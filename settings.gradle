@@ -1,4 +1,5 @@
 rootProject.name = 'bar-app'
+
 include ':bar-model'
 include ':bar-api-contract'
 include ':bar-api'

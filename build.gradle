@@ -1,34 +1,35 @@
-allprojects  {
-  apply plugin: 'maven'
-
-  group = 'uk.gov.hmcts.reform.bar'
-version = '1.0.0-SNAPSHOT'
+plugins {
+    id 'org.springframework.boot' version '1.5.6.RELEASE'
 }
+
+allprojects {
+    group = 'uk.gov.hmcts.reform.bar'
+    version = '1.0.0-SNAPSHOT'
+}
+
 
 subprojects {
-  apply plugin: 'java'
-  sourceCompatibility = 1.8
-  targetCompatibility = 1.8
-  tasks.withType(JavaCompile) {
-  	options.encoding = 'UTF-8'
-  }
+    apply plugin: 'maven'
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
 
-  
-  repositories {
-    mavenLocal()
-    
-    maven { url "http://dl.bintray.com/gov-uk-notify/maven" }
-    maven { url "http://artifactory.reform.hmcts.net/artifactory/libs-snapshot" }
-    maven { url "http://artifactory.reform.hmcts.net/artifactory/libs-release" }
-  }
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
-  
-  dependencies {
-    testCompile group: 'junit', name: 'junit', version:'4.12'
-    testCompile group: 'org.assertj', name: 'assertj-core', version:'3.8.0'
-    compileOnly group: 'org.projectlombok', name: 'lombok', version:'1.16.16'
-    compileOnly group: 'com.google.code.findbugs', name: 'annotations', version:'3.0.1'
-}
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
 
-  
+    repositories {
+        mavenLocal()
+        maven { url 'http://artifactory.reform.hmcts.net/artifactory/libs-release' }
+    }
+
+    dependencies {
+        compileOnly 'org.projectlombok:lombok:1.16.16'
+        compileOnly 'com.google.code.findbugs:annotations:3.0.1'
+
+        testCompile 'junit:junit:4.12'
+        testCompile 'org.assertj:assertj-core:3.8.0'
+    }
 }

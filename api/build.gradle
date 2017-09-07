@@ -1,25 +1,21 @@
-
-description = ''
 dependencies {
-  compile project(':bar-model')
-  compile project(':bar-api-contract')
-    compile group: 'uk.gov.hmcts.auth.checker', name: 'auth-checker-spring', version:'1.0.0.46'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version:'1.5.6.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version:'1.5.6.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version:'1.5.6.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version:'1.5.6.RELEASE'
-    compile(group: 'org.postgresql', name: 'postgresql', version:'9.4.1212') {
-exclude(module: 'commons-logging')
-exclude(module: 'slf4j-simple')
-    }
-    compile group: 'org.liquibase', name: 'liquibase-core', version:'3.5.3'
-    compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version:'1.2.0'
-    compile group: 'io.springfox', name: 'springfox-swagger2', version:'2.6.0'
-    compile group: 'io.springfox', name: 'springfox-swagger-ui', version:'2.6.0'
-    runtime group: 'org.springframework.boot', name: 'spring-boot-devtools', version:'1.5.6.RELEASE'
-    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test', version:'1.5.6.RELEASE') {
-exclude(module: 'commons-logging')
-    }
-    testCompile group: 'org.springframework.security', name: 'spring-security-test', version:'4.2.3.RELEASE'
-    testCompile group: 'org.hsqldb', name: 'hsqldb', version:'2.3.5'
+    compile project(':bar-model')
+    compile project(':bar-api-contract')
+
+    compile 'uk.gov.hmcts.auth.checker:auth-checker-spring:1.0.0.46'
+    compile 'uk.gov.hmcts.reform:java-logging-spring:1.2.0'
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compile 'org.springframework.boot:spring-boot-starter-security'
+    compile 'org.springframework.boot:spring-boot-starter-actuator'
+
+    compile 'org.liquibase:liquibase-core:3.5.3'
+    compile 'org.postgresql:postgresql:9.4.1212'
+
+    compile 'io.springfox:springfox-swagger2:2.6.0'
+    compile 'io.springfox:springfox-swagger-ui:2.6.0'
+
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'org.springframework.security:spring-security-test'
+    testCompile 'org.hsqldb:hsqldb'
 }
