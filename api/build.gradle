@@ -1,19 +1,24 @@
+plugins {
+    id 'org.springframework.boot' version '1.5.6.RELEASE'
+}
+
 dependencies {
     compile project(':bar-model')
     compile project(':bar-api-contract')
 
-    compile 'uk.gov.hmcts.auth.checker:auth-checker-spring:1.0.0.46'
-    compile 'uk.gov.hmcts.reform:java-logging-spring:1.2.0'
+    compile 'uk.gov.hmcts.auth.checker:auth-checker-spring'
+    compile 'uk.gov.hmcts.reform:java-logging-spring'
+
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-security'
     compile 'org.springframework.boot:spring-boot-starter-actuator'
 
-    compile 'org.liquibase:liquibase-core:3.5.3'
-    compile 'org.postgresql:postgresql:9.4.1212'
+    compile 'org.liquibase:liquibase-core'
+    compile 'org.postgresql:postgresql'
 
-    compile 'io.springfox:springfox-swagger2:2.6.0'
-    compile 'io.springfox:springfox-swagger-ui:2.6.0'
+    compile 'io.springfox:springfox-swagger2'
+    compile 'io.springfox:springfox-swagger-ui'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'org.springframework.security:spring-security-test'

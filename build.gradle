@@ -1,5 +1,8 @@
 plugins {
-    id 'org.springframework.boot' version '1.5.6.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.3.RELEASE'
+    id 'org.owasp.dependencycheck' version '1.4.5.1'
+    id 'org.sonarqube' version '2.5'
+    id 'jacoco'
 }
 
 allprojects {
@@ -7,17 +10,22 @@ allprojects {
     version = '1.0.0-SNAPSHOT'
 }
 
-
 subprojects {
     apply plugin: 'maven'
     apply plugin: 'java'
-    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'org.owasp.dependencycheck'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
+    }
+
+    dependencyCheck {
+        failBuildOnCVSS = 0
+        suppressionFile = 'dependency-check-suppressions.xml'
     }
 
     repositories {
@@ -31,5 +39,25 @@ subprojects {
 
         testCompile 'junit:junit:4.12'
         testCompile 'org.assertj:assertj-core:3.8.0'
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom 'org.springframework.boot:spring-boot-starter:1.5.6.RELEASE'
+        }
+
+        dependencies {
+            dependency 'uk.gov.hmcts.auth.checker:auth-checker-spring:1.0.0.46'
+            dependency 'uk.gov.hmcts.reform:java-logging-spring:1.2.0'
+
+            dependency 'com.google.guava:guava:22.0'
+
+            dependency 'org.liquibase:liquibase-core:3.5.3'
+            dependency 'org.postgresql:postgresql:9.4.1212'
+            dependency 'org.hibernate:hibernate-validator:5.3.5.Final'
+
+            dependency 'io.springfox:springfox-swagger2:2.6.0'
+            dependency 'io.springfox:springfox-swagger-ui:2.6.0'
+        }
     }
 }
