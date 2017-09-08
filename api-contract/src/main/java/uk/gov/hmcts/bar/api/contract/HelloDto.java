@@ -2,13 +2,7 @@ package uk.gov.hmcts.bar.api.contract;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.ToString;
+import lombok.*;
 
 
 @Data
@@ -16,7 +10,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(callSuper = true)
-@Builder(builderMethodName = "categoryDtoWith")
+@Builder(builderMethodName = "helloDtoWith")
 public class HelloDto {
     private String hello;
+    private String description;
 }
