@@ -24,3 +24,7 @@ dependencies {
     testCompile 'org.springframework.security:spring-security-test'
     testCompile 'org.hsqldb:hsqldb'
 }
+
+test {
+    exclude '**/ComponentTestBase*'
+}

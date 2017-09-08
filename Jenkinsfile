@@ -36,15 +36,17 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
             }
 
             stage('Build') {
-                def descriptor = Artifactory.mavenDescriptor()
-                descriptor.version = artifactVersion
-                descriptor.transform()
+                sh "./gradlew clean build"
+            }
 
-                def rtMaven = Artifactory.newMavenBuild()
-                rtMaven.tool = 'apache-maven-3.3.9'
-                rtMaven.deployer releaseRepo: 'libs-release', snapshotRepo: 'libs-snapshot', server: server
-                rtMaven.deployer.deployArtifacts = (env.BRANCH_NAME == 'master') && !versionAlreadyPublished
-                rtMaven.run pom: 'pom.xml', goals: 'clean install sonar:sonar', buildInfo: buildInfo
+            stage('OWASP dependency check') {
+                sh "./gradlew dependencyCheck"
+            }
+
+            stage('Sonar') {
+                onMaster {
+                    sh "./gradlew -Dsonar.host.url=https://sonar.reform.hmcts.net/ sonarqube"
+                }
             }
 
             def barApiDockerVersion
@@ -55,44 +57,40 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
                 barDatabaseDockerVersion = dockerImage imageName: 'bar/bar-database', context: 'docker/database'
             }
 
-            stage("Trigger acceptance tests") {
-                build job: '/bar/bar-app-acceptance-tests/master', parameters: [
-                    [$class: 'StringParameterValue', name: 'barApiDockerVersion', value: barApiDockerVersion],
-                    [$class: 'StringParameterValue', name: 'barDatabaseDockerVersion', value: barDatabaseDockerVersion]
-                ]
-            }
+//            stage("Trigger acceptance tests") {
+//                build job: '/bar/bar-app-acceptance-tests/master', parameters: [
+//                    [$class: 'StringParameterValue', name: 'barApiDockerVersion', value: barApiDockerVersion],
+//                    [$class: 'StringParameterValue', name: 'barDatabaseDockerVersion', value: barDatabaseDockerVersion]
+//                ]
+//            }
 
             onMaster {
-                stage('Publish JAR') {
-                    server.publishBuildInfo buildInfo
-                }
-
                 def rpmVersion
 
                 stage("Publish RPM") {
-                    rpmVersion = packager.javaRPM('master', 'bar-api', '$(ls api/target/bar-api-*.jar)', 'springboot', 'api/src/main/resources/application.properties')
+                    rpmVersion = packager.javaRPM('master', 'bar-api', '$(ls api/build/libs/bar-api-*.jar)', 'springboot', 'api/src/main/resources/application.properties')
                     packager.publishJavaRPM('bar-api')
                 }
 
-                stage('Deploy to Dev') {
-                    ansible.runDeployPlaybook("{bar_register_api_version: ${rpmVersion}}", 'dev')
-                    rpmTagger.tagDeploymentSuccessfulOn('dev')
-                }
-
-                stage("Trigger smoke tests in Dev") {
-                    sh 'curl -f https://dev.bar.reform.hmcts.net:4411/health'
-                    rpmTagger.tagTestingPassedOn('dev')
-                }
-
-                stage('Deploy to Test') {
-                    ansible.runDeployPlaybook("{bar_register_api_version: ${rpmVersion}}", 'test')
-                    rpmTagger.tagDeploymentSuccessfulOn('test')
-                }
-
-                stage("Trigger smoke tests in Test") {
-                    sh 'curl -f https://test.bar.reform.hmcts.net:4431/health'
-                    rpmTagger.tagTestingPassedOn('test')
-                }
+//                stage('Deploy to Dev') {
+//                    ansible.runDeployPlaybook("{bar_register_api_version: ${rpmVersion}}", 'dev')
+//                    rpmTagger.tagDeploymentSuccessfulOn('dev')
+//                }
+//
+//                stage("Trigger smoke tests in Dev") {
+//                    sh 'curl -f https://dev.bar.reform.hmcts.net:4411/health'
+//                    rpmTagger.tagTestingPassedOn('dev')
+//                }
+//
+//                stage('Deploy to Test') {
+//                    ansible.runDeployPlaybook("{bar_register_api_version: ${rpmVersion}}", 'test')
+//                    rpmTagger.tagDeploymentSuccessfulOn('test')
+//                }
+//
+//                stage("Trigger smoke tests in Test") {
+//                    sh 'curl -f https://test.bar.reform.hmcts.net:4431/health'
+//                    rpmTagger.tagTestingPassedOn('test')
+//                }
             }
 
             milestone()

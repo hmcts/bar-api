@@ -10,8 +10,8 @@ public class HelloTest {
     @Test
     public void containsValueIsInclusive() {
         Hello hello = Hello.helloWith().hello("hello").description("hello every body").build();
-        assertThat(hello.getHello().contains("hello"));
-        assertThat(hello.getDescription().contains("hello every body"));
+        assertThat(hello.getHello()).contains("hello");
+        assertThat(hello.getDescription()).contains("hello every body");
     }
 
 }
