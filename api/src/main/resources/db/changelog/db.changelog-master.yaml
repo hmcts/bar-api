@@ -23,3 +23,12 @@ databaseChangeLog:
                   type: varchar(2000)
                   constraints:
                     nullable: false
+  - changeSet:
+      id: 2
+      author: sachi
+      changes:
+        - sql: >
+            INSERT INTO hello (id, hello, description)
+            VALUES
+              (1, 'hello', 'hello every body');
+
