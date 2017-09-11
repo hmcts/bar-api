@@ -1,0 +1,11 @@
+rootProject.name = 'bar-app'
+
+include ':bar-model'
+include ':bar-api-contract'
+include ':bar-api'
+include ':bar-client'
+
+project(':bar-model').projectDir = "$rootDir/model" as File
+project(':bar-api-contract').projectDir = "$rootDir/api-contract" as File
+project(':bar-api').projectDir = "$rootDir/api" as File
+project(':bar-client').projectDir = "$rootDir/client" as File

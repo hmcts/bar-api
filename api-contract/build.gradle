@@ -1,0 +1,4 @@
+dependencies {
+    compile 'com.fasterxml.jackson.core:jackson-annotations'
+    compile 'org.hibernate:hibernate-validator'
+}
