@@ -5,7 +5,7 @@ import uk.gov.hmcts.Packager
 import uk.gov.hmcts.RPMTagger
 
 def packager = new Packager(this, 'bar')
-def ansible = new Ansible(this, 'ccfr')
+def ansible = new Ansible(this, 'bar')
 RPMTagger rpmTagger = new RPMTagger(this, 'bar-api', packager.rpmName('bar-api', params.rpmVersion), 'bar-local')
 
 def server = Artifactory.server 'artifactory.reform'
@@ -72,20 +72,20 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
                     packager.publishJavaRPM('bar-api')
                 }
 
-//                stage('Deploy to Dev') {
-//                    ansible.runDeployPlaybook("{bar_register_api_version: ${rpmVersion}}", 'dev')
-//                    rpmTagger.tagDeploymentSuccessfulOn('dev')
-//                }
-//
+                stage('Deploy to Dev') {
+                    ansible.runDeployPlaybook("{bar_api_version: ${rpmVersion}}", 'dev')
+                    rpmTagger.tagDeploymentSuccessfulOn('dev')
+                }
+
 //                stage("Trigger smoke tests in Dev") {
 //                    sh 'curl -f https://dev.bar.reform.hmcts.net:4411/health'
 //                    rpmTagger.tagTestingPassedOn('dev')
 //                }
-//
-//                stage('Deploy to Test') {
-//                    ansible.runDeployPlaybook("{bar_register_api_version: ${rpmVersion}}", 'test')
-//                    rpmTagger.tagDeploymentSuccessfulOn('test')
-//                }
+
+                stage('Deploy to Test') {
+                    ansible.runDeployPlaybook("{bar_api_version: ${rpmVersion}}", 'test')
+                    rpmTagger.tagDeploymentSuccessfulOn('test')
+                }
 //
 //                stage("Trigger smoke tests in Test") {
 //                    sh 'curl -f https://test.bar.reform.hmcts.net:4431/health'
