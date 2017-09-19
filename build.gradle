@@ -40,7 +40,6 @@ subprojects {
     dependencies {
         compileOnly 'org.projectlombok:lombok:1.16.16'
         compileOnly 'com.google.code.findbugs:annotations:3.0.1'
-        compileOnly 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.8'
 
         testCompile 'junit:junit:4.12'
         testCompile 'org.assertj:assertj-core:3.8.0'
@@ -54,7 +53,7 @@ subprojects {
         dependencies {
             dependency 'uk.gov.hmcts.auth.checker:auth-checker-spring:1.0.0.46'
             dependency 'uk.gov.hmcts.reform:java-logging-spring:1.2.0'
-
+            dependency 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.8'
             dependency 'com.google.guava:guava:22.0'
 
             dependency 'org.liquibase:liquibase-core:3.5.3'

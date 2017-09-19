@@ -35,7 +35,9 @@ public class PaymentController {
 
     @GetMapping("/payments")
     public List<PaymentDto> getPayments(@RequestBody SearchDto searchDto) throws ParseException {
-          List<PaymentDto> payments = paymentRepository.findByPaymentDateBetween(searchDto.getFromDate().truncatedTo(ChronoUnit.DAYS),searchDto.getToDate()).stream().map(paymentDtoMapper::toPaymentDto).collect(toList());
+          List<PaymentDto> payments = paymentRepository.
+              findByPaymentDateBetween(searchDto.getFromDate().truncatedTo(ChronoUnit.DAYS),searchDto.getToDate())
+              .stream().map(paymentDtoMapper::toPaymentDto).collect(toList());
           return payments;
     }
 
