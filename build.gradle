@@ -40,6 +40,7 @@ subprojects {
     dependencies {
         compileOnly 'org.projectlombok:lombok:1.16.16'
         compileOnly 'com.google.code.findbugs:annotations:3.0.1'
+        compileOnly 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.8'
 
         testCompile 'junit:junit:4.12'
         testCompile 'org.assertj:assertj-core:3.8.0'

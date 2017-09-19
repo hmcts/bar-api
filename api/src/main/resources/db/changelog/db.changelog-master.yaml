@@ -32,3 +32,42 @@ databaseChangeLog:
             VALUES
               (1, 'hello', 'hello every body');
 
+  - changeSet:
+        id: 3
+        author: sachi
+        changes:
+          - createTable:
+              tableName: payment
+              columns:
+                - column:
+                    name: id
+                    type: int
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: payee_name
+                    type: varchar(150)
+                    constraints:
+                      nullable: false
+                - column:
+                    name: case_reference
+                    type: varchar(150)
+                    constraints:
+                      nullable: false
+                - column:
+                    name: payment_channel
+                    type: varchar(50)
+                    constraints:
+                      nullable: false
+                - column:
+                    name: payment_date
+                    type: timestamp
+                    constraints:
+                      nullable: false
+                - column:
+                    name: amount
+                    type: int
+                    constraints:
+                      nullable: false
