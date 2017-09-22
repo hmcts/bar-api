@@ -1,4 +1,4 @@
-package uk.gov.hmcts.bar.api.controllers.Payment;
+package uk.gov.hmcts.bar.api.controllers.payment;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +9,8 @@ import uk.gov.hmcts.bar.api.contract.PaymentDto;
 import uk.gov.hmcts.bar.api.contract.SearchDto;
 import uk.gov.hmcts.bar.api.model.Payment;
 import uk.gov.hmcts.bar.api.model.PaymentRepository;
+import uk.gov.hmcts.bar.api.model.PaymentType;
+import uk.gov.hmcts.bar.api.model.PaymentTypeRepository;
 import uk.gov.hmcts.bar.api.model.exceptions.PaymentNotFoundException;
 
 import javax.validation.Valid;
@@ -26,11 +28,13 @@ public class PaymentController {
 
     private final PaymentDtoMapper paymentDtoMapper;
     private final PaymentRepository paymentRepository;
+    private final PaymentTypeRepository paymentTypeRepository;
 
     @Autowired
-    public PaymentController(PaymentDtoMapper paymentDtoMapper, PaymentRepository paymentRepository) {
+    public PaymentController(PaymentDtoMapper paymentDtoMapper, PaymentRepository paymentRepository, PaymentTypeRepository paymentTypeRepository) {
         this.paymentDtoMapper = paymentDtoMapper;
         this.paymentRepository = paymentRepository;
+        this.paymentTypeRepository = paymentTypeRepository;
     }
 
     @GetMapping("/payments")
@@ -41,6 +45,10 @@ public class PaymentController {
           return payments;
     }
 
+    @GetMapping("/paymentTypes")
+    public List<PaymentType> getPaymentTypes(){
+       return paymentTypeRepository.findAll();
+    }
 
     @PostMapping("/payments")
     public PaymentDto createPayment(@Valid @RequestBody PaymentDto paymentDto){
@@ -50,7 +58,7 @@ public class PaymentController {
 
     @ExceptionHandler(PaymentNotFoundException.class)
     public ResponseEntity paymentNotFound() {
-        return new ResponseEntity<>(new ErrorDto("Payment: not found ."), BAD_REQUEST);
+        return new ResponseEntity<>(new ErrorDto("payment: not found ."), BAD_REQUEST);
     }
 
 
