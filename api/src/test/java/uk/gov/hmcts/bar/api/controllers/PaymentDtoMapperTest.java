@@ -2,7 +2,7 @@ package uk.gov.hmcts.bar.api.controllers;
 
 import org.junit.Test;
 import uk.gov.hmcts.bar.api.contract.PaymentDto;
-import uk.gov.hmcts.bar.api.controllers.Payment.PaymentDtoMapper;
+import uk.gov.hmcts.bar.api.controllers.payment.PaymentDtoMapper;
 import uk.gov.hmcts.bar.api.model.Payment;
 
 import java.time.LocalDateTime;

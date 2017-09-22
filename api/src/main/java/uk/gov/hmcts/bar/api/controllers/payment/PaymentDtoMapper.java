@@ -1,4 +1,4 @@
-package uk.gov.hmcts.bar.api.controllers.Payment;
+package uk.gov.hmcts.bar.api.controllers.payment;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.bar.api.contract.PaymentDto;

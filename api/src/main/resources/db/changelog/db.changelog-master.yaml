@@ -71,3 +71,32 @@ databaseChangeLog:
                     type: int
                     constraints:
                       nullable: false
+
+  - changeSet:
+        id: 4
+        author: sachi
+        changes:
+          - createTable:
+              tableName: payment_type
+              columns:
+                - column:
+                    name: id
+                    type: int
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: name
+                    type: varchar(50)
+                    constraints:
+                      nullable: false
+          - sql: >
+              INSERT INTO payment_type (id,name)
+              VALUES
+                (1, 'Cheque'),
+                (2, 'Cash'),
+                (3, 'Payment by Account'),
+                (4, 'Postal order'),
+                (5, 'Foreign cheque'),
+                (6, 'Request to ring');
