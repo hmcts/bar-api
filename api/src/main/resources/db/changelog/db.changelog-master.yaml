@@ -100,3 +100,67 @@ databaseChangeLog:
                 (4, 'Postal order'),
                 (5, 'Foreign cheque'),
                 (6, 'Request to ring');
+  - changeSet:
+          id: 5
+          author: sachi
+          changes:
+            - createTable:
+                tableName: service
+                columns:
+                  - column:
+                      name: id
+                      type: int
+                      autoIncrement: true
+                      constraints:
+                        primaryKey: true
+                        nullable: false
+                  - column:
+                      name: name
+                      type: varchar(50)
+                      constraints:
+                        nullable: false
+
+            - sql: >
+                INSERT INTO service (id,name)
+                VALUES
+                  (1, 'Civil claims'),
+                  (2, 'Family'),
+                  (3, 'Probate');
+
+            - createTable:
+                tableName: sub_service
+                columns:
+                  - column:
+                      name: id
+                      type: int
+                      autoIncrement: true
+                      constraints:
+                        primaryKey: true
+                        nullable: false
+                  - column:
+                      name: name
+                      type: varchar(50)
+                      constraints:
+                        nullable: false
+                  - column:
+                      name: service_id
+                      type: int
+                      constraints:
+                        foreignKeyName: fk_service_id
+                        references: service(id)
+                        nullable: true
+
+            - sql: >
+                INSERT INTO sub_service (id,name,service_id)
+                VALUES
+                  (1, 'Bailiffs',1),
+                  (2, 'Enf1',1),
+                  (3, 'Enf3',1),
+                  (4, 'Hearing',1),
+                  (5, 'Housing',1),
+                  (6, 'Issue',1),
+                  (7, 'Divorce',2),
+                  (8, 'Adoption',2),
+                  (9, 'Family assessment',2),
+                  (10, 'Children act issue',2);
+
