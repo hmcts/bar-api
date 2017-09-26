@@ -121,11 +121,11 @@ databaseChangeLog:
                         nullable: false
 
             - sql: >
-                INSERT INTO service (id,name)
+                INSERT INTO service (name)
                 VALUES
-                  (1, 'Civil claims'),
-                  (2, 'Family'),
-                  (3, 'Probate');
+                  ('Civil claims'),
+                  ('Family'),
+                  ('Probate');
 
             - createTable:
                 tableName: sub_service
@@ -151,16 +151,17 @@ databaseChangeLog:
                         nullable: true
 
             - sql: >
-                INSERT INTO sub_service (id,name,service_id)
+                INSERT INTO sub_service (name,service_id)
                 VALUES
-                  (1, 'Bailiffs',1),
-                  (2, 'Enf1',1),
-                  (3, 'Enf3',1),
-                  (4, 'Hearing',1),
-                  (5, 'Housing',1),
-                  (6, 'Issue',1),
-                  (7, 'Divorce',2),
-                  (8, 'Adoption',2),
-                  (9, 'Family assessment',2),
-                  (10, 'Children act issue',2);
+                  ('Bailiffs', (select id from service where name = 'Civil claims')),
+                  ('Enf1',(select id from service where name = 'Civil claims')),
+                  ('Enf3',(select id from service where name = 'Civil claims')),
+                  ('Hearing',(select id from service where name = 'Civil claims')),
+                  ('Housing',(select id from service where name = 'Civil claims')),
+                  ('Issue',(select id from service where name = 'Civil claims')),
+                  ('Adoption',(select id from service where name = 'Family')),
+                  ('Children act issue',(select id from service where name = 'Family')),
+                  ('Divorce',(select id from service where name = 'Family')),
+                  ('Family assessment',(select id from service where name = 'Family'));
+
 

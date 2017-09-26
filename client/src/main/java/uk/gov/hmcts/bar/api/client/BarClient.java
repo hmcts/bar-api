@@ -5,10 +5,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
-import java.util.List;
 
 @SuppressFBWarnings("HTTP_PARAMETER_POLLUTION")
 public class BarClient {
@@ -21,22 +19,6 @@ public class BarClient {
     public BarClient(HttpClient httpClient, String baseUrl) {
         this.httpClient = httpClient;
         this.baseUrl = baseUrl;
-    }
-
-
-    public HelloDto getHello() {
-
-        try {
-            HttpGet request = new HttpGet(baseUrl + "/bar");
-            return httpClient.execute(request, httpResponse -> {
-                checkStatusIs2xx(httpResponse);
-                return objectMapper.readValue(httpResponse.getEntity().getContent(), HelloDto.class);
-            });
-        } catch (IOException e) {
-            throw new BarClientException(e);
-        }
-
-
     }
 
 

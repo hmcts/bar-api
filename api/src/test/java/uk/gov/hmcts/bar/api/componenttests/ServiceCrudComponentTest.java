@@ -9,9 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class ServiceCrudComponentTest extends ComponentTestBase {
 
-
     @Test
-    public void retrieveAll1() throws Exception {
+    public void retrieveAllServices() throws Exception {
         ResultActions resultActions = restActions
             .get("/services")
             .andExpect(status().isOk())
@@ -20,7 +19,6 @@ public class ServiceCrudComponentTest extends ComponentTestBase {
                     assertThat(service.getName()).isEqualTo("Civil claims");
                     assertThat(service.getSubServices()).anySatisfy(subService -> {
                         assertThat(subService.getName()).isEqualTo("Bailiffs");
-
                     });
                 });
             }));
