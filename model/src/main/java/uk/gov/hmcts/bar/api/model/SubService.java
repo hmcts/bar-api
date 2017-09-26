@@ -12,15 +12,12 @@ import javax.persistence.Id;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder(builderMethodName = "helloWith")
-public class Hello {
+@Builder(builderMethodName = "subServiceWith")
+public class SubService {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @NonNull
-    private String hello;
-    @NonNull
-    private String description;
-
-
+    private String name;
 }

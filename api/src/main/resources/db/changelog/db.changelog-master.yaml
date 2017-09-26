@@ -100,3 +100,68 @@ databaseChangeLog:
                 (4, 'Postal order'),
                 (5, 'Foreign cheque'),
                 (6, 'Request to ring');
+  - changeSet:
+          id: 5
+          author: sachi
+          changes:
+            - createTable:
+                tableName: service
+                columns:
+                  - column:
+                      name: id
+                      type: int
+                      autoIncrement: true
+                      constraints:
+                        primaryKey: true
+                        nullable: false
+                  - column:
+                      name: name
+                      type: varchar(50)
+                      constraints:
+                        nullable: false
+
+            - sql: >
+                INSERT INTO service (name)
+                VALUES
+                  ('Civil claims'),
+                  ('Family'),
+                  ('Probate');
+
+            - createTable:
+                tableName: sub_service
+                columns:
+                  - column:
+                      name: id
+                      type: int
+                      autoIncrement: true
+                      constraints:
+                        primaryKey: true
+                        nullable: false
+                  - column:
+                      name: name
+                      type: varchar(50)
+                      constraints:
+                        nullable: false
+                  - column:
+                      name: service_id
+                      type: int
+                      constraints:
+                        foreignKeyName: fk_service_id
+                        references: service(id)
+                        nullable: true
+
+            - sql: >
+                INSERT INTO sub_service (name,service_id)
+                VALUES
+                  ('Bailiffs', (select id from service where name = 'Civil claims')),
+                  ('Enf1',(select id from service where name = 'Civil claims')),
+                  ('Enf3',(select id from service where name = 'Civil claims')),
+                  ('Hearing',(select id from service where name = 'Civil claims')),
+                  ('Housing',(select id from service where name = 'Civil claims')),
+                  ('Issue',(select id from service where name = 'Civil claims')),
+                  ('Adoption',(select id from service where name = 'Family')),
+                  ('Children act issue',(select id from service where name = 'Family')),
+                  ('Divorce',(select id from service where name = 'Family')),
+                  ('Family assessment',(select id from service where name = 'Family'));
+
+
