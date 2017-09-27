@@ -8,14 +8,14 @@ services:
         - http_proxy
         - https_proxy
         - no_proxy
-    image: bar-api
+    image: docker.artifactory.reform.hmcts.net/bar/bar-api
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://bar-database:5432/bar
       - SPRING_DATASOURCE_USERNAME=bar
       - SPRING_DATASOURCE_PASSWORD=bar
       - AUTH_IDAM_CLIENT_BASEURL=https://idam-test.dev.ccidam.reform.hmcts.net
     ports:
-     - 8184:8080
+     - 8182:8080
     depends_on:
       bar-database:
         condition: service_healthy
