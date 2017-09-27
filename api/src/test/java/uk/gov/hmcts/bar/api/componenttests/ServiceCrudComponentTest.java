@@ -16,9 +16,9 @@ public class ServiceCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isOk())
             .andExpect(body().asListOf(Service.class, (services) -> {
                 assertThat(services).anySatisfy(service -> {
-                    assertThat(service.getName()).isEqualTo("Civil claims");
+                    assertThat(service.getName()).isEqualTo("Family");
                     assertThat(service.getSubServices()).anySatisfy(subService -> {
-                        assertThat(subService.getName()).isEqualTo("Bailiffs");
+                        assertThat(subService.getName()).isEqualTo("Divorce");
                     });
                 });
             }));

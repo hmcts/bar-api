@@ -116,16 +116,16 @@ databaseChangeLog:
                         nullable: false
                   - column:
                       name: name
-                      type: varchar(50)
+                      type: varchar(156)
                       constraints:
                         nullable: false
 
             - sql: >
                 INSERT INTO service (name)
                 VALUES
-                  ('Civil claims'),
+                  ('Civil'),
                   ('Family'),
-                  ('Probate');
+                  ('Tribunals');
 
             - createTable:
                 tableName: sub_service
@@ -139,7 +139,7 @@ databaseChangeLog:
                         nullable: false
                   - column:
                       name: name
-                      type: varchar(50)
+                      type: varchar(156)
                       constraints:
                         nullable: false
                   - column:
@@ -153,15 +153,17 @@ databaseChangeLog:
             - sql: >
                 INSERT INTO sub_service (name,service_id)
                 VALUES
-                  ('Bailiffs', (select id from service where name = 'Civil claims')),
-                  ('Enf1',(select id from service where name = 'Civil claims')),
-                  ('Enf3',(select id from service where name = 'Civil claims')),
-                  ('Hearing',(select id from service where name = 'Civil claims')),
-                  ('Housing',(select id from service where name = 'Civil claims')),
-                  ('Issue',(select id from service where name = 'Civil claims')),
+                  ('County', (select id from service where name = 'Civil')),
+                  ('Magistrates Civil',(select id from service where name = 'Civil')),
+                  ('RCJ',(select id from service where name = 'Civil')),
                   ('Adoption',(select id from service where name = 'Family')),
-                  ('Children act issue',(select id from service where name = 'Family')),
+                  ('Court of Protection',(select id from service where name = 'Family')),
                   ('Divorce',(select id from service where name = 'Family')),
-                  ('Family assessment',(select id from service where name = 'Family'));
-
-
+                  ('Family Law',(select id from service where name = 'Family')),
+                  ('Private Law',(select id from service where name = 'Family')),
+                  ('Probate',(select id from service where name = 'Family')),
+                  ('Public Law',(select id from service where name = 'Family')),
+                  ('All other tribunals',(select id from service where name = 'Tribunals')),
+                  ('Employment Tribunals',(select id from service where name = 'Tribunals')),
+                  ('Immigration and Asylum Chamber',(select id from service where name = 'Tribunals')),
+                  ('Property, Gender Recognition, Gambling',(select id from service where name = 'Tribunals'));
