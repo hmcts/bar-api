@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.bar.api.contract.ErrorDto;
 import uk.gov.hmcts.bar.api.contract.PaymentDto;
+import uk.gov.hmcts.bar.api.contract.PaymentUpdateDto;
 import uk.gov.hmcts.bar.api.contract.SearchDto;
 import uk.gov.hmcts.bar.api.model.Payment;
 import uk.gov.hmcts.bar.api.model.PaymentRepository;
@@ -40,7 +41,7 @@ public class PaymentController {
     @GetMapping("/payments")
     public List<PaymentDto> getPayments(@RequestBody SearchDto searchDto) throws ParseException {
           List<PaymentDto> payments = paymentRepository.
-              findByPaymentDateBetween(searchDto.getFromDate().truncatedTo(ChronoUnit.DAYS),searchDto.getToDate())
+              findByCreatedByUserIdAndPaymentDateBetween(searchDto.getUserId(),searchDto.getFromDate().truncatedTo(ChronoUnit.DAYS),searchDto.getToDate())
               .stream().map(paymentDtoMapper::toPaymentDto).collect(toList());
           return payments;
     }
@@ -51,8 +52,8 @@ public class PaymentController {
     }
 
     @PostMapping("/payments")
-    public PaymentDto createPayment(@Valid @RequestBody PaymentDto paymentDto){
-        Payment payment = paymentRepository.save(paymentDtoMapper.toPayment(paymentDto));
+    public PaymentDto recordPayment(@Valid @RequestBody PaymentUpdateDto paymentUpdateDto){
+        Payment payment = paymentRepository.save(paymentDtoMapper.toPayment(paymentUpdateDto));
         return paymentDtoMapper.toPaymentDto(payment);
     }
 

@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Integer> {
-    List<Payment> findByPaymentDateBetween(LocalDateTime fromDate , LocalDateTime toDate);
+    List<Payment> findByCreatedByUserIdAndPaymentDateBetween(String createdByUserId ,LocalDateTime fromDate , LocalDateTime toDate);
 }

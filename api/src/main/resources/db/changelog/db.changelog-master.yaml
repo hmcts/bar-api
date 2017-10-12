@@ -167,3 +167,130 @@ databaseChangeLog:
                   ('Employment Tribunals',(select id from service where name = 'Tribunals')),
                   ('Immigration and Asylum Chamber',(select id from service where name = 'Tribunals')),
                   ('Property, Gender Recognition, Gambling',(select id from service where name = 'Tribunals'));
+
+  - changeSet:
+          id: 6
+          author: sachi
+          changes:
+            - dropTable:
+                tableName: hello
+
+
+
+            - createTable:
+                tableName : court_case
+                columns:
+                  - column:
+                      name: id
+                      type: int
+                      autoIncrement: true
+                      constraints:
+                        primaryKey: true
+                        nullable: false
+                  - column:
+                      name: reference
+                      type: varchar(156)
+                      constraints:
+                        nullable: false
+                  - column:
+                      name: jurisdiction1
+                      type: varchar(100)
+                      constraints:
+                        nullable: false
+                  - column:
+                      name: jurisdiction2
+                      type: varchar(100)
+                      constraints:
+                        nullable: false
+                  - column:
+                      name: payment_id
+                      type: int
+                      constraints:
+                        foreignKeyName: fk_payment_id
+                        references: payment(id)
+                  - column:
+                      name: sub_service_id
+                      type: int
+                      constraints:
+                        foreignKeyName: fk_sub_service_id
+                        references: sub_service(id)
+
+            - dropColumn:
+                columnName: case_reference
+                tableName:  payment
+
+            - dropColumn:
+                columnName: payment_channel
+                tableName:  payment
+
+            - addColumn:
+                columns:
+                  - column:
+                      name: payment_type
+                      type: int
+                      constraints:
+                        foreignKeyName: fk_payment_type_id
+                        references: payment_type(id)
+                  - column:
+                      name: payment_receipt_type
+                      type: varchar(50)
+                      constraints:
+                        nullable: false
+                  - column:
+                      name: counter_code
+                      type: varchar(50)
+                      constraints:
+                        nullable: true
+                  - column:
+                      name: event_type
+                      type: varchar(50)
+                      constraints:
+                        nullable: true
+                  - column:
+                      name: fee_code
+                      type: varchar(50)
+                      constraints:
+                        nullable: true
+                  - column:
+                      name: sort_code
+                      type: varchar(6)
+                      constraints:
+                        nullable: true
+                  - column:
+                      name: account_number
+                      type: varchar(8)
+                      constraints:
+                        nullable: true
+                  - column:
+                      name: cheque_number
+                      type: varchar(10)
+                      constraints:
+                        nullable: true
+                  - column:
+                      name: currency_type
+                      type: varchar(10)
+                      constraints:
+                        nullable: false
+                  - column:
+                      name: created_by_user_id
+                      type: varchar(20)
+                      constraints:
+                        nullable: false
+                  - column:
+                      name: updated_by_user_id
+                      type: varchar(20)
+                      constraints:
+                        nullable: true
+                  - column:
+                      name: fee_clark_status
+                      type: varchar(20)
+                      constraints:
+                        nullable: true
+                  - column:
+                      name: update_date
+                      type: timestamp
+                      constraints:
+                        nullable: true
+                tableName: payment
+
+

@@ -4,7 +4,7 @@ package uk.gov.hmcts.bar.api.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Entity
@@ -22,6 +22,6 @@ public class Service {
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
     @JoinColumn(name = "service_id")
     @OrderBy("name ASC")
-    private Set<SubService> subServices;
+    private List<SubService> subServices;
 
 }
