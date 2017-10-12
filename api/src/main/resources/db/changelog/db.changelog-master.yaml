@@ -267,7 +267,7 @@ databaseChangeLog:
                       constraints:
                         nullable: true
                   - column:
-                      name: currency_type
+                      name: currency
                       type: varchar(10)
                       constraints:
                         nullable: false

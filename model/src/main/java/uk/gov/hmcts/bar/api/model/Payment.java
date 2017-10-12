@@ -30,7 +30,7 @@ public  class Payment {
     private String accountNumber;
     private String chequeNumber;
     @NonNull
-    private String currencyType;
+    private String currency;
     @NonNull
     private String createdByUserId;
     private String updatedByUserId;

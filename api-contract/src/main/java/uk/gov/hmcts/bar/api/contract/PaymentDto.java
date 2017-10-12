@@ -30,8 +30,8 @@ public class PaymentDto {
     private String accountNumber;
     @JsonProperty("cheque_number")
     private String chequeNumber;
-    @JsonProperty("currency_type")
-    private String currencyType;
+    @JsonProperty("currency")
+    private String currency;
     @JsonProperty("payment_type")
     private Integer paymentType;
     @JsonProperty("payment_date")

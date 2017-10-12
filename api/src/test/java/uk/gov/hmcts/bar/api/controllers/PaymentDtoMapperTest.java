@@ -23,7 +23,7 @@ public class PaymentDtoMapperTest {
     private static final SubService ANY_SUB_SERVICE = SubService.subServiceWith().name("County").build();
     private static final ServiceDto.SubServiceDto MAPPED_SUB_SERVICE_DTO = new ServiceDto.SubServiceDto("County");
     @Test
-    public void convertsToPaymentDto() {
+    public void givenPayment_convertedToPaymentDto() {
         assertThat(paymentDtoMapper.toPaymentDto(
             Payment.paymentWith()
                 .payeeName("Mr Tony Dowds")
@@ -35,7 +35,7 @@ public class PaymentDtoMapperTest {
                 .feeCode("X0001")
                 .eventType("someevent")
                 .counterCode("somecounter")
-                .currencyType("GBP")
+                .currency("GBP")
                 .paymentDate(LocalDateTime.parse("2017-09-14T10:11:30"))
                 .updateDate(LocalDateTime.parse("2017-09-14T10:11:30"))
                 .amount(500)
@@ -55,7 +55,7 @@ public class PaymentDtoMapperTest {
                 .feeCode("X0001")
                 .eventType("someevent")
                 .counterCode("somecounter")
-                .currencyType("GBP")
+                .currency("GBP")
                 .paymentDate("2017-09-14T10:11:30")
                 .updateDate("2017-09-14T10:11:30")
                 .amount(500)
@@ -67,7 +67,7 @@ public class PaymentDtoMapperTest {
 
 
     @Test
-    public void convertsToPayment() {
+    public void givenPaymentDto_convertedToPayment() {
         assertThat(paymentDtoMapper.toPayment(
             PaymentDto.paymentDtoWith()
                 .payeeName("Mr Tony Dowds")
@@ -79,7 +79,7 @@ public class PaymentDtoMapperTest {
                 .feeCode("X0001")
                 .eventType("someevent")
                 .counterCode("somecounter")
-                .currencyType("GBP")
+                .currency("GBP")
                 .paymentDate("2017-09-14T10:11:30")
                 .updateDate("2017-09-14T10:11:30")
                 .amount(500)
@@ -99,7 +99,7 @@ public class PaymentDtoMapperTest {
                 .feeCode("X0001")
                 .eventType("someevent")
                 .counterCode("somecounter")
-                .currencyType("GBP")
+                .currency("GBP")
                 .paymentDate(LocalDateTime.parse("2017-09-14T10:11:30"))
                 .updateDate(LocalDateTime.parse("2017-09-14T10:11:30"))
                 .amount(500)
