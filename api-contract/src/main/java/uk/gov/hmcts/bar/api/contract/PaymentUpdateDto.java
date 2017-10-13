@@ -1,9 +1,9 @@
 package uk.gov.hmcts.bar.api.contract;
 
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import uk.gov.hmcts.bar.api.contract.ServiceDto.SubServiceDto;
 
 import java.util.List;
 
@@ -12,8 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(callSuper = true)
-@Builder(builderMethodName = "paymentDtoWith")
-public class PaymentDto {
+@Builder(builderMethodName = "paymentUpdateDtoWith")
+public class PaymentUpdateDto {
     @JsonProperty("payee_name")
     private String payeeName;
     @JsonProperty("payment_receipt_type")
@@ -43,7 +43,7 @@ public class PaymentDto {
     private String updatedByUserId;
     @JsonProperty("update_date")
     private String updateDate;
-    private List<CaseDto> cases;
+    private List<CaseUpdateDto> cases;
 
 
     @Data
@@ -51,14 +51,15 @@ public class PaymentDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @ToString(callSuper = true)
-    @Builder(builderMethodName = "caseDtoWith")
-    public static class CaseDto {
+    @Builder(builderMethodName = "caseUpdateDtoWith")
+    public static class CaseUpdateDto {
         private String reference;
         private String jurisdiction1;
         private String jurisdiction2;
-        @JsonProperty("sub_service")
-        private SubServiceDto subService;
+        @JsonProperty("sub_service_id")
+        private String subServiceId;
 
     }
+
 
 }

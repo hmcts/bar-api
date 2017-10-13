@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @Builder(builderMethodName = "searchDtoWith")
 public class SearchDto {
 
+    private String userId;
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     private LocalDateTime fromDate;
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
