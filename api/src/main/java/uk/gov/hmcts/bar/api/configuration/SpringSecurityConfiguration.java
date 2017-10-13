@@ -13,7 +13,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 import org.springframework.beans.factory.annotation.Autowired;*/
 
 @Configuration
-@EnableWebSecurity
+//@EnableWebSecurity
 public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     /*Uncomment - - when integrating with Idam
@@ -23,7 +23,7 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
     */
 
     @Override
-    @SuppressFBWarnings(value = "SPRING_CSRF_PROTECTION_DISABLED", justification = "It's safe to disable CSRF protection as application is not being hit directly from the browser")
+    //@SuppressFBWarnings(value = "SPRING_CSRF_PROTECTION_DISABLED", justification = "It's safe to disable CSRF protection as application is not being hit directly from the browser")
     protected void configure(HttpSecurity http) throws Exception {
 
      /*  Uncomment - - when integrating with Idam
@@ -42,7 +42,7 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
       */
 
         //Remove the following line - - when integrating with Idam and uncomment the above
-        http.authorizeRequests().antMatchers("/").permitAll().and().csrf().disable();
+        //http.authorizeRequests().antMatchers("/").permitAll().and().csrf().disable();
 
     }
 
