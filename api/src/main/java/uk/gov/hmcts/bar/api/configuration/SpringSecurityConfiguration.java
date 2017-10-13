@@ -42,7 +42,7 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
       */
 
         //Remove the following line - - when integrating with Idam and uncomment the above
-        //http.authorizeRequests().antMatchers("/").permitAll().and().csrf().disable();
+        http.authorizeRequests().antMatchers("/").permitAll().and().csrf().disable();
 
     }
 
