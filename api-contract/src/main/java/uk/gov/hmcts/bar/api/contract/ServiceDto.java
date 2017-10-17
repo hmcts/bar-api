@@ -12,14 +12,16 @@ import java.util.List;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ServiceDto {
-
+    private final Integer id;
     private final String name;
     private final List<SubServiceDto> subServices;
 
     @JsonCreator
     @Builder(builderMethodName = "serviceDtoWith")
-    public ServiceDto(@JsonProperty("name") String name,
+    public ServiceDto(@JsonProperty("id")   Integer id,
+                      @JsonProperty("name") String name,
                       @JsonProperty("subServices") List<SubServiceDto> subServices) {
+        this.id = id;
         this.name = name;
         this.subServices = subServices;
 
@@ -29,12 +31,15 @@ public class ServiceDto {
     @Data
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class SubServiceDto {
+        private Integer id;
         private String name;
 
 
         @JsonCreator
         @Builder(builderMethodName = "subServiceDtoWith")
-        public SubServiceDto(@JsonProperty("name") String name) {
+        public SubServiceDto(@JsonProperty("id") Integer id,
+            @JsonProperty("name") String name) {
+            this.id =id;
             this.name = name;
 
         }
