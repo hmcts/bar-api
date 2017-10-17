@@ -10,7 +10,6 @@ import uk.gov.hmcts.bar.api.model.Case;
 import uk.gov.hmcts.bar.api.model.Payment;
 import uk.gov.hmcts.bar.api.model.SubServiceRepository;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static java.util.stream.Collectors.toList;
@@ -32,7 +31,7 @@ public class PaymentDtoMapper {
     public PaymentDto toPaymentDto(Payment payment) {
 
         return PaymentDto.paymentDtoWith()
-            .amount((new BigDecimal(payment.getAmount()).divide(new BigDecimal(100),2, BigDecimal.ROUND_HALF_UP)).toString())
+            .amount(payment.getAmount())
             .sortCode(payment.getSortCode())
             .accountNumber(payment.getAccountNumber())
             .chequeNumber(payment.getChequeNumber())
@@ -65,7 +64,7 @@ public class PaymentDtoMapper {
     public Payment toPayment(PaymentDto dto) {
 
         return Payment.paymentWith()
-            .amount(new BigDecimal(dto.getAmount()).scaleByPowerOfTen(2).intValue())
+            .amount(dto.getAmount())
             .sortCode(dto.getSortCode())
             .accountNumber(dto.getAccountNumber())
             .chequeNumber(dto.getChequeNumber())
@@ -98,7 +97,7 @@ public class PaymentDtoMapper {
 
     public Payment toPayment(PaymentUpdateDto dto) {
         return Payment.paymentWith()
-            .amount(new BigDecimal(dto.getAmount()).scaleByPowerOfTen(2).intValue())
+            .amount(dto.getAmount())
             .sortCode(dto.getSortCode())
             .accountNumber(dto.getAccountNumber())
             .chequeNumber(dto.getChequeNumber())
