@@ -62,6 +62,7 @@ public class PaymentDtoMapper {
 
 
     public Payment toPayment(PaymentDto dto) {
+
         return Payment.paymentWith()
             .amount(dto.getAmount())
             .sortCode(dto.getSortCode())
@@ -74,7 +75,7 @@ public class PaymentDtoMapper {
             .paymentReceiptType(dto.getPaymentReceiptType())
             .payeeName(dto.getPayeeName())
             .paymentType(dto.getPaymentType())
-            .paymentDate(LocalDateTime.parse(dto.getPaymentDate()))
+            .paymentDate(LocalDateTime.now())
             .updateDate(dto.getUpdateDate()!=null ? LocalDateTime.parse(dto.getUpdateDate()): null)
             .createdByUserId(dto.getCreatedByUserId())
             .updatedByUserId(dto.getUpdatedByUserId())
@@ -107,7 +108,7 @@ public class PaymentDtoMapper {
             .paymentReceiptType(dto.getPaymentReceiptType())
             .payeeName(dto.getPayeeName())
             .paymentType(dto.getPaymentType())
-            .paymentDate(LocalDateTime.parse(dto.getPaymentDate()))
+            .paymentDate(LocalDateTime.now())
             .updateDate(dto.getUpdateDate()!=null ? LocalDateTime.parse(dto.getUpdateDate()): null)
             .createdByUserId(dto.getCreatedByUserId())
             .updatedByUserId(dto.getUpdatedByUserId())

@@ -44,7 +44,7 @@ public class PaymentDtoMapperTest {
                 .cases(Arrays.asList(Case.caseWith().jurisdiction1("one").jurisdiction2("two").reference("case_1").subService(ANY_SUB_SERVICE).build()))
                 .build()
         )
-        ).isEqualTo(
+        ).isEqualToComparingOnlyGivenFields(
             PaymentDto.paymentDtoWith()
                 .payeeName("Mr Tony Dowds")
                 .sortCode("000000")
@@ -56,7 +56,6 @@ public class PaymentDtoMapperTest {
                 .eventType("someevent")
                 .counterCode("somecounter")
                 .currency("GBP")
-                .paymentDate("2017-09-14T10:11:30")
                 .updateDate("2017-09-14T10:11:30")
                 .amount(500)
                 .createdByUserId("user01")
@@ -80,7 +79,6 @@ public class PaymentDtoMapperTest {
                 .eventType("someevent")
                 .counterCode("somecounter")
                 .currency("GBP")
-                .paymentDate("2017-09-14T10:11:30")
                 .updateDate("2017-09-14T10:11:30")
                 .amount(500)
                 .createdByUserId("user01")
@@ -88,7 +86,7 @@ public class PaymentDtoMapperTest {
                 .cases(Arrays.asList(PaymentDto.CaseDto.caseDtoWith().jurisdiction1("one").jurisdiction2("two").reference("case_1").subService(MAPPED_SUB_SERVICE_DTO).build()))
                 .build()
             )
-        ).isEqualTo(
+        ).isEqualToComparingOnlyGivenFields(
             Payment.paymentWith()
                 .payeeName("Mr Tony Dowds")
                 .sortCode("000000")
