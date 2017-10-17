@@ -10,6 +10,7 @@ import uk.gov.hmcts.bar.api.model.Case;
 import uk.gov.hmcts.bar.api.model.Payment;
 import uk.gov.hmcts.bar.api.model.SubServiceRepository;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static java.util.stream.Collectors.toList;
@@ -31,7 +32,7 @@ public class PaymentDtoMapper {
     public PaymentDto toPaymentDto(Payment payment) {
 
         return PaymentDto.paymentDtoWith()
-            .amount(payment.getAmount())
+            .amount((new BigDecimal(payment.getAmount()).divide(new BigDecimal(100),2, BigDecimal.ROUND_HALF_UP)).toString())
             .sortCode(payment.getSortCode())
             .accountNumber(payment.getAccountNumber())
             .chequeNumber(payment.getChequeNumber())
@@ -62,8 +63,9 @@ public class PaymentDtoMapper {
 
 
     public Payment toPayment(PaymentDto dto) {
+
         return Payment.paymentWith()
-            .amount(dto.getAmount())
+            .amount(new BigDecimal(dto.getAmount()).scaleByPowerOfTen(2).intValue())
             .sortCode(dto.getSortCode())
             .accountNumber(dto.getAccountNumber())
             .chequeNumber(dto.getChequeNumber())
@@ -74,7 +76,7 @@ public class PaymentDtoMapper {
             .paymentReceiptType(dto.getPaymentReceiptType())
             .payeeName(dto.getPayeeName())
             .paymentType(dto.getPaymentType())
-            .paymentDate(LocalDateTime.parse(dto.getPaymentDate()))
+            .paymentDate(LocalDateTime.now())
             .updateDate(dto.getUpdateDate()!=null ? LocalDateTime.parse(dto.getUpdateDate()): null)
             .createdByUserId(dto.getCreatedByUserId())
             .updatedByUserId(dto.getUpdatedByUserId())
@@ -96,7 +98,7 @@ public class PaymentDtoMapper {
 
     public Payment toPayment(PaymentUpdateDto dto) {
         return Payment.paymentWith()
-            .amount(dto.getAmount())
+            .amount(new BigDecimal(dto.getAmount()).scaleByPowerOfTen(2).intValue())
             .sortCode(dto.getSortCode())
             .accountNumber(dto.getAccountNumber())
             .chequeNumber(dto.getChequeNumber())
@@ -107,7 +109,7 @@ public class PaymentDtoMapper {
             .paymentReceiptType(dto.getPaymentReceiptType())
             .payeeName(dto.getPayeeName())
             .paymentType(dto.getPaymentType())
-            .paymentDate(LocalDateTime.parse(dto.getPaymentDate()))
+            .paymentDate(LocalDateTime.now())
             .updateDate(dto.getUpdateDate()!=null ? LocalDateTime.parse(dto.getUpdateDate()): null)
             .createdByUserId(dto.getCreatedByUserId())
             .updatedByUserId(dto.getUpdatedByUserId())

@@ -36,7 +36,7 @@ public class PaymentDto {
     private Integer paymentType;
     @JsonProperty("payment_date")
     private String paymentDate;
-    private Integer amount;
+    private String amount;
     @JsonProperty("created_by_user_id")
     private String createdByUserId;
     @JsonProperty("updated_by_user_id")
