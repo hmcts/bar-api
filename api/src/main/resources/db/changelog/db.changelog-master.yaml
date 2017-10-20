@@ -294,3 +294,11 @@ databaseChangeLog:
                 tableName: payment
 
 
+  - changeSet:
+          id: 7
+          author: sachi
+          changes:
+            - renameColumn:
+                oldColumnName: payment_type
+                newColumnName: payment_type_id
+                tableName: payment

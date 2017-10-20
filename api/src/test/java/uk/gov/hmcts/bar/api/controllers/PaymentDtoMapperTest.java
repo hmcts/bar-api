@@ -3,11 +3,13 @@ package uk.gov.hmcts.bar.api.controllers;
 import org.junit.Test;
 import uk.gov.hmcts.bar.api.contract.PaymentDto;
 import uk.gov.hmcts.bar.api.contract.PaymentDto.CaseDto;
+import uk.gov.hmcts.bar.api.contract.PaymentDto.PaymentTypeDto;
 import uk.gov.hmcts.bar.api.contract.ServiceDto;
 import uk.gov.hmcts.bar.api.controllers.payment.PaymentDtoMapper;
 import uk.gov.hmcts.bar.api.controllers.service.ServiceDtoMapper;
 import uk.gov.hmcts.bar.api.model.Case;
 import uk.gov.hmcts.bar.api.model.Payment;
+import uk.gov.hmcts.bar.api.model.PaymentType;
 import uk.gov.hmcts.bar.api.model.SubService;
 
 import java.time.LocalDateTime;
@@ -19,7 +21,7 @@ public class PaymentDtoMapperTest {
     private final PaymentDtoMapper paymentDtoMapper = new PaymentDtoMapper(new ServiceDtoMapper(){
         @Override
         public ServiceDto.SubServiceDto toSubServiceDto(SubService subService){return MAPPED_SUB_SERVICE_DTO;}
-    },null);
+    },null,null);
     private static final SubService ANY_SUB_SERVICE = SubService.subServiceWith().name("County").build();
     private static final ServiceDto.SubServiceDto MAPPED_SUB_SERVICE_DTO = new ServiceDto.SubServiceDto(1, "County");
     @Test
@@ -31,7 +33,7 @@ public class PaymentDtoMapperTest {
                 .chequeNumber("000000")
                 .accountNumber("00000000")
                 .paymentReceiptType("post")
-                .paymentType(1)
+                .paymentType(PaymentType.paymentTypeWith().id(1).name("Cheque").build())
                 .feeCode("X0001")
                 .eventType("someevent")
                 .counterCode("somecounter")
@@ -51,7 +53,7 @@ public class PaymentDtoMapperTest {
                 .chequeNumber("000000")
                 .accountNumber("00000000")
                 .paymentReceiptType("post")
-                .paymentType(1)
+                .paymentType(PaymentTypeDto.paymentTypeDtoWith().id(1).name("Cheque").build())
                 .feeCode("X0001")
                 .eventType("someevent")
                 .counterCode("somecounter")
@@ -74,7 +76,7 @@ public class PaymentDtoMapperTest {
                 .chequeNumber("000000")
                 .accountNumber("00000000")
                 .paymentReceiptType("post")
-                .paymentType(1)
+                .paymentType(PaymentTypeDto.paymentTypeDtoWith().id(1).name("Cheque").build())
                 .feeCode("X0001")
                 .eventType("someevent")
                 .counterCode("somecounter")
@@ -83,7 +85,7 @@ public class PaymentDtoMapperTest {
                 .amount(500)
                 .createdByUserId("user01")
                 .updatedByUserId("user01")
-                .cases(Arrays.asList(PaymentDto.CaseDto.caseDtoWith().jurisdiction1("one").jurisdiction2("two").reference("case_1").subService(MAPPED_SUB_SERVICE_DTO).build()))
+                .cases(Arrays.asList(CaseDto.caseDtoWith().jurisdiction1("one").jurisdiction2("two").reference("case_1").subService(MAPPED_SUB_SERVICE_DTO).build()))
                 .build()
             )
         ).isEqualToComparingOnlyGivenFields(
@@ -93,7 +95,7 @@ public class PaymentDtoMapperTest {
                 .chequeNumber("000000")
                 .accountNumber("00000000")
                 .paymentReceiptType("post")
-                .paymentType(1)
+                .paymentType(PaymentType.paymentTypeWith().id(1).name("Cheque").build())
                 .feeCode("X0001")
                 .eventType("someevent")
                 .counterCode("somecounter")

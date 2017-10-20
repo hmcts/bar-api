@@ -20,7 +20,8 @@ public  class Payment {
     @NonNull
     private String payeeName;
     @NonNull
-    private Integer paymentType;
+    @ManyToOne
+    private PaymentType paymentType;
     @NonNull
     private String paymentReceiptType;
     private String counterCode;
