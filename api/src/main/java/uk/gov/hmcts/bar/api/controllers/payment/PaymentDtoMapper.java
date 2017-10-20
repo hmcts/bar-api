@@ -4,11 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.bar.api.contract.PaymentDto;
 import uk.gov.hmcts.bar.api.contract.PaymentDto.CaseDto;
+import uk.gov.hmcts.bar.api.contract.PaymentDto.PaymentTypeDto;
 import uk.gov.hmcts.bar.api.contract.PaymentUpdateDto;
 import uk.gov.hmcts.bar.api.controllers.service.ServiceDtoMapper;
-import uk.gov.hmcts.bar.api.model.Case;
-import uk.gov.hmcts.bar.api.model.Payment;
-import uk.gov.hmcts.bar.api.model.SubServiceRepository;
+import uk.gov.hmcts.bar.api.model.*;
 
 import java.time.LocalDateTime;
 
@@ -20,12 +19,13 @@ public class PaymentDtoMapper {
 
     private final ServiceDtoMapper serviceDtoMapper;
     private final SubServiceRepository subServiceRepository;
+    private final PaymentTypeRepository paymentTypeRepository;
 
     @Autowired
-    public PaymentDtoMapper(ServiceDtoMapper serviceDtoMapper, SubServiceRepository subServiceRepository) {
+    public PaymentDtoMapper(ServiceDtoMapper serviceDtoMapper, SubServiceRepository subServiceRepository, PaymentTypeRepository paymentTypeRepository) {
         this.serviceDtoMapper = serviceDtoMapper;
         this.subServiceRepository = subServiceRepository;
-
+        this.paymentTypeRepository = paymentTypeRepository;
     }
 
     public PaymentDto toPaymentDto(Payment payment) {
@@ -41,7 +41,7 @@ public class PaymentDtoMapper {
             .feeCode(payment.getFeeCode())
             .paymentReceiptType(payment.getPaymentReceiptType())
             .payeeName(payment.getPayeeName())
-            .paymentType(payment.getPaymentType())
+            .paymentType(toPaymentTypeDto(payment.getPaymentType()))
             .paymentDate(String.valueOf(payment.getPaymentDate()))
             .updateDate(String.valueOf(payment.getUpdateDate()))
             .createdByUserId(payment.getCreatedByUserId())
@@ -59,8 +59,6 @@ public class PaymentDtoMapper {
             .build();
     }
 
-
-
     public Payment toPayment(PaymentDto dto) {
 
         return Payment.paymentWith()
@@ -74,7 +72,7 @@ public class PaymentDtoMapper {
             .feeCode(dto.getFeeCode())
             .paymentReceiptType(dto.getPaymentReceiptType())
             .payeeName(dto.getPayeeName())
-            .paymentType(dto.getPaymentType())
+            .paymentType(toPaymentType(dto.getPaymentType()))
             .paymentDate(LocalDateTime.now())
             .updateDate(dto.getUpdateDate()!=null ? LocalDateTime.parse(dto.getUpdateDate()): null)
             .createdByUserId(dto.getCreatedByUserId())
@@ -107,7 +105,7 @@ public class PaymentDtoMapper {
             .feeCode(dto.getFeeCode())
             .paymentReceiptType(dto.getPaymentReceiptType())
             .payeeName(dto.getPayeeName())
-            .paymentType(dto.getPaymentType())
+            .paymentType(toPaymentType(dto.getPaymentTypeId()))
             .paymentDate(LocalDateTime.now())
             .updateDate(dto.getUpdateDate()!=null ? LocalDateTime.parse(dto.getUpdateDate()): null)
             .createdByUserId(dto.getCreatedByUserId())
@@ -121,13 +119,30 @@ public class PaymentDtoMapper {
             .reference(caseUpdateDto.getReference())
             .jurisdiction1(caseUpdateDto.getJurisdiction1())
             .jurisdiction2(caseUpdateDto.getJurisdiction2())
-            .subService(subServiceRepository.findOne(Integer.parseInt(caseUpdateDto.getSubServiceId())))
+            .subService(subServiceRepository.findOne(caseUpdateDto.getSubServiceId()))
             .build();
     }
 
+    public PaymentType toPaymentType(PaymentTypeDto paymentTypeDto){
+        return PaymentType.paymentTypeWith()
+            .id(paymentTypeDto.getId())
+            .name(paymentTypeDto.getName())
+            .build();
+    }
+
+    public PaymentTypeDto toPaymentTypeDto(PaymentType paymentType){
+        return PaymentTypeDto.paymentTypeDtoWith()
+            .id(paymentType.getId())
+            .name(paymentType.getName())
+            .build();
+
+    }
 
 
+    public PaymentType toPaymentType(Integer paymentTypeId){
+        return paymentTypeRepository.findOne(paymentTypeId);
 
+    }
 
 }
 
