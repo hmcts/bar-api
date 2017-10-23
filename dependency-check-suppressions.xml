@@ -35,4 +35,10 @@
         <gav regex="true">^io\.jsonwebtoken:jjwt:.*$</gav>
         <cpe>cpe:/a:sonatype:nexus</cpe>
     </suppress>
+    <suppress>
+        <notes>We are not using JSP's so, this is not impacting us</notes>
+        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
+        <cve>CVE-2017-12617</cve>
+    </suppress>
+
 </suppressions>
