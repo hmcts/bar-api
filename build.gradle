@@ -47,7 +47,7 @@ subprojects {
 
     dependencyManagement {
         imports {
-            mavenBom 'org.springframework.boot:spring-boot-starter:1.5.7.RELEASE'
+            mavenBom 'org.springframework.boot:spring-boot-starter:1.5.8.RELEASE'
         }
 
         dependencies {
