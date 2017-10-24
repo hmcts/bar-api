@@ -40,5 +40,44 @@
         <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
         <cve>CVE-2017-12617</cve>
     </suppress>
+    <suppress>
+        <notes>We are not using JSP's so, this is not impacting us</notes>
+        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
+        <cve>CVE-2017-6056</cve>
+    </suppress>
 
+
+    <suppress>
+        <notes>Access to prod boxes is controlled. We can trust local users to not use this volunarbility. if they are
+            on box they can do lot worse anyway.
+        </notes>
+        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
+        <cve>CVE-2016-6325</cve>
+    </suppress>
+
+    <suppress>
+        <notes>Access to prod boxes is controlled. We can trust local users to not use this volunarability. if they are
+            on box they can do lot worse anyway.
+        </notes>
+        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
+        <cve>CVE-2016-5425</cve>
+    </suppress>
+    <suppress>
+        <notes>We don't receive a direct traffic to API node. Hence we can suppress this warning.
+        </notes>
+        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
+        <cve>CVE-2017-6056</cve>
+    </suppress>
+    <suppress>
+        <notes>We are not using Red Hat linux, we are using CentOS</notes>
+        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
+        <cve>CVE-2016-6325</cve>
+    </suppress>
+    <suppress>
+        <notes>Access to prod boxes is controlled. We can trust local users to not use this vulnerability. if they are
+            on box they can do lot worse anyway.
+        </notes>
+        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
+        <cve>CVE-2016-5425</cve>
+    </suppress>
 </suppressions>

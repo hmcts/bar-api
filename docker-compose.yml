@@ -23,7 +23,7 @@ services:
   bar-database:
     build:
       context: docker/database
-    image: docker.artifactory.reform.hmcts.net/bar/bar-database
+    image: docker.artifactory.reform.hmcts.net/bar/bar-database/latest
     environment:
       - BAR_DB_USERNAME=bar
       - BAR_DB_PASSWORD=bar
