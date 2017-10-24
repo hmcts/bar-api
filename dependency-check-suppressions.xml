@@ -48,7 +48,7 @@
 
 
     <suppress>
-        <notes>Access to prod boxes is controlled. We can trust local users to not use this volunarbility. if they are
+        <notes>Access to prod boxes is controlled. We can trust local users to not use this vulnerability. if they are
             on box they can do lot worse anyway.
         </notes>
         <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
@@ -56,7 +56,7 @@
     </suppress>
 
     <suppress>
-        <notes>Access to prod boxes is controlled. We can trust local users to not use this volunarability. if they are
+        <notes>Access to prod boxes is controlled. We can trust local users to not use this vulnerability. if they are
             on box they can do lot worse anyway.
         </notes>
         <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
