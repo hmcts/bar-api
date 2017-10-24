@@ -36,11 +36,11 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
             }
 
             stage('Build') {
-                def rtMaven = Artifactory.newGradleBuild()
-                rtMaven.tool = 'gradle-4.2'
-                rtMaven.deployer repo: 'libs-release', server: server
-                rtMaven.deployer.deployArtifacts = (env.BRANCH_NAME == 'master') && !versionAlreadyPublished
-                rtMaven.run buildFile: 'build.gradle', tasks: 'clean build dependencyCheck sonarqube -Dsonar.host.url=https://sonar.reform.hmcts.net/', buildInfo: buildInfo
+                def rtGradle = Artifactory.newGradleBuild()
+                rtGradle.tool = 'gradle-4.2'
+                rtGradle.deployer repo: 'libs-release', server: server
+                rtGradle.deployer.deployArtifacts = (env.BRANCH_NAME == 'master') && !versionAlreadyPublished
+                rtGradle.run buildFile: 'build.gradle', tasks: 'clean build dependencyCheck artifactoryPublish sonarqube -Dsonar.host.url=https://sonar.reform.hmcts.net/', buildInfo: buildInfo
             }
 
             def barApiDockerVersion
