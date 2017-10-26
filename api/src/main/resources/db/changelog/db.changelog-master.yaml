@@ -302,3 +302,55 @@ databaseChangeLog:
                 oldColumnName: payment_type
                 newColumnName: payment_type_id
                 tableName: payment
+  - changeSet:
+          id: 8
+          author: sachi
+          changes:
+            - dropTable:
+                cascadeConstraints: true
+                tableName: payment_type
+
+            - createTable:
+                tableName: payment_type
+                columns:
+                  - column:
+                      name: id
+                      type: int
+                      autoIncrement: true
+                      constraints:
+                        primaryKey: true
+                        nullable: false
+                  - column:
+                      name: name
+                      type: varchar(50)
+                      constraints:
+                        nullable: false
+            - sql: >
+                INSERT INTO payment_type (name)
+                VALUES
+                  ('AllPay'),
+                  ('Card'),
+                  ('Cash'),
+                  ('Cheque'),
+                  ('Full Remission'),
+                  ('Postal Order');
+
+            - modifyDataType:
+               columnName: payee_name
+               newDataType: varchar(256)
+               tableName: payment
+
+            - modifyDataType:
+               columnName: sort_code
+               newDataType: char(6)
+               tableName: payment
+
+            - modifyDataType:
+               columnName: cheque_number
+               newDataType: char(6)
+               tableName: payment
+
+            - modifyDataType:
+               columnName: account_number
+               newDataType: char(8)
+               tableName: payment

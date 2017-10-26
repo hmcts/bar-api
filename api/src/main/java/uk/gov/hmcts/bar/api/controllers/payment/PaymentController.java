@@ -15,7 +15,6 @@ import uk.gov.hmcts.bar.api.model.PaymentTypeRepository;
 import uk.gov.hmcts.bar.api.model.exceptions.PaymentNotFoundException;
 
 import javax.validation.Valid;
-import java.text.ParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -39,11 +38,10 @@ public class PaymentController {
     }
 
     @GetMapping("/payments")
-    public List<PaymentDto> getPayments(@RequestBody SearchDto searchDto) throws ParseException {
-          List<PaymentDto> payments = paymentRepository.
+    public List<PaymentDto> getPayments(@RequestBody SearchDto searchDto){
+          return paymentRepository.
               findByCreatedByUserIdAndPaymentDateBetween(searchDto.getUserId(),searchDto.getFromDate().truncatedTo(ChronoUnit.DAYS),searchDto.getToDate())
               .stream().map(paymentDtoMapper::toPaymentDto).collect(toList());
-          return payments;
     }
 
     @GetMapping("/paymentTypes")
