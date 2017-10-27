@@ -7,9 +7,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import uk.gov.hmcts.bar.api.controllers.payment.PaymentController;
-import uk.gov.hmcts.bar.api.model.PaymentService;
+import uk.gov.hmcts.bar.api.controllers.refdata.ReferenceDataController;
 import uk.gov.hmcts.bar.api.model.PaymentType;
+import uk.gov.hmcts.bar.api.model.ReferenceDataService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,26 +21,26 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class PaymentControllerTest {
+public class ReferenceDataControllerTest {
 
     private MockMvc mockMvc;
 
     @Mock
-    private PaymentService paymentService;
+    private ReferenceDataService referenceDataService;
 
     @InjectMocks
-    private PaymentController paymentController;
+    private ReferenceDataController referenceDataController;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(paymentController).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(referenceDataController).build();
 
     }
 
     @Test
     public void testGetPaymentTypes() throws Exception {
-        when(paymentService.findAllPaymentTypes()).thenReturn(getPaymentTyes());
+        when(referenceDataService.getAllPaymentTypes()).thenReturn(getPaymentTyes());
 
         this.mockMvc.perform(get("/payment-types"))
             .andExpect(status().isOk())
@@ -52,8 +52,8 @@ public class PaymentControllerTest {
             .andExpect(jsonPath("$[4].name", is("Full Remission")))
             .andExpect(jsonPath("$[5].name", is("Postal Order")));
 
-        verify(paymentService, times(1)).findAllPaymentTypes();
-        verifyNoMoreInteractions(paymentService);
+        verify(referenceDataService, times(1)).getAllPaymentTypes();
+        verifyNoMoreInteractions(referenceDataService);
     }
 
 

@@ -27,7 +27,7 @@ public class PaymentService {
         return paymentRepository.save(payment);
     }
 
-    public List<PaymentType> findAllPaymentTypes(){
+    public List<PaymentType> getAllPaymentTypes(){
         return paymentTypeRepository.findAll();
     }
 

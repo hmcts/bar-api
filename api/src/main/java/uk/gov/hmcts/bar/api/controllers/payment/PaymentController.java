@@ -10,7 +10,6 @@ import uk.gov.hmcts.bar.api.contract.PaymentUpdateDto;
 import uk.gov.hmcts.bar.api.contract.SearchDto;
 import uk.gov.hmcts.bar.api.model.Payment;
 import uk.gov.hmcts.bar.api.model.PaymentService;
-import uk.gov.hmcts.bar.api.model.PaymentType;
 import uk.gov.hmcts.bar.api.model.exceptions.PaymentNotFoundException;
 
 import javax.validation.Valid;
@@ -39,10 +38,6 @@ public class PaymentController {
               .stream().map(paymentDtoMapper::toPaymentDto).collect(toList());
     }
 
-    @GetMapping("/payment-types")
-    public List<PaymentType> getPaymentTypes(){
-        return paymentService.findAllPaymentTypes();
-    }
 
     @PostMapping("/payments")
     public PaymentDto savePayment(@Valid @RequestBody PaymentUpdateDto paymentUpdateDto){
