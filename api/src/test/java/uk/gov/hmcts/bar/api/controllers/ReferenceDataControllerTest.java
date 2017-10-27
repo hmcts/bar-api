@@ -9,7 +9,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import uk.gov.hmcts.bar.api.controllers.refdata.ReferenceDataController;
 import uk.gov.hmcts.bar.api.model.PaymentType;
-import uk.gov.hmcts.bar.api.model.ReferenceDataService;
+import uk.gov.hmcts.bar.api.model.PaymentTypeService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ public class ReferenceDataControllerTest {
     private MockMvc mockMvc;
 
     @Mock
-    private ReferenceDataService referenceDataService;
+    private PaymentTypeService paymentTypeService;
 
     @InjectMocks
     private ReferenceDataController referenceDataController;
@@ -40,7 +40,7 @@ public class ReferenceDataControllerTest {
 
     @Test
     public void testGetPaymentTypes() throws Exception {
-        when(referenceDataService.getAllPaymentTypes()).thenReturn(getPaymentTyes());
+        when(paymentTypeService.getAllPaymentTypes()).thenReturn(getPaymentTyes());
 
         this.mockMvc.perform(get("/payment-types"))
             .andExpect(status().isOk())
@@ -52,8 +52,8 @@ public class ReferenceDataControllerTest {
             .andExpect(jsonPath("$[4].name", is("Cash")))
             .andExpect(jsonPath("$[5].name", is("AllPay")));
 
-        verify(referenceDataService, times(1)).getAllPaymentTypes();
-        verifyNoMoreInteractions(referenceDataService);
+        verify(paymentTypeService, times(1)).getAllPaymentTypes();
+        verifyNoMoreInteractions(paymentTypeService);
     }
 
 

@@ -6,7 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.bar.api.model.PaymentType;
-import uk.gov.hmcts.bar.api.model.ReferenceDataService;
+import uk.gov.hmcts.bar.api.model.PaymentTypeService;
 
 import java.util.List;
 
@@ -15,17 +15,17 @@ import java.util.List;
 
 public class ReferenceDataController {
 
-    private final ReferenceDataService referenceDataService;
+    private final PaymentTypeService paymentTypeService;
 
 
     @Autowired
-    public ReferenceDataController(ReferenceDataService referenceDataService) {
-        this.referenceDataService = referenceDataService;
+    public ReferenceDataController(PaymentTypeService paymentTypeService) {
+        this.paymentTypeService = paymentTypeService;
     }
 
     @GetMapping("/payment-types")
     public List<PaymentType> getPaymentTypes(){
-        return referenceDataService.getAllPaymentTypes();
+        return paymentTypeService.getAllPaymentTypes();
     }
 
 

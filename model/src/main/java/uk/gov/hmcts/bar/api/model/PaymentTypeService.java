@@ -7,12 +7,12 @@ import java.util.List;
 
 
 @Service
-public class ReferenceDataService {
+public class PaymentTypeService {
 
     private final PaymentTypeRepository paymentTypeRepository;
 
     @Autowired
-    public ReferenceDataService(PaymentTypeRepository paymentTypeRepository) {
+    public PaymentTypeService(PaymentTypeRepository paymentTypeRepository) {
         this.paymentTypeRepository = paymentTypeRepository;
     }
 
