@@ -9,14 +9,10 @@ import uk.gov.hmcts.bar.api.contract.PaymentDto;
 import uk.gov.hmcts.bar.api.contract.PaymentUpdateDto;
 import uk.gov.hmcts.bar.api.contract.SearchDto;
 import uk.gov.hmcts.bar.api.model.Payment;
-import uk.gov.hmcts.bar.api.model.PaymentRepository;
-import uk.gov.hmcts.bar.api.model.PaymentType;
-import uk.gov.hmcts.bar.api.model.PaymentTypeRepository;
+import uk.gov.hmcts.bar.api.model.PaymentService;
 import uk.gov.hmcts.bar.api.model.exceptions.PaymentNotFoundException;
 
 import javax.validation.Valid;
-import java.text.ParseException;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -28,32 +24,24 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class PaymentController {
 
     private final PaymentDtoMapper paymentDtoMapper;
-    private final PaymentRepository paymentRepository;
-    private final PaymentTypeRepository paymentTypeRepository;
+    private final PaymentService paymentService;
 
     @Autowired
-    public PaymentController(PaymentDtoMapper paymentDtoMapper, PaymentRepository paymentRepository, PaymentTypeRepository paymentTypeRepository) {
+    public PaymentController(PaymentDtoMapper paymentDtoMapper, PaymentService paymentService) {
         this.paymentDtoMapper = paymentDtoMapper;
-        this.paymentRepository = paymentRepository;
-        this.paymentTypeRepository = paymentTypeRepository;
+        this.paymentService = paymentService;
     }
 
     @GetMapping("/payments")
-    public List<PaymentDto> getPayments(@RequestBody SearchDto searchDto) throws ParseException {
-          List<PaymentDto> payments = paymentRepository.
-              findByCreatedByUserIdAndPaymentDateBetween(searchDto.getUserId(),searchDto.getFromDate().truncatedTo(ChronoUnit.DAYS),searchDto.getToDate())
+    public List<PaymentDto> getPayments(@RequestBody SearchDto searchDto){
+          return paymentService.getPayments(searchDto.getUserId(),searchDto.getFromDate(),searchDto.getToDate())
               .stream().map(paymentDtoMapper::toPaymentDto).collect(toList());
-          return payments;
     }
 
-    @GetMapping("/paymentTypes")
-    public List<PaymentType> getPaymentTypes(){
-       return paymentTypeRepository.findAll();
-    }
 
     @PostMapping("/payments")
-    public PaymentDto recordPayment(@Valid @RequestBody PaymentUpdateDto paymentUpdateDto){
-        Payment payment = paymentRepository.save(paymentDtoMapper.toPayment(paymentUpdateDto));
+    public PaymentDto savePayment(@Valid @RequestBody PaymentUpdateDto paymentUpdateDto){
+        Payment payment = paymentService.savePayment(paymentDtoMapper.toPayment(paymentUpdateDto));
         return paymentDtoMapper.toPaymentDto(payment);
     }
 
@@ -61,7 +49,6 @@ public class PaymentController {
     public ResponseEntity paymentNotFound() {
         return new ResponseEntity<>(new ErrorDto("payment: not found ."), BAD_REQUEST);
     }
-
 
 }
 

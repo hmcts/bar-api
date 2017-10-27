@@ -19,13 +19,13 @@ public class PaymentDtoMapper {
 
     private final ServiceDtoMapper serviceDtoMapper;
     private final SubServiceRepository subServiceRepository;
-    private final PaymentTypeRepository paymentTypeRepository;
+    private final PaymentService paymentService;
 
     @Autowired
-    public PaymentDtoMapper(ServiceDtoMapper serviceDtoMapper, SubServiceRepository subServiceRepository, PaymentTypeRepository paymentTypeRepository) {
+    public PaymentDtoMapper(ServiceDtoMapper serviceDtoMapper, SubServiceRepository subServiceRepository, PaymentService paymentService) {
         this.serviceDtoMapper = serviceDtoMapper;
         this.subServiceRepository = subServiceRepository;
-        this.paymentTypeRepository = paymentTypeRepository;
+        this.paymentService = paymentService;
     }
 
     public PaymentDto toPaymentDto(Payment payment) {
@@ -140,7 +140,7 @@ public class PaymentDtoMapper {
 
 
     public PaymentType toPaymentType(Integer paymentTypeId){
-        return paymentTypeRepository.findOne(paymentTypeId);
+        return paymentService.findPaymentType(paymentTypeId);
 
     }
 
