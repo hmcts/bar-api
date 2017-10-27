@@ -45,12 +45,12 @@ public class ReferenceDataControllerTest {
         this.mockMvc.perform(get("/payment-types"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(6)))
-            .andExpect(jsonPath("$[0].name", is("AllPay")))
-            .andExpect(jsonPath("$[1].name", is("Card")))
-            .andExpect(jsonPath("$[2].name", is("Cash")))
-            .andExpect(jsonPath("$[3].name", is("Cheque")))
-            .andExpect(jsonPath("$[4].name", is("Full Remission")))
-            .andExpect(jsonPath("$[5].name", is("Postal Order")));
+            .andExpect(jsonPath("$[0].name", is("Cheque")))
+            .andExpect(jsonPath("$[1].name", is("Full Remission")))
+            .andExpect(jsonPath("$[2].name", is("Card")))
+            .andExpect(jsonPath("$[3].name", is("Postal Order")))
+            .andExpect(jsonPath("$[4].name", is("Cash")))
+            .andExpect(jsonPath("$[5].name", is("AllPay")));
 
         verify(referenceDataService, times(1)).getAllPaymentTypes();
         verifyNoMoreInteractions(referenceDataService);
@@ -60,12 +60,12 @@ public class ReferenceDataControllerTest {
 
     public List<PaymentType> getPaymentTyes() {
         return new ArrayList<PaymentType>() {{
-            add(new PaymentType(1,"AllPay"));
-            add(new PaymentType(2,"Card"));
-            add(new PaymentType(3,"Cash"));
-            add(new PaymentType(4,"Cheque"));
-            add(new PaymentType(5,"Full Remission"));
-            add(new PaymentType(6,"Postal Order"));
+            add(new PaymentType(1,"Cheque"));
+            add(new PaymentType(2,"Full Remission"));
+            add(new PaymentType(3,"Card"));
+            add(new PaymentType(4,"Postal Order"));
+            add(new PaymentType(5,"Cash"));
+            add(new PaymentType(6,"AllPay"));
         }};
     }
 
