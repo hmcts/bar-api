@@ -12,7 +12,7 @@ public class PaymentTypeCrudComponentTest extends ComponentTestBase{
     @Test
     public void retrieveAllPaymentTypes() throws Exception {
         restActions
-            .get("/paymentTypes")
+            .get("/payment_types")
             .andExpect(status().isOk())
             .andExpect(body().asListOf(PaymentType.class, paymentTypes -> {
                 assertThat(paymentTypes).contains(
