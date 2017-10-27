@@ -306,34 +306,13 @@ databaseChangeLog:
           id: 8
           author: sachi
           changes:
-            - dropTable:
-                cascadeConstraints: true
-                tableName: payment_type
-
-            - createTable:
-                tableName: payment_type
-                columns:
-                  - column:
-                      name: id
-                      type: int
-                      autoIncrement: true
-                      constraints:
-                        primaryKey: true
-                        nullable: false
-                  - column:
-                      name: name
-                      type: varchar(50)
-                      constraints:
-                        nullable: false
             - sql: >
-                INSERT INTO payment_type (name)
-                VALUES
-                  ('AllPay'),
-                  ('Card'),
-                  ('Cash'),
-                  ('Cheque'),
-                  ('Full Remission'),
-                  ('Postal Order');
+                UPDATE payment_type SET name = 'AllPay' WHERE id = 1;
+                UPDATE payment_type SET name = 'Card' WHERE id = 2;
+                UPDATE payment_type SET name = 'Cash' WHERE id = 3;
+                UPDATE payment_type SET name = 'Cheque' WHERE id = 4;
+                UPDATE payment_type SET name = 'Full Remission' WHERE id = 5;
+                UPDATE payment_type SET name = 'Postal Order' WHERE id = 6;
 
             - modifyDataType:
                columnName: payee_name

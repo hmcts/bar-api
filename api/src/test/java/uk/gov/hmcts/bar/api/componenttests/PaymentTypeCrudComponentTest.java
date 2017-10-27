@@ -10,7 +10,7 @@ import static uk.gov.hmcts.bar.api.model.PaymentType.paymentTypeWith;
 public class PaymentTypeCrudComponentTest extends ComponentTestBase{
 
     @Test
-    public void retrieveAll() throws Exception {
+    public void retrieveAllPaymentTypes() throws Exception {
         restActions
             .get("/paymentTypes")
             .andExpect(status().isOk())
@@ -18,7 +18,7 @@ public class PaymentTypeCrudComponentTest extends ComponentTestBase{
                 assertThat(paymentTypes).contains(
                     paymentTypeWith()
                         .id(1)
-                        .name("Cheque")
+                        .name("AllPay")
                         .build()
                 );
             }));
