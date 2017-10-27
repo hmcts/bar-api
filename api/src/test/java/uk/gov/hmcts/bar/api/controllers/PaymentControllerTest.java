@@ -42,7 +42,7 @@ public class PaymentControllerTest {
     public void testGetPaymentTypes() throws Exception {
         when(paymentService.findAllPaymentTypes()).thenReturn(getPaymentTyes());
 
-        this.mockMvc.perform(get("/payment_types"))
+        this.mockMvc.perform(get("/payment-types"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(6)))
             .andExpect(jsonPath("$[0].name", is("AllPay")))

@@ -39,7 +39,7 @@ public class PaymentController {
               .stream().map(paymentDtoMapper::toPaymentDto).collect(toList());
     }
 
-    @GetMapping("/payment_types")
+    @GetMapping("/payment-types")
     public List<PaymentType> getPaymentTypes(){
         return paymentService.findAllPaymentTypes();
     }
