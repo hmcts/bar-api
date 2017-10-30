@@ -27,12 +27,4 @@ public class PaymentService {
         return paymentRepository.save(payment);
     }
 
-    public List<PaymentType> getAllPaymentTypes(){
-        return paymentTypeRepository.findAll();
-    }
-
-    public PaymentType findPaymentType(Integer id){
-        return paymentTypeRepository.findOne(id);
-    }
-
 }
