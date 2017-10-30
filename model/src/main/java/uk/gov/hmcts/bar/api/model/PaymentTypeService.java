@@ -20,4 +20,9 @@ public class PaymentTypeService {
         return paymentTypeRepository.findAll();
     }
 
+
+    public PaymentType getPaymentTypeById(Integer id){
+        return paymentTypeRepository.findOne(id);
+    }
+
 }

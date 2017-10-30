@@ -21,7 +21,7 @@ public class PaymentDtoMapperTest {
     private final PaymentDtoMapper paymentDtoMapper = new PaymentDtoMapper(new ServiceDtoMapper(){
         @Override
         public ServiceDto.SubServiceDto toSubServiceDto(SubService subService){return MAPPED_SUB_SERVICE_DTO;}
-    },null,null);
+    },null, null);
     private static final SubService ANY_SUB_SERVICE = SubService.subServiceWith().name("County").build();
     private static final ServiceDto.SubServiceDto MAPPED_SUB_SERVICE_DTO = new ServiceDto.SubServiceDto(1, "County");
     @Test

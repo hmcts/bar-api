@@ -3,4 +3,5 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-annotations'
     compile 'com.google.guava:guava'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
 }
