@@ -27,7 +27,7 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
 
             def artifactVersion = readFile('version.txt').trim()
             def versionAlreadyPublished = checkJavaVersionPublished group: 'bar', artifact: 'bar-app', version: artifactVersion
-
+            print "version published is =>"+versionAlreadyPublished
             onPR {
                 if (versionAlreadyPublished) {
                     print "Artifact version already exists. Please bump it."
