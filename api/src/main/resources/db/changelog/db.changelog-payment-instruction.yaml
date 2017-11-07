@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: 9
+      author: sachi
+      changes:
+        - dropTable:
+            tableName: court_case
+        - dropTable:
+            tableName: sub_service
+        - dropTable:
+            tableName: service
+        - dropTable:
+            tableName: payment
+
+        - createTable:
+            tableName: payment_instruction
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: payer_name
+                  type: varchar(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: instrument_number
+                  type: char(6)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: sort_code
+                  type: char(6)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: account_number
+                  type: char(8)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: payment_type
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
