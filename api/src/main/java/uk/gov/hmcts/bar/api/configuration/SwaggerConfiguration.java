@@ -13,7 +13,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import uk.gov.hmcts.bar.api.BarServiceApplication;
 
 import static java.util.Collections.singletonList;
-
 import static springfox.documentation.builders.RequestHandlerSelectors.basePackage;
 
 @Configuration
@@ -42,7 +41,7 @@ public class SwaggerConfiguration {
         return new ApiInfoBuilder()
             .title("BAR API")
             .description("BAR API to process the payments at court.")
-            .contact(new Contact("Sachi Kuppuswami, Kazys Sketrys, Jalal ul Deen ", "Sho", "jalal.deen@hmcts.net"))
+            .contact(new Contact("Sachi Kuppuswami, Jalal ul Deen ", "", "jalal.deen@hmcts.net"))
             .version("1.0")
             .build();
     }

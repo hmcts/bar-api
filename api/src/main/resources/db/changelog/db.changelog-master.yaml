@@ -333,3 +333,6 @@ databaseChangeLog:
                columnName: account_number
                newDataType: char(8)
                tableName: payment
+
+  - include:
+          file: db/changelog/db.changelog-payment-instruction.yaml
