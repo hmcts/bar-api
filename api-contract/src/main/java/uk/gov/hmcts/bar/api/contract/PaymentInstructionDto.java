@@ -16,7 +16,8 @@ import lombok.NonNull;
     property = "payment_type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = ChequePaymentInstructionDto.class, name = "cheque"),
-    @JsonSubTypes.Type(value = CashPaymentInstructionDto.class, name = "cash")})
+    @JsonSubTypes.Type(value = CashPaymentInstructionDto.class, name = "cash"),
+    @JsonSubTypes.Type(value = PostalOrderPaymentInstructionDto.class, name = "postal-order")})
 public class PaymentInstructionDto {
 
     @NonNull

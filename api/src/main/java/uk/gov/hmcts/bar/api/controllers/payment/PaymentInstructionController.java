@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.bar.api.contract.CashPaymentInstructionDto;
 import uk.gov.hmcts.bar.api.contract.ChequePaymentInstructionDto;
 import uk.gov.hmcts.bar.api.contract.PaymentInstructionDto;
+import uk.gov.hmcts.bar.api.contract.PostalOrderPaymentInstructionDto;
 import uk.gov.hmcts.bar.api.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.model.PaymentInstructionService;
 
@@ -36,6 +37,13 @@ public class PaymentInstructionController {
     @PostMapping("/cash")
     public PaymentInstructionDto savecashInstruction(@Valid @RequestBody CashPaymentInstructionDto cashPaymentInstructionDto) {
         PaymentInstruction paymentInstruction = paymentInstructionService.savePaymentInstruction(paymentInstructionDtoMapper.toPaymentInstruction(cashPaymentInstructionDto));
+        return paymentInstructionDtoMapper.toPaymentInstructionDto(paymentInstruction);
+    }
+
+
+    @PostMapping("/postal-orders")
+    public PaymentInstructionDto savecashInstruction(@Valid @RequestBody PostalOrderPaymentInstructionDto postalOrderPaymentInstructionDto) {
+        PaymentInstruction paymentInstruction = paymentInstructionService.savePaymentInstruction(paymentInstructionDtoMapper.toPaymentInstruction(postalOrderPaymentInstructionDto));
         return paymentInstructionDtoMapper.toPaymentInstructionDto(paymentInstruction);
     }
 

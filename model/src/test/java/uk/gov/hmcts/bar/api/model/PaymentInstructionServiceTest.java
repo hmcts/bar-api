@@ -55,5 +55,21 @@ public class PaymentInstructionServiceTest {
     }
 
 
+
+    @Test
+    public void shouldReturnPaymentInstruction_whenSavePaymentInstructionForGivenPostalOrderInstructionIsCalled() throws Exception {
+
+        PaymentInstruction savedPostalOrderPaymentInstruction = PostalOrderPaymentInstruction.postalOrderPaymentInstructionWith()
+            .amount(200).currency("GBP").payerName("Mr Payer Payer").instrumentNumber("000000").build();
+
+        when(paymentInstructionRepository.save(savedPostalOrderPaymentInstruction)).thenReturn(savedPostalOrderPaymentInstruction);
+
+        PaymentInstruction createdPaymentInstruction = paymentInstructionService.savePaymentInstruction(savedPostalOrderPaymentInstruction);
+
+        assertEquals(savedPostalOrderPaymentInstruction,createdPaymentInstruction);
+
+
+    }
+
 }
 

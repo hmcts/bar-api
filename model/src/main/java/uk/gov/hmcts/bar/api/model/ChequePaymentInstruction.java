@@ -10,7 +10,6 @@ import javax.persistence.Entity;
 @Entity
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
 @DiscriminatorValue("cheque")
 public class ChequePaymentInstruction extends PaymentInstruction {
 
