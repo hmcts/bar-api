@@ -12,7 +12,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
 
     @Test
-    public void givenCCashPaymentInstructionDetails_createCashPaymentInstruction() throws Exception {
+    public void givenCashPaymentInstructionDetails_createCashPaymentInstruction() throws Exception {
         CashPaymentInstructionDto.CashPaymentInstructionDtoBuilder  proposedCashPaymentInstruction =cashPaymentInstructionDtoWith()
             .payerName("Mr Payer Payer")
             .amount(500)
