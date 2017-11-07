@@ -92,7 +92,7 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
 
             milestone()
         } catch (err) {
-            notifyBuildFailure channel: '#cc-payments-tech'
+            notifyBuildFailure channel: '#bar-tech'
             throw err
         }
     }
