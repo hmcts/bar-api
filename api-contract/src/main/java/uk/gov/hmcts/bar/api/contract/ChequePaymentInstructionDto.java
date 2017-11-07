@@ -16,7 +16,7 @@ public class ChequePaymentInstructionDto extends PaymentInstructionDto {
     private final String sortCode;
     private final String accountNumber;
     private final String instrumentNumber;
-
+    private static final String CHEQUE = "cheque";
     @JsonCreator
     @Builder(builderMethodName = "chequePaymentInstructionDtoWith")
     public ChequePaymentInstructionDto(@JsonProperty("payer_name") String payerName,
@@ -25,15 +25,10 @@ public class ChequePaymentInstructionDto extends PaymentInstructionDto {
                                        @JsonProperty("sort_code") String sortCode,
                                        @JsonProperty("account_number") String accountNumber,
                                        @JsonProperty("instrument_number") String instrumentNumber) {
-        super(payerName,amount,currency);
+        super(payerName,amount,currency,CHEQUE);
         this.sortCode = sortCode;
         this.accountNumber = accountNumber ;
         this.instrumentNumber = instrumentNumber;
-    }
-
-
-    public String getPaymentType() {
-        return "cheque";
     }
 
 

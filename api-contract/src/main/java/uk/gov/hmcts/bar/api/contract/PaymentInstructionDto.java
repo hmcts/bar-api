@@ -24,13 +24,14 @@ public class PaymentInstructionDto {
     @NonNull
     private Integer amount;
     @NonNull
-    private String paymentType;
+    private final String paymentType;
     @NonNull
     private String currency;
-    public PaymentInstructionDto(String payerName, Integer amount, String currency) {
+    public PaymentInstructionDto(String payerName, Integer amount, String currency,String paymentType) {
         this.payerName = payerName;
         this.amount = amount;
         this.currency = currency;
+        this.paymentType = paymentType;
 
     }
 
