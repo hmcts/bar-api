@@ -1,18 +1,33 @@
 databaseChangeLog:
   - changeSet:
-      id: 9
+      id: 1
       author: sachi
       changes:
-        - dropTable:
-            tableName: court_case
-        - dropTable:
-            tableName: sub_service
-        - dropTable:
-            tableName: service
-        - dropTable:
-            tableName: payment
-
-        - createTable:
+         - createTable:
+            tableName: payment_type
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+         - sql: >
+            INSERT INTO payment_type (id,name)
+            VALUES
+              (1, 'Cheque'),
+              (2, 'Full Remission'),
+              (3, 'Card'),
+              (4, 'Postal Order'),
+              (5, 'Cash'),
+              (6, 'AllPay');
+         - createTable:
             tableName: payment_instruction
             columns:
               - column:

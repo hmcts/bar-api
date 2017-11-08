@@ -12,11 +12,11 @@ You will need jdk and maven installed on your machine or use mvnw to install the
 
 ### Installing
 1. Clone the repo to your machine using git clone git@git.reform.hmcts.net:bar/bar-app.git
-2. Run $ ./mvnw install
+2. Run $ ./gradlew build
 
 ## Running the tests
 
-You can run the tests using 'mvn test'
+You can run the tests using 'gradle test or ./gradlew test'
 
 
 ## Deployment
@@ -26,14 +26,14 @@ See Jenkinsfile for the deployment details
 ## Run the application
 To run the application at local developer machine use following command
 
-$ mvn clean install spring-boot:run
+$ gradle  bootRun  or ./gradlew bootRun
 
 Once application server is started use swagger ui to find the endpoints and test these. 
 http://localhost:8080/swagger-ui.html
 
 or in dev/test environment you can use this link
-https://dev-proxy.bar.reform.hmcts.net/swagger-ui.html
-or https://test-proxy.bar.reform.hmcts.net/swagger-ui.html
+https://dev.api.bar.reform.hmcts.net/swagger-ui.html
+or https://test.api.bar.reform.hmcts.net/swagger-ui.html
 
 ## Service Endpoints
 Some of the end points are as below. These might be out of date. Please look at the swagger-ui to be sure. 
@@ -43,7 +43,7 @@ Some of the end points are as below. These might be out of date. Please look at 
 
 ## Built With
 
-* [Maven](https://maven.apache.org/) - Dependency Management
+* [Gradle](https://gradle.org/) - Dependency Management
 
 ## Service Versioning
 
