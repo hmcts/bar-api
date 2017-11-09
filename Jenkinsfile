@@ -27,7 +27,7 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
 
             def artifactVersion = readFile('version.txt').trim()
             def versionAlreadyPublished = checkJavaVersionPublished group: 'bar', artifact: 'bar-app', version: artifactVersion
-
+            print "version published is =>"+versionAlreadyPublished
             onPR {
                 if (versionAlreadyPublished) {
                     print "Artifact version already exists. Please bump it."
@@ -40,7 +40,10 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
                 rtGradle.tool = 'gradle-4.2'
                 rtGradle.deployer repo: 'libs-release', server: server
                 rtGradle.deployer.deployArtifacts = (env.BRANCH_NAME == 'master') && !versionAlreadyPublished
-                rtGradle.run buildFile: 'build.gradle', tasks: 'clean build dependencyCheck artifactoryPublish sonarqube -Dsonar.host.url=https://sonar.reform.hmcts.net/', buildInfo: buildInfo
+                rtGradle.run buildFile: 'build.gradle', tasks: 'clean build dependencyCheck sonarqube -Dsonar.host.url=https://sonar.reform.hmcts.net/', buildInfo: buildInfo
+                 if (!versionAlreadyPublished) {
+                    rtGradle.run buildFile: 'build.gradle', tasks: 'artifactoryPublish', buildInfo: buildInfo
+                 }
             }
 
             def barApiDockerVersion
@@ -89,7 +92,7 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
 
             milestone()
         } catch (err) {
-            notifyBuildFailure channel: '#cc-payments-tech'
+            notifyBuildFailure channel: '#bar-tech'
             throw err
         }
     }
