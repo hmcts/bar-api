@@ -15,9 +15,12 @@ subprojects {
     apply plugin: 'jacoco'
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'org.owasp.dependencycheck'
+    apply plugin: 'application'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
+
+    mainClassName = "uk.gov.hmcts.bar.api.BarServiceApplication"
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
