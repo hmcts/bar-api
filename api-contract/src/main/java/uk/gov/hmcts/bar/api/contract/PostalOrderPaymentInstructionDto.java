@@ -9,12 +9,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import javax.validation.constraints.Pattern;
+
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PostalOrderPaymentInstructionDto extends PaymentInstructionDto {
 
+    @Pattern(regexp ="^\\d{6,6}$",message = "invalid postal order number")
     private final String instrumentNumber;
     private static final String POSTAL_ORDER = "postal-order";
 

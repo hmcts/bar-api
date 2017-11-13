@@ -32,7 +32,7 @@ public class PaymentInstructionServiceTest {
 
         when(paymentInstructionRepository.save(savedChequePaymentInstruction)).thenReturn(savedChequePaymentInstruction);
 
-        PaymentInstruction createdPaymentInstruction = paymentInstructionService.savePaymentInstruction(savedChequePaymentInstruction);
+        PaymentInstruction createdPaymentInstruction = paymentInstructionService.createPaymentInstruction(savedChequePaymentInstruction);
 
         assertEquals(savedChequePaymentInstruction,createdPaymentInstruction);
 
@@ -47,7 +47,7 @@ public class PaymentInstructionServiceTest {
 
         when(paymentInstructionRepository.save(savedCashPaymentInstruction)).thenReturn(savedCashPaymentInstruction);
 
-        PaymentInstruction createdPaymentInstruction = paymentInstructionService.savePaymentInstruction(savedCashPaymentInstruction);
+        PaymentInstruction createdPaymentInstruction = paymentInstructionService.createPaymentInstruction(savedCashPaymentInstruction);
 
         assertEquals(savedCashPaymentInstruction,createdPaymentInstruction);
 
@@ -64,9 +64,24 @@ public class PaymentInstructionServiceTest {
 
         when(paymentInstructionRepository.save(savedPostalOrderPaymentInstruction)).thenReturn(savedPostalOrderPaymentInstruction);
 
-        PaymentInstruction createdPaymentInstruction = paymentInstructionService.savePaymentInstruction(savedPostalOrderPaymentInstruction);
+        PaymentInstruction createdPaymentInstruction = paymentInstructionService.createPaymentInstruction(savedPostalOrderPaymentInstruction);
 
         assertEquals(savedPostalOrderPaymentInstruction,createdPaymentInstruction);
+
+
+    }
+
+    @Test
+    public void shouldReturnPaymentInstruction_whenSavePaymentInstructionForGivenAllPayInstructionIsCalled() throws Exception {
+
+        PaymentInstruction savedAllPayPaymentInstruction = AllPayPaymentInstruction.allPayPaymentInstructionWith()
+            .amount(200).currency("GBP").payerName("Mr Payer Payer").allPayTransactionId("allpayid").build();
+
+        when(paymentInstructionRepository.save(savedAllPayPaymentInstruction)).thenReturn(savedAllPayPaymentInstruction);
+
+        PaymentInstruction createdPaymentInstruction = paymentInstructionService.createPaymentInstruction(savedAllPayPaymentInstruction);
+
+        assertEquals(savedAllPayPaymentInstruction,createdPaymentInstruction);
 
 
     }

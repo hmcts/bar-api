@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import lombok.NonNull;
+
+import javax.validation.constraints.Pattern;
+
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -17,7 +20,8 @@ import lombok.NonNull;
 @JsonSubTypes({
     @JsonSubTypes.Type(value = ChequePaymentInstructionDto.class, name = "cheque"),
     @JsonSubTypes.Type(value = CashPaymentInstructionDto.class, name = "cash"),
-    @JsonSubTypes.Type(value = PostalOrderPaymentInstructionDto.class, name = "postal-order")})
+    @JsonSubTypes.Type(value = PostalOrderPaymentInstructionDto.class, name = "postal-order"),
+    @JsonSubTypes.Type(value = AllPayPaymentInstructionDto.class, name = "allpay")})
 public class PaymentInstructionDto {
 
     @NonNull
@@ -27,6 +31,7 @@ public class PaymentInstructionDto {
     @NonNull
     private final String paymentType;
     @NonNull
+    @Pattern(regexp ="(?:GBP)",message = "invalid currency")
     private String currency;
     public PaymentInstructionDto(String payerName, Integer amount, String currency,String paymentType) {
         this.payerName = payerName;

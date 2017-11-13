@@ -77,3 +77,20 @@ databaseChangeLog:
                   type: varchar(20)
                   constraints:
                     nullable: false
+  - changeSet:
+      id: 2
+      author: sachi
+      changes:
+         - addColumn:
+             columns:
+               - column:
+                   name: all_pay_transaction_id
+                   type: numeric
+                   constraints:
+                     nullable: true
+               - column:
+                   name: status
+                   type: varchar(20)
+                   constraints:
+                     nullable: false
+             tableName: payment_instruction

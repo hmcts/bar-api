@@ -5,6 +5,8 @@ import lombok.*;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.validation.constraints.Pattern;
+
 
 @Data
 @Entity
@@ -14,10 +16,13 @@ import javax.persistence.Entity;
 public class ChequePaymentInstruction extends PaymentInstruction {
 
     @NonNull
+    @Pattern(regexp ="^\\d{6,6}$",message = "invalid sort code")
     private String sortCode;
     @NonNull
+    @Pattern(regexp ="^\\d{8,8}$",message = "invalid account number")
     private String accountNumber;
     @NonNull
+    @Pattern(regexp ="^\\d{6,6}$",message = "invalid cheque number")
     private String instrumentNumber;
 
     @Builder(builderMethodName = "chequePaymentInstructionWith")

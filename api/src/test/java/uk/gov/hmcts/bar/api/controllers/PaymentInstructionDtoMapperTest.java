@@ -1,10 +1,12 @@
 package uk.gov.hmcts.bar.api.controllers;
 
 import org.junit.Test;
+import uk.gov.hmcts.bar.api.contract.AllPayPaymentInstructionDto;
 import uk.gov.hmcts.bar.api.contract.CashPaymentInstructionDto;
 import uk.gov.hmcts.bar.api.contract.ChequePaymentInstructionDto;
 import uk.gov.hmcts.bar.api.contract.PostalOrderPaymentInstructionDto;
 import uk.gov.hmcts.bar.api.controllers.payment.PaymentInstructionDtoMapper;
+import uk.gov.hmcts.bar.api.model.AllPayPaymentInstruction;
 import uk.gov.hmcts.bar.api.model.CashPaymentInstruction;
 import uk.gov.hmcts.bar.api.model.ChequePaymentInstruction;
 import uk.gov.hmcts.bar.api.model.PostalOrderPaymentInstruction;
@@ -71,6 +73,25 @@ public class PaymentInstructionDtoMapperTest {
                 .currency("GBP")
                 .amount(200)
                 .instrumentNumber("000000")
+                .build());
+    }
+
+    @Test
+    public void givenAllPayPaymentInstruction_convertToAllPayPaymentInstructionDto() {
+        assertThat(paymentInstructionDtoMapper.toPaymentInstructionDto(
+            AllPayPaymentInstruction.allPayPaymentInstructionWith()
+                .payerName("Mr Payer Payer")
+                .currency("GBP")
+                .amount(200)
+                .allPayTransactionId("12345")
+                .build()
+            )
+        ).isEqualTo(
+            AllPayPaymentInstructionDto.allPayPaymentInstructionDtoWith()
+                .payerName("Mr Payer Payer")
+                .currency("GBP")
+                .amount(200)
+                .allPayTransactionId("12345")
                 .build());
     }
 

@@ -14,7 +14,8 @@ public class PaymentInstructionService {
 
     }
 
-    public PaymentInstruction savePaymentInstruction(PaymentInstruction paymentInstruction){
+    public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction){
+        paymentInstruction.setStatus(PaymentInstruction.DRAFT);
         return paymentInstructionRepository.save(paymentInstruction);
     }
 
