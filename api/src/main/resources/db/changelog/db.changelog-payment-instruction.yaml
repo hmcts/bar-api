@@ -88,3 +88,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
 
+  - changeSet:
+      id: 2
+      author: sachi
+      changes:
+         - modifyDataType:
+             tableName: payment_instruction
+             columnName: all_pay_transaction_id
+             newDataType: varchar(20)
