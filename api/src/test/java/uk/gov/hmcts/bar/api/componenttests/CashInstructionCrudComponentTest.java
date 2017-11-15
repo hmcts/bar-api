@@ -20,7 +20,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
         restActions
             .post("/cash", proposedCashPaymentInstruction.build())
-            .andExpect(status().isOk())
+            .andExpect(status().isCreated())
             .andExpect(body().as(CashPaymentInstructionDto.class, cashPaymentInstructionDto -> {
                 assertThat(cashPaymentInstructionDto).isEqualToComparingOnlyGivenFields(
                     cashPaymentInstructionDtoWith()

@@ -19,7 +19,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
         restActions
             .post("/postal-orders", proposedCashPaymentInstruction.build())
-            .andExpect(status().isOk())
+            .andExpect(status().isCreated())
             .andExpect(body().as(PostalOrderPaymentInstructionDto.class, cashPaymentInstructionDto -> {
                 assertThat(cashPaymentInstructionDto).isEqualToComparingOnlyGivenFields(
                     postalOrderPaymentInstructionDtoWith()

@@ -23,7 +23,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
         restActions
             .post("/cheques", proposedChequePaymentInstruction.build())
-            .andExpect(status().isOk())
+            .andExpect(status().isCreated())
             .andExpect(body().as(ChequePaymentInstructionDto.class, chequeItemDto -> {
                 assertThat(chequeItemDto).isEqualToComparingOnlyGivenFields(
                     chequePaymentInstructionDtoWith()

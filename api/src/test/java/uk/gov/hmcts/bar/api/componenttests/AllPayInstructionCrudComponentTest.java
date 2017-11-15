@@ -20,7 +20,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
         restActions
             .post("/allpay", proposedAllPayPaymentInstruction.build())
-            .andExpect(status().isOk())
+            .andExpect(status().isCreated())
             .andExpect(body().as(AllPayPaymentInstructionDto.class, allPayPaymentInstructionDto -> {
                 assertThat(allPayPaymentInstructionDto).isEqualToComparingOnlyGivenFields(
                     allPayPaymentInstructionDtoWith()
