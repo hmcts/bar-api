@@ -72,7 +72,7 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
                 }
 
 //                stage("Trigger smoke tests in Dev") {
-//                    sh 'curl -f https://dev.bar.reform.hmcts.net:4411/health'
+//                    sh 'curl -f https://dev.api.bar.reform.hmcts.net:4702/health'
 //                    rpmTagger.tagTestingPassedOn('dev')
 //                }
 
@@ -82,7 +82,7 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
                 }
 //
 //                stage("Trigger smoke tests in Test") {
-//                    sh 'curl -f https://test.bar.reform.hmcts.net:4431/health'
+//                    sh 'curl -f https://test.api.bar.reform.hmcts.net:4712/health'
 //                    rpmTagger.tagTestingPassedOn('test')
 //                }
             }

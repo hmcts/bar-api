@@ -28,7 +28,18 @@ subprojects {
 
     sonarqube {
         properties {
-            property "sonar.exclusions", "**/*Instruction.java,**/ResourceNotFoundException.java,**/contract/**.java,**/client/**.java"
+            property "sonar.exclusions", "**/*Instruction.java,**/ResourceNotFoundException.java,**/*Configuration.java"
+        }
+    }
+
+    project(":bar-client") {
+        sonarqube {
+            skipProject = true
+        }
+    }
+    project(":bar-api-contract") {
+        sonarqube {
+            skipProject = true
         }
     }
 
