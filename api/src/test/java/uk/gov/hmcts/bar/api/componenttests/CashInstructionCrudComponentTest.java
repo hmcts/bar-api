@@ -30,6 +30,21 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
             }));
     }
 
+    @Test
+    public void whenCashPaymentInstructionWithInvalidCurrency_thenReturn400() throws Exception {
+        CashPaymentInstructionDto.CashPaymentInstructionDtoBuilder  proposedCashPaymentInstruction =cashPaymentInstructionDtoWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("XXX");
+
+        restActions
+            .post("/cash", proposedCashPaymentInstruction.build())
+            .andExpect(status().isBadRequest())
+            ;
+    }
+
+
+
 }
 
 
