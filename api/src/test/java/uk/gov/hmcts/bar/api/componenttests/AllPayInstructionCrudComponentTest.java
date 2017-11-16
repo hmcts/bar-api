@@ -29,5 +29,37 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
                         .currency("GBP").allPayTransactionId("12345"));
             }));
     }
+
+    @Test
+    public void whenAllPayPaymentInstructionWithInvalidAllPayTransactionId_thenReturn400() throws Exception {
+        AllPayPaymentInstructionDto.AllPayPaymentInstructionDtoBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionDtoWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .allPayTransactionId("abcd");
+
+        restActions
+            .post("/allpay", proposedAllPayPaymentInstruction.build())
+            .andExpect(status().isBadRequest())
+            ;
+    }
+
+
+    @Test
+    public void whenAllPayPaymentInstructionWithInvalidCurrency_thenReturn400() throws Exception {
+        AllPayPaymentInstructionDto.AllPayPaymentInstructionDtoBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionDtoWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("XXX")
+            .allPayTransactionId("12345");
+
+        restActions
+            .post("/allpay", proposedAllPayPaymentInstruction.build())
+            .andExpect(status().isBadRequest())
+        ;
+    }
+
+
+
 }
 

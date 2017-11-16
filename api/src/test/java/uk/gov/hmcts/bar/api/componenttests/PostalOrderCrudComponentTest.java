@@ -29,4 +29,36 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
                         .instrumentNumber("000000"));
             }));
     }
+
+    @Test
+    public void whenCashPaymentInstructionWithInvalidCurrency_thenReturn400() throws Exception {
+        PostalOrderPaymentInstructionDto.PostalOrderPaymentInstructionDtoBuilder  proposedCashPaymentInstruction =postalOrderPaymentInstructionDtoWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("xxx")
+            .instrumentNumber("000000");
+
+        restActions
+            .post("/postal-orders", proposedCashPaymentInstruction.build())
+            .andExpect(status().isBadRequest())
+            ;
+    }
+
+
+
+    @Test
+    public void whenCashPaymentInstructionWithInvalidInstrumentNumber_thenReturn400() throws Exception {
+        PostalOrderPaymentInstructionDto.PostalOrderPaymentInstructionDtoBuilder  proposedCashPaymentInstruction =postalOrderPaymentInstructionDtoWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .instrumentNumber("xxxxxx");
+
+        restActions
+            .post("/postal-orders", proposedCashPaymentInstruction.build())
+            .andExpect(status().isBadRequest())
+        ;
+    }
+
+
 }
