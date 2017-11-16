@@ -29,7 +29,7 @@ public class PaymentInstructionServiceTest {
         PaymentInstruction savedChequePaymentInstruction = ChequePaymentInstruction.chequePaymentInstructionWith()
             .accountNumber("00000000").amount(200).currency("GBP").instrumentNumber("000000").payerName("Mr Payer Payer")
              .sortCode("000000").build();
-
+        savedChequePaymentInstruction.setStatus(PaymentInstruction.DRAFT);
         when(paymentInstructionRepository.save(savedChequePaymentInstruction)).thenReturn(savedChequePaymentInstruction);
 
         PaymentInstruction createdPaymentInstruction = paymentInstructionService.createPaymentInstruction(savedChequePaymentInstruction);
@@ -45,6 +45,7 @@ public class PaymentInstructionServiceTest {
         PaymentInstruction savedCashPaymentInstruction = CashPaymentInstruction.cashPaymentInstructionWith()
             .amount(200).currency("GBP").payerName("Mr Payer Payer").build();
 
+        savedCashPaymentInstruction.setStatus(PaymentInstruction.DRAFT);
         when(paymentInstructionRepository.save(savedCashPaymentInstruction)).thenReturn(savedCashPaymentInstruction);
 
         PaymentInstruction createdPaymentInstruction = paymentInstructionService.createPaymentInstruction(savedCashPaymentInstruction);
@@ -62,6 +63,8 @@ public class PaymentInstructionServiceTest {
         PaymentInstruction savedPostalOrderPaymentInstruction = PostalOrderPaymentInstruction.postalOrderPaymentInstructionWith()
             .amount(200).currency("GBP").payerName("Mr Payer Payer").instrumentNumber("000000").build();
 
+        savedPostalOrderPaymentInstruction.setStatus(PaymentInstruction.DRAFT);
+
         when(paymentInstructionRepository.save(savedPostalOrderPaymentInstruction)).thenReturn(savedPostalOrderPaymentInstruction);
 
         PaymentInstruction createdPaymentInstruction = paymentInstructionService.createPaymentInstruction(savedPostalOrderPaymentInstruction);
@@ -76,6 +79,7 @@ public class PaymentInstructionServiceTest {
 
         PaymentInstruction savedAllPayPaymentInstruction = AllPayPaymentInstruction.allPayPaymentInstructionWith()
             .amount(200).currency("GBP").payerName("Mr Payer Payer").allPayTransactionId("allpayid").build();
+        savedAllPayPaymentInstruction.setStatus(PaymentInstruction.DRAFT);
 
         when(paymentInstructionRepository.save(savedAllPayPaymentInstruction)).thenReturn(savedAllPayPaymentInstruction);
 
