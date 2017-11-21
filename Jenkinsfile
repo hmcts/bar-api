@@ -40,7 +40,7 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
                 rtGradle.tool = 'gradle-4.2'
                 rtGradle.deployer repo: 'libs-release', server: server
                 rtGradle.deployer.deployArtifacts = (env.BRANCH_NAME == 'master') && !versionAlreadyPublished
-                rtGradle.run buildFile: 'build.gradle', tasks: 'clean build dependencyCheck artifactoryPublish sonarqube -Dsonar.host.url=https://sonar.reform.hmcts.net/', buildInfo: buildInfo
+                rtGradle.run buildFile: 'build.gradle', tasks: 'clean nextPatch build pushToGit dependencyCheck artifactoryPublish sonarqube -Dsonar.host.url=https://sonar.reform.hmcts.net/', buildInfo: buildInfo
             }
 
             def barApiDockerVersion
