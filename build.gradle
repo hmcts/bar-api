@@ -23,7 +23,6 @@ task pushToGit {
 	    def grgit = org.ajoberstar.grgit.Grgit.open(dir: '.')
 	    grgit.add(patterns: ['version.json'])
 	    grgit.commit(message: 'Committing Version Json File Changes')
-	    println 'Inside pushToGit'
 	    grgit.push(force: true) 
    }
 }
