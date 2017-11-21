@@ -23,7 +23,7 @@ task pushToGit {
 	    def grgit = org.ajoberstar.grgit.Grgit.open(dir: '.')
 	    grgit.add(patterns: ['version.json'])
 	    grgit.commit(message: 'Committing Version Json File Changes')
-	    grgit.push(force: true) 
+	    grgit.push(remote:'https://git.reform.hmcts.net/bar/bar-app.git',force: true) 
    }
 }
 
