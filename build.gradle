@@ -20,7 +20,8 @@ allprojects {
 
 task pushToGit {
  	doLast {
-	    def grgit = org.ajoberstar.grgit.Grgit.open(dir: '.')
+ 		println 'Current Version: '+version
+	    def grgit = org.ajoberstar.grgit.Grgit.open(dir: '/var/lib/jenkins/jobs/BAR/jobs/bar-app/branches/master/workspace')
 	    grgit.add(patterns: ['version.json'])
 	    grgit.commit(message: 'Committing Version Json File Changes')
 	    grgit.push(remote:'https://git.reform.hmcts.net/bar/bar-app.git',force: true) 
