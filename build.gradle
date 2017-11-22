@@ -25,7 +25,7 @@ task pushToGit {
 	    grgit.add(patterns: ['version.json'])
 	    grgit.remote.list().each { println it }
 	    grgit.commit(message: 'Committing Version Json File Changes')
-	    grgit.push(force: true) 
+	    grgit.push(refsOrSpecs: ['refs/remotes/origin/master'] ,force: true) 
    }
 }
 
