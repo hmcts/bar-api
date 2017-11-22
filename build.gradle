@@ -21,10 +21,11 @@ allprojects {
 task pushToGit {
  	doLast {
  		println 'Current Version: '+version
-	    def grgit = org.ajoberstar.grgit.Grgit.open(currentDir: file('.'))
+	    def grgit = org.ajoberstar.grgit.Grgit.open(dir: file('.'))
 	    grgit.add(patterns: ['version.json'])
+	    grgit.remote.list().each { println it }
 	    grgit.commit(message: 'Committing Version Json File Changes')
-	    grgit.push(remote:'https://git.reform.hmcts.net/bar/bar-app.git',force: true) 
+	    grgit.push(force: true) 
    }
 }
 
