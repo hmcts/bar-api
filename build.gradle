@@ -1,32 +1,12 @@
-
 plugins {
     id 'io.spring.dependency-management' version '1.0.3.RELEASE'
     id 'org.owasp.dependencycheck' version '1.4.5.1'
     id 'org.sonarqube' version '2.6'
-    id "com.github.mazzeb.auto-version" version "0.3.0"
-    id "org.ajoberstar.grgit" version "2.0.1"
-}
-
-apply plugin: "com.github.mazzeb.auto-version"
-apply plugin: "org.ajoberstar.grgit"
-
-autoversion {
-    versionFile= 'version.json'
 }
 
 allprojects {
     group = 'uk.gov.hmcts.reform.bar'
-}
-
-task pushToGit {
- 	doLast {
- 		println 'Current Version: '+version
-	    def grgit = org.ajoberstar.grgit.Grgit.open(dir: file('.'))
-	    grgit.add(patterns: ['version.json'])
-	    grgit.remote.list().each { println it }
-	    grgit.commit(message: 'Committing Version Json File Changes')
-	    grgit.push(remote: 'https://git.reform.hmcts.net/bar/bar-app.git', refsOrSpecs: ['refs/remotes/origin/master'] ,force: true) 
-   }
+    version = rootProject.file('version.txt').text.trim()
 }
 
 subprojects {
@@ -36,8 +16,7 @@ subprojects {
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'org.owasp.dependencycheck'
     apply plugin: 'application'
-    apply plugin: "com.github.mazzeb.auto-version"
-    
+
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
