@@ -12,13 +12,14 @@ import javax.validation.constraints.Pattern;
 @Data
 @Entity
 @ToString(callSuper = true)
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("allpay")
 public class AllPayPaymentInstruction extends PaymentInstruction {
 
     @NonNull
     @Pattern(regexp ="^\\d{1,20}$",message = "invalid all pay transaction id")
-    private final String allPayTransactionId;
+    private String allPayTransactionId;
 
     @JsonCreator
     @Builder(builderMethodName = "allPayPaymentInstructionWith")

@@ -3,14 +3,13 @@ package uk.gov.hmcts.bar.api.controllers.payment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
 
 import javax.validation.Valid;
+import java.util.List;
+
 @RestController
 @Validated
 public class PaymentInstructionController {
@@ -22,6 +21,12 @@ public class PaymentInstructionController {
         this.paymentInstructionService = paymentInstructionService;
 
     }
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/payment-instructions")
+    public List<PaymentInstruction> getPaymentInstructions() {
+        return paymentInstructionService.getAllPaymentInstructions();
+    }
+
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/cheques")

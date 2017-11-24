@@ -9,6 +9,9 @@ import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -22,6 +25,9 @@ public class PaymentInstructionServiceTest {
 
     @Mock
     private PaymentReferenceService paymentReferenceService;
+
+    @Mock
+    private List<PaymentInstruction> paymentInstructionList;
 
     @Before
     public void setupMock() {
@@ -107,6 +113,17 @@ public class PaymentInstructionServiceTest {
 
 
     }
+
+
+    @Test
+    public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsIsCalled() throws Exception {
+
+        when(paymentInstructionRepository.findBySiteIdAndPaymentDateIsAfter("BR01", LocalDateTime.now().truncatedTo(ChronoUnit.DAYS))).thenReturn(paymentInstructionList);
+        List<PaymentInstruction> retrievedPaymentInstructionList = paymentInstructionService.getAllPaymentInstructions();
+        assertEquals(paymentInstructionList,retrievedPaymentInstructionList);
+    }
+
+
 
 }
 

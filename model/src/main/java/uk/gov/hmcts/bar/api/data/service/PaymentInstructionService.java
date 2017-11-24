@@ -7,6 +7,11 @@ import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentReference;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+
+import static java.time.LocalDateTime.now;
+
 @Service
 @Transactional
 public class PaymentInstructionService {
@@ -32,4 +37,7 @@ public class PaymentInstructionService {
     }
 
 
+    public List<PaymentInstruction> getAllPaymentInstructions() {
+        return paymentInstructionRepository.findBySiteIdAndPaymentDateIsAfter(SITE_ID, now().truncatedTo(ChronoUnit.DAYS));
+    }
 }

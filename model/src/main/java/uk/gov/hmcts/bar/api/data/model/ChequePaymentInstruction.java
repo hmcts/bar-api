@@ -13,6 +13,7 @@ import javax.validation.constraints.Pattern;
 @Data
 @Entity
 @ToString(callSuper = true)
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("cheques")
 public class ChequePaymentInstruction extends PaymentInstruction {

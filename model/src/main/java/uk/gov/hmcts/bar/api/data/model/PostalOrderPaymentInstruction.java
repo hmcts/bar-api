@@ -12,6 +12,7 @@ import javax.validation.constraints.Pattern;
 @Data
 @Entity
 @ToString(callSuper = true)
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @DiscriminatorValue("postal-orders")

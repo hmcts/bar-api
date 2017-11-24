@@ -3,6 +3,8 @@ package uk.gov.hmcts.bar.api.componenttests;
 import org.junit.Test;
 import uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction.postalOrderPaymentInstructionWith;
@@ -59,6 +61,29 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isBadRequest())
         ;
     }
+
+
+    @Test
+    public void givenCashPaymentInstructionDetails_retrieveThem() throws Exception {
+        PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .postalOrderNumber("000000");
+
+        restActions
+            .post("/postal-orders",  proposedPostalOrderPaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+        restActions
+            .get("/payment-instructions")
+            .andExpect(status().isOk())
+            .andExpect(body().as(List.class, (postalOrdersList) -> {
+                assertThat(postalOrdersList.get(0).equals(proposedPostalOrderPaymentInstruction.build()));
+            }));
+
+    }
+
 
 
 }
