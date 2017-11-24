@@ -1,45 +1,45 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Test;
-import uk.gov.hmcts.bar.api.contract.PostalOrderPaymentInstructionDto;
+import uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.bar.api.contract.PostalOrderPaymentInstructionDto.postalOrderPaymentInstructionDtoWith;
+import static uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction.postalOrderPaymentInstructionWith;
 
 public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
     @Test
-    public void whenCashPaymentInstructionDetails_thenCreateCashPaymentInstruction() throws Exception {
-        PostalOrderPaymentInstructionDto.PostalOrderPaymentInstructionDtoBuilder  proposedCashPaymentInstruction =postalOrderPaymentInstructionDtoWith()
+    public void whenPostalOrderPaymentInstructionDetails_thenCreatePostalOrderPaymentInstruction() throws Exception {
+        PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .instrumentNumber("000000");
+            .postalOrderNumber("000000");
 
         restActions
-            .post("/postal-orders", proposedCashPaymentInstruction.build())
+            .post("/postal-orders", proposedPostalOrderPaymentInstruction.build())
             .andExpect(status().isCreated())
-            .andExpect(body().as(PostalOrderPaymentInstructionDto.class, cashPaymentInstructionDto -> {
-                assertThat(cashPaymentInstructionDto).isEqualToComparingOnlyGivenFields(
-                    postalOrderPaymentInstructionDtoWith()
+            .andExpect(body().as(PostalOrderPaymentInstruction.class, postalOrderPaymentInstructionDto -> {
+                assertThat(postalOrderPaymentInstructionDto).isEqualToComparingOnlyGivenFields(
+                    postalOrderPaymentInstructionWith()
                         .payerName("Mr Payer Payer")
                         .amount(500)
                         .currency("GBP")
-                        .instrumentNumber("000000"));
+                        .postalOrderNumber("000000"));
             }));
     }
 
     @Test
-    public void whenCashPaymentInstructionWithInvalidCurrency_thenReturn400() throws Exception {
-        PostalOrderPaymentInstructionDto.PostalOrderPaymentInstructionDtoBuilder  proposedCashPaymentInstruction =postalOrderPaymentInstructionDtoWith()
+    public void whenPostalOrderInstructionWithInvalidCurrency_thenReturn400() throws Exception {
+        PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("xxx")
-            .instrumentNumber("000000");
+            .postalOrderNumber("000000");
 
         restActions
-            .post("/postal-orders", proposedCashPaymentInstruction.build())
+            .post("/postal-orders", proposedPostalOrderPaymentInstruction.build())
             .andExpect(status().isBadRequest())
             ;
     }
@@ -47,15 +47,15 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
 
     @Test
-    public void whenCashPaymentInstructionWithInvalidInstrumentNumber_thenReturn400() throws Exception {
-        PostalOrderPaymentInstructionDto.PostalOrderPaymentInstructionDtoBuilder  proposedCashPaymentInstruction =postalOrderPaymentInstructionDtoWith()
+    public void whenPostalOrderInstructionWithInvalidPostalOrderNumber_thenReturn400() throws Exception {
+        PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .instrumentNumber("xxxxxx");
+            .postalOrderNumber("xxxxxx");
 
         restActions
-            .post("/postal-orders", proposedCashPaymentInstruction.build())
+            .post("/postal-orders", proposedPostalOrderPaymentInstruction.build())
             .andExpect(status().isBadRequest())
         ;
     }

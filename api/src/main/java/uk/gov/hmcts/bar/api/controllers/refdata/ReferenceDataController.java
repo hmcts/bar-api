@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.bar.api.model.PaymentType;
-import uk.gov.hmcts.bar.api.model.PaymentTypeService;
+import uk.gov.hmcts.bar.api.data.model.PaymentType;
+import uk.gov.hmcts.bar.api.data.service.PaymentTypeService;
 
 import java.util.List;
 

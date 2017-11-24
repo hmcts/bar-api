@@ -96,3 +96,52 @@ databaseChangeLog:
              tableName: payment_instruction
              columnName: all_pay_transaction_id
              newDataType: varchar(20)
+  - changeSet:
+      id: 3
+      author: sachi
+      changes:
+         - createTable:
+             tableName: payment_reference
+             columns:
+               - column:
+                   name: site_id
+                   type: varchar(20)
+                   constraints:
+                     nullable: false
+               - column:
+                   name: payment_date
+                   type: date
+                   constraints:
+                     nullable: false
+               - column:
+                   name: daily_sequence_id
+                   type: int
+                   constraints:
+                     nullable: false
+         - addUniqueConstraint:
+             columnNames: site_id, payment_date
+             tableName  : payment_reference
+
+         - addColumn:
+             columns:
+               - column:
+                  name: postal_order_number
+                  type: char(6)
+                  constraints:
+                    nullable: true
+               - column:
+                   name: site_id
+                   type: varchar(20)
+                   constraints:
+                     nullable: false
+               - column:
+                   name: daily_sequence_id
+                   type: int
+             tableName: payment_instruction
+         - renameColumn:
+             columnDataType: char(6)
+             newColumnName: cheque_number
+             oldColumnName: instrument_number
+             tableName: payment_instruction
+         - sql: >
+             DELETE from  payment_type where id=2

@@ -1,7 +1,9 @@
-package uk.gov.hmcts.bar.api.model;
+package uk.gov.hmcts.bar.api.data.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.bar.api.data.model.PaymentType;
+import uk.gov.hmcts.bar.api.data.repository.PaymentTypeRepository;
 
 import java.util.List;
 

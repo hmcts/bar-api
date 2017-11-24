@@ -1,4 +1,4 @@
-package uk.gov.hmcts.bar.api.model;
+package uk.gov.hmcts.bar.api.data.model;
 
 import lombok.*;
 

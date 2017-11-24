@@ -1,32 +1,32 @@
-package uk.gov.hmcts.bar.api.contract;
+package uk.gov.hmcts.bar.api.data.model;
 
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import javax.validation.constraints.Pattern;
 
 @Data
+@Entity
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class AllPayPaymentInstructionDto extends PaymentInstructionDto{
-
-    private static final String PAYMENT_INSTRUCTION_TYPE = "allpay";
+@DiscriminatorValue("allpay")
+public class AllPayPaymentInstruction extends PaymentInstruction {
 
     @NonNull
     @Pattern(regexp ="^\\d{1,20}$",message = "invalid all pay transaction id")
     private final String allPayTransactionId;
 
     @JsonCreator
-    @Builder(builderMethodName = "allPayPaymentInstructionDtoWith")
-    public AllPayPaymentInstructionDto(@JsonProperty("payer_name") String payerName,
+    @Builder(builderMethodName = "allPayPaymentInstructionWith")
+    public AllPayPaymentInstruction(@JsonProperty("payer_name") String payerName,
                                        @JsonProperty("amount") Integer amount,
                                        @JsonProperty("currency") String currency,
                                        @JsonProperty("all_pay_transaction_id") String allPayTransactionId) {
-        super(payerName, amount, currency, PAYMENT_INSTRUCTION_TYPE);
+        super(payerName, amount, currency);
         this.allPayTransactionId = allPayTransactionId;
     }
 }

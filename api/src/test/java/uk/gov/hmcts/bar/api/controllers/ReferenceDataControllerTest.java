@@ -8,8 +8,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import uk.gov.hmcts.bar.api.controllers.refdata.ReferenceDataController;
-import uk.gov.hmcts.bar.api.model.PaymentType;
-import uk.gov.hmcts.bar.api.model.PaymentTypeService;
+import uk.gov.hmcts.bar.api.data.model.PaymentType;
+import uk.gov.hmcts.bar.api.data.service.PaymentTypeService;
 
 import java.util.ArrayList;
 import java.util.List;

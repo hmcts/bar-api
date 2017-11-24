@@ -18,17 +18,17 @@ import javax.validation.constraints.Pattern;
 public class PostalOrderPaymentInstructionDto extends PaymentInstructionDto {
 
     @Pattern(regexp ="^\\d{6,6}$",message = "invalid postal order number")
-    private final String instrumentNumber;
-    private static final String POSTAL_ORDER = "postal-order";
+    private final String postalOrderNumber;
+    private static final String PAYMENT_INSTRUCTION_TYPE = "postal-orders";
 
     @JsonCreator
     @Builder(builderMethodName = "postalOrderPaymentInstructionDtoWith")
     public PostalOrderPaymentInstructionDto(@JsonProperty("payer_name") String payerName,
                                      @JsonProperty("amount") Integer amount,
                                      @JsonProperty("currency") String currency,
-                                     @JsonProperty("instrument_number") String instrumentNumber) {
-        super(payerName, amount, currency, POSTAL_ORDER);
-        this.instrumentNumber = instrumentNumber;
+                                     @JsonProperty("postal_order_number") String postalOrderNumber) {
+        super(payerName, amount, currency, PAYMENT_INSTRUCTION_TYPE);
+        this.postalOrderNumber = postalOrderNumber;
 
     }
 }

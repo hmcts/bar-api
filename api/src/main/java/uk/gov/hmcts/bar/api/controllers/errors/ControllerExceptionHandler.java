@@ -8,8 +8,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import uk.gov.hmcts.bar.api.contract.ErrorDto;
-import uk.gov.hmcts.bar.api.model.exceptions.ResourceNotFoundException;
+import uk.gov.hmcts.bar.api.data.exceptions.ResourceNotFoundException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -26,21 +25,21 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity entityNotFoundException(ResourceNotFoundException e) {
         String message = String.format("%s for %s=%s was not found", e.getResourceName(), e.getIdName(), e.getIdValue());
-        return new ResponseEntity<>(new ErrorDto(message), NOT_FOUND);
+        return new ResponseEntity<>(new Error(message), NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorDto> methodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<Error> methodArgumentNotValidException(MethodArgumentNotValidException e) {
         FieldError firstFieldError = e.getBindingResult().getFieldErrors().get(0);
         String message = firstFieldError.getField() + ": " + messageSource.getMessage(firstFieldError, Locale.getDefault());
-        return new ResponseEntity<>(new ErrorDto(message), BAD_REQUEST);
+        return new ResponseEntity<>(new Error(message), BAD_REQUEST);
     }
 
     @ExceptionHandler(value = {ConstraintViolationException.class})
-    public ResponseEntity<ErrorDto> handleResourceNotFoundException(ConstraintViolationException e) {
+    public ResponseEntity<Error> handleResourceNotFoundException(ConstraintViolationException e) {
         ConstraintViolation<?> violation = e.getConstraintViolations().iterator().next();
         String parameterName = Iterators.getLast(violation.getPropertyPath().iterator()).getName();
-        return new ResponseEntity<>(new ErrorDto(parameterName + ": " + violation.getMessage()), BAD_REQUEST);
+        return new ResponseEntity<>(new Error(parameterName + ": " + violation.getMessage()), BAD_REQUEST);
     }
 }
 

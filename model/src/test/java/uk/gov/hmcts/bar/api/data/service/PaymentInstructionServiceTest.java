@@ -1,10 +1,14 @@
-package uk.gov.hmcts.bar.api.model;
+package uk.gov.hmcts.bar.api.data.service;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
+
+import java.time.LocalDate;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -16,10 +20,13 @@ public class PaymentInstructionServiceTest {
     @Mock
     private PaymentInstructionRepository paymentInstructionRepository;
 
+    @Mock
+    private PaymentReferenceService paymentReferenceService;
+
     @Before
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
-        paymentInstructionService = new PaymentInstructionService(paymentInstructionRepository);
+        paymentInstructionService = new PaymentInstructionService(paymentReferenceService,paymentInstructionRepository);
 
     }
 
@@ -27,11 +34,14 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnPaymentInstruction_whenSavePaymentInstructionForGivenChequeInstructionIsCalled() throws Exception {
 
         PaymentInstruction savedChequePaymentInstruction = ChequePaymentInstruction.chequePaymentInstructionWith()
-            .accountNumber("00000000").amount(200).currency("GBP").instrumentNumber("000000").payerName("Mr Payer Payer")
+            .accountNumber("00000000").amount(200).currency("GBP").chequeNumber("000000").payerName("Mr Payer Payer")
              .sortCode("000000").build();
-        savedChequePaymentInstruction.setStatus(PaymentInstruction.DRAFT);
-        when(paymentInstructionRepository.save(savedChequePaymentInstruction)).thenReturn(savedChequePaymentInstruction);
 
+        PaymentReference paymentReference = new PaymentReference(new PaymentReferenceKey("BR01", LocalDate.now()),1);
+
+        savedChequePaymentInstruction.setStatus(PaymentInstruction.DRAFT);
+        when(paymentReferenceService.getNextPaymentReferenceSequenceBySite(paymentReference.getPaymentReferenceKey().getSiteId())).thenReturn(paymentReference);
+        when(paymentInstructionRepository.save(savedChequePaymentInstruction)).thenReturn(savedChequePaymentInstruction);
         PaymentInstruction createdPaymentInstruction = paymentInstructionService.createPaymentInstruction(savedChequePaymentInstruction);
 
         assertEquals(savedChequePaymentInstruction,createdPaymentInstruction);
@@ -45,7 +55,10 @@ public class PaymentInstructionServiceTest {
         PaymentInstruction savedCashPaymentInstruction = CashPaymentInstruction.cashPaymentInstructionWith()
             .amount(200).currency("GBP").payerName("Mr Payer Payer").build();
 
+        PaymentReference paymentReference = new PaymentReference(new PaymentReferenceKey("BR01", LocalDate.now()),1);
+
         savedCashPaymentInstruction.setStatus(PaymentInstruction.DRAFT);
+        when(paymentReferenceService.getNextPaymentReferenceSequenceBySite(paymentReference.getPaymentReferenceKey().getSiteId())).thenReturn(paymentReference);
         when(paymentInstructionRepository.save(savedCashPaymentInstruction)).thenReturn(savedCashPaymentInstruction);
 
         PaymentInstruction createdPaymentInstruction = paymentInstructionService.createPaymentInstruction(savedCashPaymentInstruction);
@@ -61,10 +74,12 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnPaymentInstruction_whenSavePaymentInstructionForGivenPostalOrderInstructionIsCalled() throws Exception {
 
         PaymentInstruction savedPostalOrderPaymentInstruction = PostalOrderPaymentInstruction.postalOrderPaymentInstructionWith()
-            .amount(200).currency("GBP").payerName("Mr Payer Payer").instrumentNumber("000000").build();
+            .amount(200).currency("GBP").payerName("Mr Payer Payer").postalOrderNumber("000000").build();
 
+        PaymentReference paymentReference = new PaymentReference(new PaymentReferenceKey("BR01", LocalDate.now()),1);
         savedPostalOrderPaymentInstruction.setStatus(PaymentInstruction.DRAFT);
 
+        when(paymentReferenceService.getNextPaymentReferenceSequenceBySite(paymentReference.getPaymentReferenceKey().getSiteId())).thenReturn(paymentReference);
         when(paymentInstructionRepository.save(savedPostalOrderPaymentInstruction)).thenReturn(savedPostalOrderPaymentInstruction);
 
         PaymentInstruction createdPaymentInstruction = paymentInstructionService.createPaymentInstruction(savedPostalOrderPaymentInstruction);
@@ -79,8 +94,11 @@ public class PaymentInstructionServiceTest {
 
         PaymentInstruction savedAllPayPaymentInstruction = AllPayPaymentInstruction.allPayPaymentInstructionWith()
             .amount(200).currency("GBP").payerName("Mr Payer Payer").allPayTransactionId("allpayid").build();
+
+        PaymentReference paymentReference = new PaymentReference(new PaymentReferenceKey("BR01", LocalDate.now()),1);
         savedAllPayPaymentInstruction.setStatus(PaymentInstruction.DRAFT);
 
+        when(paymentReferenceService.getNextPaymentReferenceSequenceBySite(paymentReference.getPaymentReferenceKey().getSiteId())).thenReturn(paymentReference);
         when(paymentInstructionRepository.save(savedAllPayPaymentInstruction)).thenReturn(savedAllPayPaymentInstruction);
 
         PaymentInstruction createdPaymentInstruction = paymentInstructionService.createPaymentInstruction(savedAllPayPaymentInstruction);

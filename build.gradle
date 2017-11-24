@@ -37,12 +37,6 @@ subprojects {
             skipProject = true
         }
     }
-    project(":bar-api-contract") {
-        sonarqube {
-            skipProject = true
-        }
-    }
-
 
     test {
         finalizedBy jacocoTestReport

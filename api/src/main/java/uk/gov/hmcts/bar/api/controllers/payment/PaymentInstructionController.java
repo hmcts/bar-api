@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.bar.api.contract.*;
-import uk.gov.hmcts.bar.api.model.PaymentInstruction;
-import uk.gov.hmcts.bar.api.model.PaymentInstructionService;
+import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
 
 import javax.validation.Valid;
 @RestController
@@ -17,43 +16,36 @@ import javax.validation.Valid;
 public class PaymentInstructionController {
 
     private final PaymentInstructionService paymentInstructionService;
-    private final PaymentInstructionDtoMapper paymentInstructionDtoMapper;
 
     @Autowired
-    public PaymentInstructionController(PaymentInstructionService paymentInstructionService, PaymentInstructionDtoMapper paymentInstructionDtoMapper) {
+    public PaymentInstructionController(PaymentInstructionService paymentInstructionService) {
         this.paymentInstructionService = paymentInstructionService;
-        this.paymentInstructionDtoMapper = paymentInstructionDtoMapper;
+
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/cheques")
-    public PaymentInstructionDto saveChequeInstruction(@Valid @RequestBody ChequePaymentInstructionDto chequePaymentInstructionDto) {
-        PaymentInstruction paymentInstruction = paymentInstructionService.createPaymentInstruction(paymentInstructionDtoMapper.toPaymentInstruction(chequePaymentInstructionDto));
-        return paymentInstructionDtoMapper.toPaymentInstructionDto(paymentInstruction);
+    public PaymentInstruction saveChequeInstruction(@Valid @RequestBody ChequePaymentInstruction chequePaymentInstruction) {
+        return paymentInstructionService.createPaymentInstruction(chequePaymentInstruction);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/cash")
-    public PaymentInstructionDto saveCashInstruction(@Valid @RequestBody CashPaymentInstructionDto cashPaymentInstructionDto) {
-        PaymentInstruction paymentInstruction = paymentInstructionService.createPaymentInstruction(paymentInstructionDtoMapper.toPaymentInstruction(cashPaymentInstructionDto));
-        return paymentInstructionDtoMapper.toPaymentInstructionDto(paymentInstruction);
+    public PaymentInstruction saveCashInstruction(@Valid @RequestBody CashPaymentInstruction cashPaymentInstruction) {
+        return  paymentInstructionService.createPaymentInstruction(cashPaymentInstruction);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/postal-orders")
-    public PaymentInstructionDto savePostalOrderInstruction(@Valid @RequestBody PostalOrderPaymentInstructionDto postalOrderPaymentInstructionDto) {
-        PaymentInstruction paymentInstruction = paymentInstructionService.createPaymentInstruction(paymentInstructionDtoMapper.toPaymentInstruction(postalOrderPaymentInstructionDto));
-        return paymentInstructionDtoMapper.toPaymentInstructionDto(paymentInstruction);
+    public PaymentInstruction savePostalOrderInstruction(@Valid @RequestBody PostalOrderPaymentInstruction postalOrderPaymentInstruction) {
+       return  paymentInstructionService.createPaymentInstruction(postalOrderPaymentInstruction);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/allpay")
-    public PaymentInstructionDto saveAllPayInstruction(@Valid @RequestBody AllPayPaymentInstructionDto allPayPaymentInstructionDto) {
-        PaymentInstruction paymentInstruction = paymentInstructionService.createPaymentInstruction(paymentInstructionDtoMapper.toPaymentInstruction(allPayPaymentInstructionDto));
-        return paymentInstructionDtoMapper.toPaymentInstructionDto(paymentInstruction);
+    public PaymentInstruction saveAllPayInstruction(@Valid @RequestBody AllPayPaymentInstruction allPayPaymentInstruction) {
+         return  paymentInstructionService.createPaymentInstruction(allPayPaymentInstruction);
     }
-
-
 
 }
 

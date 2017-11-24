@@ -1,4 +1,4 @@
-package uk.gov.hmcts.bar.api.model.exceptions;
+package uk.gov.hmcts.bar.api.data.exceptions;
 
 import lombok.Getter;
 

@@ -1,11 +1,11 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Test;
-import uk.gov.hmcts.bar.api.contract.CashPaymentInstructionDto;
+import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.bar.api.contract.CashPaymentInstructionDto.cashPaymentInstructionDtoWith;
+import static uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction.cashPaymentInstructionWith;
 
 
 public class CashInstructionCrudComponentTest extends ComponentTestBase {
@@ -13,7 +13,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenCashPaymentInstructionDetails_thenCreateCashPaymentInstruction() throws Exception {
-        CashPaymentInstructionDto.CashPaymentInstructionDtoBuilder  proposedCashPaymentInstruction =cashPaymentInstructionDtoWith()
+        CashPaymentInstruction.CashPaymentInstructionBuilder  proposedCashPaymentInstruction =cashPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP");
@@ -21,9 +21,9 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
         restActions
             .post("/cash", proposedCashPaymentInstruction.build())
             .andExpect(status().isCreated())
-            .andExpect(body().as(CashPaymentInstructionDto.class, cashPaymentInstructionDto -> {
+            .andExpect(body().as(CashPaymentInstruction.class, cashPaymentInstructionDto -> {
                 assertThat(cashPaymentInstructionDto).isEqualToComparingOnlyGivenFields(
-                    cashPaymentInstructionDtoWith()
+                    cashPaymentInstructionWith()
                         .payerName("Mr Payer Payer")
                         .amount(500)
                         .currency("GBP"));
@@ -32,7 +32,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenCashPaymentInstructionWithInvalidCurrency_thenReturn400() throws Exception {
-        CashPaymentInstructionDto.CashPaymentInstructionDtoBuilder  proposedCashPaymentInstruction =cashPaymentInstructionDtoWith()
+        CashPaymentInstruction.CashPaymentInstructionBuilder  proposedCashPaymentInstruction =cashPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("XXX");

@@ -1,18 +1,18 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Test;
-import uk.gov.hmcts.bar.api.contract.AllPayPaymentInstructionDto;
+import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.bar.api.contract.AllPayPaymentInstructionDto.allPayPaymentInstructionDtoWith;
+import static uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction.allPayPaymentInstructionWith;
 
 public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
 
     @Test
     public void whenAllPayPaymentInstructionDetails_thenCreateAllPayPaymentInstruction() throws Exception {
-        AllPayPaymentInstructionDto.AllPayPaymentInstructionDtoBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionDtoWith()
+        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
@@ -21,9 +21,9 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
         restActions
             .post("/allpay", proposedAllPayPaymentInstruction.build())
             .andExpect(status().isCreated())
-            .andExpect(body().as(AllPayPaymentInstructionDto.class, allPayPaymentInstructionDto -> {
+            .andExpect(body().as(AllPayPaymentInstruction.class, allPayPaymentInstructionDto -> {
                 assertThat(allPayPaymentInstructionDto).isEqualToComparingOnlyGivenFields(
-                    allPayPaymentInstructionDtoWith()
+                    allPayPaymentInstructionWith()
                         .payerName("Mr Payer Payer")
                         .amount(500)
                         .currency("GBP").allPayTransactionId("12345"));
@@ -32,7 +32,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenAllPayPaymentInstructionWithInvalidAllPayTransactionId_thenReturn400() throws Exception {
-        AllPayPaymentInstructionDto.AllPayPaymentInstructionDtoBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionDtoWith()
+        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
@@ -47,7 +47,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenAllPayPaymentInstructionWithInvalidCurrency_thenReturn400() throws Exception {
-        AllPayPaymentInstructionDto.AllPayPaymentInstructionDtoBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionDtoWith()
+        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("XXX")

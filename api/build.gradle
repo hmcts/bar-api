@@ -4,8 +4,6 @@ plugins {
 
 dependencies {
     compile project(':bar-model')
-    compile project(':bar-api-contract')
-
     compile 'uk.gov.hmcts.auth.checker:auth-checker-spring'
     compile 'uk.gov.hmcts.reform:java-logging-spring'
 

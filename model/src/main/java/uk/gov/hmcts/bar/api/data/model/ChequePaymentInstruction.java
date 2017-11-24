@@ -1,45 +1,46 @@
-package uk.gov.hmcts.bar.api.contract;
+package uk.gov.hmcts.bar.api.data.model;
+
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import javax.validation.constraints.Pattern;
 
+
 @Data
+@Entity
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class ChequePaymentInstructionDto extends PaymentInstructionDto {
+@DiscriminatorValue("cheques")
+public class ChequePaymentInstruction extends PaymentInstruction {
 
+    @NonNull
     @Pattern(regexp ="^\\d{6,6}$",message = "invalid sort code")
-    private final String sortCode;
-
+    private String sortCode;
+    @NonNull
     @Pattern(regexp ="^\\d{8,8}$",message = "invalid account number")
-    private final String accountNumber;
-
+    private String accountNumber;
+    @NonNull
     @Pattern(regexp ="^\\d{6,6}$",message = "invalid cheque number")
-    private final String chequeNumber;
-
-    private static final String PAYMENT_INSTRUCTION_TYPE = "cheques";
+    private String chequeNumber;
 
     @JsonCreator
-    @Builder(builderMethodName = "chequePaymentInstructionDtoWith")
-    public ChequePaymentInstructionDto(@JsonProperty("payer_name") String payerName,
+    @Builder(builderMethodName = "chequePaymentInstructionWith")
+    public ChequePaymentInstruction(@JsonProperty("payer_name") String payerName,
                                        @JsonProperty("amount") Integer amount,
                                        @JsonProperty("currency") String currency,
                                        @JsonProperty("sort_code") String sortCode,
                                        @JsonProperty("account_number") String accountNumber,
                                        @JsonProperty("cheque_number") String chequeNumber) {
-        super(payerName,amount,currency,PAYMENT_INSTRUCTION_TYPE);
+        super(payerName,amount,currency);
         this.sortCode = sortCode;
         this.accountNumber = accountNumber ;
         this.chequeNumber = chequeNumber;
     }
+
 
 
 }

@@ -13,14 +13,14 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CashPaymentInstructionDto extends PaymentInstructionDto {
-    private static final String CASH = "cash";
+    private static final String PAYMENT_INSTRUCTION_TYPE = "cash";
     @JsonCreator
     @Builder(builderMethodName = "cashPaymentInstructionDtoWith")
     public CashPaymentInstructionDto(@JsonProperty("payer_name") String payerName,
                                        @JsonProperty("amount") Integer amount,
                                        @JsonProperty("currency") String currency
                                        ) {
-        super(payerName,amount,currency,CASH);
+        super(payerName,amount,currency,PAYMENT_INSTRUCTION_TYPE);
 
     }
 

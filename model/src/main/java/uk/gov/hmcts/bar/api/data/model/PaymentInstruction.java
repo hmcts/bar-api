@@ -1,6 +1,10 @@
-package uk.gov.hmcts.bar.api.model;
+package uk.gov.hmcts.bar.api.data.model;
 
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,12 +19,14 @@ import java.time.LocalDateTime;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "payment_type")
 public abstract class PaymentInstruction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access= JsonProperty.Access.READ_ONLY)
     private Integer id;
     @NonNull
     private String payerName;
@@ -30,10 +36,18 @@ public abstract class PaymentInstruction {
     @Pattern(regexp ="(?:GBP)",message = "invalid currency")
     private String currency;
     @NonNull
+    @JsonProperty(access= JsonProperty.Access.READ_ONLY)
     private String status ;
     @NonNull
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
+    @JsonProperty(access= JsonProperty.Access.READ_ONLY)
     private LocalDateTime paymentDate = LocalDateTime.now();
+    @NonNull
+    @JsonProperty(access= JsonProperty.Access.READ_ONLY)
+    private String siteId;
+    @JsonProperty(access= JsonProperty.Access.READ_ONLY)
+    private int dailySequenceId;
+
 
     public static final String DRAFT= "draft";
     public static final String PENDING= "pending";
@@ -44,4 +58,9 @@ public abstract class PaymentInstruction {
         this.currency = currency;
 
     }
+    @JsonGetter
+    private String getPaymentDate() {
+        return this.paymentDate.toString();
+    }
+
 }

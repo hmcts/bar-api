@@ -1,7 +1,7 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Test;
-import uk.gov.hmcts.bar.api.model.PaymentType;
+import uk.gov.hmcts.bar.api.data.model.PaymentType;
 
 import java.util.ArrayList;
 
@@ -19,7 +19,6 @@ public class PaymentTypeCrudComponentTest extends ComponentTestBase{
                 assertThat(paymentTypes).isEqualTo(
                     new ArrayList<PaymentType>() {{
                         add(new PaymentType(1,"Cheque"));
-                        add(new PaymentType(2,"Full Remission"));
                         add(new PaymentType(3,"Card"));
                         add(new PaymentType(4,"Postal Order"));
                         add(new PaymentType(5,"Cash"));
