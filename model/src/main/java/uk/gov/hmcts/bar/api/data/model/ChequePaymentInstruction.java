@@ -43,5 +43,8 @@ public class ChequePaymentInstruction extends PaymentInstruction {
     }
 
 
+    public String getPaymentType(){
+        return "cheques";
+    }
 
 }

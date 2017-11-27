@@ -19,17 +19,22 @@ import javax.validation.constraints.Pattern;
 public class PostalOrderPaymentInstruction extends PaymentInstruction {
 
     @NonNull
-    @Pattern(regexp ="^\\d{6,6}$",message = "invalid postal order number")
+    @Pattern(regexp = "^\\d{6,6}$", message = "invalid postal order number")
     private String postalOrderNumber;
 
     @JsonCreator
     @Builder(builderMethodName = "postalOrderPaymentInstructionWith")
     public PostalOrderPaymentInstruction(@JsonProperty("payer_name") String payerName,
-                                            @JsonProperty("amount") Integer amount,
-                                            @JsonProperty("currency") String currency,
-                                            @JsonProperty("postal_order_number") String postalOrderNumber) {
+                                         @JsonProperty("amount") Integer amount,
+                                         @JsonProperty("currency") String currency,
+                                         @JsonProperty("postal_order_number") String postalOrderNumber) {
         super(payerName, amount, currency);
         this.postalOrderNumber = postalOrderNumber;
 
+    }
+
+
+    public String getPaymentType() {
+        return "postal-orders";
     }
 }

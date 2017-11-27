@@ -30,4 +30,8 @@ public class AllPayPaymentInstruction extends PaymentInstruction {
         super(payerName, amount, currency);
         this.allPayTransactionId = allPayTransactionId;
     }
+
+    public String getPaymentType(){
+        return "allpay";
+    }
 }
