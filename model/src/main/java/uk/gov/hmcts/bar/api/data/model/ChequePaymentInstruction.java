@@ -7,6 +7,7 @@ import lombok.*;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 
@@ -18,13 +19,16 @@ import javax.validation.constraints.Pattern;
 @DiscriminatorValue("cheques")
 public class ChequePaymentInstruction extends PaymentInstruction {
 
-    @NonNull
+    private static final String CHEQUE_DISCRIMINATOR_VALUE="cheques";
+
+
+    @NotNull
     @Pattern(regexp ="^\\d{6,6}$",message = "invalid sort code")
     private String sortCode;
-    @NonNull
+    @NotNull
     @Pattern(regexp ="^\\d{8,8}$",message = "invalid account number")
     private String accountNumber;
-    @NonNull
+    @NotNull
     @Pattern(regexp ="^\\d{6,6}$",message = "invalid cheque number")
     private String chequeNumber;
 
@@ -44,7 +48,7 @@ public class ChequePaymentInstruction extends PaymentInstruction {
 
 
     public String getPaymentType(){
-        return "cheques";
+        return CHEQUE_DISCRIMINATOR_VALUE;
     }
 
 }

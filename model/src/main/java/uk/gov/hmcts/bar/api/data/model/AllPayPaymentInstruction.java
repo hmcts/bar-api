@@ -7,6 +7,7 @@ import lombok.*;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Data
@@ -17,7 +18,9 @@ import javax.validation.constraints.Pattern;
 @DiscriminatorValue("allpay")
 public class AllPayPaymentInstruction extends PaymentInstruction {
 
-    @NonNull
+    private static final String ALLPAY_DISCRIMINATOR_VALUE="allpay";
+
+    @NotNull
     @Pattern(regexp ="^\\d{1,20}$",message = "invalid all pay transaction id")
     private String allPayTransactionId;
 
@@ -32,6 +35,6 @@ public class AllPayPaymentInstruction extends PaymentInstruction {
     }
 
     public String getPaymentType(){
-        return "allpay";
+        return ALLPAY_DISCRIMINATOR_VALUE;
     }
 }

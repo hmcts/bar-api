@@ -7,6 +7,7 @@ import lombok.*;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Data
@@ -18,7 +19,9 @@ import javax.validation.constraints.Pattern;
 @DiscriminatorValue("postal-orders")
 public class PostalOrderPaymentInstruction extends PaymentInstruction {
 
-    @NonNull
+    private static final String POSTAL_ORDER_DISCRIMINATOR_VALUE="postal-orders";
+
+    @NotNull
     @Pattern(regexp = "^\\d{6,6}$", message = "invalid postal order number")
     private String postalOrderNumber;
 
@@ -35,6 +38,6 @@ public class PostalOrderPaymentInstruction extends PaymentInstruction {
 
 
     public String getPaymentType() {
-        return "postal-orders";
+        return POSTAL_ORDER_DISCRIMINATOR_VALUE;
     }
 }

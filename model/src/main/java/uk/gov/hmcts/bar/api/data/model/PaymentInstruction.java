@@ -12,6 +12,7 @@ import lombok.NonNull;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 
@@ -32,7 +33,7 @@ public abstract class PaymentInstruction {
     private String payerName;
     @NonNull
     private Integer amount;
-    @NonNull
+    @NotNull
     @Pattern(regexp ="(?:GBP)",message = "invalid currency")
     private String currency;
     @NonNull
@@ -62,5 +63,7 @@ public abstract class PaymentInstruction {
     private String getPaymentDate() {
         return this.paymentDate.toString();
     }
+
+    abstract String getPaymentType();
 
 }
