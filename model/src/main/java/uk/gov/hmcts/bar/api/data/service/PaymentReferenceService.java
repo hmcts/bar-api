@@ -38,7 +38,7 @@ public class PaymentReferenceService {
 
         }
 
-        PaymentReference savedPaymentReference = paymentReferenceRepository.save(nextPaymentReference);
+        paymentReferenceRepository.save(nextPaymentReference);
         return nextPaymentReference;
     }
 
