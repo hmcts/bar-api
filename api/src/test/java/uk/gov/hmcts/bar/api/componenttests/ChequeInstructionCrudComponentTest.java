@@ -19,9 +19,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .chequeNumber("000000")
-            .sortCode("000000")
-            .accountNumber("00000000");
+            .chequeNumber("000000");
 
         restActions
             .post("/cheques", proposedChequePaymentInstruction.build())
@@ -32,53 +30,17 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
                         .payerName("Mr Payer Payer")
                         .amount(500)
                         .currency("GBP")
-                        .chequeNumber("000000")
-                        .sortCode("000000")
-                        .accountNumber("00000000"));
+                        .chequeNumber("000000"));
             }));
     }
 
-
     @Test
-    public void whenChequeInstructionWithInvalidSortCode_thenReturn400() throws Exception {
+    public void whenChequeInstructionWithInvalidChequeNumber_thenReturn400() throws Exception {
         ChequePaymentInstruction.ChequePaymentInstructionBuilder  proposedChequePaymentInstruction =chequePaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .chequeNumber("000000")
-            .sortCode("xxxxxx")
-            .accountNumber("00000000");
-
-        restActions
-            .post("/cheques", proposedChequePaymentInstruction.build())
-            .andExpect(status().isBadRequest())
-            ;
-    }
-    @Test
-    public void whenChequeInstructionWithInvalidAccountNumber_thenReturn400() throws Exception {
-        ChequePaymentInstruction.ChequePaymentInstructionBuilder  proposedChequePaymentInstruction =chequePaymentInstructionWith()
-            .payerName("Mr Payer Payer")
-            .amount(500)
-            .currency("GBP")
-            .chequeNumber("000000")
-            .sortCode("000000")
-            .accountNumber("xxxxxxxx");
-
-        restActions
-            .post("/cheques", proposedChequePaymentInstruction.build())
-            .andExpect(status().isBadRequest())
-        ;
-    }
-
-    @Test
-    public void whenChequeInstructionWithInvalidInstrumentNumber_thenReturn400() throws Exception {
-        ChequePaymentInstruction.ChequePaymentInstructionBuilder  proposedChequePaymentInstruction =chequePaymentInstructionWith()
-            .payerName("Mr Payer Payer")
-            .amount(500)
-            .currency("GBP")
-            .chequeNumber("xxxxxx")
-            .sortCode("000000")
-            .accountNumber("00000000");
+            .chequeNumber("xxxxxx");
 
         restActions
             .post("/cheques", proposedChequePaymentInstruction.build())
@@ -92,9 +54,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("xxx")
-            .chequeNumber("000000")
-            .sortCode("000000")
-            .accountNumber("00000000");
+            .chequeNumber("000000");
 
         restActions
             .post("/cheques", proposedChequePaymentInstruction.build())
@@ -110,9 +70,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .chequeNumber("000000")
-            .sortCode("000000")
-            .accountNumber("00000000");
+            .chequeNumber("000000");
 
         restActions
             .post("/cheques",  proposedChequePaymentInstruction.build())
