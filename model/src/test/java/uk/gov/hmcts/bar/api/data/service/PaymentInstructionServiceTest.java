@@ -40,8 +40,8 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnPaymentInstruction_whenSavePaymentInstructionForGivenChequeInstructionIsCalled() throws Exception {
 
         PaymentInstruction savedChequePaymentInstruction = ChequePaymentInstruction.chequePaymentInstructionWith()
-            .accountNumber("00000000").amount(200).currency("GBP").chequeNumber("000000").payerName("Mr Payer Payer")
-             .sortCode("000000").build();
+            .amount(200).currency("GBP").chequeNumber("000000").payerName("Mr Payer Payer")
+            .build();
 
         PaymentReference paymentReference = new PaymentReference(new PaymentReferenceKey("BR01", LocalDate.now()),1);
 
