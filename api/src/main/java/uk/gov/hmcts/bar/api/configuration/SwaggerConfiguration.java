@@ -41,7 +41,7 @@ public class SwaggerConfiguration {
         return new ApiInfoBuilder()
             .title("BAR API")
             .description("BAR API to process the payments at court.")
-            .contact(new Contact("Sachi Kuppuswami, Jalal ul Deen ", "", "jalal.deen@hmcts.net"))
+            .contact(new Contact("Sachi Kuppuswami, Jalal ul Deen, Ravi Kumar Arasan ", "", "jalal.deen@hmcts.net"))
             .version("1.0")
             .build();
     }

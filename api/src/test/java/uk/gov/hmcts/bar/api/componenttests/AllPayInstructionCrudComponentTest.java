@@ -82,5 +82,44 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
     }
 
+    @Test
+    public void whenAllPayPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
+        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .allPayTransactionId("12345");
+
+        restActions
+            .post("/allpay",  proposedAllPayPaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+        restActions
+            .delete("/payment-instructions/1")
+            .andExpect(status().isNoContent());
+
+
+    }
+
+    @Test
+    public void whenNonExistingAllPayPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
+        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .allPayTransactionId("12345");
+
+        restActions
+            .post("/allpay",  proposedAllPayPaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .delete("/payment-instructions/1000")
+            .andExpect(status().isNoContent());
+
+    }
+
+
 }
 

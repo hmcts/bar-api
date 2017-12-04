@@ -84,6 +84,44 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
     }
 
+    @Test
+    public void whenPostalOrderPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
+        PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .postalOrderNumber("000000");
+
+        restActions
+            .post("/postal-orders",  proposedPostalOrderPaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+        restActions
+            .delete("/payment-instructions/1")
+            .andExpect(status().isNoContent());
+
+
+    }
+
+    @Test
+    public void whenNonExistingPostalOrderPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
+        PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .postalOrderNumber("000000");
+
+        restActions
+            .post("/postal-orders",  proposedPostalOrderPaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+        restActions
+            .delete("/payment-instructions/1000")
+            .andExpect(status().isNoContent());
+
+
+    }
+
 
 
 }

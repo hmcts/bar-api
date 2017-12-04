@@ -85,7 +85,43 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
     }
 
+    @Test
+    public void whenChequePaymentInstructionIsDeleted_expectStatus_204() throws Exception {
+        ChequePaymentInstruction.ChequePaymentInstructionBuilder  proposedChequePaymentInstruction =chequePaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .chequeNumber("000000");
 
+        restActions
+            .post("/cheques",  proposedChequePaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+        restActions
+            .delete("/payment-instructions/1")
+            .andExpect(status().isNoContent());
+
+
+    }
+
+    @Test
+    public void whenNonExistingChequePaymentInstructionIsDeleted_expectStatus_204() throws Exception {
+        ChequePaymentInstruction.ChequePaymentInstructionBuilder  proposedChequePaymentInstruction =chequePaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .chequeNumber("000000");
+
+        restActions
+            .post("/cheques",  proposedChequePaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+        restActions
+            .delete("/payment-instructions/1000")
+            .andExpect(status().isNoContent());
+
+
+    }
 
 
 }

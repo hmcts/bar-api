@@ -11,6 +11,7 @@ import uk.gov.hmcts.bar.api.componenttests.backdoors.UserResolverBackdoor;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class RestActions {
     private final HttpHeaders httpHeaders = new HttpHeaders();
@@ -66,6 +67,19 @@ public class RestActions {
                 .headers(httpHeaders)
                 .content(objectMapper.writeValueAsString(dto))
             );
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ResultActions delete(String urlTemplate, Object... uriVars) {
+        try {
+            return mvc.perform(MockMvcRequestBuilders
+                .delete(urlTemplate, uriVars)
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .headers(httpHeaders))
+                .andExpect(status().isNoContent());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

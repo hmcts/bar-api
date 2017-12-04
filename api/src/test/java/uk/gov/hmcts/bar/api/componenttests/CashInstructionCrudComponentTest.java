@@ -30,6 +30,10 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
                         .amount(500)
                         .currency("GBP"));
             }));
+
+        /*restActions
+            .delete("/payment-instructions/0")
+            .andExpect(status().isNoContent());*/
     }
 
     @Test
@@ -41,8 +45,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
         restActions
             .post("/cash", proposedCashPaymentInstruction.build())
-            .andExpect(status().isBadRequest())
-            ;
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -63,10 +66,47 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
                 assertThat(cashList.get(0).equals( proposedCashPaymentInstruction.build()));
             }));
 
+
+    }
+
+    @Test
+    public void whenCashPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
+        CashPaymentInstruction.CashPaymentInstructionBuilder  proposedCashPaymentInstruction =cashPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP");
+
+        restActions
+            .post("/cash",  proposedCashPaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .delete("/payment-instructions/1")
+            .andExpect(status().isNoContent());
+
+
     }
 
 
+    @Test
+    public void whenNonExistingCashPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
+        CashPaymentInstruction.CashPaymentInstructionBuilder  proposedCashPaymentInstruction =cashPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP");
 
+        restActions
+            .post("/cash",  proposedCashPaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .delete("/payment-instructions/1000")
+            .andExpect(status().isNoContent());
+
+
+    }
 
 
 }

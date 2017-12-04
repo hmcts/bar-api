@@ -2,9 +2,11 @@ package uk.gov.hmcts.bar.api.data.service;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 
@@ -14,7 +16,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 public class PaymentInstructionServiceTest {
 
     @InjectMocks
@@ -123,6 +125,37 @@ public class PaymentInstructionServiceTest {
         assertEquals(paymentInstructionList,retrievedPaymentInstructionList);
     }
 
+
+
+    @Test
+    public void shouldDeletePaymentInstruction_whenDeletePaymentInstructionIsCalled() throws Exception {
+
+       paymentInstructionService.deleteCurrentPaymentInstructionWithDraftStatus(1);
+
+        verify(paymentInstructionRepository, times(1)).deletePaymentInstructionByIdAndStatusAndPaymentDateAfter(1,PaymentInstruction.DRAFT,LocalDateTime.now().truncatedTo(ChronoUnit.DAYS));
+    }
+
+
+    @Test(expected = PaymentInstructionNotFoundException.class)
+    public void shouldThrowPaymentInstructionNotFoundException_whenDeletePaymentInstructionIsCalledAndNotFound() throws Exception {
+        PaymentInstructionService service = mock(PaymentInstructionService.class);
+        doThrow(PaymentInstructionNotFoundException.class).when(service).deleteCurrentPaymentInstructionWithDraftStatus(1);
+        service.deleteCurrentPaymentInstructionWithDraftStatus(1);
+
+    }
+
+    @Test
+    public void shouldDeleteDraftPaymentInstruction_whenDeletePaymentInstructionIsCalled() {
+
+        ArgumentCaptor<Integer> idCapture = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<String> statusCapture = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<LocalDateTime> dateTimeCapture = ArgumentCaptor.forClass(LocalDateTime.class);
+
+        paymentInstructionService.deleteCurrentPaymentInstructionWithDraftStatus(1);
+        verify(paymentInstructionRepository, times(1)).deletePaymentInstructionByIdAndStatusAndPaymentDateAfter(idCapture.capture(),statusCapture.capture(),dateTimeCapture.capture());
+
+        assertEquals("draft", statusCapture.getValue());
+    }
 
 
 }

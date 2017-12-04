@@ -1,8 +1,10 @@
 package uk.gov.hmcts.bar.api.data.service;
 
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentReference;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
@@ -39,5 +41,15 @@ public class PaymentInstructionService {
 
     public List<PaymentInstruction> getAllPaymentInstructions() {
         return paymentInstructionRepository.findBySiteIdAndPaymentDateIsAfter(SITE_ID, now().truncatedTo(ChronoUnit.DAYS));
+    }
+
+    public void deleteCurrentPaymentInstructionWithDraftStatus(Integer id){
+        try {
+            paymentInstructionRepository.deletePaymentInstructionByIdAndStatusAndPaymentDateAfter(id,PaymentInstruction.DRAFT,now().truncatedTo(ChronoUnit.DAYS));
+        }
+        catch (EmptyResultDataAccessException erdae){
+            throw new PaymentInstructionNotFoundException(id);
+        }
+
     }
 }

@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface PaymentInstructionRepository extends JpaRepository<PaymentInstruction, Integer> {
     List<PaymentInstruction> findBySiteIdAndPaymentDateIsAfter(String siteId,LocalDateTime paymentDate);
+    void deletePaymentInstructionByIdAndStatusAndPaymentDateAfter(Integer id, String paymentInstructionStatus,LocalDateTime paymentDate );
 }
