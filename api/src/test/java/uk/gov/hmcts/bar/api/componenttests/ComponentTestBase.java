@@ -9,7 +9,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.bar.api.componenttests.backdoors.UserResolverBackdoor;
 import uk.gov.hmcts.bar.api.componenttests.sugar.CustomResultMatcher;
 import uk.gov.hmcts.bar.api.componenttests.sugar.RestActions;
 import uk.gov.hmcts.bar.api.componenttests.utils.DbTestUtil;
@@ -30,9 +29,9 @@ public class ComponentTestBase {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
+    /*@Autowired
     protected UserResolverBackdoor userRequestAuthorizer;
-
+*/
     @Autowired
     private WebApplicationContext webApplicationContext;
 
@@ -41,7 +40,7 @@ public class ComponentTestBase {
     @Before
     public void setUp() throws SQLException{
         MockMvc mvc = webAppContextSetup(webApplicationContext).apply(springSecurity()).build();
-        this.restActions = new RestActions(mvc, userRequestAuthorizer, objectMapper);
+        this.restActions = new RestActions(mvc,objectMapper);
         DbTestUtil.resetAutoIncrementColumns(webApplicationContext, "payment_instruction");
     }
 
