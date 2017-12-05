@@ -29,9 +29,6 @@ public class ComponentTestBase {
     @Autowired
     private ObjectMapper objectMapper;
 
-    /*@Autowired
-    protected UserResolverBackdoor userRequestAuthorizer;
-*/
     @Autowired
     private WebApplicationContext webApplicationContext;
 
