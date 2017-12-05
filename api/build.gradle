@@ -1,10 +1,10 @@
 plugins {
-    id 'org.springframework.boot' version '1.5.8.RELEASE'
+    id 'org.springframework.boot' version '1.5.9.RELEASE'
 }
 
 dependencies {
     compile project(':bar-model')
-    compile 'uk.gov.hmcts.auth.checker:auth-checker-spring'
+
     compile 'uk.gov.hmcts.reform:java-logging-spring'
 
     compile 'org.springframework.boot:spring-boot-starter-web'
