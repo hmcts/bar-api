@@ -50,9 +50,6 @@ public abstract class PaymentInstruction {
     private int dailySequenceId;
 
 
-    public static final String DRAFT= "draft";
-    public static final String PENDING= "pending";
-
     public PaymentInstruction(String payerName, Integer amount, String currency) {
         this.payerName = payerName;
         this.amount = amount;
