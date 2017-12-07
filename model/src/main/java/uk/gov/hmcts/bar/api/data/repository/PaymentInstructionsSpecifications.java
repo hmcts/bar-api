@@ -20,15 +20,24 @@ public class PaymentInstructionsSpecifications {
 	private String status = null;
 	private LocalDateTime startDate = null;
 	private LocalDateTime endDate = null;
+	protected Specification<PaymentInstruction> statusSpec = null;
+	protected Specification<PaymentInstruction> startDateSpec = null;
+	protected Specification<PaymentInstruction> endDateSpec = null;
+	protected Specification<PaymentInstruction> siteIdSpec = null;
 
 	public PaymentInstructionsSpecifications(String status, LocalDateTime startDate, LocalDateTime endDate) {
 		this.status = status;
 		this.startDate = startDate;
 		this.endDate = endDate;
+
+		statusSpec = new StatusSpec();
+		startDateSpec = new StartDateSpec();
+		endDateSpec = new EndDateSpec();
+		siteIdSpec = new SiteIdSpec();
 	}
 
 	public Specification<PaymentInstruction> getPaymentInstructionsSpecification() {
-		return where(new StatusSpec()).and(new StartDateSpec()).and(new EndDateSpec()).and(new SiteIdSpec());
+		return where(statusSpec).and(startDateSpec).and(endDateSpec).and(siteIdSpec);
 	}
 
 	private class StatusSpec implements Specification<PaymentInstruction> {
