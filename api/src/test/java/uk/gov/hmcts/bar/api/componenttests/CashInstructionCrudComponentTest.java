@@ -1,13 +1,14 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
-import org.junit.Test;
-import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
-
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction.cashPaymentInstructionWith;
+
+import java.util.List;
+
+import org.junit.Test;
+
+import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
 
 
 public class CashInstructionCrudComponentTest extends ComponentTestBase {
@@ -68,6 +69,29 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
 
     }
+    
+	@Test
+	public void givenCashPaymentInstructionDetails_retrieveOneOfThem() throws Exception {
+		CashPaymentInstruction.CashPaymentInstructionBuilder proposedCashPaymentInstruction = cashPaymentInstructionWith()
+				.payerName("Mr Payer Payer").amount(500).currency("GBP");
+
+		restActions.post("/cash", proposedCashPaymentInstruction.build()).andExpect(status().isCreated());
+
+		restActions.get("/payment-instructions/1").andExpect(status().isOk())
+				.andExpect(body().as(CashPaymentInstruction.class, (pi) -> {
+					assertThat(pi.getAmount() == 500);
+				}));
+	}
+	
+	@Test
+	public void givenCashPaymentInstructionDetails_retrieveOneOfThemWithWrongId() throws Exception {
+		CashPaymentInstruction.CashPaymentInstructionBuilder proposedCashPaymentInstruction = cashPaymentInstructionWith()
+				.payerName("Mr Payer Payer").amount(500).currency("GBP");
+
+		restActions.post("/cash", proposedCashPaymentInstruction.build()).andExpect(status().isCreated());
+
+		restActions.get("/payment-instructions/2").andExpect(status().isNotFound());
+	}
 
     @Test
     public void whenCashPaymentInstructionIsDeleted_expectStatus_204() throws Exception {

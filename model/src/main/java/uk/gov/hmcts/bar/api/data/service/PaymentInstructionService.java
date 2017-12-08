@@ -4,12 +4,13 @@ package uk.gov.hmcts.bar.api.data.service;
 import static java.time.LocalDateTime.now;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.Iterator;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -52,16 +53,33 @@ public class PaymentInstructionService {
     }
 
 
-	public List<PaymentInstruction> getAllPaymentInstructions(String status, LocalDateTime startDate,
-			LocalDateTime endDate) {
+	public List<PaymentInstruction> getAllPaymentInstructions(String status, Date startDate,
+			Date endDate) {
+		
+		LocalDateTime paramStartDate = null;
+		LocalDateTime paramEndDate = null;
+		
+		if (startDate != null) {
+			paramStartDate = LocalDateTime.ofInstant(startDate.toInstant(), ZoneId.systemDefault()).toLocalDate()
+					.atStartOfDay();
+		}
+
+		if (endDate != null) {
+			paramEndDate = LocalDateTime.ofInstant(endDate.toInstant(), ZoneId.systemDefault()).toLocalDate()
+					.atTime(LocalTime.now());
+		}
 
 		PaymentInstructionsSpecifications paymentInstructionsSpecification = new PaymentInstructionsSpecifications(
-				status, startDate, endDate);
+				status, paramStartDate, paramEndDate);
 		Pageable pageDetails = new PageRequest(PAGE_NUMBER, MAX_RECORDS_PER_PAGE);
-
+		
 		return Lists.newArrayList(paymentInstructionRepository
 				.findAll(paymentInstructionsSpecification.getPaymentInstructionsSpecification(), pageDetails)
 				.iterator());
+	}
+	
+	public PaymentInstruction getPaymentInstruction(Integer id) {
+		return paymentInstructionRepository.findOne(id);
 	}
 
     public void deleteCurrentPaymentInstructionWithDraftStatus(Integer id){

@@ -1,8 +1,5 @@
 package uk.gov.hmcts.bar.api.controllers.payment;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -57,21 +54,22 @@ public class PaymentInstructionController {
 			@RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") Date startDate,
 			@RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") Date endDate) {
 
-		LocalDateTime paramStartDate = null;
-		LocalDateTime paramEndDate = null;
-
-		if (startDate != null) {
-			paramStartDate = LocalDateTime.ofInstant(startDate.toInstant(), ZoneId.systemDefault()).toLocalDate()
-					.atStartOfDay();
-		}
-
-		if (endDate != null) {
-			paramEndDate = LocalDateTime.ofInstant(endDate.toInstant(), ZoneId.systemDefault()).toLocalDate()
-					.atTime(LocalTime.now());
-		}
-
 		return PaymentInstructionControllerHelper.updateStatusDisplayValue(
-				paymentInstructionService.getAllPaymentInstructions(status, paramStartDate, paramEndDate));
+				paymentInstructionService.getAllPaymentInstructions(status, startDate, endDate));
+	}
+	
+	@ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction for the given id.")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Return payment instruction"),
+			@ApiResponse(code = 404, message = "Payment instruction not found"),
+			@ApiResponse(code = 500, message = "Internal server error") })
+	@ResponseStatus(HttpStatus.OK)
+	@GetMapping("/payment-instructions/{id}")
+	public ResponseEntity<?> getPaymentInstruction(@PathVariable("id") Integer id) {
+		PaymentInstruction paymentInstruction = paymentInstructionService.getPaymentInstruction(id);
+		if (paymentInstruction == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<PaymentInstruction>(paymentInstruction, HttpStatus.OK);
 	}
 
 	@ApiOperation(value = "Delete payment instruction", notes = "Delete payment instruction with the given id.")

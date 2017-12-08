@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -58,6 +59,9 @@ public class PaymentInstructionServiceTest {
     
     @Mock
     private Iterator<PaymentInstruction> piIteratorMock;
+    
+    @Mock
+    private PaymentInstruction paymentInstructionMock;
     
     private PaymentInstructionService paymentInstructionService;
     
@@ -195,7 +199,7 @@ public class PaymentInstructionServiceTest {
 		when(piPageMock.iterator()).thenReturn(piIteratorMock);
 
 		List<PaymentInstruction> retrievedPaymentInstructionList = paymentInstructionService
-				.getAllPaymentInstructions("BR01", LocalDateTime.now(), LocalDateTime.now());
+				.getAllPaymentInstructions("BR01", new Date(), new Date());
 		assertEquals(Lists.newArrayList(piIteratorMock), retrievedPaymentInstructionList);
 	}
 	
@@ -217,7 +221,7 @@ public class PaymentInstructionServiceTest {
 		when(piPageMock.iterator()).thenReturn(piIteratorMock);
 
 		List<PaymentInstruction> retrievedPaymentInstructionList = paymentInstructionService
-				.getAllPaymentInstructions(null, LocalDateTime.now(), null);
+				.getAllPaymentInstructions(null, new Date(), null);
 		assertEquals(Lists.newArrayList(piIteratorMock), retrievedPaymentInstructionList);
 	}
 	
@@ -228,7 +232,7 @@ public class PaymentInstructionServiceTest {
 		when(piPageMock.iterator()).thenReturn(piIteratorMock);
 
 		List<PaymentInstruction> retrievedPaymentInstructionList = paymentInstructionService
-				.getAllPaymentInstructions(null, null, LocalDateTime.now());
+				.getAllPaymentInstructions(null, null, new Date());
 		assertEquals(Lists.newArrayList(piIteratorMock), retrievedPaymentInstructionList);
 	}
 	
@@ -239,7 +243,7 @@ public class PaymentInstructionServiceTest {
 		when(piPageMock.iterator()).thenReturn(piIteratorMock);
 
 		List<PaymentInstruction> retrievedPaymentInstructionList = paymentInstructionService
-				.getAllPaymentInstructions(null, LocalDateTime.now(), LocalDateTime.now());
+				.getAllPaymentInstructions(null, new Date(), new Date());
 		assertEquals(Lists.newArrayList(piIteratorMock), retrievedPaymentInstructionList);
 	}
 	
@@ -250,7 +254,7 @@ public class PaymentInstructionServiceTest {
 		when(piPageMock.iterator()).thenReturn(piIteratorMock);
 
 		List<PaymentInstruction> retrievedPaymentInstructionList = paymentInstructionService
-				.getAllPaymentInstructions("BR01", null, LocalDateTime.now());
+				.getAllPaymentInstructions("BR01", null, new Date());
 		assertEquals(Lists.newArrayList(piIteratorMock), retrievedPaymentInstructionList);
 	}
 	
@@ -261,8 +265,24 @@ public class PaymentInstructionServiceTest {
 		when(piPageMock.iterator()).thenReturn(piIteratorMock);
 
 		List<PaymentInstruction> retrievedPaymentInstructionList = paymentInstructionService
-				.getAllPaymentInstructions("BR01", LocalDateTime.now(), null);
+				.getAllPaymentInstructions("BR01", new Date(), null);
 		assertEquals(Lists.newArrayList(piIteratorMock), retrievedPaymentInstructionList);
+	}
+	
+	@Test
+	public void shouldReturnPaymentInstruction_whenGetPaymentInstructionIsCalledForId() {
+		when(paymentInstructionRepository.findOne(Mockito.any(Integer.class))).thenReturn(paymentInstructionMock);
+		
+		PaymentInstruction pi = paymentInstructionService.getPaymentInstruction(3);
+		assertEquals(paymentInstructionMock, pi);
+	}
+	
+	@Test
+	public void shouldReturnNull_whenGetPaymentInstructionIsCalledForWrongId() {
+		when(paymentInstructionRepository.findOne(Mockito.any(Integer.class))).thenReturn(null);
+		
+		PaymentInstruction pi = paymentInstructionService.getPaymentInstruction(3);
+		assertEquals(null, pi);
 	}
 
 

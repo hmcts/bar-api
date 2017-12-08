@@ -1,13 +1,14 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
-import org.junit.Test;
-import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
-
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction.allPayPaymentInstructionWith;
+
+import java.util.List;
+
+import org.junit.Test;
+
+import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
 
 public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
@@ -81,6 +82,29 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             }));
 
     }
+    
+	@Test
+	public void givenAllPayPaymentInstructionDetails_retrieveOneOfThem() throws Exception {
+		AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+				.payerName("Mr Payer Payer").amount(500).currency("GBP").allPayTransactionId("12345");
+
+		restActions.post("/allpay", proposedAllPayPaymentInstruction.build()).andExpect(status().isCreated());
+
+		restActions.get("/payment-instructions/1").andExpect(status().isOk())
+				.andExpect(body().as(AllPayPaymentInstruction.class, (pi) -> {
+					assertThat(pi.getAmount() == 500);
+				}));
+	}
+	
+	@Test
+	public void givenAllPayPaymentInstructionDetails_retrieveOneOfThemWithWrongId() throws Exception {
+		AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+				.payerName("Mr Payer Payer").amount(500).currency("GBP").allPayTransactionId("12345");
+
+		restActions.post("/allpay", proposedAllPayPaymentInstruction.build()).andExpect(status().isCreated());
+
+		restActions.get("/payment-instructions/2").andExpect(status().isNotFound());
+	}
 
     @Test
     public void whenAllPayPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
