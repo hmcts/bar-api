@@ -37,7 +37,5 @@ public class PostalOrderPaymentInstruction extends PaymentInstruction {
     }
 
 
-    public String getPaymentType() {
-        return POSTAL_ORDER_DISCRIMINATOR_VALUE;
-    }
+
 }

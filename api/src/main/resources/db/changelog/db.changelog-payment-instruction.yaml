@@ -145,3 +145,46 @@ databaseChangeLog:
              tableName: payment_instruction
          - sql: >
              DELETE from  payment_type where id=2
+
+  - changeSet:
+      id: 4
+      author: sachi
+      changes:
+         - dropTable:
+             tableName: payment_type
+         - createTable:
+            tableName: payment_type
+            columns:
+              - column:
+                  name: id
+                  type: varchar(20)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+         - sql: >
+            INSERT INTO payment_type (id,name)
+            VALUES
+              ('cheques', 'Cheque'),
+              ('card', 'Card'),
+              ('postal-orders', 'Postal Order'),
+              ('cash', 'Cash'),
+              ('allpay', 'AllPay');
+
+         - renameColumn:
+            columnDataType: varchar(20)
+            newColumnName: payment_type_id
+            oldColumnName: payment_type
+            tableName: payment_instruction
+
+         - addForeignKeyConstraint:
+            baseColumnNames: payment_type_id
+            baseTableName: payment_instruction
+            constraintName: fk_payment_type
+            referencedColumnNames: id
+            referencedTableName: payment_type
+

@@ -22,8 +22,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "payment_type")
-public abstract class PaymentInstruction {
+@DiscriminatorColumn(name = "payment_type_id")
+public class PaymentInstruction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,6 +61,10 @@ public abstract class PaymentInstruction {
         return this.paymentDate.toString();
     }
 
-    abstract String getPaymentType();
+
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name="payment_type_id",referencedColumnName="id",insertable=false, updatable=false)
+    @JsonProperty(access= JsonProperty.Access.READ_ONLY)
+    private PaymentType paymentType;
 
 }

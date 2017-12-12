@@ -72,6 +72,21 @@ public class RestActions {
         }
     }
 
+    public ResultActions patch(String urlTemplate, Object request) {
+        try {
+            return mvc.perform(MockMvcRequestBuilders
+                .patch(urlTemplate, request)
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .headers(httpHeaders)
+                .content(objectMapper.writeValueAsString(request)));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
 
 
 }

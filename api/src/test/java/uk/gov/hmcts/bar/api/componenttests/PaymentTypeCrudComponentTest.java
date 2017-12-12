@@ -16,13 +16,13 @@ public class PaymentTypeCrudComponentTest extends ComponentTestBase{
             .get("/payment-types")
             .andExpect(status().isOk())
             .andExpect(body().asListOf(PaymentType.class, paymentTypes -> {
-                assertThat(paymentTypes).isEqualTo(
+                assertThat(paymentTypes).hasSameElementsAs(
                     new ArrayList<PaymentType>() {{
-                        add(new PaymentType(1,"Cheque"));
-                        add(new PaymentType(3,"Card"));
-                        add(new PaymentType(4,"Postal Order"));
-                        add(new PaymentType(5,"Cash"));
-                        add(new PaymentType(6,"AllPay"));
+                        add(new PaymentType("cheques","Cheque"));
+                        add(new PaymentType("card","Card"));
+                        add(new PaymentType("postal-orders","Postal Order"));
+                        add(new PaymentType("cash","Cash"));
+                        add(new PaymentType("allpay","AllPay"));
                     }});
             }));
     }

@@ -1,14 +1,15 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction.cashPaymentInstructionWith;
+import org.junit.Test;
+import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
 
 import java.util.List;
 
-import org.junit.Test;
-
-import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction.cashPaymentInstructionWith;
+import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest.paymentInstructionRequestWith;
 
 
 public class CashInstructionCrudComponentTest extends ComponentTestBase {
@@ -69,7 +70,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
 
     }
-    
+
 	@Test
 	public void givenCashPaymentInstructionDetails_retrieveOneOfThem() throws Exception {
 		CashPaymentInstruction.CashPaymentInstructionBuilder proposedCashPaymentInstruction = cashPaymentInstructionWith()
@@ -82,7 +83,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 					assertThat(pi.getAmount() == 500);
 				}));
 	}
-	
+
 	@Test
 	public void givenCashPaymentInstructionDetails_retrieveOneOfThemWithWrongId() throws Exception {
 		CashPaymentInstruction.CashPaymentInstructionBuilder proposedCashPaymentInstruction = cashPaymentInstructionWith()
@@ -131,6 +132,56 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
 
     }
+
+
+    @Test
+    public void whenCashPaymentInstructionIsUpdated_expectStatus_200() throws Exception {
+        CashPaymentInstruction.CashPaymentInstructionBuilder  proposedCashPaymentInstruction =cashPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP");
+
+
+        PaymentInstructionRequest request= paymentInstructionRequestWith()
+            .status("P").build();
+
+        restActions
+            .post("/cash",  proposedCashPaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .patch("/payment-instructions/1",request)
+            .andExpect(status().isOk());
+
+
+    }
+
+
+    @Test
+    public void whenNonExistingCashPaymentInstructionIsUpdated_expectStatus_404() throws Exception {
+        CashPaymentInstruction.CashPaymentInstructionBuilder  proposedCashPaymentInstruction =cashPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP");
+
+
+        PaymentInstructionRequest request= paymentInstructionRequestWith()
+            .status("P").build();
+
+        restActions
+            .post("/cash",  proposedCashPaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .patch("/payment-instructions/1000",request)
+            .andExpect(status().isNotFound());
+
+
+    }
+
+
 
 
 }

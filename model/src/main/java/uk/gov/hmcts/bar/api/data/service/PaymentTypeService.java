@@ -23,7 +23,7 @@ public class PaymentTypeService {
     }
 
 
-    public PaymentType getPaymentTypeById(Integer id){
+    public PaymentType getPaymentTypeById(String id){
         return paymentTypeRepository.findOne(id);
     }
 

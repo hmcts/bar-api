@@ -36,8 +36,4 @@ public class ChequePaymentInstruction extends PaymentInstruction {
     }
 
 
-    public String getPaymentType(){
-        return CHEQUE_DISCRIMINATOR_VALUE;
-    }
-
 }

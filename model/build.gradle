@@ -4,5 +4,6 @@ dependencies {
     compile 'com.google.guava:guava'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     compile 'org.hibernate:hibernate-validator'
+    compile 'commons-beanutils:commons-beanutils'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
 }

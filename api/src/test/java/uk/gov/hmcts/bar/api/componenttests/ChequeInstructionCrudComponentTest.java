@@ -1,14 +1,15 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction.chequePaymentInstructionWith;
+import org.junit.Test;
+import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
 
 import java.util.List;
 
-import org.junit.Test;
-
-import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction.chequePaymentInstructionWith;
+import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest.paymentInstructionRequestWith;
 
 
 public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
@@ -85,7 +86,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             }));
 
     }
-    
+
 	@Test
 	public void givenChequePaymentInstructionDetails_retrieveOneOfThem() throws Exception {
 		ChequePaymentInstruction.ChequePaymentInstructionBuilder proposedChequePaymentInstruction = chequePaymentInstructionWith()
@@ -98,7 +99,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 					assertThat(pi.getAmount() == 500);
 				}));
 	}
-	
+
 	@Test
 	public void givenChequePaymentInstructionDetails_retrieveOneOfThemWithWrongId() throws Exception {
 		ChequePaymentInstruction.ChequePaymentInstructionBuilder proposedChequePaymentInstruction = chequePaymentInstructionWith()
@@ -146,6 +147,52 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
 
     }
+
+
+    @Test
+    public void whenChequePaymentInstructionIsUpdated_expectStatus_200() throws Exception {
+        ChequePaymentInstruction.ChequePaymentInstructionBuilder  proposedChequePaymentInstruction =chequePaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .chequeNumber("000000");
+
+        PaymentInstructionRequest request= paymentInstructionRequestWith()
+            .status("P").build();
+
+        restActions
+            .post("/cheques",  proposedChequePaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+        restActions
+            .patch("/payment-instructions/1",request)
+            .andExpect(status().isOk());
+
+
+    }
+
+    @Test
+    public void whenNonExistingChequePaymentInstructionIsUpdated_expectStatus_404() throws Exception {
+        ChequePaymentInstruction.ChequePaymentInstructionBuilder  proposedChequePaymentInstruction =chequePaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .chequeNumber("000000");
+
+        PaymentInstructionRequest request= paymentInstructionRequestWith()
+            .status("P").build();
+
+        restActions
+            .post("/cheques",  proposedChequePaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+        restActions
+            .patch("/payment-instructions/1000",request)
+            .andExpect(status().isNotFound());
+
+
+    }
+
 
 
 }

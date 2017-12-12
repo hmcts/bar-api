@@ -34,7 +34,5 @@ public class AllPayPaymentInstruction extends PaymentInstruction {
         this.allPayTransactionId = allPayTransactionId;
     }
 
-    public String getPaymentType(){
-        return ALLPAY_DISCRIMINATOR_VALUE;
-    }
+
 }

@@ -26,9 +26,6 @@ public class CashPaymentInstruction extends PaymentInstruction {
         super(payerName,amount,currency);
 
     }
-    public String getPaymentType(){
-        return CASH_DISCRIMINATOR_VALUE;
-    }
 
 
 }

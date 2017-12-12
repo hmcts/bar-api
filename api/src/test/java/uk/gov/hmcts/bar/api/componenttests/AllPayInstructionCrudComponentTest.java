@@ -1,14 +1,15 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction.allPayPaymentInstructionWith;
+import org.junit.Test;
+import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
 
 import java.util.List;
 
-import org.junit.Test;
-
-import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction.allPayPaymentInstructionWith;
+import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest.paymentInstructionRequestWith;
 
 public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
@@ -82,7 +83,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             }));
 
     }
-    
+
 	@Test
 	public void givenAllPayPaymentInstructionDetails_retrieveOneOfThem() throws Exception {
 		AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
@@ -95,7 +96,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 					assertThat(pi.getAmount() == 500);
 				}));
 	}
-	
+
 	@Test
 	public void givenAllPayPaymentInstructionDetails_retrieveOneOfThemWithWrongId() throws Exception {
 		AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
@@ -143,6 +144,53 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isNoContent());
 
     }
+
+
+    @Test
+    public void whenAllPayPaymentInstructionIsSubmitted_expectStatus_200() throws Exception {
+        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .allPayTransactionId("12345");
+
+        PaymentInstructionRequest request= paymentInstructionRequestWith()
+            .status("P").build();
+
+        restActions
+            .post("/allpay",  proposedAllPayPaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .patch("/payment-instructions/1",request)
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void whenNonExistingAllPayPaymentInstructionIsUpdated_expectStatus_404() throws Exception {
+        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .allPayTransactionId("12345");
+
+        PaymentInstructionRequest request= paymentInstructionRequestWith()
+            .status("P").build();
+
+        restActions
+            .post("/allpay",  proposedAllPayPaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .patch("/payment-instructions/1000",request)
+            .andExpect(status().isNotFound());
+    }
+
+
+
+
 
 
 }

@@ -3,8 +3,6 @@ package uk.gov.hmcts.bar.api.data.model;
 import lombok.*;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Data
@@ -15,8 +13,7 @@ import javax.persistence.Id;
 public class PaymentType{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id;
     @NonNull
     private String name;
 
