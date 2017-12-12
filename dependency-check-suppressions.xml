@@ -99,5 +99,11 @@
 
         <cve>CVE-2016-5425</cve>
     </suppress>
+    <suppress>
+        <notes>We are not using RedHat</notes>
+
+        <cve>CVE-2017-8806</cve>
+    </suppress>
+
 
 </suppressions>
