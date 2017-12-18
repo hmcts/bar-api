@@ -8,6 +8,10 @@ import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 
 public class PaymentInstructionControllerHelper {
 	
+	private PaymentInstructionControllerHelper() {
+		
+	}
+	
 	public static List<PaymentInstruction> updateStatusDisplayValue(final List<PaymentInstruction> paymentInstructions) {
 		return paymentInstructions.stream().map(paymentInstruction -> {
 			paymentInstruction

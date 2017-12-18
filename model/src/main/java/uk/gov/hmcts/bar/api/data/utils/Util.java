@@ -7,6 +7,10 @@ import java.beans.FeatureDescriptor;
 import java.util.stream.Stream;
 
 public class Util {
+	
+	private Util() {
+		
+	}
 
     public static String[] getNullPropertyNames(Object source) {
         final BeanWrapper wrappedSource = new BeanWrapperImpl(source);

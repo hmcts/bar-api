@@ -1,27 +1,41 @@
 package uk.gov.hmcts.bar.api.controllers.payment;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import java.util.Date;
+import java.util.List;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import uk.gov.hmcts.bar.api.controllers.helper.PaymentInstructionControllerHelper;
-import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
-import uk.gov.hmcts.bar.api.data.model.*;
-import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.util.Date;
-import java.util.List;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import uk.gov.hmcts.bar.api.controllers.helper.PaymentInstructionControllerHelper;
+import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
+import uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
 
 @RestController
 @Validated
 public class PaymentInstructionController {
-
+	
     private final PaymentInstructionService paymentInstructionService;
 
     @Autowired
@@ -66,13 +80,8 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/payment-instructions/{id}")
     public ResponseEntity<?> deletePaymentInstruction(@PathVariable("id") Integer id) {
-        try {
-            paymentInstructionService.deletePaymentInstruction(id);
-        } catch (PaymentInstructionNotFoundException pinfe) {
-
-        }
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
+    		paymentInstructionService.deletePaymentInstruction(id);
+        return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
     }
 
     @ApiOperation(value = "Create cheque payment instruction", notes = "Create cheque payment instruction with the given values.")
@@ -129,15 +138,10 @@ public class PaymentInstructionController {
     @PatchMapping("/payment-instructions/{id}")
     public ResponseEntity<?> submitPaymentInstructionsByPostClerk(@PathVariable("id") Integer id,
                                                                   @RequestBody PaymentInstructionRequest paymentInstructionRequest) {
-        if (null == paymentInstructionRequest)
+        if (null == paymentInstructionRequest) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        PaymentInstruction updatedPaymentInstruction =null;
-        try {
-            updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(id, paymentInstructionRequest);
         }
-        catch(PaymentInstructionNotFoundException pinfe){
-            return new ResponseEntity<> (HttpStatus.NOT_FOUND);
-        }
+        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(id, paymentInstructionRequest);
         return new ResponseEntity<PaymentInstruction>(updatedPaymentInstruction, HttpStatus.OK);
     }
 }

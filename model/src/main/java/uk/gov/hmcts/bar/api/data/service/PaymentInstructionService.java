@@ -1,13 +1,25 @@
 package uk.gov.hmcts.bar.api.data.service;
 
 
-import com.google.common.collect.Lists;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
+
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
@@ -17,17 +29,12 @@ import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionsSpecifications;
 import uk.gov.hmcts.bar.api.data.utils.Util;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
 
 @Service
 @Transactional
 public class PaymentInstructionService {
+	
+	private static final Logger LOG = getLogger(PaymentInstructionService.class);
 
     private static final String SITE_ID="BR01";
     private static final int PAGE_NUMBER = 0;
@@ -88,6 +95,7 @@ public class PaymentInstructionService {
             paymentInstructionRepository.delete(id);
         }
         catch (EmptyResultDataAccessException erdae){
+        		LOG.error("Resource not found: "+erdae.getMessage());
             throw new PaymentInstructionNotFoundException(id);
         }
 
