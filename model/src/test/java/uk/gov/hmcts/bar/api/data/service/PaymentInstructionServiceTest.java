@@ -1,27 +1,44 @@
 package uk.gov.hmcts.bar.api.data.service;
 
-import com.google.common.collect.Lists;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.mockito.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specifications;
-import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
-import uk.gov.hmcts.bar.api.data.model.*;
-import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
-import uk.gov.hmcts.bar.api.data.utils.Util;
-
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specifications;
+
+import com.google.common.collect.Lists;
+
+import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
+import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentReference;
+import uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
+import uk.gov.hmcts.bar.api.data.utils.Util;
 
 @SuppressWarnings("unchecked")
 public class PaymentInstructionServiceTest {
@@ -46,7 +63,7 @@ public class PaymentInstructionServiceTest {
 
     @Mock
     private PaymentInstruction paymentInstructionMock;
-
+    
     @Mock
     private ChequePaymentInstruction chequePaymentInstructionMock;
 
@@ -65,6 +82,8 @@ public class PaymentInstructionServiceTest {
 
     @Mock
     private Util utilMock;
+    
+    private String[] propertyNames = {"chequeNumber"};
 
     private PaymentInstructionService paymentInstructionService;
 
@@ -262,8 +281,10 @@ public class PaymentInstructionServiceTest {
     @Test
     public void shouldReturnUpdatedPaymentInstruction_whenUpdatePaymentInstructionForGivenPaymentInstructionIsCalled() throws Exception {
 
-        when(paymentInstructionRepository.findOne(anyInt())).thenReturn(paymentInstructionMock);
+        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(paymentInstructionMock));
         when(paymentInstructionRepository.saveAndFlush(any(PaymentInstruction.class))).thenReturn(paymentInstructionMock);
+     //   when(paymentInstructionServiceMock.updatePaymentInstruction(1,paymentRequestMock)).thenReturn(paymentInstructionMock);
+        when(Util.getNullPropertyNames(paymentRequestMock)).thenReturn(propertyNames);
         PaymentInstruction updatedPaymentInstruction = paymentInstructionServiceMock.updatePaymentInstruction(1,paymentRequestMock);
         verify(paymentInstructionRepository, times(1)).saveAndFlush(paymentInstructionMock);
         verify(paymentInstructionRepository, times(1)).refresh(paymentInstructionMock);

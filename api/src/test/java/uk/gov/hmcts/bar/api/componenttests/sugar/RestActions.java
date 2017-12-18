@@ -1,13 +1,13 @@
 package uk.gov.hmcts.bar.api.componenttests.sugar;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RestActions {
     private final HttpHeaders httpHeaders = new HttpHeaders();
@@ -65,8 +65,8 @@ public class RestActions {
                 .delete(urlTemplate, uriVars)
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .headers(httpHeaders))
-                .andExpect(status().isNoContent());
+                .headers(httpHeaders)
+            	    .content(objectMapper.writeValueAsString(uriVars)));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

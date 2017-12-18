@@ -2,6 +2,7 @@ package uk.gov.hmcts.bar.api.data.exceptions;
 
 import lombok.Getter;
 
+@SuppressWarnings("serial")
 @Getter
 public class ResourceNotFoundException extends RuntimeException {
     private final String resourceName;
@@ -12,5 +13,10 @@ public class ResourceNotFoundException extends RuntimeException {
         this.resourceName = resourceName;
         this.idName = idName;
         this.idValue = idValue;
+    }
+    
+    @Override
+    public String getMessage() {
+    		return resourceName+": "+idName+" = "+idValue;
     }
 }

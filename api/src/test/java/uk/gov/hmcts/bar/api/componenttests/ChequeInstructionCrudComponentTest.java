@@ -143,7 +143,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
         restActions
             .delete("/payment-instructions/1000")
-            .andExpect(status().isNoContent());
+            .andExpect(status().isNotFound());
 
 
     }
