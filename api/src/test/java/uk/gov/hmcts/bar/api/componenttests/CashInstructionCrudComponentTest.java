@@ -1,6 +1,7 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Test;
+import uk.gov.hmcts.bar.api.data.model.CaseReference;
 import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
 
@@ -8,9 +9,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.bar.api.data.model.CaseReference.caseReferenceWith;
 import static uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction.cashPaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest.paymentInstructionRequestWith;
-
 
 public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
@@ -181,7 +182,28 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
     }
 
+    @Test
+    public void whenCaseReferenceForACashPaymentInstructionIsCreated_expectStatus_201() throws Exception {
+        CashPaymentInstruction.CashPaymentInstructionBuilder  proposedCashPaymentInstruction =cashPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP");
 
+        CaseReference caseReference = caseReferenceWith()
+            .caseReference("case102")
+            .build();
+
+        restActions
+            .post("/cash",  proposedCashPaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .post("/payment-instructions/1/cases",caseReference)
+            .andExpect(status().isCreated());
+
+
+    }
 
 
 }

@@ -7,6 +7,13 @@ import java.io.Serializable;
 
 @NoRepositoryBean
 public interface BaseRepository<T,ID extends Serializable> extends JpaRepository<T,ID> {
+
+    default T saveAndRefresh(T t) {
+        saveAndFlush(t);
+        refresh(t);
+        return t;
+    }
+
     void refresh(T t);
 }
 

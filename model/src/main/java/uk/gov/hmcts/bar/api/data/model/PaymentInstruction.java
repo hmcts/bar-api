@@ -2,6 +2,7 @@ package uk.gov.hmcts.bar.api.data.model;
 
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -15,6 +16,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @Entity
@@ -22,6 +24,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@JsonIgnoreProperties(value={ "case_references" }, allowGetters=true)
 @DiscriminatorColumn(name = "payment_type_id")
 public class PaymentInstruction {
 
@@ -66,5 +69,17 @@ public class PaymentInstruction {
     @JoinColumn(name="payment_type_id",referencedColumnName="id",insertable=false, updatable=false)
     @JsonProperty(access= JsonProperty.Access.READ_ONLY)
     private PaymentType paymentType;
+
+
+    @ManyToMany(fetch = FetchType.EAGER,cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(
+        name = "payment_instruction_case_reference",
+        joinColumns = @JoinColumn(name = "payment_instruction_id",referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "case_reference_id", referencedColumnName = "id")
+    )
+    @JsonProperty(access= JsonProperty.Access.READ_ONLY)
+    @OrderBy("id")
+    private Set<CaseReference> caseReferences;
+
 
 }

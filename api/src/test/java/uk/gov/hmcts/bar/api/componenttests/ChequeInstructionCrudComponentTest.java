@@ -1,6 +1,7 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Test;
+import uk.gov.hmcts.bar.api.data.model.CaseReference;
 import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
 
@@ -8,10 +9,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.bar.api.data.model.CaseReference.caseReferenceWith;
 import static uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction.chequePaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest.paymentInstructionRequestWith;
-
-
 public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
 
@@ -189,6 +189,30 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
         restActions
             .patch("/payment-instructions/1000",request)
             .andExpect(status().isNotFound());
+
+
+    }
+
+    @Test
+    public void whenCaseReferenceForAChequePaymentInstructionIsCreated_expectStatus_201() throws Exception {
+        ChequePaymentInstruction.ChequePaymentInstructionBuilder  proposedChequePaymentInstruction =chequePaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .chequeNumber("000000");
+
+        CaseReference caseReference = caseReferenceWith()
+            .caseReference("case102")
+            .build();
+
+        restActions
+            .post("/cheques",  proposedChequePaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .post("/payment-instructions/1/cases",caseReference)
+            .andExpect(status().isCreated());
 
 
     }

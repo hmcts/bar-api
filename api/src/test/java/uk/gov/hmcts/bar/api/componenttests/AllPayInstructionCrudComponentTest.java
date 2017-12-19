@@ -2,6 +2,7 @@ package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Test;
 import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.CaseReference;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction.allPayPaymentInstructionWith;
+import static uk.gov.hmcts.bar.api.data.model.CaseReference.caseReferenceWith;
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest.paymentInstructionRequestWith;
 
 public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
@@ -189,8 +191,29 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
     }
 
 
+    @Test
+    public void whenCaseReferenceForAllPayPaymentInstructionIsCreated_expectStatus_201() throws Exception {
+        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .allPayTransactionId("12345");
+
+        CaseReference caseReference = caseReferenceWith()
+            .caseReference("case102")
+            .build();
+
+        restActions
+            .post("/allpay",  proposedAllPayPaymentInstruction.build())
+            .andExpect(status().isCreated());
 
 
+        restActions
+            .post("/payment-instructions/1/cases",caseReference)
+            .andExpect(status().isCreated());
+
+
+    }
 
 
 }

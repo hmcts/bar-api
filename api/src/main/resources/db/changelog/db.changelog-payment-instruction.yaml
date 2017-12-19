@@ -188,3 +188,53 @@ databaseChangeLog:
             referencedColumnNames: id
             referencedTableName: payment_type
 
+  - changeSet:
+      id: 5
+      author: sachi
+      changes:
+         - dropColumn:
+            columnName: sort_code
+            tableName: payment_instruction
+         - dropColumn:
+            columnName: account_number
+            tableName: payment_instruction
+
+         - createTable:
+            tableName: case_reference
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: case_reference
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+         - addUniqueConstraint:
+            columnNames: case_reference
+            tableName: case_reference
+
+
+         - createTable:
+            tableName: payment_instruction_case_reference
+            columns:
+              - column:
+                  name: payment_instruction_id
+                  type: int
+                  constraints:
+                    foreignKeyName: fk_payment_instruction_id
+                    references: payment_instruction(id)
+              - column:
+                  name: case_reference_id
+                  type: int
+                  constraints:
+                    foreignKeyName: fk_case_reference_id
+                    references: case_reference(id)
+         - addUniqueConstraint:
+            columnNames: payment_instruction_id, case_reference_id
+            tableName: payment_instruction_case_reference
+

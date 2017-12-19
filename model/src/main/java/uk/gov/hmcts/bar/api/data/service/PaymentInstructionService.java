@@ -1,7 +1,20 @@
 package uk.gov.hmcts.bar.api.data.service;
 
 
-import static org.slf4j.LoggerFactory.getLogger;
+import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.springframework.beans.BeanUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
+import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
+import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
+import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionsSpecifications;
+import uk.gov.hmcts.bar.api.data.utils.Util;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -10,30 +23,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.springframework.beans.BeanUtils;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Lists;
-
-import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
-import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
-import uk.gov.hmcts.bar.api.data.model.PaymentReference;
-import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
-import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionsSpecifications;
-import uk.gov.hmcts.bar.api.data.utils.Util;
+import static org.slf4j.LoggerFactory.getLogger;
 
 
 @Service
 @Transactional
 public class PaymentInstructionService {
-	
+
 	private static final Logger LOG = getLogger(PaymentInstructionService.class);
 
     private static final String SITE_ID="BR01";
@@ -41,11 +37,13 @@ public class PaymentInstructionService {
     private static final int MAX_RECORDS_PER_PAGE = 200;
     private PaymentInstructionRepository paymentInstructionRepository;
     private PaymentReferenceService paymentReferenceService;
+    private CaseReferenceService caseReferenceService;
 
 
-    public PaymentInstructionService(PaymentReferenceService paymentReferenceService,
+    public PaymentInstructionService(PaymentReferenceService paymentReferenceService,CaseReferenceService caseReferenceService,
                                      PaymentInstructionRepository paymentInstructionRepository) {
         this.paymentReferenceService = paymentReferenceService;
+        this.caseReferenceService = caseReferenceService;
         this.paymentInstructionRepository = paymentInstructionRepository;
 
     }
@@ -55,9 +53,24 @@ public class PaymentInstructionService {
         PaymentReference nextPaymentReference = paymentReferenceService.getNextPaymentReferenceSequenceBySite(SITE_ID);
         paymentInstruction.setSiteId(SITE_ID);
         paymentInstruction.setDailySequenceId(nextPaymentReference.getDailySequenceId());
-        paymentInstructionRepository.saveAndFlush(paymentInstruction);
-        paymentInstructionRepository.refresh(paymentInstruction);
-        return paymentInstruction;
+        return paymentInstructionRepository.saveAndRefresh(paymentInstruction);
+    }
+
+    public PaymentInstruction createCaseReference(Integer paymentInstructionId, CaseReferenceRequest caseReferenceRequest) {
+
+        Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(paymentInstructionId);
+        PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
+            .orElseThrow(() -> new PaymentInstructionNotFoundException(paymentInstructionId));
+
+        Optional<CaseReference> optionalCaseReference = caseReferenceService.getCaseReference(caseReferenceRequest.getCaseReference());
+        if (optionalCaseReference.isPresent())
+        {
+            existingPaymentInstruction.getCaseReferences().add(optionalCaseReference.get());
+        }
+        else{
+            existingPaymentInstruction.getCaseReferences().add(caseReferenceService.saveCaseReference(caseReferenceRequest.getCaseReference()));
+        }
+        return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
     }
 
 
@@ -95,7 +108,7 @@ public class PaymentInstructionService {
             paymentInstructionRepository.delete(id);
         }
         catch (EmptyResultDataAccessException erdae){
-        		LOG.error("Resource not found: "+erdae.getMessage());
+        		LOG.error("Resource not found: "+erdae.getMessage(),erdae);
             throw new PaymentInstructionNotFoundException(id);
         }
 
@@ -103,15 +116,11 @@ public class PaymentInstructionService {
 
     public PaymentInstruction updatePaymentInstruction(Integer id,PaymentInstructionRequest paymentInstructionRequest) {
         Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
-        if(!optionalPaymentInstruction.isPresent()){
-            throw new PaymentInstructionNotFoundException(id);
-        }
-        PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction.get();
-        String [] nullPropertiesNamesToIgnore = Util.getNullPropertyNames(paymentInstructionRequest);
+        PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
+            .orElseThrow(() -> new PaymentInstructionNotFoundException(id));
+        String [] nullPropertiesNamesToIgnore = new Util().getNullPropertyNames(paymentInstructionRequest);
         BeanUtils.copyProperties(paymentInstructionRequest,existingPaymentInstruction,nullPropertiesNamesToIgnore);
-        paymentInstructionRepository.saveAndFlush(existingPaymentInstruction);
-        paymentInstructionRepository.refresh(existingPaymentInstruction);
-        return existingPaymentInstruction;
+        return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
     }
 
 

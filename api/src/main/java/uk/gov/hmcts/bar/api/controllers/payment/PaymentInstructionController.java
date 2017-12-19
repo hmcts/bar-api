@@ -1,41 +1,26 @@
 package uk.gov.hmcts.bar.api.controllers.payment;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.validation.Valid;
-
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.bar.api.controllers.helper.PaymentInstructionControllerHelper;
-import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
-import uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
+
+import javax.validation.Valid;
+import java.util.Date;
+import java.util.List;
 
 @RestController
 @Validated
 public class PaymentInstructionController {
-	
+
     private final PaymentInstructionService paymentInstructionService;
 
     @Autowired
@@ -144,4 +129,17 @@ public class PaymentInstructionController {
         PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(id, paymentInstructionRequest);
         return new ResponseEntity<PaymentInstruction>(updatedPaymentInstruction, HttpStatus.OK);
     }
+
+    @ApiOperation(value = "Create case reference for a payment instruction", notes = "Create case reference for a payment instruction.")
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "Case reference for a payment instruction created"),
+        @ApiResponse(code = 400, message = "Bad request"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/payment-instructions/{id}/cases")
+    public PaymentInstruction saveCaseReference(
+        @PathVariable("id") Integer id, @RequestBody CaseReferenceRequest caseReferenceRequest) {
+        return paymentInstructionService.createCaseReference(id,caseReferenceRequest);
+    }
+
+
 }

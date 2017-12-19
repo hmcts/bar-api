@@ -7,12 +7,12 @@ import java.beans.FeatureDescriptor;
 import java.util.stream.Stream;
 
 public class Util {
-	
-	private Util() {
-		
+
+	public Util() {
+
 	}
 
-    public static String[] getNullPropertyNames(Object source) {
+    public  static String[] getNullPropertyNames(Object source) {
         final BeanWrapper wrappedSource = new BeanWrapperImpl(source);
         return Stream.of(wrappedSource.getPropertyDescriptors())
             .map(FeatureDescriptor::getName)
