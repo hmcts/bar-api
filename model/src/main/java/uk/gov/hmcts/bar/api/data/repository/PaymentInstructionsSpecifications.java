@@ -15,9 +15,8 @@ import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 
 public class PaymentInstructionsSpecifications {
 
-	private static final String SITE_ID = "BR01";
-
 	private String status = null;
+	private String siteId = null;
 	private LocalDateTime startDate = null;
 	private LocalDateTime endDate = null;
 	protected Specification<PaymentInstruction> statusSpec = null;
@@ -25,10 +24,11 @@ public class PaymentInstructionsSpecifications {
 	protected Specification<PaymentInstruction> endDateSpec = null;
 	protected Specification<PaymentInstruction> siteIdSpec = null;
 
-	public PaymentInstructionsSpecifications(String status, LocalDateTime startDate, LocalDateTime endDate) {
+	public PaymentInstructionsSpecifications(String status, LocalDateTime startDate, LocalDateTime endDate, String siteId) {
 		this.status = status;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.siteId = siteId;
 
 		statusSpec = new StatusSpec();
 		startDateSpec = new StartDateSpec();
@@ -61,8 +61,8 @@ public class PaymentInstructionsSpecifications {
 
 			Predicate predicate = null;
 
-			if (startDate != null) {
-				predicate = builder.equal(root.<String>get("siteId"), SITE_ID);
+			if (siteId != null) {
+				predicate = builder.equal(root.<String>get("siteId"), siteId);
 			}
 			return predicate;
 		}

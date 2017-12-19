@@ -28,7 +28,7 @@ subprojects {
 
     sonarqube {
         properties {
-            property "sonar.exclusions", "**/**/data/model/*.java,**/BarServiceApplication.java,**/Error.java,**/ResourceNotFoundException.java,**/*Configuration.java"
+            property "sonar.exclusions", "**/**/data/model/*.java,**/BarServiceApplication.java,**/Error.java,**/ResourceNotFoundException.java,**/*Configuration.java,**/BaseRepository.java"
         }
     }
 
