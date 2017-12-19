@@ -6,11 +6,7 @@ import org.springframework.beans.BeanWrapperImpl;
 import java.beans.FeatureDescriptor;
 import java.util.stream.Stream;
 
-public class Util {
-
-	public Util() {
-
-	}
+public interface Util {
 
     public  static String[] getNullPropertyNames(Object source) {
         final BeanWrapper wrappedSource = new BeanWrapperImpl(source);

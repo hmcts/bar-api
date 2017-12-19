@@ -91,7 +91,7 @@ public class PaymentInstructionService {
 		}
 
 		PaymentInstructionsSpecifications paymentInstructionsSpecification = new PaymentInstructionsSpecifications(
-				status, paramStartDate, paramEndDate);
+				status, paramStartDate, paramEndDate, SITE_ID);
 		Pageable pageDetails = new PageRequest(PAGE_NUMBER, MAX_RECORDS_PER_PAGE);
 
 		return Lists.newArrayList(paymentInstructionRepository
@@ -118,7 +118,7 @@ public class PaymentInstructionService {
         Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
         PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
             .orElseThrow(() -> new PaymentInstructionNotFoundException(id));
-        String [] nullPropertiesNamesToIgnore = new Util().getNullPropertyNames(paymentInstructionRequest);
+        String [] nullPropertiesNamesToIgnore = Util.getNullPropertyNames(paymentInstructionRequest);
         BeanUtils.copyProperties(paymentInstructionRequest,existingPaymentInstruction,nullPropertiesNamesToIgnore);
         return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
     }
