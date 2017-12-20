@@ -50,12 +50,12 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/payment-instructions/{id}")
-    public ResponseEntity<?> getPaymentInstruction(@PathVariable("id") Integer id) {
+    public ResponseEntity<PaymentInstruction> getPaymentInstruction(@PathVariable("id") Integer id) {
         PaymentInstruction paymentInstruction = paymentInstructionService.getPaymentInstruction(id);
         if (paymentInstruction == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<PaymentInstruction>(paymentInstruction, HttpStatus.OK);
+        return new ResponseEntity<>(paymentInstruction, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Delete payment instruction", notes = "Delete payment instruction with the given id.")
@@ -64,9 +64,8 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/payment-instructions/{id}")
-    public ResponseEntity<?> deletePaymentInstruction(@PathVariable("id") Integer id) {
+    public void deletePaymentInstruction(@PathVariable("id") Integer id) {
     		paymentInstructionService.deletePaymentInstruction(id);
-        return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
     }
 
     @ApiOperation(value = "Create cheque payment instruction", notes = "Create cheque payment instruction with the given values.")
@@ -121,13 +120,13 @@ public class PaymentInstructionController {
     })
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/payment-instructions/{id}")
-    public ResponseEntity<?> submitPaymentInstructionsByPostClerk(@PathVariable("id") Integer id,
+    public ResponseEntity<PaymentInstruction> submitPaymentInstructionsByPostClerk(@PathVariable("id") Integer id,
                                                                   @RequestBody PaymentInstructionRequest paymentInstructionRequest) {
         if (null == paymentInstructionRequest) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(id, paymentInstructionRequest);
-        return new ResponseEntity<PaymentInstruction>(updatedPaymentInstruction, HttpStatus.OK);
+        return new ResponseEntity<>(updatedPaymentInstruction, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Create case reference for a payment instruction", notes = "Create case reference for a payment instruction.")

@@ -20,9 +20,9 @@ public class SearchCriteriaRequest {
     private String chequeNumber;
     private String postalOrderNumer;
     private String status;
-    @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
+    @Convert(converter = Jsr310JpaConverters.LocalDateConverter.class)
     private LocalDate fromDate;
-    @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
+    @Convert(converter = Jsr310JpaConverters.LocalDateConverter.class)
     private LocalDate toDate;
 
 }
