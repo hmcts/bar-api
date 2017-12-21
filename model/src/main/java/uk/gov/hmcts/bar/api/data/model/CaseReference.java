@@ -12,6 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 @Data
 @Entity
@@ -23,6 +25,9 @@ public class CaseReference {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @NotNull
+    @Pattern(regexp ="^[a-zA-Z0-9]{1,10}",message = "invalid case reference number")
     private String caseReference;
 
     @Builder(builderMethodName = "caseReferenceWith")

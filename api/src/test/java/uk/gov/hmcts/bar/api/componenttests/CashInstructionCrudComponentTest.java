@@ -204,6 +204,29 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
 
     }
+    @Test
+    public void whenInvalidCaseReferenceForACashPaymentInstructionIsCreated_expectStatus_201() throws Exception {
+        CashPaymentInstruction.CashPaymentInstructionBuilder  proposedCashPaymentInstruction =cashPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP");
+
+        CaseReference caseReference = caseReferenceWith()
+            .caseReference("????????")
+            .build();
+
+        restActions
+            .post("/cash",  proposedCashPaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .post("/payment-instructions/1/cases",caseReference)
+            .andExpect(status().isBadRequest());
+
+
+    }
+
 
 
 }

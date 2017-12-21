@@ -65,6 +65,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
         ;
     }
 
+
     @Test
     public void givenAllPayPaymentInstructionDetails_retrieveThem() throws Exception {
         AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
@@ -214,6 +215,32 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
 
     }
+
+    @Test
+    public void whenInvalidCaseReferenceForAllPayPaymentInstructionIsCreated_expectStatus_400() throws Exception {
+        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .allPayTransactionId("12345");
+
+        CaseReference caseReference = caseReferenceWith()
+            .caseReference("<><><><>")
+            .build();
+
+        restActions
+            .post("/allpay",  proposedAllPayPaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .post("/payment-instructions/1/cases",caseReference)
+            .andExpect(status().isBadRequest());
+
+
+    }
+
+
 
 
 }

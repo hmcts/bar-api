@@ -218,6 +218,31 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
     }
 
 
+    @Test
+    public void whenInvalidCaseReferenceForAChequePaymentInstructionIsCreated_expectStatus_201() throws Exception {
+        ChequePaymentInstruction.ChequePaymentInstructionBuilder  proposedChequePaymentInstruction =chequePaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .chequeNumber("000000");
+
+        CaseReference caseReference = caseReferenceWith()
+            .caseReference("?????^^^^11")
+            .build();
+
+        restActions
+            .post("/cheques",  proposedChequePaymentInstruction.build())
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .post("/payment-instructions/1/cases",caseReference)
+            .andExpect(status().isBadRequest());
+
+
+    }
+
+
 
 }
 
