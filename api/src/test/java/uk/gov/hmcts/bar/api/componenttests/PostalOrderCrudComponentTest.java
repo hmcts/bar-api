@@ -222,10 +222,29 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
     }
 
 
+    @Test
+    public void whenInvalidCaseReferenceForAChequePaymentInstructionIsCreated_expectStatus_201() throws Exception {
+        PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .postalOrderNumber("000000");
+
+        CaseReference caseReference = caseReferenceWith()
+            .caseReference("@@@@@@@@@@@@@@@@")
+            .build();
+
+        restActions
+            .post("/postal-orders",  proposedPostalOrderPaymentInstruction.build())
+            .andExpect(status().isCreated());
 
 
+        restActions
+            .post("/payment-instructions/1/cases",caseReference)
+            .andExpect(status().isBadRequest());
 
 
+    }
 
 
 }
