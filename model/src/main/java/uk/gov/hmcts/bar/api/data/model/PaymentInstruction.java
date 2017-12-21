@@ -51,6 +51,12 @@ public class PaymentInstruction {
     private String siteId;
     @JsonProperty(access= JsonProperty.Access.READ_ONLY)
     private int dailySequenceId;
+    @Pattern(regexp ="^\\d{1,20}$",message = "invalid all pay transaction id")
+    private String allPayTransactionId;
+    @Pattern(regexp ="^\\d{6,6}$",message = "invalid cheque number")
+    private String chequeNumber;
+    @Pattern(regexp = "^\\d{6,6}$", message = "invalid postal order number")
+    protected String postalOrderNumber;
 
 
     public PaymentInstruction(String payerName, Integer amount, String currency) {

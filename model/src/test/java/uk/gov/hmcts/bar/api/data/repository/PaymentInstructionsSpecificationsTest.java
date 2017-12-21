@@ -4,7 +4,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -19,10 +21,10 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.jpa.domain.Specification;
 
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto.PaymentInstructionSearchCriteriaDtoBuilder;
 
 public class PaymentInstructionsSpecificationsTest {
-	
-	private static final String SITE_ID = "BR01";
 	
 	@Mock
 	private CriteriaBuilder builder;
@@ -47,10 +49,15 @@ public class PaymentInstructionsSpecificationsTest {
         MockitoAnnotations.initMocks(this);
 	}
 	
+	private PaymentInstructionSearchCriteriaDtoBuilder paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto
+			.searchCriteriaRequestWith().siteId("BR01");
+	
 	@Test
 	public void shouldReturnAllSpecs_whenAllParamsAreProvided() {
-		PaymentInstructionsSpecifications paymentInstructionsSpecifications = new PaymentInstructionsSpecifications("D",
-				LocalDateTime.now(), LocalDateTime.now(), SITE_ID);
+		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
+				.status("D").startDate(LocalDate.now().atStartOfDay()).endDate(LocalDate.now().atTime(LocalTime.now()))
+				.build();
+		PaymentInstructionsSpecifications paymentInstructionsSpecifications = new PaymentInstructionsSpecifications(paymentInstructionSearchCriteriaDto);
 		Specification<PaymentInstruction> piSpec = paymentInstructionsSpecifications
 				.getPaymentInstructionsSpecification();
 		assertNotNull(piSpec);
@@ -121,8 +128,9 @@ public class PaymentInstructionsSpecificationsTest {
 	
 	@Test
 	public void testPaymentInstructionsSpecificationsWithOnlyStatus() {
-		PaymentInstructionsSpecifications paymentInstructionsSpecifications = new PaymentInstructionsSpecifications("D",
-				null, null, SITE_ID);
+		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
+				.status("D").build();
+		PaymentInstructionsSpecifications paymentInstructionsSpecifications = new PaymentInstructionsSpecifications(paymentInstructionSearchCriteriaDto);
 		Specification<PaymentInstruction> piSpec = paymentInstructionsSpecifications
 				.getPaymentInstructionsSpecification();
 		assertNotNull(piSpec);
@@ -130,8 +138,10 @@ public class PaymentInstructionsSpecificationsTest {
 
 	@Test
 	public void testPaymentInstructionsSpecificationsWithOnlyStartDate() {
+		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
+				.startDate(LocalDate.now().atStartOfDay()).build();
 		PaymentInstructionsSpecifications paymentInstructionsSpecifications = new PaymentInstructionsSpecifications(
-				null, LocalDateTime.now(), null, SITE_ID);
+				paymentInstructionSearchCriteriaDto);
 		Specification<PaymentInstruction> piSpec = paymentInstructionsSpecifications
 				.getPaymentInstructionsSpecification();
 		assertNotNull(piSpec);
@@ -139,8 +149,10 @@ public class PaymentInstructionsSpecificationsTest {
 
 	@Test
 	public void testPaymentInstructionsSpecificationsWithOnlyEndDate() {
+		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
+				.endDate(LocalDate.now().atTime(LocalTime.now())).build();
 		PaymentInstructionsSpecifications paymentInstructionsSpecifications = new PaymentInstructionsSpecifications(
-				null, null, LocalDateTime.now(), SITE_ID);
+				paymentInstructionSearchCriteriaDto);
 		Specification<PaymentInstruction> piSpec = paymentInstructionsSpecifications
 				.getPaymentInstructionsSpecification();
 		assertNotNull(piSpec);
@@ -148,8 +160,9 @@ public class PaymentInstructionsSpecificationsTest {
 
 	@Test
 	public void testPaymentInstructionsSpecificationsWithStatusAndStartDate() {
-		PaymentInstructionsSpecifications paymentInstructionsSpecifications = new PaymentInstructionsSpecifications("D",
-				LocalDateTime.now(), null, SITE_ID);
+		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
+				.status("D").startDate(LocalDate.now().atStartOfDay()).build();
+		PaymentInstructionsSpecifications paymentInstructionsSpecifications = new PaymentInstructionsSpecifications(paymentInstructionSearchCriteriaDto);
 		Specification<PaymentInstruction> piSpec = paymentInstructionsSpecifications
 				.getPaymentInstructionsSpecification();
 		assertNotNull(piSpec);
@@ -157,8 +170,9 @@ public class PaymentInstructionsSpecificationsTest {
 
 	@Test
 	public void testPaymentInstructionsSpecificationsWithStatusAndEndDate() {
-		PaymentInstructionsSpecifications paymentInstructionsSpecifications = new PaymentInstructionsSpecifications("D",
-				null, LocalDateTime.now(), SITE_ID);
+		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
+				.status("D").endDate(LocalDate.now().atTime(LocalTime.now())).build();
+		PaymentInstructionsSpecifications paymentInstructionsSpecifications = new PaymentInstructionsSpecifications(paymentInstructionSearchCriteriaDto);
 		Specification<PaymentInstruction> piSpec = paymentInstructionsSpecifications
 				.getPaymentInstructionsSpecification();
 		assertNotNull(piSpec);
@@ -166,8 +180,10 @@ public class PaymentInstructionsSpecificationsTest {
 
 	@Test
 	public void testPaymentInstructionsSpecificationsWithStartDateAndEndDate() {
+		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
+				.startDate(LocalDate.now().atStartOfDay()).endDate(LocalDate.now().atTime(LocalTime.now())).build();
 		PaymentInstructionsSpecifications paymentInstructionsSpecifications = new PaymentInstructionsSpecifications(
-				null, LocalDateTime.now(), LocalDateTime.now(), SITE_ID);
+				paymentInstructionSearchCriteriaDto);
 		Specification<PaymentInstruction> piSpec = paymentInstructionsSpecifications
 				.getPaymentInstructionsSpecification();
 		assertNotNull(piSpec);
@@ -184,7 +200,9 @@ public class PaymentInstructionsSpecificationsTest {
 
 	private Specification<PaymentInstruction> getStatusSpec(String status, LocalDateTime startDate,
 			LocalDateTime endDate) {
-		return new PaymentInstructionsSpecifications(status, startDate, endDate, SITE_ID) {
+		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
+				.status(status).startDate(startDate).endDate(endDate).build();
+		return new PaymentInstructionsSpecifications(paymentInstructionSearchCriteriaDto) {
 			public Specification<PaymentInstruction> getStatusSpec() {
 				return this.statusSpec;
 			}
@@ -193,7 +211,9 @@ public class PaymentInstructionsSpecificationsTest {
 
 	private Specification<PaymentInstruction> getStartDateSpec(String status, LocalDateTime startDate,
 			LocalDateTime endDate) {
-		return new PaymentInstructionsSpecifications(status, startDate, endDate, SITE_ID) {
+		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
+				.status(status).startDate(startDate).endDate(endDate).build();
+		return new PaymentInstructionsSpecifications(paymentInstructionSearchCriteriaDto) {
 			public Specification<PaymentInstruction> getStartDateSpec() {
 				return this.startDateSpec;
 			}
@@ -202,7 +222,9 @@ public class PaymentInstructionsSpecificationsTest {
 
 	private Specification<PaymentInstruction> getEndDateSpec(String status, LocalDateTime startDate,
 			LocalDateTime endDate) {
-		return new PaymentInstructionsSpecifications(status, startDate, endDate, SITE_ID) {
+		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
+				.status(status).startDate(startDate).endDate(endDate).build();
+		return new PaymentInstructionsSpecifications(paymentInstructionSearchCriteriaDto) {
 			public Specification<PaymentInstruction> getEndDateSpec() {
 				return this.endDateSpec;
 			}
@@ -211,7 +233,9 @@ public class PaymentInstructionsSpecificationsTest {
 	
 	private Specification<PaymentInstruction> getSiteIdSpec(String status, LocalDateTime startDate,
 			LocalDateTime endDate) {
-		return new PaymentInstructionsSpecifications(status, startDate, endDate, SITE_ID) {
+		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
+				.status(status).startDate(startDate).endDate(endDate).build();
+		return new PaymentInstructionsSpecifications(paymentInstructionSearchCriteriaDto) {
 			public Specification<PaymentInstruction> getSiteIdSpec() {
 				return this.siteIdSpec;
 			}
