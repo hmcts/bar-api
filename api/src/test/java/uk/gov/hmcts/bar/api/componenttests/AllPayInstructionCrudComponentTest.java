@@ -18,14 +18,14 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenAllPayPaymentInstructionDetails_thenCreateAllPayPaymentInstruction() throws Exception {
-        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+        AllPayPaymentInstruction proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .allPayTransactionId("12345");
+            .allPayTransactionId("12345").build();
 
         restActions
-            .post("/allpay", proposedAllPayPaymentInstruction.build())
+            .post("/allpay", proposedAllPayPaymentInstruction)
             .andExpect(status().isCreated())
             .andExpect(body().as(AllPayPaymentInstruction.class, allPayPaymentInstruction-> {
                 assertThat(allPayPaymentInstruction).isEqualToComparingOnlyGivenFields(
@@ -38,29 +38,28 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenAllPayPaymentInstructionWithInvalidAllPayTransactionId_thenReturn400() throws Exception {
-        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+        AllPayPaymentInstruction proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .allPayTransactionId("abcd");
+            .allPayTransactionId("abcd").build();
 
         restActions
-            .post("/allpay", proposedAllPayPaymentInstruction.build())
-            .andExpect(status().isBadRequest())
-            ;
+            .post("/allpay", proposedAllPayPaymentInstruction)
+            .andExpect(status().isBadRequest());
     }
 
 
     @Test
     public void whenAllPayPaymentInstructionWithInvalidCurrency_thenReturn400() throws Exception {
-        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+        AllPayPaymentInstruction proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("XXX")
-            .allPayTransactionId("12345");
+            .allPayTransactionId("12345").build();
 
         restActions
-            .post("/allpay", proposedAllPayPaymentInstruction.build())
+            .post("/allpay", proposedAllPayPaymentInstruction)
             .andExpect(status().isBadRequest())
         ;
     }
@@ -68,31 +67,31 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void givenAllPayPaymentInstructionDetails_retrieveThem() throws Exception {
-        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+        AllPayPaymentInstruction proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .allPayTransactionId("12345");
+            .allPayTransactionId("12345").build();
 
         restActions
-            .post("/allpay", proposedAllPayPaymentInstruction.build())
+            .post("/allpay", proposedAllPayPaymentInstruction)
             .andExpect(status().isCreated());
 
         restActions
             .get("/payment-instructions")
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, (allPayList) -> {
-                assertThat(allPayList.get(0).equals(proposedAllPayPaymentInstruction.build()));
+                assertThat(allPayList.get(0).equals(proposedAllPayPaymentInstruction));
             }));
 
     }
 
 	@Test
 	public void givenAllPayPaymentInstructionDetails_retrieveOneOfThem() throws Exception {
-		AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
-				.payerName("Mr Payer Payer").amount(500).currency("GBP").allPayTransactionId("12345");
+		AllPayPaymentInstruction proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+				.payerName("Mr Payer Payer").amount(500).currency("GBP").allPayTransactionId("12345").build();
 
-		restActions.post("/allpay", proposedAllPayPaymentInstruction.build()).andExpect(status().isCreated());
+		restActions.post("/allpay", proposedAllPayPaymentInstruction).andExpect(status().isCreated());
 
 		restActions.get("/payment-instructions/1").andExpect(status().isOk())
 				.andExpect(body().as(AllPayPaymentInstruction.class, (pi) -> {
@@ -102,24 +101,24 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
 	@Test
 	public void givenAllPayPaymentInstructionDetails_retrieveOneOfThemWithWrongId() throws Exception {
-		AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
-				.payerName("Mr Payer Payer").amount(500).currency("GBP").allPayTransactionId("12345");
+		AllPayPaymentInstruction proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+				.payerName("Mr Payer Payer").amount(500).currency("GBP").allPayTransactionId("12345").build();
 
-		restActions.post("/allpay", proposedAllPayPaymentInstruction.build()).andExpect(status().isCreated());
+		restActions.post("/allpay", proposedAllPayPaymentInstruction).andExpect(status().isCreated());
 
 		restActions.get("/payment-instructions/2").andExpect(status().isNotFound());
 	}
 
     @Test
     public void whenAllPayPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
-        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+        AllPayPaymentInstruction proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .allPayTransactionId("12345");
+            .allPayTransactionId("12345").build();
 
         restActions
-            .post("/allpay",  proposedAllPayPaymentInstruction.build())
+            .post("/allpay",  proposedAllPayPaymentInstruction)
             .andExpect(status().isCreated());
 
         restActions
@@ -131,14 +130,14 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenNonExistingAllPayPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
-        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+        AllPayPaymentInstruction proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .allPayTransactionId("12345");
+            .allPayTransactionId("12345").build();
 
         restActions
-            .post("/allpay",  proposedAllPayPaymentInstruction.build())
+            .post("/allpay",  proposedAllPayPaymentInstruction)
             .andExpect(status().isCreated());
 
 
@@ -151,17 +150,17 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenAllPayPaymentInstructionIsSubmitted_expectStatus_200() throws Exception {
-        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+        AllPayPaymentInstruction proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .allPayTransactionId("12345");
+            .allPayTransactionId("12345").build();
 
         PaymentInstructionRequest request= paymentInstructionRequestWith()
             .status("P").build();
 
         restActions
-            .post("/allpay",  proposedAllPayPaymentInstruction.build())
+            .post("/allpay",  proposedAllPayPaymentInstruction)
             .andExpect(status().isCreated());
 
 
@@ -172,17 +171,17 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenNonExistingAllPayPaymentInstructionIsUpdated_expectStatus_404() throws Exception {
-        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+        AllPayPaymentInstruction proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .allPayTransactionId("12345");
+            .allPayTransactionId("12345").build();
 
         PaymentInstructionRequest request= paymentInstructionRequestWith()
             .status("P").build();
 
         restActions
-            .post("/allpay",  proposedAllPayPaymentInstruction.build())
+            .post("/allpay",  proposedAllPayPaymentInstruction)
             .andExpect(status().isCreated());
 
 
@@ -194,18 +193,18 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenCaseReferenceForAllPayPaymentInstructionIsCreated_expectStatus_201() throws Exception {
-        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+        AllPayPaymentInstruction proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .allPayTransactionId("12345");
+            .allPayTransactionId("12345").build();
 
         CaseReference caseReference = caseReferenceWith()
             .caseReference("case102")
             .build();
 
         restActions
-            .post("/allpay",  proposedAllPayPaymentInstruction.build())
+            .post("/allpay",  proposedAllPayPaymentInstruction)
             .andExpect(status().isCreated());
 
 
@@ -218,18 +217,18 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenInvalidCaseReferenceForAllPayPaymentInstructionIsCreated_expectStatus_400() throws Exception {
-        AllPayPaymentInstruction.AllPayPaymentInstructionBuilder proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+        AllPayPaymentInstruction proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .allPayTransactionId("12345");
+            .allPayTransactionId("12345").build();
 
         CaseReference caseReference = caseReferenceWith()
             .caseReference("<><><><>")
             .build();
 
         restActions
-            .post("/allpay",  proposedAllPayPaymentInstruction.build())
+            .post("/allpay",  proposedAllPayPaymentInstruction)
             .andExpect(status().isCreated());
 
 
@@ -240,6 +239,36 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
     }
 
+    @Test
+    public void whenAllPayPaymentInstructionIsEdited_expectStatus_200() throws Exception {
+        AllPayPaymentInstruction proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .allPayTransactionId("12345").build();
+
+        AllPayPaymentInstruction updatedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+            .payerName("Mr Updated Payer")
+            .amount(600)
+            .currency("GBP")
+            .allPayTransactionId("123456").build();
+
+        restActions
+            .post("/allpay",  proposedAllPayPaymentInstruction)
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .patch("/payment-instructions/1",updatedAllPayPaymentInstruction)
+            .andExpect(status().isOk())
+            .andExpect(body().as(AllPayPaymentInstruction.class, allPayPaymentInstruction-> {
+                assertThat(allPayPaymentInstruction).isEqualToComparingOnlyGivenFields(
+                    allPayPaymentInstructionWith()
+                        .payerName("Mr Updated Payer")
+                        .amount(600)
+                        .currency("GBP").allPayTransactionId("123456").build());
+            }));
+    }
 
 
 
