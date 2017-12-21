@@ -17,14 +17,14 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenPostalOrderPaymentInstructionDetails_thenCreatePostalOrderPaymentInstruction() throws Exception {
-        PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
+        PostalOrderPaymentInstruction  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .postalOrderNumber("000000");
+            .postalOrderNumber("000000").build();
 
         restActions
-            .post("/postal-orders", proposedPostalOrderPaymentInstruction.build())
+            .post("/postal-orders", proposedPostalOrderPaymentInstruction)
             .andExpect(status().isCreated())
             .andExpect(body().as(PostalOrderPaymentInstruction.class, postalOrderPaymentInstructionDto -> {
                 assertThat(postalOrderPaymentInstructionDto).isEqualToComparingOnlyGivenFields(
@@ -38,14 +38,14 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenPostalOrderInstructionWithInvalidCurrency_thenReturn400() throws Exception {
-        PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
+        PostalOrderPaymentInstruction  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("xxx")
-            .postalOrderNumber("000000");
+            .postalOrderNumber("000000").build();
 
         restActions
-            .post("/postal-orders", proposedPostalOrderPaymentInstruction.build())
+            .post("/postal-orders", proposedPostalOrderPaymentInstruction)
             .andExpect(status().isBadRequest())
             ;
     }
@@ -54,14 +54,14 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenPostalOrderInstructionWithInvalidPostalOrderNumber_thenReturn400() throws Exception {
-        PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
+        PostalOrderPaymentInstruction  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .postalOrderNumber("xxxxxx");
+            .postalOrderNumber("xxxxxx").build();
 
         restActions
-            .post("/postal-orders", proposedPostalOrderPaymentInstruction.build())
+            .post("/postal-orders", proposedPostalOrderPaymentInstruction)
             .andExpect(status().isBadRequest())
         ;
     }
@@ -69,31 +69,31 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void givenPostalOrderPaymentInstructionDetails_retrieveThem() throws Exception {
-        PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
+        PostalOrderPaymentInstruction proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .postalOrderNumber("000000");
+            .postalOrderNumber("000000").build();
 
         restActions
-            .post("/postal-orders",  proposedPostalOrderPaymentInstruction.build())
+            .post("/postal-orders",  proposedPostalOrderPaymentInstruction)
             .andExpect(status().isCreated());
 
         restActions
             .get("/payment-instructions")
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, (postalOrdersList) -> {
-                assertThat(postalOrdersList.get(0).equals(proposedPostalOrderPaymentInstruction.build()));
+                assertThat(postalOrdersList.get(0).equals(proposedPostalOrderPaymentInstruction));
             }));
 
     }
 
 	@Test
 	public void givenPostalOrderPaymentInstructionDetails_retrieveOneOfThem() throws Exception {
-		PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder proposedPostalOrderPaymentInstruction = postalOrderPaymentInstructionWith()
-				.payerName("Mr Payer Payer").amount(500).currency("GBP").postalOrderNumber("000000");
+		PostalOrderPaymentInstruction proposedPostalOrderPaymentInstruction = postalOrderPaymentInstructionWith()
+				.payerName("Mr Payer Payer").amount(500).currency("GBP").postalOrderNumber("000000").build();
 
-		restActions.post("/postal-orders", proposedPostalOrderPaymentInstruction.build())
+		restActions.post("/postal-orders", proposedPostalOrderPaymentInstruction)
 				.andExpect(status().isCreated());
 
 		restActions.get("/payment-instructions/1").andExpect(status().isOk())
@@ -104,10 +104,10 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
 	@Test
 	public void givenPostalOrderPaymentInstructionDetails_retrieveOneOfThemWithWrongId() throws Exception {
-		PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder proposedPostalOrderPaymentInstruction = postalOrderPaymentInstructionWith()
-				.payerName("Mr Payer Payer").amount(500).currency("GBP").postalOrderNumber("000000");
+		PostalOrderPaymentInstruction proposedPostalOrderPaymentInstruction = postalOrderPaymentInstructionWith()
+				.payerName("Mr Payer Payer").amount(500).currency("GBP").postalOrderNumber("000000").build();
 
-		restActions.post("/postal-orders", proposedPostalOrderPaymentInstruction.build())
+		restActions.post("/postal-orders", proposedPostalOrderPaymentInstruction)
 				.andExpect(status().isCreated());
 
 		restActions.get("/payment-instructions/2").andExpect(status().isNotFound());
@@ -115,14 +115,14 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenPostalOrderPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
-        PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
+        PostalOrderPaymentInstruction  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .postalOrderNumber("000000");
+            .postalOrderNumber("000000").build();
 
         restActions
-            .post("/postal-orders",  proposedPostalOrderPaymentInstruction.build())
+            .post("/postal-orders",  proposedPostalOrderPaymentInstruction)
             .andExpect(status().isCreated());
 
         restActions
@@ -134,14 +134,14 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenNonExistingPostalOrderPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
-        PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
+        PostalOrderPaymentInstruction  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .postalOrderNumber("000000");
+            .postalOrderNumber("000000").build();
 
         restActions
-            .post("/postal-orders",  proposedPostalOrderPaymentInstruction.build())
+            .post("/postal-orders",  proposedPostalOrderPaymentInstruction)
             .andExpect(status().isCreated());
 
         restActions
@@ -152,19 +152,19 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
     }
 
     @Test
-    public void whenPostalOrderPaymentInstructionIsUpdated_expectStatus_200() throws Exception {
-        PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
+    public void whenPostalOrderPaymentInstructionIsSubmitted_expectStatus_200() throws Exception {
+        PostalOrderPaymentInstruction  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .postalOrderNumber("000000");
+            .postalOrderNumber("000000").build();
 
 
         PaymentInstructionRequest request= paymentInstructionRequestWith()
             .status("P").build();
 
         restActions
-            .post("/postal-orders",  proposedPostalOrderPaymentInstruction.build())
+            .post("/postal-orders",  proposedPostalOrderPaymentInstruction)
             .andExpect(status().isCreated());
 
         restActions
@@ -176,18 +176,18 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenNonExistingPostalOrderPaymentInstructionIsUpdated_expectStatus_404() throws Exception {
-        PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
+        PostalOrderPaymentInstruction  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .postalOrderNumber("000000");
+            .postalOrderNumber("000000").build();
 
 
         PaymentInstructionRequest request= paymentInstructionRequestWith()
             .status("P").build();
 
         restActions
-            .post("/postal-orders",  proposedPostalOrderPaymentInstruction.build())
+            .post("/postal-orders",  proposedPostalOrderPaymentInstruction)
             .andExpect(status().isCreated());
 
         restActions
@@ -199,18 +199,18 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenCaseReferenceForAChequePaymentInstructionIsCreated_expectStatus_201() throws Exception {
-        PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
+        PostalOrderPaymentInstruction  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .postalOrderNumber("000000");
+            .postalOrderNumber("000000").build();
 
         CaseReference caseReference = caseReferenceWith()
             .caseReference("case102")
             .build();
 
         restActions
-            .post("/postal-orders",  proposedPostalOrderPaymentInstruction.build())
+            .post("/postal-orders",  proposedPostalOrderPaymentInstruction)
             .andExpect(status().isCreated());
 
 
@@ -224,24 +224,51 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenInvalidCaseReferenceForAChequePaymentInstructionIsCreated_expectStatus_201() throws Exception {
-        PostalOrderPaymentInstruction.PostalOrderPaymentInstructionBuilder  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
+        PostalOrderPaymentInstruction proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .postalOrderNumber("000000");
+            .postalOrderNumber("000000").build();
 
         CaseReference caseReference = caseReferenceWith()
             .caseReference("@@@@@@@@@@@@@@@@")
             .build();
 
         restActions
-            .post("/postal-orders",  proposedPostalOrderPaymentInstruction.build())
+            .post("/postal-orders",  proposedPostalOrderPaymentInstruction)
             .andExpect(status().isCreated());
 
 
         restActions
             .post("/payment-instructions/1/cases",caseReference)
             .andExpect(status().isBadRequest());
+
+
+    }
+
+    @Test
+    public void whenPostalOrderPaymentInstructionIsUpdated_expectStatus_200() throws Exception {
+        PostalOrderPaymentInstruction  proposedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .postalOrderNumber("000000").build();
+
+        PostalOrderPaymentInstruction  updatedPostalOrderPaymentInstruction =postalOrderPaymentInstructionWith()
+            .payerName("Mr Updated Payer")
+            .amount(600)
+            .currency("GBP")
+            .postalOrderNumber("000000").build();
+
+
+        restActions
+            .post("/postal-orders",  proposedPostalOrderPaymentInstruction)
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .patch("/payment-instructions/1",updatedPostalOrderPaymentInstruction)
+            .andExpect(status().isOk());
 
 
     }
