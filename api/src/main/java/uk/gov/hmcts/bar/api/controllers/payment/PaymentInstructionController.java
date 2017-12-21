@@ -1,21 +1,39 @@
 package uk.gov.hmcts.bar.api.controllers.payment;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import uk.gov.hmcts.bar.api.controllers.helper.PaymentInstructionControllerHelper;
-import uk.gov.hmcts.bar.api.data.model.*;
-import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.util.Date;
-import java.util.List;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.CaseReferenceRequest;
+import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
+import uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
+import uk.gov.hmcts.bar.api.data.utils.Util;
 
 @RestController
 @Validated
@@ -37,11 +55,22 @@ public class PaymentInstructionController {
     @GetMapping("/payment-instructions")
     public List<PaymentInstruction> getPaymentInstructions(
         @RequestParam(name = "status", required = false) String status,
-        @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") Date startDate,
-        @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") Date endDate) {
-
-        return PaymentInstructionControllerHelper.updateStatusDisplayValue(
-            paymentInstructionService.getAllPaymentInstructions(status, startDate, endDate));
+        @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
+        @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate,
+        @RequestParam(name = "payerName", required = false) String payerName,
+        @RequestParam(name = "chequeNumber", required = false) String chequeNumber,
+        @RequestParam(name = "postalOrderNumer", required = false) String postalOrderNumer,
+        @RequestParam(name = "dailySequenceId", required = false) Integer dailySequenceId,
+        @RequestParam(name = "allPayInstructionId", required = false) String allPayInstructionId,
+        @RequestParam(name = "paymentType", required = false) String paymentType) {
+    	
+		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = PaymentInstructionSearchCriteriaDto
+				.searchCriteriaRequestWith().status(status)
+				.startDate(startDate == null ? null : startDate.atStartOfDay())
+				.endDate(endDate == null ? null : endDate.atTime(LocalTime.now())).payerName(payerName)
+				.chequeNumber(chequeNumber).postalOrderNumer(postalOrderNumer).dailySequenceId(dailySequenceId)
+				.allPayInstructionId(allPayInstructionId).paymentType(paymentType).build();
+		return Util.updateStatusDisplayValue(paymentInstructionService.getAllPaymentInstructions(paymentInstructionSearchCriteriaDto));
     }
 
     @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction for the given id.")

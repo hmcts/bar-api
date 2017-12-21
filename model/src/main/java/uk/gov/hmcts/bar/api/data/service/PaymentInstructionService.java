@@ -1,7 +1,11 @@
 package uk.gov.hmcts.bar.api.data.service;
 
 
-import com.google.common.collect.Lists;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -9,21 +13,20 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
+
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
-import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.data.model.CaseReference;
+import uk.gov.hmcts.bar.api.data.model.CaseReferenceRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
+import uk.gov.hmcts.bar.api.data.model.PaymentReference;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionsSpecifications;
 import uk.gov.hmcts.bar.api.data.utils.Util;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 
 @Service
@@ -32,7 +35,7 @@ public class PaymentInstructionService {
 
 	private static final Logger LOG = getLogger(PaymentInstructionService.class);
 
-    private static final String SITE_ID="BR01";
+    public static final String SITE_ID="BR01";
     private static final int PAGE_NUMBER = 0;
     private static final int MAX_RECORDS_PER_PAGE = 200;
     private PaymentInstructionRepository paymentInstructionRepository;
@@ -74,24 +77,10 @@ public class PaymentInstructionService {
     }
 
 
-	public List<PaymentInstruction> getAllPaymentInstructions(String status, Date startDate,
-			Date endDate) {
+	public List<PaymentInstruction> getAllPaymentInstructions(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto) {
 
-		LocalDateTime paramStartDate = null;
-		LocalDateTime paramEndDate = null;
-
-		if (startDate != null) {
-			paramStartDate = LocalDateTime.ofInstant(startDate.toInstant(), ZoneId.systemDefault()).toLocalDate()
-					.atStartOfDay();
-		}
-
-		if (endDate != null) {
-			paramEndDate = LocalDateTime.ofInstant(endDate.toInstant(), ZoneId.systemDefault()).toLocalDate()
-					.atTime(LocalTime.now());
-		}
-
-		PaymentInstructionsSpecifications paymentInstructionsSpecification = new PaymentInstructionsSpecifications(
-				status, paramStartDate, paramEndDate, SITE_ID);
+		paymentInstructionSearchCriteriaDto.setSiteId(SITE_ID);
+		PaymentInstructionsSpecifications paymentInstructionsSpecification = new PaymentInstructionsSpecifications(paymentInstructionSearchCriteriaDto);
 		Pageable pageDetails = new PageRequest(PAGE_NUMBER, MAX_RECORDS_PER_PAGE);
 
 		return Lists.newArrayList(paymentInstructionRepository
