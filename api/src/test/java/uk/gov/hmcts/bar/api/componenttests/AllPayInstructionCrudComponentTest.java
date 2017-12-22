@@ -8,6 +8,7 @@ import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction.allPayPaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.CaseReference.caseReferenceWith;
@@ -268,6 +269,52 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
                         .amount(600)
                         .currency("GBP").allPayTransactionId("123456").build());
             }));
+    }
+
+    @Test
+    public void whenSearchAllPayPaymentInstructionByPayerName_expectStatus_200() throws Exception {
+        AllPayPaymentInstruction proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .allPayTransactionId("12345").build();
+
+        restActions
+            .post("/allpay",  proposedAllPayPaymentInstruction)
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .get("/payment-instructions?payerName=Mr Payer Payer")
+            .andExpect(status().isOk())
+            .andExpect(body().as(List.class, allPayPaymentInstructionList-> {
+            assertThat(allPayPaymentInstructionList.get(0)).isEqualToComparingOnlyGivenFields(
+                allPayPaymentInstructionWith()
+                    .payerName("Mr Payer Payer")
+                    .amount(500)
+                    .currency("GBP").allPayTransactionId("12345").build());
+        }));
+    }
+
+
+    @Test
+    public void whenSearchNonExistingAllPayPaymentInstructionByPayerName_expectStatus_200AndEmptyList() throws Exception {
+        AllPayPaymentInstruction proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .allPayTransactionId("12345").build();
+
+        restActions
+            .post("/allpay",  proposedAllPayPaymentInstruction)
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .get("/payment-instructions?payerName=NonExisting")
+            .andExpect(status().isOk())
+            .andExpect(body().as(List.class, allPayPaymentInstructionList-> assertTrue(allPayPaymentInstructionList.isEmpty())));
+
     }
 
 

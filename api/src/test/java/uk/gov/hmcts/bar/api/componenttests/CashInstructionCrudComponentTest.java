@@ -8,6 +8,7 @@ import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.bar.api.data.model.CaseReference.caseReferenceWith;
 import static uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction.cashPaymentInstructionWith;
@@ -259,7 +260,47 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
     }
 
+    @Test
+    public void whenSearchCashPaymentInstructionByPayerName_expectStatus_200() throws Exception {
+        CashPaymentInstruction proposedCashPaymentInstruction = cashPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP").build();
 
+        restActions
+            .post("/cash",  proposedCashPaymentInstruction)
+            .andExpect(status().isCreated());
+
+        restActions
+            .get("/payment-instructions?payerName=Mr Payer Payer")
+            .andExpect(status().isOk())
+            .andExpect(body().as(List.class, cashPaymentInstructionList -> {
+                assertThat(cashPaymentInstructionList.get(0)).isEqualToComparingOnlyGivenFields(
+                    cashPaymentInstructionWith()
+                        .payerName("Mr Payer Payer")
+                        .amount(500)
+                        .currency("GBP"));
+            }));
+
+
+    }
+    @Test
+    public void whenSearchNonExistingCashPaymentInstructionByPayerName_expectStatus_200AndEmptyList() throws Exception {
+        CashPaymentInstruction proposedCashPaymentInstruction = cashPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP").build();
+
+        restActions
+            .post("/cash",  proposedCashPaymentInstruction)
+            .andExpect(status().isCreated());
+
+        restActions
+            .get("/payment-instructions?payerName=NonExisting")
+            .andExpect(status().isOk())
+            .andExpect(body().as(List.class, cashPaymentInstructionList-> assertTrue(cashPaymentInstructionList.isEmpty())));
+
+    }
 
 }
 

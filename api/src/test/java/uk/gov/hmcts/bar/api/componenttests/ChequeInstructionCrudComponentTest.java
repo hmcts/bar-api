@@ -8,6 +8,7 @@ import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.bar.api.data.model.CaseReference.caseReferenceWith;
 import static uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction.chequePaymentInstructionWith;
@@ -273,10 +274,55 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
                     .chequeNumber("000000"));
         }));
 
+    }
 
+    @Test
+    public void whenSearchChequePaymentInstructionByPayerName_expectStatus_200() throws Exception {
+        ChequePaymentInstruction proposedChequePaymentInstruction = chequePaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .chequeNumber("000000").build();
+
+        restActions
+            .post("/cheques", proposedChequePaymentInstruction)
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .get("/payment-instructions?payerName=Mr Payer Payer")
+            .andExpect(status().isOk())
+            .andExpect(body().as(List.class, chequePaymentInstructionList -> {
+            assertThat(chequePaymentInstructionList.get(0)).isEqualToComparingOnlyGivenFields(
+                chequePaymentInstructionWith()
+                    .payerName("Mr Updated Payer")
+                    .amount(600)
+                    .currency("GBP")
+                    .chequeNumber("000000"));
+        }));
     }
 
 
+
+
+    @Test
+    public void whenSearchNonExistingChequePaymentInstructionByPayerName_expectStatus_200AndEmptyList() throws Exception {
+        ChequePaymentInstruction proposedChequePaymentInstruction = chequePaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .chequeNumber("000000").build();
+
+        restActions
+            .post("/cheques", proposedChequePaymentInstruction)
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .get("/payment-instructions?payerName=NonExisting")
+            .andExpect(status().isOk())
+            .andExpect(body().as(List.class, chequePaymentInstructionList-> assertTrue(chequePaymentInstructionList.isEmpty())));
+    }
 }
 
 
