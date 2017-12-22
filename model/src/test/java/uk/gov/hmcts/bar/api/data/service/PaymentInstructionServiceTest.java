@@ -1,14 +1,17 @@
 package uk.gov.hmcts.bar.api.data.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.google.common.collect.Lists;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specifications;
+import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
+import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto.PaymentInstructionSearchCriteriaDtoBuilder;
+import uk.gov.hmcts.bar.api.data.repository.CaseReferenceRepository;
+import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -16,33 +19,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specifications;
-
-import com.google.common.collect.Lists;
-
-import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
-import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.CaseReference;
-import uk.gov.hmcts.bar.api.data.model.CaseReferenceRequest;
-import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto.PaymentInstructionSearchCriteriaDtoBuilder;
-import uk.gov.hmcts.bar.api.data.model.PaymentReference;
-import uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.repository.CaseReferenceRepository;
-import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
 public class PaymentInstructionServiceTest {
 
@@ -270,6 +251,23 @@ public class PaymentInstructionServiceTest {
 		assertEquals(Lists.newArrayList(piIteratorMock), retrievedPaymentInstructionList);
 	}
 
+    @Test
+    public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsIsCalledWithOnlyPayerName()
+        throws Exception {
+
+        when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
+            .thenReturn(piPageMock);
+        when(piPageMock.iterator()).thenReturn(piIteratorMock);
+
+        PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
+            .payerName("Mr Payer Payer").build();
+
+        List<PaymentInstruction> retrievedPaymentInstructionList = paymentInstructionService
+            .getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
+        assertEquals(Lists.newArrayList(piIteratorMock), retrievedPaymentInstructionList);
+    }
+
+
 	@Test
 	public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsIsCalledWithOnlyStartDateAndEndDate()
 			throws Exception {
@@ -317,7 +315,7 @@ public class PaymentInstructionServiceTest {
 				.getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
 		assertEquals(Lists.newArrayList(piIteratorMock), retrievedPaymentInstructionList);
 	}
-	
+
 	@Test
 	public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsIsCalledWithOnlyDailySequenceId()
 			throws Exception {
