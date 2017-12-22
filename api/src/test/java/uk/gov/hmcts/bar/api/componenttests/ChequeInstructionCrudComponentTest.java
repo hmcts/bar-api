@@ -323,6 +323,73 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, chequePaymentInstructionList-> assertTrue(chequePaymentInstructionList.isEmpty())));
     }
+
+    @Test
+    public void whenSearchChequePaymentInstructionByChequeNumber_expectStatus_200() throws Exception {
+        ChequePaymentInstruction proposedChequePaymentInstruction = chequePaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .chequeNumber("000000").build();
+
+        restActions
+            .post("/cheques", proposedChequePaymentInstruction)
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .get("/payment-instructions?chequeNumber=000000")
+            .andExpect(status().isOk())
+            .andExpect(body().as(List.class, chequePaymentInstructionList -> {
+                assertThat(chequePaymentInstructionList.get(0)).isEqualToComparingOnlyGivenFields(
+                    chequePaymentInstructionWith()
+                        .payerName("Mr Updated Payer")
+                        .amount(600)
+                        .currency("GBP")
+                        .chequeNumber("000000"));
+            }));
+    }
+
+
+    @Test
+    public void whenSearchNonExistingChequePaymentInstructionByChequeNumber_expectStatus_200AndEmptyList() throws Exception {
+        ChequePaymentInstruction proposedChequePaymentInstruction = chequePaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .chequeNumber("000000").build();
+
+        restActions
+            .post("/cheques", proposedChequePaymentInstruction)
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .get("/payment-instructions?chequeNumber=111111")
+            .andExpect(status().isOk())
+            .andExpect(body().as(List.class, chequePaymentInstructionList-> assertTrue(chequePaymentInstructionList.isEmpty())));
+    }
+
+    @Test
+    public void whenSearchChequePaymentInstructionWithInvalidChequeNumber_expectStatus_400() throws Exception {
+        ChequePaymentInstruction proposedChequePaymentInstruction = chequePaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .chequeNumber("000000").build();
+
+        restActions
+            .post("/cheques", proposedChequePaymentInstruction)
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .get("/payment-instructions?chequeNumber=invalid")
+            .andExpect(status().isBadRequest());
+
+    }
+
+
 }
 
 

@@ -81,7 +81,7 @@ public class PaymentInstructionServiceTest {
 		MockitoAnnotations.initMocks(this);
 		paymentInstructionService = new PaymentInstructionService(paymentReferenceService, caseReferenceService,
 				paymentInstructionRepository);
-		paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.searchCriteriaRequestWith()
+		paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto()
 				.siteId("BR01");
 	}
 
@@ -179,7 +179,7 @@ public class PaymentInstructionServiceTest {
 		when(piPageMock.iterator()).thenReturn(piIteratorMock);
 
 		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = PaymentInstructionSearchCriteriaDto
-				.searchCriteriaRequestWith().build();
+				.paymentInstructionSearchCriteriaDto().build();
 
 		List<PaymentInstruction> retrievedPaymentInstructionList = paymentInstructionService
 				.getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
@@ -261,6 +261,22 @@ public class PaymentInstructionServiceTest {
 
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
             .payerName("Mr Payer Payer").build();
+
+        List<PaymentInstruction> retrievedPaymentInstructionList = paymentInstructionService
+            .getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
+        assertEquals(Lists.newArrayList(piIteratorMock), retrievedPaymentInstructionList);
+    }
+
+    @Test
+    public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsIsCalledWithOnlyChequeNumber()
+        throws Exception {
+
+        when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
+            .thenReturn(piPageMock);
+        when(piPageMock.iterator()).thenReturn(piIteratorMock);
+
+        PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
+            .chequeNumber("000000").build();
 
         List<PaymentInstruction> retrievedPaymentInstructionList = paymentInstructionService
             .getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);

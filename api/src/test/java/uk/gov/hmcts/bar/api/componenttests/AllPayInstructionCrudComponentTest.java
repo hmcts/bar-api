@@ -317,6 +317,25 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
     }
 
+    @Test
+    public void whenSearchAllPayPaymentInstructionWithInvalidAllPayId_expectStatus_400() throws Exception {
+        AllPayPaymentInstruction proposedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .allPayTransactionId("12345").build();
+
+        restActions
+            .post("/allpay",  proposedAllPayPaymentInstruction)
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .get("/payment-instructions?allPayInstructionId=invalid@@@@@")
+            .andExpect(status().isBadRequest());
+
+
+    }
 
 
 }

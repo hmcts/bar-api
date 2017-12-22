@@ -1,57 +1,51 @@
 package uk.gov.hmcts.bar.api.data.repository;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.jpa.domain.Specification;
-
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto.PaymentInstructionSearchCriteriaDtoBuilder;
 
+import javax.persistence.criteria.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.when;
+
 public class PaymentInstructionsSpecificationsTest {
-	
+
 	@Mock
 	private CriteriaBuilder builder;
-	
+
 	@Mock
 	private Root<PaymentInstruction> root;
-	
+
 	@Mock
 	private CriteriaQuery<?> query;
-	
+
 	@Mock
 	private Predicate predicate;
-	
+
 	@Mock
 	private Path<String> stringPath;
-	
+
 	@Mock
 	private Path<LocalDateTime> dateTimePath;
-	
+
 	@Before
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
 	}
-	
+
 	private PaymentInstructionSearchCriteriaDtoBuilder paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto
-			.searchCriteriaRequestWith().siteId("BR01");
-	
+			.paymentInstructionSearchCriteriaDto().siteId("BR01");
+
 	@Test
 	public void shouldReturnAllSpecs_whenAllParamsAreProvided() {
 		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
@@ -62,13 +56,13 @@ public class PaymentInstructionsSpecificationsTest {
 				.getPaymentInstructionsSpecification();
 		assertNotNull(piSpec);
 	}
-	
+
 	@Test
 	public void shouldReturnStatusSpecs_whenAllParamsAreProvided() {
 		Specification<PaymentInstruction> statusSpec = getStatusSpec("D", LocalDateTime.now(), LocalDateTime.now());
 		assertNotNull(statusSpec);
 	}
-	
+
 	@Test
 	public void shouldReturnStatusSpecs_whenAllParamsAreProvidedUsingToPredicate() {
 		String status = "D";
@@ -77,13 +71,13 @@ public class PaymentInstructionsSpecificationsTest {
 		Predicate statusPredicate = getStatusSpec(status, LocalDateTime.now(), LocalDateTime.now()).toPredicate(root, query, builder);
 		assertNotNull(statusPredicate);
 	}
-	
+
 	@Test
 	public void shouldReturnStartDateSpecs_whenAllParamsAreProvided() {
 		Specification<PaymentInstruction> startDateSpec = getStartDateSpec("D", LocalDateTime.now(), LocalDateTime.now());
 		assertNotNull(startDateSpec);
 	}
-	
+
 	@Test
 	public void shouldReturnStartDateSpecs_whenAllParamsAreProvidedUsingToPredicate() {
 		LocalDateTime startDate = LocalDateTime.now();
@@ -92,13 +86,13 @@ public class PaymentInstructionsSpecificationsTest {
 		Predicate startDatePredicate = getStartDateSpec("D", startDate, LocalDateTime.now()).toPredicate(root, query, builder);
 		assertNotNull(startDatePredicate);
 	}
-	
+
 	@Test
 	public void shouldReturnEndDateSpecs_whenAllParamsAreProvided() {
 		Specification<PaymentInstruction> endDateSpec = getEndDateSpec("D", LocalDateTime.now(), LocalDateTime.now());
 		assertNotNull(endDateSpec);
 	}
-	
+
 	@Test
 	public void shouldReturnEndDateSpecs_whenAllParamsAreProvidedUsingToPredicate() {
 		LocalDateTime endDate = LocalDateTime.now();
@@ -113,19 +107,19 @@ public class PaymentInstructionsSpecificationsTest {
 		Predicate statusPredicate = getStatusSpec(null, null, null).toPredicate(null, null, null);
 		assertNull(statusPredicate);
 	}
-	
+
 	@Test
 	public void shouldReturNoStartDatePredicate_whenNoParamsAreProvided() {
 		Predicate startDatePredicate = getStartDateSpec(null, null, null).toPredicate(null, null, null);
 		assertNull(startDatePredicate);
 	}
-	
+
 	@Test
 	public void shouldReturNoEndDatePredicate_whenNoParamsAreProvided() {
 		Predicate endDatePredicate = getEndDateSpec(null, null, null).toPredicate(null, null, null);
 		assertNull(endDatePredicate);
 	}
-	
+
 	@Test
 	public void testPaymentInstructionsSpecificationsWithOnlyStatus() {
 		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
@@ -188,7 +182,7 @@ public class PaymentInstructionsSpecificationsTest {
 				.getPaymentInstructionsSpecification();
 		assertNotNull(piSpec);
 	}
-	
+
 	@Test
 	public void shouldReturnSiteIdSpecs_whenAllParamsAreProvidedUsingToPredicate() {
 		String siteId = "BR01";
@@ -230,7 +224,7 @@ public class PaymentInstructionsSpecificationsTest {
 			}
 		}.getEndDateSpec();
 	}
-	
+
 	private Specification<PaymentInstruction> getSiteIdSpec(String status, LocalDateTime startDate,
 			LocalDateTime endDate) {
 		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder

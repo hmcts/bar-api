@@ -328,4 +328,22 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
     }
 
 
+    @Test
+    public void whenSearchPostalOrderPaymentInstructionWithInvalidInput_expectStatus_400() throws Exception {
+        PostalOrderPaymentInstruction proposedPostalOrderPaymentInstruction = postalOrderPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .postalOrderNumber("000000").build();
+
+        restActions
+            .post("/postal-orders", proposedPostalOrderPaymentInstruction)
+            .andExpect(status().isCreated());
+
+
+        restActions
+            .get("/payment-instructions?postalOrderNumber=&&&&&&&")
+            .andExpect(status().isBadRequest());
+    }
+
 }
