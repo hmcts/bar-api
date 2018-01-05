@@ -115,7 +115,8 @@ public class PaymentInstructionsSpecifications {
 			Predicate predicate = null;
 
 			if (paymentInstructionSearchCriteriaDto.getPayerName() != null) {
-				predicate = builder.equal(root.<String>get("payerName"), paymentInstructionSearchCriteriaDto.getPayerName());
+				predicate = builder.like(builder.upper(root.<String>get("payerName")),
+						"%" + paymentInstructionSearchCriteriaDto.getPayerName().toUpperCase() + "%");
 			}
 			return predicate;
 		}
