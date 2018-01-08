@@ -1,6 +1,7 @@
 package uk.gov.hmcts.bar.api.controllers.payment;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,13 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import static uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction.allPayPaymentInstructionWith;
+import static uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction.cashPaymentInstructionWith;
+import static uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction.chequePaymentInstructionWith;
+import static uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction.postalOrderPaymentInstructionWith;
+
 @RestController
+
 @Validated
 public class PaymentInstructionController {
 
@@ -42,19 +49,19 @@ public class PaymentInstructionController {
         @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
         @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate,
         @RequestParam(name = "payerName", required = false) String payerName,
-        @Valid  @Pattern(regexp ="^\\d{6,6}$",message = "invalid cheque number") @RequestParam(name = "chequeNumber", required = false) String chequeNumber,
-        @Valid  @Pattern(regexp ="^\\d{6,6}$",message = "invalid postal order number") @RequestParam(name = "postalOrderNumber", required = false) String postalOrderNumber,
+        @Valid @Pattern(regexp = "^\\d{6,6}$", message = "invalid cheque number") @RequestParam(name = "chequeNumber", required = false) String chequeNumber,
+        @Valid @Pattern(regexp = "^\\d{6,6}$", message = "invalid postal order number") @RequestParam(name = "postalOrderNumber", required = false) String postalOrderNumber,
         @RequestParam(name = "dailySequenceId", required = false) Integer dailySequenceId,
-        @Valid @Pattern(regexp ="^\\d{1,20}$",message = "invalid all pay transaction id") @RequestParam(name = "allPayInstructionId", required = false) String allPayInstructionId,
+        @Valid @Pattern(regexp = "^\\d{1,20}$", message = "invalid all pay transaction id") @RequestParam(name = "allPayInstructionId", required = false) String allPayInstructionId,
         @RequestParam(name = "paymentType", required = false) String paymentType) {
 
-		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = PaymentInstructionSearchCriteriaDto
-				.paymentInstructionSearchCriteriaDto().status(status)
-				.startDate(startDate == null ? null : startDate.atStartOfDay())
-				.endDate(endDate == null ? null : endDate.atTime(LocalTime.now())).payerName(payerName)
-				.chequeNumber(chequeNumber).postalOrderNumer(postalOrderNumber).dailySequenceId(dailySequenceId)
-				.allPayInstructionId(allPayInstructionId).paymentType(paymentType).build();
-		return Util.updateStatusDisplayValue(paymentInstructionService.getAllPaymentInstructions(paymentInstructionSearchCriteriaDto));
+        PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = PaymentInstructionSearchCriteriaDto
+            .paymentInstructionSearchCriteriaDto().status(status)
+            .startDate(startDate == null ? null : startDate.atStartOfDay())
+            .endDate(endDate == null ? null : endDate.atTime(LocalTime.now())).payerName(payerName)
+            .chequeNumber(chequeNumber).postalOrderNumer(postalOrderNumber).dailySequenceId(dailySequenceId)
+            .allPayInstructionId(allPayInstructionId).paymentType(paymentType).build();
+        return Util.updateStatusDisplayValue(paymentInstructionService.getAllPaymentInstructions(paymentInstructionSearchCriteriaDto));
     }
 
     @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction for the given id.")
@@ -78,7 +85,7 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/payment-instructions/{id}")
     public void deletePaymentInstruction(@PathVariable("id") Integer id) {
-    		paymentInstructionService.deletePaymentInstruction(id);
+        paymentInstructionService.deletePaymentInstruction(id);
     }
 
     @ApiOperation(value = "Create cheque payment instruction", notes = "Create cheque payment instruction with the given values.")
@@ -88,7 +95,12 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/cheques")
     public PaymentInstruction saveChequeInstruction(
-        @Valid @RequestBody ChequePaymentInstruction chequePaymentInstruction) {
+        @Valid @RequestBody Cheque cheque) {
+        ChequePaymentInstruction chequePaymentInstruction = chequePaymentInstructionWith()
+            .payerName(cheque.getPayerName())
+            .amount(cheque.getAmount())
+            .currency(cheque.getCurrency())
+            .chequeNumber(cheque.getChequeNumber()).build();
         return paymentInstructionService.createPaymentInstruction(chequePaymentInstruction);
     }
 
@@ -98,7 +110,11 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/cash")
-    public PaymentInstruction saveCashInstruction(@Valid @RequestBody CashPaymentInstruction cashPaymentInstruction) {
+    public PaymentInstruction saveCashInstruction(@ApiParam(value="Cash request",required=true) @Valid @RequestBody Cash cash) {
+        CashPaymentInstruction cashPaymentInstruction = cashPaymentInstructionWith()
+            .payerName(cash.getPayerName())
+            .amount(cash.getAmount())
+            .currency(cash.getCurrency()).build();
         return paymentInstructionService.createPaymentInstruction(cashPaymentInstruction);
     }
 
@@ -109,7 +125,12 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/postal-orders")
     public PaymentInstruction savePostalOrderInstruction(
-        @Valid @RequestBody PostalOrderPaymentInstruction postalOrderPaymentInstruction) {
+        @ApiParam(value="Postal Order request",required=true) @Valid @RequestBody PostalOrder postalOrder) {
+        PostalOrderPaymentInstruction postalOrderPaymentInstruction = postalOrderPaymentInstructionWith()
+            .payerName(postalOrder.getPayerName())
+            .amount(postalOrder.getAmount())
+            .currency(postalOrder.getCurrency())
+            .postalOrderNumber(postalOrder.getPostalOrderNumber()).build();
         return paymentInstructionService.createPaymentInstruction(postalOrderPaymentInstruction);
     }
 
@@ -120,7 +141,12 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/allpay")
     public PaymentInstruction saveAllPayInstruction(
-        @Valid @RequestBody AllPayPaymentInstruction allPayPaymentInstruction) {
+        @ApiParam(value="All Pay request", required=true) @Valid @RequestBody AllPay allPay) {
+        AllPayPaymentInstruction allPayPaymentInstruction = allPayPaymentInstructionWith()
+            .payerName(allPay.getPayerName())
+            .amount(allPay.getAmount())
+            .currency(allPay.getCurrency())
+            .allPayTransactionId(allPay.getAllPayTransactionId()).build();
         return paymentInstructionService.createPaymentInstruction(allPayPaymentInstruction);
     }
 
@@ -134,11 +160,11 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/payment-instructions/{id}")
     public ResponseEntity<PaymentInstruction> submitPaymentInstructionsByPostClerk(@PathVariable("id") Integer id,
-                                                                  @RequestBody PaymentInstructionRequest paymentInstructionRequest) {
-        if (null == paymentInstructionRequest) {
+                                                                                   @RequestBody PaymentInstructionUpdateRequest paymentInstructionUpdateRequest) {
+        if (null == paymentInstructionUpdateRequest) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(id, paymentInstructionRequest);
+        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(id, paymentInstructionUpdateRequest);
         return new ResponseEntity<>(updatedPaymentInstruction, HttpStatus.OK);
     }
 
@@ -150,8 +176,10 @@ public class PaymentInstructionController {
     @PostMapping("/payment-instructions/{id}/cases")
     public PaymentInstruction saveCaseReference(
         @PathVariable("id") Integer id, @RequestBody CaseReferenceRequest caseReferenceRequest) {
-        return paymentInstructionService.createCaseReference(id,caseReferenceRequest);
+        return paymentInstructionService.createCaseReference(id, caseReferenceRequest);
     }
+
+
 
 
 }

@@ -1,25 +1,24 @@
 package uk.gov.hmcts.bar.api.data.utils;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-
-import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
+import static org.junit.Assert.assertTrue;
 
 public class UtilTest {
 
 	@Test
 	public void whenPaymentInstructionWithNullPropertyValuesPassedIn_shouldReturnAllNullPropertyNames() {
-		PaymentInstructionRequest pir = PaymentInstructionRequest.paymentInstructionRequestWith().payerName("Ravi")
-				.amount(200).allPayTransactionId("748373").status("D").build();
+		PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
+				.status("D").build();
 		List<String> nullPropertyNames = Arrays.asList(Util.getNullPropertyNames(pir));
-		assertTrue(nullPropertyNames.contains("chequeNumber") && nullPropertyNames.contains("postalOrderNumber"));
+		assertTrue(nullPropertyNames.isEmpty());
 	}
 
 	@Test

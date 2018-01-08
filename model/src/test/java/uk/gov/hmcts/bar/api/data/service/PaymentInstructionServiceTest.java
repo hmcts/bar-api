@@ -367,12 +367,12 @@ public class PaymentInstructionServiceTest {
 	@Test
 	public void shouldReturnUpdatedPaymentInstruction_whenUpdatePaymentInstructionForGivenPaymentInstructionIsCalled()
 			throws Exception {
-		PaymentInstructionRequest pir = PaymentInstructionRequest.paymentInstructionRequestWith().payerName("Ravi")
-				.amount(200).allPayTransactionId("748373").status("D").build();
+		PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
+				.status("D").build();
 		when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(paymentInstructionMock));
 		when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
 				.thenReturn(paymentInstructionMock);
-		PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(1, pir);
+		PaymentInstruction updatedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(1, pir);
 		verify(paymentInstructionRepository, times(1)).findById(anyInt());
 		verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
 

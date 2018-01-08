@@ -3,6 +3,7 @@ package uk.gov.hmcts.bar.api.data.model;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -26,6 +27,7 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @JsonIgnoreProperties(value={ "case_references" }, allowGetters=true)
 @DiscriminatorColumn(name = "payment_type_id")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaymentInstruction {
 
     @Id

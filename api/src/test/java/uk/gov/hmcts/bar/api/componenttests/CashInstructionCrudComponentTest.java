@@ -2,8 +2,9 @@ package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Test;
 import uk.gov.hmcts.bar.api.data.model.CaseReference;
+import uk.gov.hmcts.bar.api.data.model.Cash;
 import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 
 import java.util.List;
 
@@ -11,63 +12,66 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.bar.api.data.model.CaseReference.caseReferenceWith;
+import static uk.gov.hmcts.bar.api.data.model.Cash.cashPaymentInstructionRequestWith;
 import static uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction.cashPaymentInstructionWith;
-import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest.paymentInstructionRequestWith;
+import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith;
 
 public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
 
     @Test
     public void whenCashPaymentInstructionDetails_thenCreateCashPaymentInstruction() throws Exception {
-        CashPaymentInstruction  proposedCashPaymentInstruction =cashPaymentInstructionWith()
+        Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP").build();
 
         restActions
-            .post("/cash", proposedCashPaymentInstruction)
+            .post("/cash", proposedCashPaymentInstructionRequest)
             .andExpect(status().isCreated())
-            .andExpect(body().as(CashPaymentInstruction.class, cashPaymentInstructionDto -> {
-                assertThat(cashPaymentInstructionDto).isEqualToComparingOnlyGivenFields(
+            .andExpect(body().as(CashPaymentInstruction.class, cashPaymentInstruction -> {
+                assertThat(cashPaymentInstruction).isEqualToComparingOnlyGivenFields(
                     cashPaymentInstructionWith()
                         .payerName("Mr Payer Payer")
                         .amount(500)
                         .currency("GBP"));
             }));
 
-        /*restActions
-            .delete("/payment-instructions/0")
-            .andExpect(status().isNoContent());*/
     }
 
     @Test
     public void whenCashPaymentInstructionWithInvalidCurrency_thenReturn400() throws Exception {
-        CashPaymentInstruction  proposedCashPaymentInstruction =cashPaymentInstructionWith()
+        Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("XXX").build();
 
         restActions
-            .post("/cash", proposedCashPaymentInstruction)
+            .post("/cash", proposedCashPaymentInstructionRequest)
             .andExpect(status().isBadRequest());
     }
 
     @Test
     public void givenCashPaymentInstructionDetails_retrieveThem() throws Exception {
-        CashPaymentInstruction  proposedCashPaymentInstruction =cashPaymentInstructionWith()
+        Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP").build();
+
+        CashPaymentInstruction  retrievedCashPaymentInstruction = cashPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP").build();
 
         restActions
-            .post("/cash",  proposedCashPaymentInstruction)
+            .post("/cash",  proposedCashPaymentInstructionRequest)
             .andExpect(status().isCreated());
 
         restActions
             .get("/payment-instructions")
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, (cashList) -> {
-                assertThat(cashList.get(0).equals( proposedCashPaymentInstruction));
+                assertThat(cashList.get(0).equals(retrievedCashPaymentInstruction));
             }));
 
 
@@ -75,10 +79,10 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
 	@Test
 	public void givenCashPaymentInstructionDetails_retrieveOneOfThem() throws Exception {
-		CashPaymentInstruction proposedCashPaymentInstruction = cashPaymentInstructionWith()
+		Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
 				.payerName("Mr Payer Payer").amount(500).currency("GBP").build();
 
-		restActions.post("/cash", proposedCashPaymentInstruction).andExpect(status().isCreated());
+		restActions.post("/cash", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
 
 		restActions.get("/payment-instructions/1").andExpect(status().isOk())
 				.andExpect(body().as(CashPaymentInstruction.class, (pi) -> {
@@ -88,23 +92,23 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
 	@Test
 	public void givenCashPaymentInstructionDetails_retrieveOneOfThemWithWrongId() throws Exception {
-		CashPaymentInstruction proposedCashPaymentInstruction = cashPaymentInstructionWith()
+		Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
 				.payerName("Mr Payer Payer").amount(500).currency("GBP").build();
 
-		restActions.post("/cash", proposedCashPaymentInstruction).andExpect(status().isCreated());
+		restActions.post("/cash", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
 
 		restActions.get("/payment-instructions/2").andExpect(status().isNotFound());
 	}
 
     @Test
     public void whenCashPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
-        CashPaymentInstruction.CashPaymentInstructionBuilder  proposedCashPaymentInstruction =cashPaymentInstructionWith()
+        Cash proposedCashPaymentInstructionRequest =cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP");
+            .currency("GBP").build();
 
         restActions
-            .post("/cash",  proposedCashPaymentInstruction.build())
+            .post("/cash",  proposedCashPaymentInstructionRequest)
             .andExpect(status().isCreated());
 
 
@@ -118,13 +122,13 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenNonExistingCashPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
-        CashPaymentInstruction  proposedCashPaymentInstruction =cashPaymentInstructionWith()
+        Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP").build();
 
         restActions
-            .post("/cash",  proposedCashPaymentInstruction)
+            .post("/cash",  proposedCashPaymentInstructionRequest)
             .andExpect(status().isCreated());
 
 
@@ -138,17 +142,17 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenCashPaymentInstructionIsUpdated_expectStatus_200() throws Exception {
-        CashPaymentInstruction proposedCashPaymentInstruction =cashPaymentInstructionWith()
+        Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP").build();
 
 
-        PaymentInstructionRequest request= paymentInstructionRequestWith()
+        PaymentInstructionUpdateRequest request= paymentInstructionUpdateRequestWith()
             .status("P").build();
 
         restActions
-            .post("/cash",  proposedCashPaymentInstruction)
+            .post("/cash",  proposedCashPaymentInstructionRequest)
             .andExpect(status().isCreated());
 
 
@@ -162,17 +166,17 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenNonExistingCashPaymentInstructionIsUpdated_expectStatus_404() throws Exception {
-        CashPaymentInstruction  proposedCashPaymentInstruction =cashPaymentInstructionWith()
+        Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP").build();
 
 
-        PaymentInstructionRequest request= paymentInstructionRequestWith()
+        PaymentInstructionUpdateRequest request= paymentInstructionUpdateRequestWith()
             .status("P").build();
 
         restActions
-            .post("/cash",  proposedCashPaymentInstruction)
+            .post("/cash",  proposedCashPaymentInstructionRequest)
             .andExpect(status().isCreated());
 
 
@@ -185,7 +189,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenCaseReferenceForACashPaymentInstructionIsCreated_expectStatus_201() throws Exception {
-        CashPaymentInstruction proposedCashPaymentInstruction =cashPaymentInstructionWith()
+        Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP").build();
@@ -195,7 +199,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
             .build();
 
         restActions
-            .post("/cash",  proposedCashPaymentInstruction)
+            .post("/cash",  proposedCashPaymentInstructionRequest)
             .andExpect(status().isCreated());
 
 
@@ -207,7 +211,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
     }
     @Test
     public void whenInvalidCaseReferenceForACashPaymentInstructionIsCreated_expectStatus_201() throws Exception {
-        CashPaymentInstruction  proposedCashPaymentInstruction =cashPaymentInstructionWith()
+        Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP").build();
@@ -217,7 +221,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
             .build();
 
         restActions
-            .post("/cash",  proposedCashPaymentInstruction)
+            .post("/cash",  proposedCashPaymentInstructionRequest)
             .andExpect(status().isCreated());
 
 
@@ -228,47 +232,16 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
     }
 
-    @Test
-    public void whenCashPaymentInstructionIsEdited_expectStatus_200() throws Exception {
-        CashPaymentInstruction proposedCashPaymentInstruction = cashPaymentInstructionWith()
-            .payerName("Mr Payer Payer")
-            .amount(500)
-            .currency("GBP").build();
-
-        CashPaymentInstruction updatedCashPaymentInstruction =cashPaymentInstructionWith()
-            .payerName("Mr Updated Payer")
-            .amount(600)
-            .currency("GBP").build();
-
-
-        restActions
-            .post("/cash",  proposedCashPaymentInstruction)
-            .andExpect(status().isCreated());
-
-
-        restActions
-            .patch("/payment-instructions/1",updatedCashPaymentInstruction)
-            .andExpect(status().isOk())
-            .andExpect(body().as(CashPaymentInstruction.class, cashPaymentInstruction -> {
-                assertThat(cashPaymentInstruction).isEqualToComparingOnlyGivenFields(
-                    cashPaymentInstructionWith()
-                        .payerName("Mr Updated Payer")
-                        .amount(600)
-                        .currency("GBP"));
-            }));
-
-
-    }
 
     @Test
     public void whenSearchCashPaymentInstructionByPayerName_expectStatus_200() throws Exception {
-        CashPaymentInstruction proposedCashPaymentInstruction = cashPaymentInstructionWith()
+        Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP").build();
 
         restActions
-            .post("/cash",  proposedCashPaymentInstruction)
+            .post("/cash",  proposedCashPaymentInstructionRequest)
             .andExpect(status().isCreated());
 
         restActions
@@ -286,13 +259,13 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
     }
     @Test
     public void whenSearchNonExistingCashPaymentInstructionByPayerName_expectStatus_200AndEmptyList() throws Exception {
-        CashPaymentInstruction proposedCashPaymentInstruction = cashPaymentInstructionWith()
+        Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP").build();
 
         restActions
-            .post("/cash",  proposedCashPaymentInstruction)
+            .post("/cash",  proposedCashPaymentInstructionRequest)
             .andExpect(status().isCreated());
 
         restActions
