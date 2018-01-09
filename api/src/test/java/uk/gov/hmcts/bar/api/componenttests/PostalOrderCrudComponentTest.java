@@ -321,4 +321,58 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isBadRequest());
     }
 
+
+    @Test
+    public void whenPostalOrderPaymentInstructionIsSubmittedByPostClerk_expectStatus_200() throws Exception {
+        PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .postalOrderNumber("000000").build();
+
+
+        PostalOrder updatedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+            .payerName("Mr Updated Payer")
+            .amount(6000)
+            .currency("GBP")
+            .postalOrderNumber("000000").build();
+
+
+        restActions
+            .post("/postal-orders",  proposedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        restActions
+            .put("/postal-orders/1",updatedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+    }
+    @Test
+    public void whenNonExistingPostalOrderPaymentInstructionIsSubmittedByPostClerk_expectStatus_404() throws Exception {
+        PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .postalOrderNumber("000000").build();
+
+        PostalOrder updatedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+            .payerName("Mr Updated Payer")
+            .amount(6000)
+            .currency("GBP")
+            .postalOrderNumber("000000").build();
+
+
+        restActions
+            .post("/postal-orders",  proposedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        restActions
+            .put("/postal-orders/1000",updatedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isNotFound());
+
+    }
+
+
+
+
 }

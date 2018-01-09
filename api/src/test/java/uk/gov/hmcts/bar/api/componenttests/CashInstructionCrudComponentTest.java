@@ -141,7 +141,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
 
     @Test
-    public void whenCashPaymentInstructionIsUpdated_expectStatus_200() throws Exception {
+    public void whenCashPaymentInstructionIsSubmittedByPostClerk_expectStatus_200() throws Exception {
         Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
@@ -165,7 +165,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
 
     @Test
-    public void whenNonExistingCashPaymentInstructionIsUpdated_expectStatus_404() throws Exception {
+    public void whenNonExistingCashPaymentInstructionIsSubmittedByPostClerk_expectStatus_404() throws Exception {
         Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
@@ -272,6 +272,52 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
             .get("/payment-instructions?payerName=NonExisting")
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, cashPaymentInstructionList-> assertTrue(cashPaymentInstructionList.isEmpty())));
+
+    }
+
+
+    @Test
+    public void whenCashPaymentInstructionIsUpdated_expectStatus_200() throws Exception {
+        Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP").build();
+
+        Cash updatedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
+            .payerName("Mr Updated Payer")
+            .amount(6000)
+            .currency("GBP").build();
+
+
+        restActions
+            .post("/cash",  proposedCashPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        restActions
+            .put("/cash/1",updatedCashPaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+    }
+    @Test
+    public void whenNonExistingCashPaymentInstructionIsUpdated_expectStatus_404() throws Exception {
+        Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP").build();
+
+        Cash updatedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
+            .payerName("Mr Updated Payer")
+            .amount(6000)
+            .currency("GBP").build();
+
+
+        restActions
+            .post("/cash",  proposedCashPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        restActions
+            .put("/cash/1000",updatedCashPaymentInstructionRequest)
+            .andExpect(status().isNotFound());
 
     }
 

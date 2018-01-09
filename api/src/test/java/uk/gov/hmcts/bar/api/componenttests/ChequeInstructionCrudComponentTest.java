@@ -160,7 +160,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
 
     @Test
-    public void whenChequePaymentInstructionIsSubmitted_expectStatus_200() throws Exception {
+    public void whenChequePaymentInstructionIsSubmittedByPostClerk_expectStatus_200() throws Exception {
         Cheque proposedChequePaymentInstructionRequest =chequePaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
@@ -182,7 +182,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
     }
 
     @Test
-    public void whenNonExistingChequePaymentInstructionIsUpdated_expectStatus_404() throws Exception {
+    public void whenNonExistingChequePaymentInstructionIsSubmittedByPostClerk_expectStatus_404() throws Exception {
         Cheque proposedChequePaymentInstructionRequest =chequePaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
@@ -365,6 +365,57 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
     }
 
+
+    @Test
+    public void whenChequePaymentInstructionIsUpdated_expectStatus_200() throws Exception {
+        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .chequeNumber("000000").build();
+
+
+        Cheque updatedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(6000)
+            .currency("GBP")
+            .chequeNumber("000000").build();
+
+
+        restActions
+            .post("/cheques",  proposedChequePaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        restActions
+            .put("/cheques/1",updatedChequePaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+    }
+    @Test
+    public void whenNonExistingChequePaymentInstructionIsUpdated_expectStatus_404() throws Exception {
+        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .chequeNumber("000000").build();
+
+
+        Cheque updatedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(6000)
+            .currency("GBP")
+            .chequeNumber("000000").build();
+
+
+        restActions
+            .post("/cheques",  proposedChequePaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        restActions
+            .put("/cheques/1000",updatedChequePaymentInstructionRequest)
+            .andExpect(status().isNotFound());
+
+    }
 
 }
 

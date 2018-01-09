@@ -365,7 +365,7 @@ public class PaymentInstructionServiceTest {
 	}
 
 	@Test
-	public void shouldReturnUpdatedPaymentInstruction_whenUpdatePaymentInstructionForGivenPaymentInstructionIsCalled()
+	public void shouldReturnSubmittedPaymentInstruction_whenSubmitPaymentInstructionForGivenPaymentInstructionIsCalled()
 			throws Exception {
 		PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
 				.status("D").build();
@@ -377,6 +377,22 @@ public class PaymentInstructionServiceTest {
 		verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
 
 	}
+    @Test
+    public void shouldReturn200_whenUpdatePaymentInstructionForGivenPaymentInstructionIsCalled()
+        throws Exception {
+        PaymentInstructionRequest pir = PaymentInstructionRequest.paymentInstructionRequestWith()
+            .amount(200)
+            .payerName("Payer Name")
+            .currency("GBP").build();
+        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(paymentInstructionMock));
+        when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
+            .thenReturn(paymentInstructionMock);
+        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(1, pir);
+        verify(paymentInstructionRepository, times(1)).findById(anyInt());
+        verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
+
+    }
+
 
 	@Test
 	public void shouldCreateCaseReference_whenCreateCaseReferenceIsCalled() {

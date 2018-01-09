@@ -159,7 +159,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
 
     @Test
-    public void whenAllPayPaymentInstructionIsSubmitted_expectStatus_200() throws Exception {
+    public void whenAllPayPaymentInstructionIsSubmittedByPostClerk_expectStatus_200() throws Exception {
         AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
@@ -180,7 +180,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
     }
 
     @Test
-    public void whenNonExistingAllPayPaymentInstructionIsUpdated_expectStatus_404() throws Exception {
+    public void whenNonExistingAllPayPaymentInstructionIsSubmittedByPostClerk_expectStatus_404() throws Exception {
         AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
@@ -314,6 +314,59 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
 
     }
+
+
+    @Test
+    public void whenAllPayPaymentInstructionIsUpdated_expectStatus_200() throws Exception {
+        AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .allPayTransactionId("12345").build();
+
+
+        AllPay updatedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(6000)
+            .currency("GBP")
+            .allPayTransactionId("12345").build();
+
+
+        restActions
+            .post("/allpay",  proposedAllPayPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        restActions
+            .put("/allpay/1",updatedAllPayPaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+    }
+    @Test
+    public void whenNonExistingAllPayPaymentInstructionIsUpdated_expectStatus_404() throws Exception {
+        AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .allPayTransactionId("12345").build();
+
+
+        AllPay updatedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(6000)
+            .currency("GBP")
+            .allPayTransactionId("12345").build();
+
+
+        restActions
+            .post("/allpay",  proposedAllPayPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        restActions
+            .put("/allpay/1000",updatedAllPayPaymentInstructionRequest)
+            .andExpect(status().isNotFound());
+
+    }
+
 
 
 }

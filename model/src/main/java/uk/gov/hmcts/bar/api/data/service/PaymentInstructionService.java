@@ -105,5 +105,14 @@ public class PaymentInstructionService {
         return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
     }
 
+    public PaymentInstruction updatePaymentInstruction(Integer id,PaymentInstructionRequest paymentInstructionRequest){
+        Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
+        PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
+            .orElseThrow(() -> new PaymentInstructionNotFoundException(id));
+        String [] nullPropertiesNamesToIgnore = Util.getNullPropertyNames(paymentInstructionRequest);
+        BeanUtils.copyProperties(paymentInstructionRequest,existingPaymentInstruction,nullPropertiesNamesToIgnore);
+        return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
+    }
+
 
 }
