@@ -347,26 +347,6 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
     }
 
     @Test
-    public void whenSearchChequePaymentInstructionWithInvalidChequeNumber_expectStatus_400() throws Exception {
-        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
-            .payerName("Mr Payer Payer")
-            .amount(500)
-            .currency("GBP")
-            .chequeNumber("000000").build();
-
-        restActions
-            .post("/cheques", proposedChequePaymentInstructionRequest)
-            .andExpect(status().isCreated());
-
-
-        restActions
-            .get("/payment-instructions?chequeNumber=invalid")
-            .andExpect(status().isBadRequest());
-
-    }
-
-
-    @Test
     public void whenChequePaymentInstructionIsUpdated_expectStatus_200() throws Exception {
         Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")

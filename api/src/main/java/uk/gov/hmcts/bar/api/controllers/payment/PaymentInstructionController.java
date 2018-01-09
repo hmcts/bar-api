@@ -15,7 +15,6 @@ import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
 import uk.gov.hmcts.bar.api.data.utils.Util;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -49,10 +48,10 @@ public class PaymentInstructionController {
         @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
         @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate,
         @RequestParam(name = "payerName", required = false) String payerName,
-        @Valid @Pattern(regexp = "^\\d{6,6}$", message = "invalid cheque number") @RequestParam(name = "chequeNumber", required = false) String chequeNumber,
-        @Valid @Pattern(regexp = "^\\d{6,6}$", message = "invalid postal order number") @RequestParam(name = "postalOrderNumber", required = false) String postalOrderNumber,
+        @RequestParam(name = "chequeNumber", required = false) String chequeNumber,
+        @RequestParam(name = "postalOrderNumber", required = false) String postalOrderNumber,
         @RequestParam(name = "dailySequenceId", required = false) Integer dailySequenceId,
-        @Valid @Pattern(regexp = "^\\d{1,20}$", message = "invalid all pay transaction id") @RequestParam(name = "allPayInstructionId", required = false) String allPayInstructionId,
+        @RequestParam(name = "allPayInstructionId", required = false) String allPayInstructionId,
         @RequestParam(name = "paymentType", required = false) String paymentType) {
 
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = PaymentInstructionSearchCriteriaDto
