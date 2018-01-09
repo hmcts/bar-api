@@ -26,9 +26,10 @@ public class PostalOrder extends PaymentInstructionRequest{
     public PostalOrder(@JsonProperty("payer_name") String payerName,
                        @JsonProperty("amount") Integer amount,
                        @JsonProperty("currency") String currency,
-                       @JsonProperty("postal_order_number") String postalOrderNumber) {
+                       @JsonProperty("postal_order_number") String postalOrderNumber,
+                       @JsonProperty("status") String status) {
 
-        super(payerName,amount,currency);
+        super(payerName,amount,currency,status);
         this.postalOrderNumber = postalOrderNumber;
     }
 }

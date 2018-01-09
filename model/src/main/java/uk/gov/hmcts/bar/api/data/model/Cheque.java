@@ -26,9 +26,10 @@ public class Cheque extends PaymentInstructionRequest{
     public Cheque(@JsonProperty("payer_name") String payerName,
                   @JsonProperty("amount") Integer amount,
                   @JsonProperty("currency") String currency,
-                  @JsonProperty("cheque_number") String chequeNumber) {
+                  @JsonProperty("cheque_number") String chequeNumber,
+                  @JsonProperty("status") String status) {
 
-        super(payerName,amount,currency);
+        super(payerName,amount,currency,status);
         this.chequeNumber = chequeNumber;
     }
 
