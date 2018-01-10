@@ -7,6 +7,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
@@ -74,7 +75,8 @@ public class PaymentInstructionService {
 
 		paymentInstructionSearchCriteriaDto.setSiteId(SITE_ID);
 		PaymentInstructionsSpecifications paymentInstructionsSpecification = new PaymentInstructionsSpecifications(paymentInstructionSearchCriteriaDto);
-		Pageable pageDetails = new PageRequest(PAGE_NUMBER, MAX_RECORDS_PER_PAGE);
+		Sort sort = new Sort(Sort.Direction.ASC, "paymentDate");
+		Pageable pageDetails = new PageRequest(PAGE_NUMBER, MAX_RECORDS_PER_PAGE, sort);
 
 		return Lists.newArrayList(paymentInstructionRepository
 				.findAll(paymentInstructionsSpecification.getPaymentInstructionsSpecification(), pageDetails)

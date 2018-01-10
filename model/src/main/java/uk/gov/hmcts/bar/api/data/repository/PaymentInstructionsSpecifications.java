@@ -5,6 +5,7 @@ import static org.springframework.data.jpa.domain.Specifications.where;
 import java.time.LocalDateTime;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaBuilder.In;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -14,6 +15,7 @@ import org.springframework.data.jpa.domain.Specifications;
 
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
+import uk.gov.hmcts.bar.api.data.utils.Util;
 
 public class PaymentInstructionsSpecifications {
 
@@ -56,12 +58,12 @@ public class PaymentInstructionsSpecifications {
 		@Override
 		public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 
-			Predicate predicate = null;
+			In<String> inCriteriaForStatus = null;
 
 			if (paymentInstructionSearchCriteriaDto.getStatus() != null) {
-				predicate = builder.equal(root.<String>get("status"), paymentInstructionSearchCriteriaDto.getStatus());
+				inCriteriaForStatus = builder.in(root.<String>get("status"));
 			}
-			return predicate;
+			return Util.getListOfStatuses(inCriteriaForStatus, paymentInstructionSearchCriteriaDto.getStatus());
 		}
 	}
 
