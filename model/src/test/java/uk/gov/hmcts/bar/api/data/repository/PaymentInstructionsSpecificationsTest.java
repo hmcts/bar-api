@@ -10,6 +10,8 @@ import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto.PaymentInstructionSearchCriteriaDtoBuilder;
 
 import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder.In;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -31,6 +33,9 @@ public class PaymentInstructionsSpecificationsTest {
 
 	@Mock
 	private Predicate predicate;
+	
+	@Mock
+	private  In<String> inCriteriaForStatus;
 
 	@Mock
 	private Path<String> stringPath;
@@ -67,7 +72,7 @@ public class PaymentInstructionsSpecificationsTest {
 	public void shouldReturnStatusSpecs_whenAllParamsAreProvidedUsingToPredicate() {
 		String status = "D";
 		when(root.<String>get("status")).thenReturn(stringPath);
-		when(builder.equal(stringPath, status)).thenReturn(predicate);
+		when(builder.in(stringPath)).thenReturn(inCriteriaForStatus);
 		Predicate statusPredicate = getStatusSpec(status, LocalDateTime.now(), LocalDateTime.now()).toPredicate(root, query, builder);
 		assertNotNull(statusPredicate);
 	}
