@@ -1,15 +1,17 @@
 package uk.gov.hmcts.bar.api.data.utils;
 
+import java.beans.FeatureDescriptor;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.persistence.criteria.CriteriaBuilder.In;
+
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
-
-import java.beans.FeatureDescriptor;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public interface Util {
 
@@ -27,6 +29,21 @@ public interface Util {
 					.setStatus(PaymentStatusEnum.getPaymentStatusEnum(paymentInstruction.getStatus()).displayValue());
 			return paymentInstruction;
 		}).collect(Collectors.toList());
+	}
+    
+	public static In<String> getListOfStatuses(In<String> inCriteriaForStatus, String status) {
+		if (inCriteriaForStatus == null) {
+			return null;
+		}
+		String[] statusArray = status.split(",");
+		if (statusArray != null && statusArray.length > 0) {
+			for (String statusValue : statusArray) {
+				inCriteriaForStatus.value(statusValue);
+			}
+		} else {
+			inCriteriaForStatus.value(status);
+		}
+		return inCriteriaForStatus;
 	}
 
 }
