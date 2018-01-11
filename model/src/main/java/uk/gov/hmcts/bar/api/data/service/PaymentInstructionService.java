@@ -75,7 +75,7 @@ public class PaymentInstructionService {
 
 		paymentInstructionSearchCriteriaDto.setSiteId(SITE_ID);
 		PaymentInstructionsSpecifications paymentInstructionsSpecification = new PaymentInstructionsSpecifications(paymentInstructionSearchCriteriaDto);
-		Sort sort = new Sort(Sort.Direction.ASC, "paymentDate");
+		Sort sort = new Sort(Sort.Direction.DESC, "paymentDate");
 		Pageable pageDetails = new PageRequest(PAGE_NUMBER, MAX_RECORDS_PER_PAGE, sort);
 
 		return Lists.newArrayList(paymentInstructionRepository
