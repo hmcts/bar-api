@@ -20,6 +20,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction.allPayPaymentInstructionWith;
+import static uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction.cardPaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction.cashPaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction.chequePaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction.postalOrderPaymentInstructionWith;
@@ -86,6 +87,35 @@ public class PaymentInstructionController {
     public void deletePaymentInstruction(@PathVariable("id") Integer id) {
         paymentInstructionService.deletePaymentInstruction(id);
     }
+
+    @ApiOperation(value = "Create card payment instruction", notes = "Create card payment instruction with the given values.")
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "Card payment instruction created"),
+        @ApiResponse(code = 400, message = "Bad request"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/cards")
+    public PaymentInstruction saveCardInstruction(
+        @Valid @RequestBody Card card) {
+        CardPaymentInstruction cardPaymentInstruction = cardPaymentInstructionWith()
+            .payerName(card.getPayerName())
+            .amount(card.getAmount())
+            .currency(card.getCurrency())
+            .build();
+        return paymentInstructionService.createPaymentInstruction(cardPaymentInstruction);
+    }
+
+    @ApiOperation(value = "Update card payment instruction", notes = "Update card payment instruction with the given values.")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Card payment instruction updated"),
+        @ApiResponse(code = 400, message = "Bad request"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/cards/{id}")
+    public ResponseEntity<Void> updateCardInstruction(@PathVariable("id") Integer id , @ApiParam(value="Card request",required=true) @Valid @RequestBody Card card) {
+        paymentInstructionService.updatePaymentInstruction(id,card);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
 
     @ApiOperation(value = "Create cheque payment instruction", notes = "Create cheque payment instruction with the given values.")
     @ApiResponses(value = {@ApiResponse(code = 201, message = "Cheque payment instruction created"),

@@ -19,7 +19,7 @@ public class PaymentTypeCrudComponentTest extends ComponentTestBase{
                 assertThat(paymentTypes).hasSameElementsAs(
                     new ArrayList<PaymentType>() {{
                         add(new PaymentType("cheques","Cheque"));
-                        add(new PaymentType("card","Card"));
+                        add(new PaymentType("cards","Card"));
                         add(new PaymentType("postal-orders","Postal Order"));
                         add(new PaymentType("cash","Cash"));
                         add(new PaymentType("allpay","AllPay"));

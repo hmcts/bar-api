@@ -238,3 +238,10 @@ databaseChangeLog:
             columnNames: payment_instruction_id, case_reference_id
             tableName: payment_instruction_case_reference
 
+  - changeSet:
+      id: 6
+      author: sachi
+      changes:
+         - sql: >
+            UPDATE payment_type SET id = 'cards' WHERE id = 'card';
+

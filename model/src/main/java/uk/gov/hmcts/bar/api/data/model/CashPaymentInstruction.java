@@ -15,8 +15,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("cash")
 public class CashPaymentInstruction extends PaymentInstruction {
 
-    private static final String CASH_DISCRIMINATOR_VALUE="cash";
-
     @JsonCreator
     @Builder(builderMethodName = "cashPaymentInstructionWith")
     public CashPaymentInstruction(@JsonProperty("payer_name") String payerName,
