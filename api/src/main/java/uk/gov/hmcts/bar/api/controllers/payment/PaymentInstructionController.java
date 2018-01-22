@@ -1,29 +1,56 @@
 package uk.gov.hmcts.bar.api.controllers.payment;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import uk.gov.hmcts.bar.api.data.model.*;
-import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
-import uk.gov.hmcts.bar.api.data.utils.Util;
-
-import javax.validation.Valid;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
 import static uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction.allPayPaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction.cardPaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction.cashPaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction.chequePaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction.postalOrderPaymentInstructionWith;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import uk.gov.hmcts.bar.api.data.model.AllPay;
+import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.Card;
+import uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.CaseFeeDetail;
+import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
+import uk.gov.hmcts.bar.api.data.model.CaseReferenceRequest;
+import uk.gov.hmcts.bar.api.data.model.Cash;
+import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.Cheque;
+import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
+import uk.gov.hmcts.bar.api.data.model.PostalOrder;
+import uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.service.CaseFeeDetailService;
+import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
+import uk.gov.hmcts.bar.api.data.utils.Util;
 
 @RestController
 
@@ -31,11 +58,13 @@ import static uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction.post
 public class PaymentInstructionController {
 
     private final PaymentInstructionService paymentInstructionService;
+    
+    private final CaseFeeDetailService caseFeeDetailService;
 
     @Autowired
-    public PaymentInstructionController(PaymentInstructionService paymentInstructionService) {
+    public PaymentInstructionController(PaymentInstructionService paymentInstructionService, CaseFeeDetailService caseFeeDetailService) {
         this.paymentInstructionService = paymentInstructionService;
-
+        this.caseFeeDetailService = caseFeeDetailService;
     }
 
     @ApiOperation(value = "Get all current payment instructions", notes = "Get all current payment instructions for a given site.")
@@ -257,6 +286,17 @@ public class PaymentInstructionController {
     public PaymentInstruction saveCaseReference(
         @PathVariable("id") Integer id, @RequestBody CaseReferenceRequest caseReferenceRequest) {
         return paymentInstructionService.createCaseReference(id, caseReferenceRequest);
+    }
+    
+    @ApiOperation(value = "Create case fee detail for a payment instruction", notes = "Create case fee detail for a payment instruction.")
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "Case fee detail for a payment instruction created"),
+        @ApiResponse(code = 400, message = "Bad request"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/payment-instructions/{id}/fees")
+    public CaseFeeDetail saveCaseFeeDetail(
+        @PathVariable("id") Integer id, @RequestBody CaseFeeDetailRequest caseFeeDetailRequest) {
+        return caseFeeDetailService.saveCaseFeeDetail(id, caseFeeDetailRequest);
     }
 
 }
