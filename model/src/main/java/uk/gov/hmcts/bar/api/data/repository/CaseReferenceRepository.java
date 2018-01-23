@@ -7,5 +7,5 @@ import java.util.Optional;
 
 @Repository
 public interface CaseReferenceRepository extends BaseRepository<CaseReference,Integer>{
-    Optional<CaseReference> findByCaseReference(String caseReference);
+    Optional<CaseReference> findByCaseReferenceAndPaymentInstructionId(String caseReference, Integer id);
 }

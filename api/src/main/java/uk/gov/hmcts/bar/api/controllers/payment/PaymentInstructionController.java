@@ -38,6 +38,7 @@ import uk.gov.hmcts.bar.api.data.model.Card;
 import uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.CaseFeeDetail;
 import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
+import uk.gov.hmcts.bar.api.data.model.CaseReference;
 import uk.gov.hmcts.bar.api.data.model.CaseReferenceRequest;
 import uk.gov.hmcts.bar.api.data.model.Cash;
 import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
@@ -73,25 +74,35 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/payment-instructions")
-    public List<PaymentInstruction> getPaymentInstructions(
-        @RequestParam(name = "status", required = false) String status,
-        @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
-        @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate,
-        @RequestParam(name = "payerName", required = false) String payerName,
-        @RequestParam(name = "chequeNumber", required = false) String chequeNumber,
-        @RequestParam(name = "postalOrderNumber", required = false) String postalOrderNumber,
-        @RequestParam(name = "dailySequenceId", required = false) Integer dailySequenceId,
-        @RequestParam(name = "allPayInstructionId", required = false) String allPayInstructionId,
-        @RequestParam(name = "paymentType", required = false) String paymentType) {
+	public List<PaymentInstruction> getPaymentInstructions(
+			@RequestParam(name = "status", required = false) String status,
+			@RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
+			@RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate,
+			@RequestParam(name = "payerName", required = false) String payerName,
+			@RequestParam(name = "chequeNumber", required = false) String chequeNumber,
+			@RequestParam(name = "postalOrderNumber", required = false) String postalOrderNumber,
+			@RequestParam(name = "dailySequenceId", required = false) Integer dailySequenceId,
+			@RequestParam(name = "allPayInstructionId", required = false) String allPayInstructionId,
+			@RequestParam(name = "caseReference", required = false) String caseReference,
+			@RequestParam(name = "paymentType", required = false) String paymentType) {
 
-        PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = PaymentInstructionSearchCriteriaDto
-            .paymentInstructionSearchCriteriaDto().status(status)
-            .startDate(startDate == null ? null : startDate.atStartOfDay())
-            .endDate(endDate == null ? null : endDate.atTime(LocalTime.now())).payerName(payerName)
-            .chequeNumber(chequeNumber).postalOrderNumer(postalOrderNumber).dailySequenceId(dailySequenceId)
-            .allPayInstructionId(allPayInstructionId).paymentType(paymentType).build();
-        return Util.updateStatusDisplayValue(paymentInstructionService.getAllPaymentInstructions(paymentInstructionSearchCriteriaDto));
-    }
+		List<PaymentInstruction> paymentInstructionList = null;
+
+		if (caseReference != null) {
+			paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByCaseReference(caseReference);
+		} else {
+			PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = PaymentInstructionSearchCriteriaDto
+					.paymentInstructionSearchCriteriaDto().status(status)
+					.startDate(startDate == null ? null : startDate.atStartOfDay())
+					.endDate(endDate == null ? null : endDate.atTime(LocalTime.now())).payerName(payerName)
+					.chequeNumber(chequeNumber).postalOrderNumer(postalOrderNumber).dailySequenceId(dailySequenceId)
+					.allPayInstructionId(allPayInstructionId).paymentType(paymentType).build();
+
+			paymentInstructionList = paymentInstructionService
+					.getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
+		}
+		return Util.updateStatusDisplayValue(paymentInstructionList);
+	}
 
     @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction for the given id.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return payment instruction"),
@@ -283,7 +294,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/payment-instructions/{id}/cases")
-    public PaymentInstruction saveCaseReference(
+    public CaseReference saveCaseReference(
         @PathVariable("id") Integer id, @RequestBody CaseReferenceRequest caseReferenceRequest) {
         return paymentInstructionService.createCaseReference(id, caseReferenceRequest);
     }
@@ -294,9 +305,8 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/payment-instructions/{id}/fees")
-    public CaseFeeDetail saveCaseFeeDetail(
-        @PathVariable("id") Integer id, @RequestBody CaseFeeDetailRequest caseFeeDetailRequest) {
-        return caseFeeDetailService.saveCaseFeeDetail(id, caseFeeDetailRequest);
+    public CaseFeeDetail saveCaseFeeDetail(@RequestBody CaseFeeDetailRequest caseFeeDetailRequest) {
+        return caseFeeDetailService.saveCaseFeeDetail(caseFeeDetailRequest);
     }
 
 }

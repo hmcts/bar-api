@@ -53,21 +53,15 @@ public class PaymentInstructionService {
         return paymentInstructionRepository.saveAndRefresh(paymentInstruction);
     }
 
-    public PaymentInstruction createCaseReference(Integer paymentInstructionId, CaseReferenceRequest caseReferenceRequest) {
+    public CaseReference createCaseReference(Integer paymentInstructionId, CaseReferenceRequest caseReferenceRequest) {
 
         Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(paymentInstructionId);
         PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
             .orElseThrow(() -> new PaymentInstructionNotFoundException(paymentInstructionId));
-
-        Optional<CaseReference> optionalCaseReference = caseReferenceService.getCaseReference(caseReferenceRequest.getCaseReference());
-        if (optionalCaseReference.isPresent())
-        {
-            existingPaymentInstruction.getCaseReferences().add(optionalCaseReference.get());
-        }
-        else{
-            existingPaymentInstruction.getCaseReferences().add(caseReferenceService.saveCaseReference(caseReferenceRequest.getCaseReference()));
-        }
-        return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
+        
+        CaseReference caseReference = new CaseReference(caseReferenceRequest.getCaseReference(), existingPaymentInstruction.getId());
+        
+        return caseReferenceService.saveCaseReference(caseReference);
     }
 
 
@@ -114,6 +108,10 @@ public class PaymentInstructionService {
         String [] nullPropertiesNamesToIgnore = Util.getNullPropertyNames(paymentInstructionRequest);
         BeanUtils.copyProperties(paymentInstructionRequest,existingPaymentInstruction,nullPropertiesNamesToIgnore);
         return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
+    }
+    
+    public List<PaymentInstruction> getAllPaymentInstructionsByCaseReference(String caseReference) {
+        return paymentInstructionRepository.findByCaseReference(caseReference);
     }
 
 

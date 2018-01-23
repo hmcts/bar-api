@@ -252,13 +252,12 @@ databaseChangeLog:
          - addColumn:
              columns:
                - column:
-                  name: case_payment_id
+                  name: payment_instruction_id
                   type: int
-                  autoIncrement: true
                   constraints:
-                    primaryKey: true
-                    nullable: false 
-             tableName: payment_instruction_case_reference      
+                    foreignKeyName: fk_payment_instruction_id
+                    references: payment_instruction(id) 
+             tableName: case_reference      
          
          - createTable:
             tableName: case_fee_detail
@@ -271,11 +270,11 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false 
               - column:
-                  name: case_payment_id
+                  name: case_reference_id
                   type: int
                   constraints:
-                    foreignKeyName: fk_case_payment_id
-                    references: payment_instruction_case_reference(case_payment_id)
+                    foreignKeyName: fk_case_reference_id
+                    references: case_reference(id)
               - column:
                   name: fee_code
                   type: varchar(255)

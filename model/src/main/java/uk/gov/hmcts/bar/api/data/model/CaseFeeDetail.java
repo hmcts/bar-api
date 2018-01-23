@@ -1,5 +1,7 @@
 package uk.gov.hmcts.bar.api.data.model;
 
+import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,7 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,9 +32,7 @@ public class CaseFeeDetail {
     @JsonProperty(access= JsonProperty.Access.READ_ONLY)
 	private int caseFeeId;
 	
-	@ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "CASE_PAYMENT_ID") 
-	private PaymentInstructionCaseReference paymentInstructionCaseReference;
+	private Integer caseReferenceId;
 	
 	private String feeCode;
 	
@@ -44,13 +44,13 @@ public class CaseFeeDetail {
 	
 	@JsonCreator
     @Builder(builderMethodName = "caseFeeDetailWith")
-	public CaseFeeDetail(@JsonProperty("payment_instruction_case_reference") PaymentInstructionCaseReference paymentInstructionCaseReference,
+	public CaseFeeDetail(@JsonProperty("case_reference_id") Integer caseReferenceId,
 			@JsonProperty("fee_code") String feeCode,
             @JsonProperty("amount") Integer amount,
             @JsonProperty("fee_description") String feeDescription,
             @JsonProperty("fee_version") String feeVersion) {
 
-		this.paymentInstructionCaseReference = paymentInstructionCaseReference;
+		this.caseReferenceId = caseReferenceId;
 		this.amount = amount;
 		this.feeCode = feeCode;
 		this.feeDescription = feeDescription;

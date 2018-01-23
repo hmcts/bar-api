@@ -392,22 +392,4 @@ public class PaymentInstructionServiceTest {
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
 
     }
-
-
-	@Test
-	public void shouldCreateCaseReference_whenCreateCaseReferenceIsCalled() {
-
-		CaseReferenceRequest caseReferenceRequest = CaseReferenceRequest.caseReferenceRequestWith()
-				.caseReference("12345").build();
-		when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(paymentInstructionMock));
-		when(caseReferenceService.getCaseReference(anyString())).thenReturn(Optional.of(caseReferenceMock));
-		when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
-				.thenReturn(paymentInstructionMock);
-		PaymentInstruction paymentInstruction = paymentInstructionService.createCaseReference(1, caseReferenceRequest);
-		verify(paymentInstructionRepository, times(1)).findById(anyInt());
-		verify(caseReferenceService, times(1)).getCaseReference(anyString());
-		verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
-
-	}
-
 }

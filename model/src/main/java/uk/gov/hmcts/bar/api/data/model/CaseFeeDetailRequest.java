@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class CaseFeeDetailRequest {
 
-	private String caseReference;
+	private Integer caseReferenceId;
 	
 	private String feeCode;
 	
@@ -27,13 +27,13 @@ public class CaseFeeDetailRequest {
 
     @JsonCreator
     @Builder(builderMethodName = "caseFeeDetailRequestWith")
-    public CaseFeeDetailRequest(@JsonProperty("case_reference") String caseReference,
+    public CaseFeeDetailRequest(@JsonProperty("case_reference_id") Integer caseReferenceId,
     		                        @JsonProperty("fee_code") String feeCode,
     		                        @JsonProperty("amount") Integer amount,
     		                        @JsonProperty("fee_description") String feeDescription,
     		                        @JsonProperty("fee_version") String feeVersion) {
 
-        this.caseReference = caseReference;
+        this.caseReferenceId = caseReferenceId;
         this.amount = amount;
         this.feeCode = feeCode;
         this.feeDescription = feeDescription;
