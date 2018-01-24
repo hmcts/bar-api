@@ -244,4 +244,56 @@ databaseChangeLog:
       changes:
          - sql: >
             UPDATE payment_type SET id = 'cards' WHERE id = 'card';
+  
+  - changeSet:
+      id: 7
+      author: ravi
+      changes:
+         - addColumn:
+             columns:
+               - column:
+                  name: payment_instruction_id
+                  type: int
+                  constraints:
+                    foreignKeyName: fk_cr_payment_instruction_id
+                    references: payment_instruction(id) 
+             tableName: case_reference      
+         
+         - createTable:
+            tableName: case_fee_detail
+            columns:
+              - column:
+                  name: case_fee_id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false 
+              - column:
+                  name: case_reference_id
+                  type: int
+                  constraints:
+                    foreignKeyName: fk_cfd_case_reference_id
+                    references: case_reference(id)
+              - column:
+                  name: fee_code
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: fee_description
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: fee_version
+                  type: varchar(15)
+                  constraints:
+                    nullable: false    
+                      
 
