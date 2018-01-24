@@ -255,7 +255,7 @@ databaseChangeLog:
                   name: payment_instruction_id
                   type: int
                   constraints:
-                    foreignKeyName: fk_payment_instruction_id
+                    foreignKeyName: fk_cr_payment_instruction_id
                     references: payment_instruction(id) 
              tableName: case_reference      
          
@@ -273,7 +273,7 @@ databaseChangeLog:
                   name: case_reference_id
                   type: int
                   constraints:
-                    foreignKeyName: fk_case_reference_id
+                    foreignKeyName: fk_cfd_case_reference_id
                     references: case_reference(id)
               - column:
                   name: fee_code
