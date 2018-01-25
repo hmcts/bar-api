@@ -27,6 +27,11 @@ public class CaseFeeDetailService {
 		return caseFeeDetailRepository.saveAndRefresh(CaseFeeDetail.caseFeeDetailWith()
 				.amount(caseFeeDetailRequest.getAmount()).feeCode(caseFeeDetailRequest.getFeeCode())
 				.feeDescription(caseFeeDetailRequest.getFeeDescription())
-				.feeVersion(caseFeeDetailRequest.getFeeVersion()).caseReferenceId(caseFeeDetailRequest.getCaseReferenceId()).build());
+				.feeVersion(caseFeeDetailRequest.getFeeVersion())
+				.caseReferenceId(caseFeeDetailRequest.getCaseReferenceId())
+				.remissionAmount(caseFeeDetailRequest.getRemissionAmount())
+				.remissionAuthorisation(caseFeeDetailRequest.getRemissionAuthorisation())
+				.remissionBenefiter(caseFeeDetailRequest.getRemissionBenefiter())
+				.refundAmount(caseFeeDetailRequest.getRefundAmount()).build());
 	}
 }
