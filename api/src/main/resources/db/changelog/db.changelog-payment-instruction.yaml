@@ -303,6 +303,11 @@ databaseChangeLog:
          - addColumn:
              columns:
                - column:
+                  name: case_reference
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+               - column:
                   name: remission_amount
                   type: int
                   constraints:

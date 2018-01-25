@@ -1,13 +1,20 @@
 package uk.gov.hmcts.bar.api.data.service;
 
+import java.util.Optional;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.gov.hmcts.bar.api.data.exceptions.CaseFeeDetailNotFoundException;
+import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
 import uk.gov.hmcts.bar.api.data.model.CaseFeeDetail;
 import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.repository.CaseFeeDetailRepository;
 import uk.gov.hmcts.bar.api.data.repository.CaseReferenceRepository;
+import uk.gov.hmcts.bar.api.data.utils.Util;
 
 @Service
 @Transactional
@@ -32,6 +39,20 @@ public class CaseFeeDetailService {
 				.remissionAmount(caseFeeDetailRequest.getRemissionAmount())
 				.remissionAuthorisation(caseFeeDetailRequest.getRemissionAuthorisation())
 				.remissionBenefiter(caseFeeDetailRequest.getRemissionBenefiter())
-				.refundAmount(caseFeeDetailRequest.getRefundAmount()).build());
+				.refundAmount(caseFeeDetailRequest.getRefundAmount())
+				.caseReference(caseFeeDetailRequest.getCaseReference()).build());
+	}
+	
+	public CaseFeeDetail updateCaseFeeDetail(Integer feeId, CaseFeeDetailRequest caseFeeDetailRequest) {
+
+		CaseFeeDetail existingCaseFeeDetail = caseFeeDetailRepository.findOne(feeId);
+		if (existingCaseFeeDetail == null) {
+			throw new CaseFeeDetailNotFoundException(feeId);
+		}
+
+		String[] nullPropertiesNamesToIgnore = Util.getNullPropertyNames(caseFeeDetailRequest);
+		BeanUtils.copyProperties(caseFeeDetailRequest, existingCaseFeeDetail, nullPropertiesNamesToIgnore);
+
+		return caseFeeDetailRepository.saveAndRefresh(existingCaseFeeDetail);
 	}
 }

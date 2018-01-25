@@ -37,6 +37,8 @@ public class CaseFeeDetail {
 	
 	private String feeVersion;
 	
+	private String caseReference;
+	
 	private Integer remissionAmount;
 	
 	private String remissionBenefiter;
@@ -52,6 +54,7 @@ public class CaseFeeDetail {
             @JsonProperty("amount") Integer amount,
             @JsonProperty("fee_description") String feeDescription,
             @JsonProperty("fee_version") String feeVersion,
+            @JsonProperty("case_reference") String caseReference,
             @JsonProperty("remission_amount") Integer remissionAmount,
             @JsonProperty("remission_benefiter") String remissionBenefiter,
             @JsonProperty("remission_authorisation") String remissionAuthorisation,
@@ -62,6 +65,7 @@ public class CaseFeeDetail {
 		this.feeCode = feeCode;
 		this.feeDescription = feeDescription;
 		this.feeVersion =  feeVersion;
+		this.caseReference = caseReference;
 		this.remissionAmount = remissionAmount;
 		this.remissionBenefiter = remissionBenefiter;
 		this.remissionAuthorisation = remissionAuthorisation;

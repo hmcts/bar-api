@@ -308,5 +308,15 @@ public class PaymentInstructionController {
     public CaseFeeDetail saveCaseFeeDetail(@RequestBody CaseFeeDetailRequest caseFeeDetailRequest) {
         return caseFeeDetailService.saveCaseFeeDetail(caseFeeDetailRequest);
     }
+    
+    @ApiOperation(value = "Update fee details", notes = "Update fee details with the given values.")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Fee details updated"),
+        @ApiResponse(code = 400, message = "Bad request"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/payment-instructions/{id}/fees/{feeId}")
+    public CaseFeeDetail updateFeeDetail(@PathVariable("id") Integer id , @PathVariable("feeId") Integer feeId, @RequestBody CaseFeeDetailRequest caseFeeDetailRequest) {
+    		return caseFeeDetailService.updateCaseFeeDetail(feeId, caseFeeDetailRequest);
+    }
 
 }
