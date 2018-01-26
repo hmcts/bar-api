@@ -5,7 +5,7 @@ import java.util.Map;
 
 public enum PaymentActionEnum {
 
-	PROCESS("P", "Process"), SUSPENSE("S", "Suspense"), SUSPENSE_DEFICIENCY("SD", "Suspence Deficiency"), RETURN("R",
+	PROCESS("P", "Process"), SUSPENSE("S", "Suspense"), SUSPENSE_DEFICIENCY("SD", "Suspense Deficiency"), RETURN("R",
 			"Return"), REFUND("RF", "Refund");
 
 	private static final Map<String, PaymentActionEnum> paymentActionEnumMap = new HashMap<>();
