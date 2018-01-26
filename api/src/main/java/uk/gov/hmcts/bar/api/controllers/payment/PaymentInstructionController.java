@@ -32,6 +32,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import uk.gov.hmcts.bar.api.data.exceptions.InvalidActionException;
 import uk.gov.hmcts.bar.api.data.model.AllPay;
 import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.Card;
@@ -45,6 +46,7 @@ import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.Cheque;
 import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionActionRequest;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 import uk.gov.hmcts.bar.api.data.model.PostalOrder;
@@ -84,7 +86,8 @@ public class PaymentInstructionController {
 			@RequestParam(name = "dailySequenceId", required = false) Integer dailySequenceId,
 			@RequestParam(name = "allPayInstructionId", required = false) String allPayInstructionId,
 			@RequestParam(name = "caseReference", required = false) String caseReference,
-			@RequestParam(name = "paymentType", required = false) String paymentType) {
+			@RequestParam(name = "paymentType", required = false) String paymentType,
+			@RequestParam(name = "action", required = false) String action) {
 
 		List<PaymentInstruction> paymentInstructionList = null;
 
@@ -96,12 +99,12 @@ public class PaymentInstructionController {
 					.startDate(startDate == null ? null : startDate.atStartOfDay())
 					.endDate(endDate == null ? null : endDate.atTime(LocalTime.now())).payerName(payerName)
 					.chequeNumber(chequeNumber).postalOrderNumer(postalOrderNumber).dailySequenceId(dailySequenceId)
-					.allPayInstructionId(allPayInstructionId).paymentType(paymentType).build();
+					.allPayInstructionId(allPayInstructionId).paymentType(paymentType).action(action).build();
 
 			paymentInstructionList = paymentInstructionService
 					.getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
 		}
-		return Util.updateStatusDisplayValue(paymentInstructionList);
+		return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
 	}
 
     @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction for the given id.")
@@ -308,5 +311,32 @@ public class PaymentInstructionController {
     public CaseFeeDetail saveCaseFeeDetail(@RequestBody CaseFeeDetailRequest caseFeeDetailRequest) {
         return caseFeeDetailService.saveCaseFeeDetail(caseFeeDetailRequest);
     }
+    
+	@ApiOperation(value = "Update fee details", notes = "Update fee details with the given values.")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Fee details updated"),
+			@ApiResponse(code = 400, message = "Bad request"),
+			@ApiResponse(code = 500, message = "Internal server error") })
+	@ResponseStatus(HttpStatus.OK)
+	@PutMapping("/payment-instructions/{id}/fees/{feeId}")
+	public CaseFeeDetail updateFeeDetail(@PathVariable("id") Integer id, @PathVariable("feeId") Integer feeId,
+			@RequestBody CaseFeeDetailRequest caseFeeDetailRequest) {
+		return caseFeeDetailService.updateCaseFeeDetail(feeId, caseFeeDetailRequest);
+    }
+    
+	@ApiOperation(value = "Action current payment instructions by post clerk", notes = "Action current payment instructions by a post clerk.")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Action current payment instructions by post clerk"),
+			@ApiResponse(code = 400, message = "Bad request"),
+			@ApiResponse(code = 500, message = "Internal server error") })
+	@ResponseStatus(HttpStatus.OK)
+	@PatchMapping("/payment-instructions/{id}/action")
+	public ResponseEntity<PaymentInstruction> actionPaymentInstructionsByPostClerk(@PathVariable("id") Integer id,
+			@RequestBody PaymentInstructionActionRequest paymentInstructionActionRequest) throws InvalidActionException {
+		if (null == paymentInstructionActionRequest) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		PaymentInstruction submittedPaymentInstruction = paymentInstructionService.actionPaymentInstruction(id,
+				paymentInstructionActionRequest);
+		return new ResponseEntity<>(submittedPaymentInstruction, HttpStatus.OK);
+	}
 
 }

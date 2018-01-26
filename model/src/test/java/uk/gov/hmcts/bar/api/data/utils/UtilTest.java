@@ -28,7 +28,7 @@ public class UtilTest {
 		PaymentInstruction pi = new AllPayPaymentInstruction();
 		pi.setStatus("D");
 		piList.add(pi);
-		piListModified = Util.updateStatusDisplayValue(piList);
+		piListModified = Util.updateStatusAndActionDisplayValue(piList);
 		assertTrue(piListModified.get(0).getStatus().equals("Draft"));
 	}
 
@@ -39,7 +39,7 @@ public class UtilTest {
 		PaymentInstruction pi = new AllPayPaymentInstruction();
 		pi.setStatus("P");
 		piList.add(pi);
-		piListModified = Util.updateStatusDisplayValue(piList);
+		piListModified = Util.updateStatusAndActionDisplayValue(piList);
 		assertTrue(piListModified.get(0).getStatus().equals("Pending"));
 	}
 }

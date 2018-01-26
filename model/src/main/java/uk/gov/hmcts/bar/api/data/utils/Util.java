@@ -10,6 +10,7 @@ import javax.persistence.criteria.CriteriaBuilder.In;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
+import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 
@@ -23,10 +24,15 @@ public interface Util {
             .toArray(String[]::new);
     }
     
-    public static List<PaymentInstruction> updateStatusDisplayValue(final List<PaymentInstruction> paymentInstructions) {
+	public static List<PaymentInstruction> updateStatusAndActionDisplayValue(
+			final List<PaymentInstruction> paymentInstructions) {
 		return paymentInstructions.stream().map(paymentInstruction -> {
 			paymentInstruction
 					.setStatus(PaymentStatusEnum.getPaymentStatusEnum(paymentInstruction.getStatus()).displayValue());
+			if (paymentInstruction.getAction() != null) {
+				paymentInstruction.setAction(
+						PaymentActionEnum.getPaymentActionEnum(paymentInstruction.getAction()).displayValue());
+			}
 			return paymentInstruction;
 		}).collect(Collectors.toList());
 	}

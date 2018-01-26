@@ -24,6 +24,16 @@ public class CaseFeeDetailRequest {
 	
 	private String feeVersion;
 	
+	private String caseReference;
+	
+	private Integer remissionAmount;
+	
+	private String remissionBenefiter;
+	
+	private String remissionAuthorisation;
+	
+	private Integer refundAmount;
+	
 
     @JsonCreator
     @Builder(builderMethodName = "caseFeeDetailRequestWith")
@@ -31,12 +41,22 @@ public class CaseFeeDetailRequest {
     		                        @JsonProperty("fee_code") String feeCode,
     		                        @JsonProperty("amount") Integer amount,
     		                        @JsonProperty("fee_description") String feeDescription,
-    		                        @JsonProperty("fee_version") String feeVersion) {
+    		                        @JsonProperty("fee_version") String feeVersion,
+    		                        @JsonProperty("case_reference") String caseReference,
+    		                        @JsonProperty("remission_amount") Integer remissionAmount,
+    		                        @JsonProperty("remission_benefiter") String remissionBenefiter,
+    		                        @JsonProperty("remission_authorisation") String remissionAuthorisation,
+    		                        @JsonProperty("refund_amount") Integer refundAmount) {
 
         this.caseReferenceId = caseReferenceId;
         this.amount = amount;
         this.feeCode = feeCode;
         this.feeDescription = feeDescription;
         this.feeVersion =  feeVersion;
+		this.caseReference = caseReference;
+        this.remissionAmount = remissionAmount;
+		this.remissionBenefiter = remissionBenefiter;
+		this.remissionAuthorisation = remissionAuthorisation;
+		this.refundAmount = refundAmount;
     }
 }

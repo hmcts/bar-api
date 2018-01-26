@@ -296,4 +296,44 @@ databaseChangeLog:
                   constraints:
                     nullable: false    
                       
+  - changeSet:
+      id: 8
+      author: ravi
+      changes:
+         - addColumn:
+             columns:
+               - column:
+                  name: case_reference
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+               - column:
+                  name: remission_amount
+                  type: int
+                  constraints:
+                    nullable: true
+               - column:
+                  name: remission_benefiter
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+               - column:
+                  name: remission_authorisation
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+               - column:
+                  name: refund_amount
+                  type: int
+                  constraints:
+                    nullable: true                 
+             tableName: case_fee_detail
+         - addColumn:
+             columns:
+               - column:
+                  name: action
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+             tableName: payment_instruction                               
 
