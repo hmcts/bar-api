@@ -28,5 +28,6 @@ public class PaymentInstructionSearchCriteriaDto {
     @Pattern(regexp ="^\\d{1,20}$",message = "invalid all pay transaction id")
     private String allPayInstructionId;
     private String paymentType;
+    private String action;
 
 }

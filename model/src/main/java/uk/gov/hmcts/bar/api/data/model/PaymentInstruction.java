@@ -58,7 +58,9 @@ public class PaymentInstruction {
     private String currency;
     @NonNull
     @JsonProperty(access= JsonProperty.Access.READ_ONLY)
-    private String status ;
+    private String status;
+    @JsonProperty(access= JsonProperty.Access.READ_ONLY)
+    private String action;
     @NonNull
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     @JsonProperty(access= JsonProperty.Access.READ_ONLY)
