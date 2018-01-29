@@ -17,13 +17,15 @@ import lombok.NoArgsConstructor;
 public class PaymentInstructionUpdateRequest {
 
     private String status;
+    private String action;
 
     @JsonCreator
     @Builder(builderMethodName = "paymentInstructionUpdateRequestWith")
-    public PaymentInstructionUpdateRequest(@JsonProperty("status") String status
+    public PaymentInstructionUpdateRequest(@JsonProperty("status") String status, @JsonProperty("action") String action
     ) {
 
         this.status = status;
+        this.action = action;
 
     }
 
