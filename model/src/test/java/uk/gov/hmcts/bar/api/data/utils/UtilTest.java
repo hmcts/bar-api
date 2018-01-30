@@ -16,7 +16,7 @@ public class UtilTest {
 	@Test
 	public void whenPaymentInstructionWithNullPropertyValuesPassedIn_shouldReturnAllNullPropertyNames() {
 		PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
-				.status("D").build();
+				.status("D").action("S").build();
 		List<String> nullPropertyNames = Arrays.asList(Util.getNullPropertyNames(pir));
 		assertTrue(nullPropertyNames.isEmpty());
 	}

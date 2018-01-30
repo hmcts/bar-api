@@ -61,7 +61,7 @@ import uk.gov.hmcts.bar.api.data.utils.Util;
 public class PaymentInstructionController {
 
     private final PaymentInstructionService paymentInstructionService;
-    
+
     private final CaseFeeDetailService caseFeeDetailService;
 
     @Autowired
@@ -301,7 +301,7 @@ public class PaymentInstructionController {
         @PathVariable("id") Integer id, @RequestBody CaseReferenceRequest caseReferenceRequest) {
         return paymentInstructionService.createCaseReference(id, caseReferenceRequest);
     }
-    
+
     @ApiOperation(value = "Create case fee detail for a payment instruction", notes = "Create case fee detail for a payment instruction.")
     @ApiResponses(value = {@ApiResponse(code = 201, message = "Case fee detail for a payment instruction created"),
         @ApiResponse(code = 400, message = "Bad request"),
@@ -311,7 +311,7 @@ public class PaymentInstructionController {
     public CaseFeeDetail saveCaseFeeDetail(@RequestBody CaseFeeDetailRequest caseFeeDetailRequest) {
         return caseFeeDetailService.saveCaseFeeDetail(caseFeeDetailRequest);
     }
-    
+
 	@ApiOperation(value = "Update fee details", notes = "Update fee details with the given values.")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Fee details updated"),
 			@ApiResponse(code = 400, message = "Bad request"),
@@ -322,21 +322,5 @@ public class PaymentInstructionController {
 			@RequestBody CaseFeeDetailRequest caseFeeDetailRequest) {
 		return caseFeeDetailService.updateCaseFeeDetail(feeId, caseFeeDetailRequest);
     }
-    
-	@ApiOperation(value = "Action current payment instructions by post clerk", notes = "Action current payment instructions by a post clerk.")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Action current payment instructions by post clerk"),
-			@ApiResponse(code = 400, message = "Bad request"),
-			@ApiResponse(code = 500, message = "Internal server error") })
-	@ResponseStatus(HttpStatus.OK)
-	@PatchMapping("/payment-instructions/{id}/action")
-	public ResponseEntity<PaymentInstruction> actionPaymentInstructionsByPostClerk(@PathVariable("id") Integer id,
-			@RequestBody PaymentInstructionActionRequest paymentInstructionActionRequest) throws InvalidActionException {
-		if (null == paymentInstructionActionRequest) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-		PaymentInstruction submittedPaymentInstruction = paymentInstructionService.actionPaymentInstruction(id,
-				paymentInstructionActionRequest);
-		return new ResponseEntity<>(submittedPaymentInstruction, HttpStatus.OK);
-	}
 
 }

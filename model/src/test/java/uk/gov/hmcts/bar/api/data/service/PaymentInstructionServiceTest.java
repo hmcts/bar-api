@@ -195,7 +195,7 @@ public class PaymentInstructionServiceTest {
 		when(piPageMock.iterator()).thenReturn(piIteratorMock);
 
 		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
-				.status("D").startDate(LocalDate.now().atStartOfDay()).endDate(LocalDate.now().atTime(LocalTime.now()))
+				.status("D").action("Suspense").startDate(LocalDate.now().atStartOfDay()).endDate(LocalDate.now().atTime(LocalTime.now()))
 				.build();
 
 		List<PaymentInstruction> retrievedPaymentInstructionList = paymentInstructionService
@@ -377,6 +377,19 @@ public class PaymentInstructionServiceTest {
 		verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
 
 	}
+    @Test
+    public void shouldReturnSubmittedPaymentInstructionWithAction_whenSubmitPaymentInstructionForGivenPaymentInstructionIsCalledWithAction()
+        throws Exception {
+        PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
+            .status("D").action("Suspense").build();
+        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(paymentInstructionMock));
+        when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
+            .thenReturn(paymentInstructionMock);
+        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(1, pir);
+        verify(paymentInstructionRepository, times(1)).findById(anyInt());
+        verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
+
+    }
     @Test
     public void shouldReturn200_whenUpdatePaymentInstructionForGivenPaymentInstructionIsCalled()
         throws Exception {
