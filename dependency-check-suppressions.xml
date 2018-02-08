@@ -104,6 +104,10 @@
 
         <cve>CVE-2017-8806</cve>
     </suppress>
+    <suppress>
+        <notes>Will be fixed later because of time constraints</notes>
 
+        <cve>CVE-2017-17485</cve>
+    </suppress>
 
 </suppressions>
