@@ -109,5 +109,8 @@
 
         <cve>CVE-2017-17485</cve>
     </suppress>
-
+     <suppress>
+	             <notes>We are not impacted by it as we control the client who use these endpoints</notes>
+		     <cve>CVE-2018-5968</cve>
+     </suppress>
 </suppressions>
