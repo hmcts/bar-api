@@ -6,7 +6,7 @@ import java.util.Map;
 public enum PaymentStatusEnum {
 
 	DRAFT("D", "Draft"), PENDING("P", "Pending"), VALIDATED("V", "Validated"), PENDING_APPROVAL("PA",
-			"Pending Approval");
+			"Pending Approval"), APPROVED("A", "Approved");
 
 	private static final Map<String, PaymentStatusEnum> paymentStatusEnumMap = new HashMap<>();
 
@@ -18,7 +18,7 @@ public enum PaymentStatusEnum {
 	}
 
 	private String dbKey = null;
-	
+
 	private String displayValue = null;
 
 	PaymentStatusEnum(String dbKey, String displayValue) {
@@ -29,7 +29,7 @@ public enum PaymentStatusEnum {
 	public String dbKey() {
 		return this.dbKey;
 	}
-	
+
 	public String displayValue() {
 		return this.displayValue;
 	}
