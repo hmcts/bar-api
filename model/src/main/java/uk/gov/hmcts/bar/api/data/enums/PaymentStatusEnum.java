@@ -6,7 +6,7 @@ import java.util.Map;
 public enum PaymentStatusEnum {
 
 	DRAFT("D", "Draft"), PENDING("P", "Pending"), VALIDATED("V", "Validated"), PENDING_APPROVAL("PA",
-			"Pending Approval"), APPROVED("A", "Approved");
+			"Pending Approval"), APPROVED("A", "Approved"), TRANSFERREDTOBAR("TTB", "Transferred to bar");
 
 	private static final Map<String, PaymentStatusEnum> paymentStatusEnumMap = new HashMap<>();
 
