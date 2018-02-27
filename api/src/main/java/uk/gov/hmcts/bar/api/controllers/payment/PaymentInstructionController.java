@@ -53,6 +53,7 @@ import uk.gov.hmcts.bar.api.data.model.PostalOrder;
 import uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.service.CaseFeeDetailService;
 import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
+import uk.gov.hmcts.bar.api.data.service.UnallocatedAmountService;
 import uk.gov.hmcts.bar.api.data.utils.Util;
 
 @RestController
@@ -64,10 +65,15 @@ public class PaymentInstructionController {
 
     private final CaseFeeDetailService caseFeeDetailService;
 
+    private final UnallocatedAmountService unallocatedAmountService;
+
     @Autowired
-    public PaymentInstructionController(PaymentInstructionService paymentInstructionService, CaseFeeDetailService caseFeeDetailService) {
+    public PaymentInstructionController(PaymentInstructionService paymentInstructionService,
+                                        CaseFeeDetailService caseFeeDetailService,
+                                        UnallocatedAmountService unallocatedAmountService) {
         this.paymentInstructionService = paymentInstructionService;
         this.caseFeeDetailService = caseFeeDetailService;
+        this.unallocatedAmountService = unallocatedAmountService;
     }
 
     @ApiOperation(value = "Get all current payment instructions", notes = "Get all current payment instructions for a given site.")
@@ -321,6 +327,16 @@ public class PaymentInstructionController {
 	public CaseFeeDetail updateFeeDetail(@PathVariable("id") Integer id, @PathVariable("feeId") Integer feeId,
 			@RequestBody CaseFeeDetailRequest caseFeeDetailRequest) {
 		return caseFeeDetailService.updateCaseFeeDetail(feeId, caseFeeDetailRequest);
+    }
+
+    @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction's unallocated amount for the given id.")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return payment unallocated amount"),
+        @ApiResponse(code = 404, message = "Payment instruction not found"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/payment-instructions/{id}/unallocated")
+    public int getUnallocatedPayment(@PathVariable("id") Integer paymentId){
+        return unallocatedAmountService.calculateUnallocatedAmount(paymentId);
     }
 
 }
