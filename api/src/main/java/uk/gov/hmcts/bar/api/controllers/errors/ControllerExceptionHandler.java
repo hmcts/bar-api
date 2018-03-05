@@ -1,6 +1,7 @@
 package uk.gov.hmcts.bar.api.controllers.errors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import java.util.Locale;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.google.common.collect.Iterators;
 
+import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionConverterException;
 import uk.gov.hmcts.bar.api.data.exceptions.ResourceNotFoundException;
 
 @RestControllerAdvice
@@ -44,13 +46,19 @@ public class ControllerExceptionHandler {
         String message = firstFieldError.getField() + ": " + messageSource.getMessage(firstFieldError, Locale.getDefault());
         return new ResponseEntity<>(new Error(message), BAD_REQUEST);
     }
-    
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Error> handleResourceNotFoundException(ConstraintViolationException e) {
         LOG.debug("Constraint violated: " + e.getConstraintViolations());
         ConstraintViolation<?> violation = e.getConstraintViolations().iterator().next();
         String parameterName = Iterators.getLast(violation.getPropertyPath().iterator()).getName();
         return new ResponseEntity<>(new Error(parameterName + ": " + violation.getMessage()), BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PaymentInstructionConverterException.class)
+    public ResponseEntity<Error> handleResourceNotAcceptable(PaymentInstructionConverterException e) {
+        LOG.debug("Failed to flatten payment instruction: " + e.getMessage());
+        return new ResponseEntity<>(new Error(e.getMessage()), NOT_ACCEPTABLE);
     }
 
 }

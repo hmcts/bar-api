@@ -15,7 +15,7 @@ import java.util.List;
 public abstract class CsvConverter<T> extends AbstractHttpMessageConverter<T> {
 
     public static final String SEPARATOR = ";";
-    public static final String EOL = "\r\n";
+    public static final String EOL = "\n";
 
     public CsvConverter(){
         super(new MediaType("text", "csv"));

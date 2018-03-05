@@ -3,6 +3,7 @@ package uk.gov.hmcts.bar.api.componenttests.sugar;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -10,6 +11,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RestActions {
+    public static final MediaType TEXT_CSV = new MediaType("text", "csv");
+
     private final HttpHeaders httpHeaders = new HttpHeaders();
     private final MockMvc mvc;
     private final ObjectMapper objectMapper;
@@ -30,6 +33,19 @@ public class RestActions {
             throw new RuntimeException(e);
         }
     }
+
+    public ResultActions getCsv(String urlTemplate) {
+        try {
+            return mvc.perform(MockMvcRequestBuilders
+                .get(urlTemplate)
+                .contentType(APPLICATION_JSON)
+                .accept(TEXT_CSV)
+                .headers(httpHeaders));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     public ResultActions put(String urlTemplate, Object dto) {
         try {

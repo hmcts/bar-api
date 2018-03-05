@@ -1,5 +1,6 @@
 package uk.gov.hmcts.bar.api.data.utils;
 
+import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionConverterException;
 import uk.gov.hmcts.bar.api.data.model.*;
 
 import java.time.format.DateTimeFormatter;
@@ -18,14 +19,24 @@ public class PaymentInstructionUtil {
 
         List<String[]> paymentLines = new ArrayList<>();
 
-        paymentInstruction.getCaseReferences().forEach(reference -> reference.getCaseFeeDetails().forEach(caseFeeDetail -> {
-            String[] line = new String[13];
-            line[9] = reference.getCaseReference();
-            line[10] = caseFeeDetail.getAmount().toString();
-            line[11] = caseFeeDetail.getFeeCode();
-            line[12] = caseFeeDetail.getFeeDescription();
-            paymentLines.add(line);
-        }));
+        if (paymentInstruction.getCaseReferences() != null){
+            paymentInstruction.getCaseReferences().forEach(reference -> {
+                if (reference.getCaseFeeDetails() != null){
+                    reference.getCaseFeeDetails().forEach(caseFeeDetail -> {
+                        String[] line = new String[13];
+                        line[9] = reference.getCaseReference();
+                        line[10] = caseFeeDetail.getAmount().toString();
+                        line[11] = caseFeeDetail.getFeeCode();
+                        line[12] = caseFeeDetail.getFeeDescription();
+                        paymentLines.add(line);
+                    });
+                }else{
+                    String[] line = new String[13];
+                    line[9] = reference.getCaseReference();
+                    paymentLines.add(line);
+                }
+            });
+        }
 
         if (paymentLines.size() == 0){
             paymentLines.add(new String[13]);
@@ -35,7 +46,7 @@ public class PaymentInstructionUtil {
         paymentLines.get(0)[1] = paymentInstruction.getPaymentDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         paymentLines.get(0)[2] = paymentInstruction.getPayerName();
         paymentLines.get(0)[8] = paymentInstruction.getAction();
-        paymentLines.get(0)[findAmountIndex(paymentInstruction)] = paymentInstruction.getAmount().toString();
+        paymentLines.get(0)[findAmountIndex(paymentInstruction)] = paymentInstruction.getAmount() == null ? null : paymentInstruction.getAmount().toString();
 
         return paymentLines;
     }
@@ -53,6 +64,6 @@ public class PaymentInstructionUtil {
         } else if (clazz.equals(AllPayPaymentInstruction.class)){
             return 7;
         }
-        return -1;
+        throw new PaymentInstructionConverterException("The payment instruction type in unknown: " + paymentInstruction.getClass().getName());
     }
 }

@@ -4,13 +4,14 @@ import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.utils.PaymentInstructionUtil;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class PaymentInstructionsCsvConverter extends CsvConverter<List<PaymentInstruction>> {
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        return List.class.isAssignableFrom(clazz);
+        return Collection.class.isAssignableFrom(clazz);
     }
 
     @Override
