@@ -84,8 +84,9 @@ public class PaymentInstruction {
         this.currency = currency;
 
     }
-    @JsonGetter
-    private String getPaymentDate() {
+
+    @JsonGetter("paymentDate")
+    private String getPaymentDateAsString() {
         return this.paymentDate.toString();
     }
 
@@ -94,7 +95,7 @@ public class PaymentInstruction {
     @JoinColumn(name="payment_type_id",referencedColumnName="id",insertable=false, updatable=false)
     @JsonProperty(access= JsonProperty.Access.READ_ONLY)
     private PaymentType paymentType;
-    
+
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "paymentInstructionId", referencedColumnName = "id")
     private List<CaseReference> caseReferences;
