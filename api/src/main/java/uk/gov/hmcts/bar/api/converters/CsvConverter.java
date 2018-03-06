@@ -14,7 +14,7 @@ import java.util.List;
 
 public abstract class CsvConverter<T> extends AbstractHttpMessageConverter<T> {
 
-    public static final String SEPARATOR = ";";
+    public static final String SEPARATOR = ",";
     public static final String EOL = "\n";
 
     public CsvConverter(){
@@ -42,6 +42,15 @@ public abstract class CsvConverter<T> extends AbstractHttpMessageConverter<T> {
     }
 
     private String convertLine(String[] line){
-        return Arrays.stream(line).reduce("", (s, s2) -> s + SEPARATOR + (s2 == null ? "" : s2)).substring(1);
+        return Arrays.stream(line).reduce("", (s, s2) -> s + SEPARATOR + (s2 == null ? "" : replaceSeparator(s2))).substring(1);
+    }
+
+    /**
+     * We need to use comma as separator to be able to open correctly in Excel, So we replace "," or ", " to space
+     * @param source
+     * @return
+     */
+    private String replaceSeparator(String source){
+        return source.replaceAll("(" + SEPARATOR + " |" + SEPARATOR + ")", " ");
     }
 }

@@ -76,7 +76,8 @@ public class PaymentInstructionController {
         this.unallocatedAmountService = unallocatedAmountService;
     }
 
-    @ApiOperation(value = "Get all current payment instructions", notes = "Get all current payment instructions for a given site.")
+    @ApiOperation(value = "Get all current payment instructions", notes = "Get all current payment instructions for a given site.",
+        produces = "application/json, text/csv")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return all current payment instructions"),
         @ApiResponse(code = 404, message = "Payment instructions not found"),
         @ApiResponse(code = 500, message = "Internal server error")})
@@ -113,7 +114,8 @@ public class PaymentInstructionController {
 		return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
 	}
 
-    @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction for the given id.")
+    @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction for the given id.",
+        produces = "application/json, text/csv")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return payment instruction"),
         @ApiResponse(code = 404, message = "Payment instruction not found"),
         @ApiResponse(code = 500, message = "Internal server error")})

@@ -34,12 +34,12 @@ public class PaymentinstructionConverterTest {
         paymentInstructions.add(CashPaymentInstruction.cashPaymentInstructionWith()
             .amount(10000)
             .currency("GBP")
-            .payerName("John Doe")
+            .payerName("John Doe, Bill")
             .build());
         paymentInstructions.add(CardPaymentInstruction.cardPaymentInstructionWith()
             .amount(2000)
             .currency("GBP")
-            .payerName("Jane Doe")
+            .payerName("Jane Doe,Alice")
             .build());
     }
 
@@ -57,8 +57,8 @@ public class PaymentinstructionConverterTest {
         converter.writeInternal(paymentInstructions, message);
 
         Assert.assertEquals(HEADER +
-            "0" + S + CURRENT_DATE + S + "John Doe" + S  + S  + S + "10000" + S  + S  + S  + S  + S  + S  + S  + EOL +
-            "0" + S + CURRENT_DATE + S + "Jane Doe" + S  + S  + S  + S + "2000" + S  + S  + S  + S  + S  + S  + EOL,
+            "0" + S + CURRENT_DATE + S + "John Doe Bill" + S  + S  + S + "10000" + S  + S  + S  + S  + S  + S  + S  + EOL +
+            "0" + S + CURRENT_DATE + S + "Jane Doe Alice" + S  + S  + S  + S + "2000" + S  + S  + S  + S  + S  + S  + EOL,
             message.getBodyAsString());
     }
 

@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionConverterException;
 import uk.gov.hmcts.bar.api.data.exceptions.ResourceNotFoundException;
 
 public class ControllerExceptionHandlerTest {
@@ -38,26 +39,26 @@ public class ControllerExceptionHandlerTest {
 
 	@Mock
 	private ResourceNotFoundException resourceNotFoundExceptionMock;
-	
+
 	@Mock
 	private ConstraintViolationException constraintViolationExceptionMock;
-	
+
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private ConstraintViolation violationMock;
-	
+
 	@Mock
 	private Set<ConstraintViolation<?>> setOfViolationsMock;
-	
+
 	@Mock
 	private Path pathMock;
-	
+
 	@Mock
 	private Iterator<ConstraintViolation<?>> cvIteratorMock;
-	
+
 	@Mock
-	private Iterator<Node> nodeIteratorMock; 
-	
+	private Iterator<Node> nodeIteratorMock;
+
 	@Before
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
@@ -88,7 +89,15 @@ public class ControllerExceptionHandlerTest {
 		assertThat(controllerExceptionHandlerMock.methodArgumentNotValidException(methodArgumentNotValidExceptionMock)
 				.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
-	
+
+	@Test
+	public void whenFailedToFlattenPaymentInstruction_shouldReturn406(){
+        PaymentInstructionConverterException pice = new PaymentInstructionConverterException("Failed to convert PaymentInstruction");
+        ResponseEntity<Error> error = controllerExceptionHandler.handleResourceNotAcceptable(pice);
+        assertThat(error.getBody().getMessage()).isEqualTo("Failed to convert PaymentInstruction");
+        assertThat(error.getStatusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE);
+    }
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void whenThereIsConstraintViolation_shouldReturn500() {
