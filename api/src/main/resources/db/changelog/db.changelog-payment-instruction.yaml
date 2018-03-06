@@ -244,7 +244,7 @@ databaseChangeLog:
       changes:
          - sql: >
             UPDATE payment_type SET id = 'cards' WHERE id = 'card';
-  
+
   - changeSet:
       id: 7
       author: ravi
@@ -256,9 +256,9 @@ databaseChangeLog:
                   type: int
                   constraints:
                     foreignKeyName: fk_cr_payment_instruction_id
-                    references: payment_instruction(id) 
-             tableName: case_reference      
-         
+                    references: payment_instruction(id)
+             tableName: case_reference
+
          - createTable:
             tableName: case_fee_detail
             columns:
@@ -268,7 +268,7 @@ databaseChangeLog:
                   autoIncrement: true
                   constraints:
                     primaryKey: true
-                    nullable: false 
+                    nullable: false
               - column:
                   name: case_reference_id
                   type: int
@@ -294,8 +294,8 @@ databaseChangeLog:
                   name: fee_version
                   type: varchar(15)
                   constraints:
-                    nullable: false    
-                      
+                    nullable: false
+
   - changeSet:
       id: 8
       author: ravi
@@ -326,7 +326,7 @@ databaseChangeLog:
                   name: refund_amount
                   type: int
                   constraints:
-                    nullable: true                 
+                    nullable: true
              tableName: case_fee_detail
          - addColumn:
              columns:
@@ -335,5 +335,12 @@ databaseChangeLog:
                   type: varchar(255)
                   constraints:
                     nullable: true
-             tableName: payment_instruction                               
-
+             tableName: payment_instruction
+  - changeSet:
+      id: 9
+      author: akiss
+      changes:
+      - dropUniqueConstraint:
+          constraintName: case_reference_case_reference_key
+          columnNames: case_reference
+          tableName: case_reference
