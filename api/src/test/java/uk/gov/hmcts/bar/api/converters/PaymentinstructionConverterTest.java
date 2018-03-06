@@ -24,9 +24,9 @@ public class PaymentinstructionConverterTest {
     private MockHttpOutputMessage message = new MockHttpOutputMessage();
 
     private static final String S = SEPARATOR;
-    private static final String HEADER = "Daily sequential payment ID" + S + "Date" + S + "Payee name" + S +
-        "Cheque Amount" + S + "Postal Order Amount" + S + "Cash Amount" + S + "Card Amount" + S + "AllPay Amount" + S +
-        "Action Taken" + S + "Case ref no." + S + "Fee Amount" + S + "Fee code" + S + "Fee description" + EOL;
+    private static final String HEADER = "\"Daily sequential payment ID\"" + S + "\"Date\"" + S + "\"Payee name\"" + S +
+        "\"Cheque Amount\"" + S + "\"Postal Order Amount\"" + S + "\"Cash Amount\"" + S + "\"Card Amount\"" + S + "\"AllPay Amount\"" + S +
+        "\"Action Taken\"" + S + "\"Case ref no.\"" + S + "\"Fee Amount\"" + S + "\"Fee code\"" + S + "\"Fee description\"" + EOL;
     public static final String CURRENT_DATE = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
     @Before
@@ -34,12 +34,12 @@ public class PaymentinstructionConverterTest {
         paymentInstructions.add(CashPaymentInstruction.cashPaymentInstructionWith()
             .amount(10000)
             .currency("GBP")
-            .payerName("John Doe")
+            .payerName("John Doe, \"Bill\"")
             .build());
         paymentInstructions.add(CardPaymentInstruction.cardPaymentInstructionWith()
             .amount(2000)
             .currency("GBP")
-            .payerName("Jane Doe")
+            .payerName("\"Jane\" Doe,Alice")
             .build());
     }
 
@@ -57,8 +57,10 @@ public class PaymentinstructionConverterTest {
         converter.writeInternal(paymentInstructions, message);
 
         Assert.assertEquals(HEADER +
-            "0" + S + CURRENT_DATE + S + "John Doe" + S  + S  + S + "10000" + S  + S  + S  + S  + S  + S  + S  + EOL +
-            "0" + S + CURRENT_DATE + S + "Jane Doe" + S  + S  + S  + S + "2000" + S  + S  + S  + S  + S  + S  + EOL,
+            "\"0\"" + S + "\"" + CURRENT_DATE + "\"" + S + "\"John Doe, \"\"Bill\"\"\"" + S + "\"\"" + S + "\"\"" + S +
+            "\"" + "10000" + "\"" + S + "\"\"" + S + "\"\"" + S + "\"\"" + S + "\"\"" + S + "\"\"" + S + "\"\"" + S + "\"\"" + EOL +
+            "\"0\"" + S + "\"" + CURRENT_DATE + "\"" + S + "\"\"\"Jane\"\" Doe,Alice\"" + S + "\"\"" + S + "\"\"" + S +
+            "\"\"" + S + "\"" + "2000" + "\"" + S + "\"\"" + S + "\"\"" + S + "\"\"" + S + "\"\"" + S + "\"\"" + S + "\"\"" + EOL,
             message.getBodyAsString());
     }
 
