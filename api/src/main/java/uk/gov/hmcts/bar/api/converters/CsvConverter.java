@@ -42,15 +42,15 @@ public abstract class CsvConverter<T> extends AbstractHttpMessageConverter<T> {
     }
 
     private String convertLine(String[] line){
-        return Arrays.stream(line).reduce("", (s, s2) -> s + SEPARATOR + (s2 == null ? "" : replaceSeparator(s2))).substring(1);
+        return Arrays.stream(line).reduce("", (s, s2) -> s + SEPARATOR + (s2 == null ? "\"\"" : replaceSeparator(s2))).substring(1);
     }
 
     /**
-     * We need to use comma as separator to be able to open correctly in Excel, So we replace "," or ", " to space
+     * We need to use comma as separator to be able to open correctly in Excel, So we have to double quote the content
      * @param source
      * @return
      */
     private String replaceSeparator(String source){
-        return source.replaceAll("(" + SEPARATOR + " |" + SEPARATOR + ")", " ");
+        return "\"" + source.replaceAll("\"", "\"\"") + "\"";
     }
 }
