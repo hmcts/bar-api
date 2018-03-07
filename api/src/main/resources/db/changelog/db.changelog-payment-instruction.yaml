@@ -336,11 +336,3 @@ databaseChangeLog:
                   constraints:
                     nullable: true
              tableName: payment_instruction
-  - changeSet:
-      id: 9
-      author: akiss
-      changes:
-      - dropUniqueConstraint:
-          constraintName: case_reference_case_reference_key
-          columnNames: case_reference
-          tableName: case_reference
