@@ -19,7 +19,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
     public void givenPostalOrderPaymentInstructionDetails_retrieveAsCvs() throws Exception {
         PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
-            .amount(500)
+            .amount(533)
             .currency("GBP")
             .postalOrderNumber("000000").build();
 
@@ -31,9 +31,10 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
             .getCsv("/payment-instructions")
             .andExpect(status().isOk())
             .andExpect(result -> {
-                Assert.assertEquals(String.format("Daily sequential payment ID%sDate%sPayee name%sCheque Amount%s" +
-                    "Postal Order Amount%sCash Amount%sCard Amount%sAllPay Amount%sAction Taken%sCase ref no.%s" +
-                    "Fee Amount%sFee code%sFee description%s1%s%s%sMr Payer Payer%s%s500%s%s%s%s%s%s%s%s%s",
+                Assert.assertEquals(String.format("\"Daily sequential payment ID\"%s\"Date\"%s\"Payee name\"%s\"Cheque Amount\"%s" +
+                    "\"Postal Order Amount\"%s\"Cash Amount\"%s\"Card Amount\"%s\"AllPay Amount\"%s\"Action Taken\"%s\"Case ref no.\"%s" +
+                    "\"Fee Amount\"%s\"Fee code\"%s\"Fee description\"%s\"1\"%s\"%s\"%s\"Mr Payer Payer\"%s\"\"%s\"533\"" +
+                    "%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s",
                     SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR,
                     SEPARATOR, SEPARATOR, SEPARATOR, EOL, SEPARATOR, CURRENT_DATE, SEPARATOR, SEPARATOR, SEPARATOR,
                     SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, EOL),
