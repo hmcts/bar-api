@@ -8,8 +8,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.bar.api.converters.CsvConverter.*;
 import static uk.gov.hmcts.bar.api.data.model.PostalOrder.postalOrderPaymentInstructionRequestWith;
+
+import static uk.gov.hmcts.bar.api.converters.PaymentInstructionsCsvConverter.EOL;
+import static uk.gov.hmcts.bar.api.converters.PaymentInstructionsCsvConverter.SEPARATOR;
 
 public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
 
@@ -33,7 +35,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
             .andExpect(result -> {
                 Assert.assertEquals(String.format("\"Daily sequential payment ID\"%s\"Date\"%s\"Payee name\"%s\"Cheque Amount\"%s" +
                     "\"Postal Order Amount\"%s\"Cash Amount\"%s\"Card Amount\"%s\"AllPay Amount\"%s\"Action Taken\"%s\"Case ref no.\"%s" +
-                    "\"Fee Amount\"%s\"Fee code\"%s\"Fee description\"%s\"1\"%s\"%s\"%s\"Mr Payer Payer\"%s\"\"%s\"533\"" +
+                    "\"Fee Amount\"%s\"Fee code\"%s\"Fee description\"%s\"1\"%s\"%s\"%s\"Mr Payer Payer\"%s\"\"%s\"5.33\"" +
                     "%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s",
                     SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR,
                     SEPARATOR, SEPARATOR, SEPARATOR, EOL, SEPARATOR, CURRENT_DATE, SEPARATOR, SEPARATOR, SEPARATOR,

@@ -25,5 +25,10 @@ public class CashPaymentInstruction extends PaymentInstruction {
 
     }
 
+    @Override
+    public void fillAmount(PaymentInstructionReportLine reportRow) {
+        reportRow.setCashAmount(this.getAmount());
+    }
+
 
 }

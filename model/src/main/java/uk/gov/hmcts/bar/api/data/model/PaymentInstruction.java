@@ -2,6 +2,7 @@ package uk.gov.hmcts.bar.api.data.model;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -43,7 +44,11 @@ import lombok.NonNull;
 @JsonIgnoreProperties(value={ "case_references" }, allowGetters=true)
 @DiscriminatorColumn(name = "payment_type_id")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PaymentInstruction {
+public abstract class PaymentInstruction {
+
+    public static final String[] CSV_TABLE_HEADER = {"Daily sequential payment ID", "Date", "Payee name", "Cheque Amount",
+        "Postal Order Amount", "Cash Amount", "Card Amount", "AllPay Amount", "Action Taken", "Case ref no.",
+        "Fee Amount", "Fee code", "Fee description"};
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,7 +90,7 @@ public class PaymentInstruction {
 
     }
 
-    @JsonGetter("paymentDate")
+    @JsonGetter("payment_date")
     private String getPaymentDateAsString() {
         return this.paymentDate.toString();
     }
@@ -99,5 +104,43 @@ public class PaymentInstruction {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "paymentInstructionId", referencedColumnName = "id")
     private List<CaseReference> caseReferences;
+
+    public List<PaymentInstructionReportLine> flattenPaymentInstruction(){
+
+        List<PaymentInstructionReportLine> paymentLines = new ArrayList<>();
+
+        if (this.getCaseReferences() != null){
+            this.getCaseReferences().forEach(reference -> {
+                if (reference.getCaseFeeDetails() != null){
+                    reference.getCaseFeeDetails().forEach(caseFeeDetail -> {
+                        PaymentInstructionReportLine line = new PaymentInstructionReportLine();
+                        line.setCaseRef(reference.getCaseReference());
+                        line.setFeeAmount(caseFeeDetail.getAmount());
+                        line.setFeeCode(caseFeeDetail.getFeeCode());
+                        line.setFeeDescription(caseFeeDetail.getFeeDescription());
+                        paymentLines.add(line);
+                    });
+                }else{
+                    PaymentInstructionReportLine line = new PaymentInstructionReportLine();
+                    line.setCaseRef(reference.getCaseReference());
+                    paymentLines.add(line);
+                }
+            });
+        }
+
+        if (paymentLines.size() == 0){
+            paymentLines.add(new PaymentInstructionReportLine());
+        }
+
+        paymentLines.get(0).setDailyId(this.getDailySequenceId());
+        paymentLines.get(0).setDate(this.getPaymentDate());
+        paymentLines.get(0).setName(this.getPayerName());
+        paymentLines.get(0).setAction(this.getAction());
+        fillAmount(paymentLines.get(0));
+
+        return paymentLines;
+    }
+
+    public abstract void fillAmount(PaymentInstructionReportLine reportRow);
 
 }

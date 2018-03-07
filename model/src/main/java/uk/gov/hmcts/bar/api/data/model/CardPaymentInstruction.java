@@ -26,4 +26,9 @@ public class CardPaymentInstruction extends PaymentInstruction {
         super(payerName, amount, currency);
 
     }
+
+    @Override
+    public void fillAmount(PaymentInstructionReportLine reportRow) {
+        reportRow.setCardAmount(this.getAmount());
+    }
 }

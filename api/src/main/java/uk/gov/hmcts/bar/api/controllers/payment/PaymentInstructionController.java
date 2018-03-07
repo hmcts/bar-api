@@ -114,8 +114,7 @@ public class PaymentInstructionController {
 		return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
 	}
 
-    @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction for the given id.",
-        produces = "application/json, text/csv")
+    @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction for the given id.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return payment instruction"),
         @ApiResponse(code = 404, message = "Payment instruction not found"),
         @ApiResponse(code = 500, message = "Internal server error")})

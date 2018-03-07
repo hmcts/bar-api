@@ -33,4 +33,8 @@ public class ChequePaymentInstruction extends PaymentInstruction {
     }
 
 
+    @Override
+    public void fillAmount(PaymentInstructionReportLine reportRow) {
+        reportRow.setCheckAmount(this.getAmount());
+    }
 }
