@@ -32,4 +32,8 @@ public class AllPayPaymentInstruction extends PaymentInstruction {
     }
 
 
+    @Override
+    public void fillAmount(PaymentInstructionReportLine reportRow) {
+        reportRow.setAllPayAmount(this.getAmount());
+    }
 }

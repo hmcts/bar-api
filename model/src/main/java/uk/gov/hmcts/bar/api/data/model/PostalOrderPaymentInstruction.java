@@ -32,4 +32,8 @@ public class PostalOrderPaymentInstruction extends PaymentInstruction {
         this.setPostalOrderNumber(postalOrderNumber);
     }
 
+    @Override
+    public void fillAmount(PaymentInstructionReportLine reportRow) {
+        reportRow.setPostalOrderAmount(this.getAmount());
+    }
 }

@@ -63,7 +63,7 @@ public class TestUtils {
             case "all":
                 return new AllPayPaymentInstruction("John Doe", amount, "GBP", "1234");
             default:
-                return new PaymentInstruction("John Doe", amount, "GBP");
+                return new CashPaymentInstruction("John Doe", amount, "GBP");
         }
     }
 
