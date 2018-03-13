@@ -38,7 +38,7 @@ public class CaseFeeDetailService {
 				.refundAmount(caseFeeDetailRequest.getRefundAmount())
 				.caseReference(caseFeeDetailRequest.getCaseReference()).build());
 	}
-	
+
 	public CaseFeeDetail updateCaseFeeDetail(Integer feeId, CaseFeeDetailRequest caseFeeDetailRequest) {
 
 		CaseFeeDetail existingCaseFeeDetail = caseFeeDetailRepository.findOne(feeId);
@@ -46,8 +46,9 @@ public class CaseFeeDetailService {
 			throw new CaseFeeDetailNotFoundException(feeId);
 		}
 
+		//Disabling this right now to be able to remove remission if needed (null out all values)
 		String[] nullPropertiesNamesToIgnore = Util.getNullPropertyNames(caseFeeDetailRequest);
-		BeanUtils.copyProperties(caseFeeDetailRequest, existingCaseFeeDetail, nullPropertiesNamesToIgnore);
+		BeanUtils.copyProperties(caseFeeDetailRequest, existingCaseFeeDetail);
 
 		return caseFeeDetailRepository.saveAndRefresh(existingCaseFeeDetail);
 	}
