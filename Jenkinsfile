@@ -46,10 +46,11 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
             def barApiDockerVersion
             def barDatabaseDockerVersion
 
-            stage('Build docker') {
-                barApiDockerVersion = dockerImage imageName: 'bar/bar-api'
-                barDatabaseDockerVersion = dockerImage imageName: 'bar/bar-database', context: 'docker/database'
-            }
+// Disabling docker build until it is fixed on jenkins
+//            stage('Build docker') {
+//                barApiDockerVersion = dockerImage imageName: 'bar/bar-api'
+//                barDatabaseDockerVersion = dockerImage imageName: 'bar/bar-database', context: 'docker/database'
+//            }
 
 //            stage("Trigger acceptance tests") {
 //                build job: '/bar/bar-app-acceptance-tests/master', parameters: [
