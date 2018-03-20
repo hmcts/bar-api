@@ -25,7 +25,7 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
                 checkout scm
             }
 
-            def artifactVersion = readFile('version.txt').trim()
+            def artifactVersion = readFile('version.txt').trim() + '.' + env.BUILD_NUMBER
             def versionAlreadyPublished = checkJavaVersionPublished group: 'bar', artifact: 'bar-app', version: artifactVersion
 
             onPR {
@@ -46,11 +46,10 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
             def barApiDockerVersion
             def barDatabaseDockerVersion
 
-// Disabling docker build until it is fixed on jenkins
-//            stage('Build docker') {
-//                barApiDockerVersion = dockerImage imageName: 'bar/bar-api'
-//                barDatabaseDockerVersion = dockerImage imageName: 'bar/bar-database', context: 'docker/database'
-//            }
+            stage('Build docker') {
+                barApiDockerVersion = dockerImage imageName: 'bar/bar-api'
+                barDatabaseDockerVersion = dockerImage imageName: 'bar/bar-database', context: 'docker/database'
+            }
 
 //            stage("Trigger acceptance tests") {
 //                build job: '/bar/bar-app-acceptance-tests/master', parameters: [
