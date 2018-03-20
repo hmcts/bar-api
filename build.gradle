@@ -4,9 +4,17 @@ plugins {
     id 'org.sonarqube' version '2.6'
 }
 
+class Globals {
+    String buildNumber =  System.getenv('BUILD_NUMBER') ? ".${System.getenv('BUILD_NUMBER')}" : ""
+}
+
+ext {
+    globals = new Globals()
+}
+
 allprojects {
     group = 'uk.gov.hmcts.reform.bar'
-    version = rootProject.file('version.txt').text.trim()
+    version = rootProject.file('version.txt').text.trim() + globals.buildNumber
 }
 
 subprojects {
