@@ -3,7 +3,7 @@ package uk.gov.hmcts.bar.api.converters;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.GenericHttpMessageConverter;
+import org.springframework.http.converter.AbstractGenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
@@ -20,16 +20,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public class PaymentInstructionsCsvConverter implements GenericHttpMessageConverter<List<PaymentInstruction>> {
+public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageConverter<List<PaymentInstruction>> {
 
     public static final String SEPARATOR = ",";
     public static final String EOL = "\n";
     public static final MediaType CSV_MEDIA_TYPE = new MediaType("text", "csv");
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat( "0.00" );
 
-    @Override
-    public boolean canRead(Type type, Class<?> contextClass, MediaType mediaType) {
-        return false;
+    public PaymentInstructionsCsvConverter(){
+        super(CSV_MEDIA_TYPE);
     }
 
     @Override
@@ -37,42 +36,19 @@ public class PaymentInstructionsCsvConverter implements GenericHttpMessageConver
         return null;
     }
 
-
     @Override
-    public boolean canRead(Class<?> clazz, MediaType mediaType) {
-        return false;
-    }
-
-    @Override
-    public List<PaymentInstruction> read(Class<? extends List<PaymentInstruction>> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    protected List<PaymentInstruction> readInternal(Class<? extends List<PaymentInstruction>> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
         return null;
-    }
-
-    @Override
-    public List<MediaType> getSupportedMediaTypes() {
-        return Arrays.asList(CSV_MEDIA_TYPE);
-    }
-
-    @Override
-    public boolean canWrite(Class<?> clazz, MediaType mediaType) {
-        return false;
-
     }
 
     @Override
     public boolean canWrite(Type type, Class<?> clazz, MediaType mediaType) {
         return Collection.class.isAssignableFrom(clazz) &&
-            ((ParameterizedType) type).getActualTypeArguments()[0] == PaymentInstruction.class &&
-            (mediaType == null || mediaType.isCompatibleWith(CSV_MEDIA_TYPE));
+            ((ParameterizedType) type).getActualTypeArguments()[0] == PaymentInstruction.class;
     }
 
     @Override
-    public void write(List<PaymentInstruction> paymentInstructions, Type type, MediaType contentType, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
-        write(paymentInstructions, contentType, outputMessage);
-    }
-
-    @Override
-    public void write(List<PaymentInstruction> paymentInstructions, MediaType contentType, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+    protected void writeInternal(List<PaymentInstruction> paymentInstructions, Type type, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
         OutputStream outputStream = outputMessage.getBody();
         outputStream.write(convertToCsv(flattenEntity(paymentInstructions)).getBytes());
         outputStream.close();
@@ -128,4 +104,5 @@ public class PaymentInstructionsCsvConverter implements GenericHttpMessageConver
     private String replaceSeparator(String source){
         return "\"" + source.replaceAll("\"", "\"\"") + "\"";
     }
+
 }
