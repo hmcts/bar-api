@@ -324,10 +324,20 @@ public class PaymentInstructionController {
 			@ApiResponse(code = 400, message = "Bad request"),
 			@ApiResponse(code = 500, message = "Internal server error") })
 	@ResponseStatus(HttpStatus.OK)
-	@PutMapping("/payment-instructions/{id}/fees/{feeId}")
-	public CaseFeeDetail updateFeeDetail(@PathVariable("id") Integer id, @PathVariable("feeId") Integer feeId,
+	@PutMapping("/fees/{feeId}")
+	public CaseFeeDetail updateFeeDetail(@PathVariable("feeId") Integer feeId,
 			@RequestBody CaseFeeDetailRequest caseFeeDetailRequest) {
 		return caseFeeDetailService.updateCaseFeeDetail(feeId, caseFeeDetailRequest);
+    }
+
+    @ApiOperation(value = "Delete fee details", notes = "Delete fee details with the given values.")
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Fee details deleted"),
+        @ApiResponse(code = 400, message = "Bad request"),
+        @ApiResponse(code = 500, message = "Internal server error") })
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/fees/{feeId}")
+    public void deleteFeeDetail(@PathVariable("feeId") Integer feeId) {
+        caseFeeDetailService.deleteCaseFeeDetail(feeId);
     }
 
     @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction's unallocated amount for the given id.")
