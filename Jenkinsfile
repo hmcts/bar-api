@@ -25,21 +25,11 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
                 checkout scm
             }
 
-            def artifactVersion = readFile('version.txt').trim() + '.' + env.BUILD_NUMBER
-            def versionAlreadyPublished = checkJavaVersionPublished group: 'bar', artifact: 'bar-app', version: artifactVersion
-
-            onPR {
-                if (versionAlreadyPublished) {
-                    print "Artifact version already exists. Please bump it."
-                    error "Artifact version already exists. Please bump it."
-                }
-            }
-
             stage('Build') {
                 def rtGradle = Artifactory.newGradleBuild()
                 rtGradle.tool = 'gradle-4.2'
                 rtGradle.deployer repo: 'libs-release', server: server
-                rtGradle.deployer.deployArtifacts = (env.BRANCH_NAME == 'master') && !versionAlreadyPublished
+                rtGradle.deployer.deployArtifacts = (env.BRANCH_NAME == 'master')
                 rtGradle.run buildFile: 'build.gradle', tasks: 'clean build dependencyCheckAnalyze artifactoryPublish sonarqube -Dsonar.host.url=https://sonar.reform.hmcts.net/', buildInfo: buildInfo
             }
 
@@ -62,7 +52,7 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
                 def rpmVersion
 
                 stage("Publish RPM") {
-                    rpmVersion = packager.javaRPM('master', 'bar-api', '$(ls api/build/libs/bar-api-*.jar)', 'springboot', 'api/src/main/resources/application.properties')
+                    rpmVersion = packager.javaRPM('master', 'bar-api', '$(ls build/libs/bar-app.jar)', 'springboot', 'api/src/main/resources/application.properties')
                     packager.publishJavaRPM('bar-api')
                 }
 

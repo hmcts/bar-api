@@ -1,73 +1,28 @@
 plugins {
+    id 'application'
+    id 'org.springframework.boot' version '1.5.9.RELEASE'
     id 'io.spring.dependency-management' version '1.0.3.RELEASE'
     id 'org.owasp.dependencycheck' version '3.0.2'
-    id 'org.sonarqube' version '2.6'
-}
-
-class Globals {
-    String buildNumber =  System.getenv('BUILD_NUMBER') ? ".${System.getenv('BUILD_NUMBER')}" : ""
-}
-
-ext {
-    globals = new Globals()
+    id "com.gorylenko.gradle-git-properties" version "1.4.21"
+    id "org.sonarqube" version "2.6.1"
+    id 'jacoco'
 }
 
 allprojects {
-    group = 'uk.gov.hmcts.reform.bar'
-    version = rootProject.file('version.txt').text.trim() + globals.buildNumber
-}
-
-subprojects {
     apply plugin: 'maven'
-    apply plugin: 'java'
-    apply plugin: 'jacoco'
     apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'org.owasp.dependencycheck'
-    apply plugin: 'application'
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-
-    mainClassName = "uk.gov.hmcts.bar.api.BarServiceApplication"
-
-    tasks.withType(JavaCompile) {
-        options.encoding = 'UTF-8'
+    group = 'uk.gov.hmcts.reform.bar'
+    ext {
+        buildNumber = System.getenv("BUILD_NUMBER") ?: '0'
     }
-
-    sonarqube {
-        properties {
-            property "sonar.exclusions", "**/**/data/model/*.java,**/BarServiceApplication.java,**/Error.java,**/ResourceNotFoundException.java,**/*Configuration.java,**/BaseRepository.java"
-        }
-    }
-
-    project(":bar-client") {
-        sonarqube {
-            skipProject = true
-        }
-    }
-
-    test {
-        finalizedBy jacocoTestReport
-    }
-
-    dependencyCheck {
-        failBuildOnCVSS = 0
-        suppressionFile = 'dependency-check-suppressions.xml'
-    }
+    version = rootProject.file('version.txt').text.trim() + ".${buildNumber}"
 
     repositories {
         mavenLocal()
-        maven { url 'http://artifactory.reform.hmcts.net/artifactory/libs-release' }
-    }
-
-    dependencies {
-        compileOnly 'org.projectlombok:lombok:1.16.16'
-        compileOnly 'com.google.code.findbugs:annotations:3.0.1'
-
-        testCompile 'junit:junit:4.12'
-        testCompile 'org.assertj:assertj-core:3.8.0'
-        testCompile 'com.tngtech.java:junit-dataprovider:1.13.1'
-
+        maven {
+            url "http://artifactory.reform.hmcts.net/artifactory/libs-release"
+        }
     }
 
     dependencyManagement {
@@ -88,5 +43,116 @@ subprojects {
             dependency 'io.springfox:springfox-swagger-ui:2.6.0'
             dependency 'commons-beanutils:commons-beanutils:1.9.3'
         }
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+    project(":bar-client") {
+        sonarqube {
+            skipProject = true
+        }
+    }
+
+    test {
+        finalizedBy jacocoTestReport
+        jacoco {
+            append = true
+            destinationFile = file("${project.rootDir}/build/jacoco/test.exec")
+        }
+    }
+
+    jacocoTestReport {
+        executionData(test)
+        reports {
+            xml.enabled true
+            html.enabled true
+        }
+    }
+
+    dependencies {
+        compileOnly 'org.projectlombok:lombok:1.16.16'
+        compileOnly 'com.google.code.findbugs:annotations:3.0.1'
+
+        testCompile 'junit:junit:4.12'
+        testCompile 'org.assertj:assertj-core:3.8.0'
+        testCompile 'com.tngtech.java:junit-dataprovider:1.13.1'
+
+    }
+}
+
+dependencies {
+    compile project(':bar-api')
+}
+
+jar {
+    archiveName 'bar-app.jar'
+    manifest {
+        attributes 'Implementation-Title': project.name, 'Implementation-Version': project.version
+    }
+}
+
+springBoot {
+    mainClassName = 'uk.gov.hmcts.bar.api.BarServiceApplication'
+    buildInfo()
+}
+
+dependencyCheck {
+    failBuildOnCVSS = 0
+    suppressionFile = 'dependency-check-suppressions.xml'
+}
+
+def sonarExclusions = [
+        '**/**/data/model/*.java',
+        '**/BarServiceApplication.java',
+        '**/Error.java',
+        '**/ResourceNotFoundException.java',
+        '**/*Configuration.java',
+        '**/BaseRepository.java'
+]
+
+sonarqube {
+    properties {
+        property "sonar.host.url", "https://sonar.reform.hmcts.net/"
+        property "sonar.dynamicAnalysis", "reuseReports"
+        property "sonar.java.coveragePlugin", "jacoco"
+        property "sonar.jacoco.reportPaths", "${project.buildDir}/jacoco/test.exec"
+        property "sonar.dependencyCheck.reportPath", "${project.buildDir}/reports/dependency-check-report.xml"
+        property "sonar.exclusions", sonarExclusions.join(", ")
+        property "sonar.test.exclusions", sonarExclusions.join(", ")
+        property "sonar.coverage.exclusions", sonarExclusions.join(", ")
+    }
+}
+
+task smoke(type: GradleBuild, description: 'Runs smoke tests', group: 'Verification') {
+    buildFile = './api/build.gradle'
+    tasks = ['smokeTest']
+}
+
+task functional(type: GradleBuild, description: 'Runs Functional tests', group: 'Verification') {
+    buildFile = './api/build.gradle'
+    tasks = ['functionalTest']
+}
+
+task printVersion {
+    description 'Prints the version of this project'
+    doLast {
+        print project.version
+    }
+}
+
+run {
+    def debug = System.getProperty("debug")
+    if (debug == 'true') {
+        jvmArgs = ['-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005']
     }
 }
