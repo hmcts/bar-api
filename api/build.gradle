@@ -1,3 +1,31 @@
+sourceSets {
+
+    smokeTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/smokeTest/java')
+        }
+    }
+    functionalTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/functionalTest/java')
+        }
+    }
+}
+
+apply plugin: 'idea'
+idea {
+    module {
+        testSourceDirs += project.sourceSets.smokeTest.java.srcDirs
+        testSourceDirs += project.sourceSets.smokeTest.resources.srcDirs
+        testSourceDirs += project.sourceSets.functionalTest.java.srcDirs
+        testSourceDirs += project.sourceSets.functionalTest.resources.srcDirs
+    }
+}
+
 dependencies {
     compile project(':bar-model')
 
@@ -17,9 +45,28 @@ dependencies {
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'org.springframework.security:spring-security-test'
     testCompile 'org.hsqldb:hsqldb'
+
+    testCompile group: 'org.projectlombok', name: 'lombok', version: '1.16.10'
+    testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
+
+    // smoke
+    smokeTestCompile sourceSets.test.runtimeClasspath
+
+    // functional
+    functionalTestCompile sourceSets.test.runtimeClasspath
 }
 
 test {
     exclude '**/ComponentTestBase*'
+}
+
+task smokeTest(type: Test, description: 'Runs the smoke tests', group: 'Verification') {
+    testClassesDirs = sourceSets.smokeTest.output.classesDirs
+    classpath = sourceSets.smokeTest.runtimeClasspath
+}
+
+task functionalTest(type: Test, description: 'Runs the smoke functional', group: 'Verification') {
+    testClassesDirs = sourceSets.functionalTest.output.classesDirs
+    classpath = sourceSets.functionalTest.runtimeClasspath
 }
 
