@@ -52,4 +52,9 @@ public class CaseFeeDetailService {
 
 		return caseFeeDetailRepository.saveAndRefresh(existingCaseFeeDetail);
 	}
+
+	public void deleteCaseFeeDetail(Integer feeId) {
+
+        caseFeeDetailRepository.delete(feeId);
+    }
 }
