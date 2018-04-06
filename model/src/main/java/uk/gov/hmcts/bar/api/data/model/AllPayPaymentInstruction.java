@@ -1,17 +1,12 @@
 package uk.gov.hmcts.bar.api.data.model;
 
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
 @Data
 @Entity
@@ -26,8 +21,9 @@ public class AllPayPaymentInstruction extends PaymentInstruction {
     public AllPayPaymentInstruction(@JsonProperty("payer_name") String payerName,
                                        @JsonProperty("amount") Integer amount,
                                        @JsonProperty("currency") String currency,
+                                       @JsonProperty("status") String status,
                                        @JsonProperty("all_pay_transaction_id") String allPayTransactionId) {
-        super(payerName, amount, currency);
+        super(payerName, amount, currency,status);
         this.setAllPayTransactionId(allPayTransactionId);
     }
 

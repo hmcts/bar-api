@@ -93,7 +93,6 @@ public class PaymentInstructionServiceTest {
 				.thenReturn(paymentReferenceMock);
 		when(paymentInstructionRepository.saveAndFlush(any(ChequePaymentInstruction.class)))
 				.thenReturn(chequePaymentInstructionMock);
-		when(paymentInstructionRepository.findOne(anyInt())).thenReturn(any(AllPayPaymentInstruction.class));
 		PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
 				.createPaymentInstruction(chequePaymentInstructionMock);
 		verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());

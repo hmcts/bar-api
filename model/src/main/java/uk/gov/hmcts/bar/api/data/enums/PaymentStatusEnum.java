@@ -38,4 +38,15 @@ public enum PaymentStatusEnum {
 		return paymentStatusEnumMap.get(dbKey);
 	}
 
+    public static boolean contains(String dbKey) {
+
+        for (PaymentStatusEnum pse : PaymentStatusEnum.values()) {
+            if (pse.dbKey().equals(dbKey)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }

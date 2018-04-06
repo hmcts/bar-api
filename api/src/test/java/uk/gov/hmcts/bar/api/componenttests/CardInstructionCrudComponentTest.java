@@ -22,7 +22,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
         restActions
             .post("/cards", proposedCardPaymentInstructionRequest)
@@ -32,6 +32,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
                     cardPaymentInstructionWith()
                         .payerName("Mr Payer Payer")
                         .amount(500)
+                        .status("D")
                         .currency("GBP"));
             }));
 
@@ -78,7 +79,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
     @Test
     public void givenCardPaymentInstructionDetails_retrieveOneOfThem() throws Exception {
         Card proposedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Payer Payer").amount(500).currency("GBP").build();
+            .payerName("Mr Payer Payer").amount(500).currency("GBP").status("D").build();
 
         restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
