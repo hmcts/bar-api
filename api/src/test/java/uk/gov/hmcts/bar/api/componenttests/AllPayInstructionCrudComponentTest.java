@@ -25,6 +25,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
+            .status("D")
             .allPayTransactionId("12345").build();
 
         restActions
@@ -35,7 +36,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
                     allPayPaymentInstructionWith()
                         .payerName("Mr Payer Payer")
                         .amount(500)
-                        .currency("GBP").allPayTransactionId("12345").build());
+                        .currency("GBP").status("D").allPayTransactionId("12345").build());
             }));
     }
 
@@ -99,7 +100,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 	@Test
 	public void givenAllPayPaymentInstructionDetails_retrieveOneOfThem() throws Exception {
 		AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(500).currency("GBP").allPayTransactionId("12345").build();
+				.payerName("Mr Payer Payer").amount(500).currency("GBP").status("D").allPayTransactionId("12345").build();
 
 		restActions.post("/allpay", proposedAllPayPaymentInstructionRequest).andExpect(status().isCreated());
 

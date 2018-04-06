@@ -1,17 +1,12 @@
 package uk.gov.hmcts.bar.api.data.model;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
 @Data
 @Entity
@@ -27,8 +22,9 @@ public class PostalOrderPaymentInstruction extends PaymentInstruction {
     public PostalOrderPaymentInstruction(@JsonProperty("payer_name") String payerName,
                                          @JsonProperty("amount") Integer amount,
                                          @JsonProperty("currency") String currency,
+                                         @JsonProperty("status") String status,
                                          @JsonProperty("postal_order_number") String postalOrderNumber) {
-        super(payerName, amount, currency);
+        super(payerName, amount, currency,status);
         this.setPostalOrderNumber(postalOrderNumber);
     }
 
