@@ -73,7 +73,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
             .status("D").authorizationCode("qwerty")
             .currency("GBP").build();
 
-        CardPaymentInstruction  retrievedCardPaymentInstruction = cardPaymentInstructionWith()
+        CardPaymentInstruction  expectedCardPaymentInstruction = cardPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .status("D").authorizationCode("qwerty")
@@ -87,7 +87,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
             .get("/payment-instructions")
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, (cardList) -> {
-                assertThat(cardList.get(0).equals(retrievedCardPaymentInstruction));
+                assertThat(cardList.get(0).equals(expectedCardPaymentInstruction));
             }));
 
 
