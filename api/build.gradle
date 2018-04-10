@@ -29,6 +29,7 @@ idea {
 dependencies {
     compile project(':bar-model')
 
+    compile 'uk.gov.hmcts.auth.checker:auth-checker-spring:[1.0, )'
     compile 'uk.gov.hmcts.reform:java-logging-spring'
 
     compile 'org.springframework.boot:spring-boot-starter-web'
