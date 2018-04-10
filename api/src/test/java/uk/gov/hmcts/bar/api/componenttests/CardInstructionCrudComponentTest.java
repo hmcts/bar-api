@@ -22,7 +22,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP").status("D").build();
+            .currency("GBP").status("D").authorizationCode("123456").build();
 
         restActions
             .post("/cards", proposedCardPaymentInstructionRequest)
@@ -32,7 +32,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
                     cardPaymentInstructionWith()
                         .payerName("Mr Payer Payer")
                         .amount(500)
-                        .status("D")
+                        .status("D").authorizationCode("123456")
                         .currency("GBP"));
             }));
 
@@ -43,6 +43,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
             .amount(500)
+            .status("D").authorizationCode("qwerty")
             .currency("XXX").build();
 
         restActions
@@ -51,15 +52,31 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
     }
 
     @Test
+    public void whenCardPaymentInstructionWithInvalidAuthorizationCode_thenReturn400() throws Exception {
+        Card proposedCardPaymentInstructionRequest = cardWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .status("D").authorizationCode("qwertyxxxx")
+            .currency("GBP").build();
+
+        restActions
+            .post("/cards", proposedCardPaymentInstructionRequest)
+            .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
     public void givenCardPaymentInstructionDetails_retrieveThem() throws Exception {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
             .amount(500)
+            .status("D").authorizationCode("qwerty")
             .currency("GBP").build();
 
-        CardPaymentInstruction  retrievedCardPaymentInstruction = cardPaymentInstructionWith()
+        CardPaymentInstruction  expectedCardPaymentInstruction = cardPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
+            .status("D").authorizationCode("qwerty")
             .currency("GBP").build();
 
         restActions
@@ -70,7 +87,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
             .get("/payment-instructions")
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, (cardList) -> {
-                assertThat(cardList.get(0).equals(retrievedCardPaymentInstruction));
+                assertThat(cardList.get(0).equals(expectedCardPaymentInstruction));
             }));
 
 
@@ -79,7 +96,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
     @Test
     public void givenCardPaymentInstructionDetails_retrieveOneOfThem() throws Exception {
         Card proposedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Payer Payer").amount(500).currency("GBP").status("D").build();
+            .payerName("Mr Payer Payer").amount(500).currency("GBP").status("D").authorizationCode("qwerty").build();
 
         restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
@@ -92,7 +109,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
     @Test
     public void givenCardPaymentInstructionDetails_retrieveOneOfThemWithWrongId() throws Exception {
         Card proposedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Payer Payer").amount(500).currency("GBP").build();
+            .payerName("Mr Payer Payer").amount(500).currency("GBP").status("D").authorizationCode("qwerty").build();
 
         restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
@@ -104,7 +121,9 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
         Card proposedCardPaymentInstructionRequest =cardWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP").build();
+            .currency("GBP")
+            .status("D").authorizationCode("qwerty")
+            .build();
 
         restActions
             .post("/cards",  proposedCardPaymentInstructionRequest)
@@ -124,6 +143,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
             .amount(500)
+            .status("D").authorizationCode("qwerty")
             .currency("GBP").build();
 
         restActions
@@ -143,7 +163,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
     public void whenCardPaymentInstructionIsSubmittedByPostClerk_expectStatus_200() throws Exception {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
-            .amount(500)
+            .amount(500).authorizationCode("qwerty")
             .currency("GBP").build();
 
 
@@ -167,7 +187,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
     public void whenNonExistingCardPaymentInstructionIsSubmittedByPostClerk_expectStatus_404() throws Exception {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
-            .amount(500)
+            .amount(500).authorizationCode("123456")
             .currency("GBP").build();
 
 
@@ -190,7 +210,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
     public void whenCaseReferenceForACardPaymentInstructionIsCreated_expectStatus_201() throws Exception {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
-            .amount(500)
+            .amount(500).authorizationCode("qwerty")
             .currency("GBP").build();
 
         CaseReference caseReference = caseReferenceWith()
@@ -212,7 +232,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
     public void whenInvalidCaseReferenceForACardPaymentInstructionIsCreated_expectStatus_201() throws Exception {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
-            .amount(500)
+            .amount(500).authorizationCode("qwerty")
             .currency("GBP").build();
 
         CaseReference caseReference = caseReferenceWith()
@@ -236,7 +256,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
     public void whenSearchCardPaymentInstructionByPayerName_expectStatus_200() throws Exception {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
-            .amount(500)
+            .amount(500).authorizationCode("qwerty")
             .currency("GBP").build();
 
         restActions
@@ -260,7 +280,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
     public void whenSearchNonExistingCardPaymentInstructionByPayerName_expectStatus_200AndEmptyList() throws Exception {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
-            .amount(500)
+            .amount(500).authorizationCode("qwerty")
             .currency("GBP").build();
 
         restActions
@@ -279,12 +299,12 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
     public void whenCardPaymentInstructionIsUpdated_expectStatus_200() throws Exception {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
-            .amount(500)
+            .amount(500).authorizationCode("qwerty")
             .currency("GBP").build();
 
         Card updatedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Updated Payer")
-            .amount(6000)
+            .amount(6000).authorizationCode("qwerty")
             .currency("GBP").build();
 
 
@@ -301,12 +321,12 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
     public void whenNonExistingCardPaymentInstructionIsUpdated_expectStatus_404() throws Exception {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
-            .amount(500)
+            .amount(500).authorizationCode("qwerty")
             .currency("GBP").build();
 
         Card updatedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Updated Payer")
-            .amount(6000)
+            .amount(6000).authorizationCode("qwerty")
             .currency("GBP").build();
 
 

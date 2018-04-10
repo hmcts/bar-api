@@ -55,7 +55,7 @@ public class TestUtils {
             case "cash":
                 return new CashPaymentInstruction("John Doe", amount, "GBP","D");
             case "card":
-                return new CardPaymentInstruction("John Doe", amount, "GBP","D");
+                return new CardPaymentInstruction("John Doe", amount, "GBP","D","123456");
             case "cheque":
                 return new ChequePaymentInstruction("John Doe", amount, "GBP", "1234","D");
             case "postal":

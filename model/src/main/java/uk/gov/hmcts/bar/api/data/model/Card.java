@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
+import javax.validation.constraints.Pattern;
+
 @Data
 @NoArgsConstructor
 @ToString(callSuper = true)
@@ -16,14 +18,20 @@ import lombok.*;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Card extends PaymentInstructionRequest {
 
+    @Pattern(regexp = "^[a-zA-Z0-9]{6,6}$", message = "invalid authorization code")
+    private String authorizationCode;
+
     @JsonCreator
     @Builder(builderMethodName = "cardWith")
     public Card(@JsonProperty("payer_name") String payerName,
                 @JsonProperty("amount") Integer amount,
                 @JsonProperty("currency") String currency,
-                @JsonProperty("status") String status) {
+                @JsonProperty("status") String status,
+                @JsonProperty("authorization_code") String authorizationCode) {
 
         super(payerName,amount,currency,status);
+        this.authorizationCode= authorizationCode;
+
 
     }
 }

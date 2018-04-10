@@ -336,3 +336,15 @@ databaseChangeLog:
                   constraints:
                     nullable: true
              tableName: payment_instruction
+  - changeSet:
+        id: 9
+        author: sachi
+        changes:
+           - addColumn:
+               columns:
+                 - column:
+                    name: authorization_code
+                    type: char(6)
+                    constraints:
+                      nullable: true
+               tableName: payment_instruction
