@@ -122,6 +122,7 @@ public class PaymentInstructionController {
             .amount(card.getAmount())
             .currency(card.getCurrency())
             .status(card.getStatus())
+            .authorizationCode(card.getAuthorizationCode())
             .build();
         return paymentInstructionService.createPaymentInstruction(cardPaymentInstruction);
     }

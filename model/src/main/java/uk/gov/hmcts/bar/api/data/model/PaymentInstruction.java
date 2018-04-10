@@ -65,6 +65,8 @@ public abstract class PaymentInstruction {
     private String chequeNumber;
     @Pattern(regexp = "^\\d{6,6}$", message = "invalid postal order number")
     protected String postalOrderNumber;
+    @Pattern(regexp = "^[a-zA-Z0-9]{6,6}$", message = "invalid authorization code")
+    protected String authorizationCode;
 
 
     public PaymentInstruction(String payerName, Integer amount, String currency,String status) {

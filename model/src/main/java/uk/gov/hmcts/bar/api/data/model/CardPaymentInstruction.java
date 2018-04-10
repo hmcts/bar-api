@@ -16,15 +16,17 @@ import javax.persistence.Entity;
 @DiscriminatorValue("cards")
 public class CardPaymentInstruction extends PaymentInstruction {
 
-
     @JsonCreator
     @Builder(builderMethodName = "cardPaymentInstructionWith")
     public CardPaymentInstruction(@JsonProperty("payer_name") String payerName,
                                   @JsonProperty("amount") Integer amount,
                                   @JsonProperty("currency") String currency,
-                                  @JsonProperty("status") String status
+                                  @JsonProperty("status") String status,
+                                  @JsonProperty("authorization_code") String authorizationCode
+
     ) {
         super(payerName, amount, currency,status);
+        this.setAuthorizationCode(authorizationCode);
 
     }
 
