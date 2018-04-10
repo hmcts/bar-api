@@ -36,7 +36,7 @@ public class ComponentTestBase {
 
     @Before
     public void setUp() throws SQLException{
-        MockMvc mvc = webAppContextSetup(webApplicationContext).apply(springSecurity()).build();
+        MockMvc mvc = webAppContextSetup(webApplicationContext).build();
         this.restActions = new RestActions(mvc,objectMapper);
         DbTestUtil.resetAutoIncrementColumns(webApplicationContext, "payment_instruction");
     }
