@@ -130,7 +130,24 @@
         <cve>CVE-2017-14798</cve>
     </suppress>
     <suppress>
-        <notes>Will be fixed by Idam team as this is Idam dependency related</notes>
-        <cve>CVE-2016-9878</cve>
+        <notes><![CDATA[
+   file name: service-token-parser-1.0.5.jar
+   ]]></notes>
+        <gav regex="true">^uk\.gov\.hmcts\.auth\.provider\.service:service-token-parser.*:.*$</gav>
+        <cpe>cpe:/a:pivotal_software:spring_framework</cpe>
+        <cpe>cpe:/a:pivotal:spring_framework</cpe>
+        <cpe>cpe:/a:pivotal_software:spring_boot</cpe>
+    </suppress>
+
+
+    <suppress>
+        <notes><![CDATA[
+   file name: user-token-parser-1.0.1.2.jar
+   ]]></notes>
+        <gav regex="true">^uk\.gov\.hmcts\.auth\.idam:user-token-parser.*:.*$</gav>
+        <cpe>cpe:/a:pivotal_software:spring_framework</cpe>
+        <cpe>cpe:/a:pivotal:spring_framework</cpe>
+        <cpe>cpe:/a:pivotal_software:spring_boot</cpe>
     </suppress>
 </suppressions>
+
