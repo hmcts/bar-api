@@ -28,3 +28,7 @@ variable "microservice" {
   type = "string"
   default = "bar-app"
 }
+
+variable "idam_api_url" {
+  default = "http://betaDevBccidamAppLB.reform.hmcts.net"
+}
