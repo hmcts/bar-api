@@ -12,7 +12,7 @@ def server = Artifactory.server 'artifactory.reform'
 def buildInfo = Artifactory.newBuildInfo()
 
 properties(
-    [[$class: 'GithubProjectProperty', displayName: 'bar Register API', projectUrlStr: 'https://git.reform.hmcts.net/bar/bar-app'],
+    [[$class: 'GithubProjectProperty', displayName: 'bar Register API', projectUrlStr: 'https://github.com/hmcts/bar-app'],
      pipelineTriggers([[$class: 'GitHubPushTrigger']])]
 )
 
