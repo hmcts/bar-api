@@ -15,11 +15,13 @@ import uk.gov.hmcts.bar.api.data.service.CaseFeeDetailService;
 import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
 import uk.gov.hmcts.bar.api.data.service.UnallocatedAmountService;
 import uk.gov.hmcts.bar.api.data.utils.Util;
+import uk.gov.hmcts.bar.api.service.UserService;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction.allPayPaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction.cardPaymentInstructionWith;
@@ -38,13 +40,17 @@ public class PaymentInstructionController {
 
     private final UnallocatedAmountService unallocatedAmountService;
 
+    private final UserService userService;
+
     @Autowired
     public PaymentInstructionController(PaymentInstructionService paymentInstructionService,
                                         CaseFeeDetailService caseFeeDetailService,
-                                        UnallocatedAmountService unallocatedAmountService) {
+                                        UnallocatedAmountService unallocatedAmountService,
+                                        UserService userService) {
         this.paymentInstructionService = paymentInstructionService;
         this.caseFeeDetailService = caseFeeDetailService;
         this.unallocatedAmountService = unallocatedAmountService;
+        this.userService = userService;
     }
 
     @ApiOperation(value = "Get all current payment instructions", notes = "Get all current payment instructions for a given site.",
@@ -85,6 +91,33 @@ public class PaymentInstructionController {
 		return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
 	}
 
+    @ApiOperation(value = "Get all current payment instructions", notes = "Get all current payment instructions for a given site.",
+        produces = "application/json, text/csv")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return all current payment instructions for a given user"),
+        @ApiResponse(code = 404, message = "Payment instructions not found"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/user/{idamId}/payment-instructions")
+    public List<PaymentInstruction> getPaymentInstructionsByIdamId(
+        @PathVariable("idamId") String idamId,
+        @RequestParam(name = "status", required = false) String status,
+        @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
+        @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate,
+        @RequestParam(name = "payerName", required = false) String payerName,
+        @RequestParam(name = "chequeNumber", required = false) String chequeNumber,
+        @RequestParam(name = "postalOrderNumber", required = false) String postalOrderNumber,
+        @RequestParam(name = "dailySequenceId", required = false) Integer dailySequenceId,
+        @RequestParam(name = "allPayInstructionId", required = false) String allPayInstructionId,
+        @RequestParam(name = "caseReference", required = false) String caseReference,
+        @RequestParam(name = "paymentType", required = false) String paymentType,
+        @RequestParam(name = "action", required = false) String action) {
+
+        // TODO: The filter by IdamId should be moved to criteria
+        List<PaymentInstruction> paymentInstructions = getPaymentInstructions(status, startDate, endDate, payerName, chequeNumber,
+            postalOrderNumber, dailySequenceId, allPayInstructionId, caseReference, paymentType, action);
+        return paymentInstructions.stream().filter(paymentInstruction -> paymentInstruction.getBarUser().getIdamId().equals(idamId)).collect(Collectors.toList());
+    }
+
     @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction for the given id.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return payment instruction"),
         @ApiResponse(code = 404, message = "Payment instruction not found"),
@@ -124,7 +157,8 @@ public class PaymentInstructionController {
             .status(card.getStatus())
             .authorizationCode(card.getAuthorizationCode())
             .build();
-        return paymentInstructionService.createPaymentInstruction(cardPaymentInstruction);
+        BarUser user = userService.identifyUser();
+        return paymentInstructionService.createPaymentInstruction(cardPaymentInstruction, user);
     }
 
     @ApiOperation(value = "Update card payment instruction", notes = "Update card payment instruction with the given values.")
@@ -154,7 +188,8 @@ public class PaymentInstructionController {
             .currency(cheque.getCurrency())
             .status(cheque.getStatus())
             .chequeNumber(cheque.getChequeNumber()).build();
-        return paymentInstructionService.createPaymentInstruction(chequePaymentInstruction);
+        BarUser user = userService.identifyUser();
+        return paymentInstructionService.createPaymentInstruction(chequePaymentInstruction, user);
     }
 
     @ApiOperation(value = "Update cheque payment instruction", notes = "Update cheque payment instruction with the given values.")
@@ -181,7 +216,8 @@ public class PaymentInstructionController {
             .amount(cash.getAmount())
             .status(cash.getStatus())
             .currency(cash.getCurrency()).build();
-        return paymentInstructionService.createPaymentInstruction(cashPaymentInstruction);
+        BarUser user = userService.identifyUser();
+        return paymentInstructionService.createPaymentInstruction(cashPaymentInstruction, user);
     }
 
 
@@ -213,7 +249,8 @@ public class PaymentInstructionController {
             .currency(postalOrder.getCurrency())
             .status(postalOrder.getStatus())
             .postalOrderNumber(postalOrder.getPostalOrderNumber()).build();
-        return paymentInstructionService.createPaymentInstruction(postalOrderPaymentInstruction);
+        BarUser user = userService.identifyUser();
+        return paymentInstructionService.createPaymentInstruction(postalOrderPaymentInstruction, user);
     }
 
     @ApiOperation(value = "Update postal order payment instruction", notes = "Update postal order payment instruction with the given values.")
@@ -243,7 +280,8 @@ public class PaymentInstructionController {
             .currency(allPay.getCurrency())
             .status(allPay.getStatus())
             .allPayTransactionId(allPay.getAllPayTransactionId()).build();
-        return paymentInstructionService.createPaymentInstruction(allPayPaymentInstruction);
+        BarUser user = userService.identifyUser();
+        return paymentInstructionService.createPaymentInstruction(allPayPaymentInstruction, user);
     }
 
     @ApiOperation(value = "Update allpay payment instruction", notes = "Update allpay payment instruction with the given values.")

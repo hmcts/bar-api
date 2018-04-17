@@ -40,14 +40,14 @@ public class PaymentInstructionService {
 
 
     public PaymentInstructionService(PaymentReferenceService paymentReferenceService, CaseReferenceService caseReferenceService,
-                                     PaymentInstructionRepository paymentInstructionRepository) {
+                                     PaymentInstructionRepository paymentInstructionRepository, BarUserService barUserService) {
         this.paymentReferenceService = paymentReferenceService;
         this.caseReferenceService = caseReferenceService;
         this.paymentInstructionRepository = paymentInstructionRepository;
 
     }
 
-    public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction) {
+    public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction, BarUser user) {
         if (PaymentStatusEnum.contains(paymentInstruction.getStatus())) {
             paymentInstruction.setStatus(paymentInstruction.getStatus());
         } else {
@@ -57,6 +57,7 @@ public class PaymentInstructionService {
         PaymentReference nextPaymentReference = paymentReferenceService.getNextPaymentReferenceSequenceBySite(SITE_ID);
         paymentInstruction.setSiteId(SITE_ID);
         paymentInstruction.setDailySequenceId(nextPaymentReference.getDailySequenceId());
+        paymentInstruction.setBarUser(user);
         return paymentInstructionRepository.saveAndRefresh(paymentInstruction);
     }
 

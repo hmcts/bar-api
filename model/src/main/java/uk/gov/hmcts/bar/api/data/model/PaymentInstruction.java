@@ -88,6 +88,11 @@ public abstract class PaymentInstruction {
     @JsonProperty(access= JsonProperty.Access.READ_ONLY)
     private PaymentType paymentType;
 
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name="bar_user_id", referencedColumnName="id", insertable=false, updatable=false)
+    @JsonProperty(access= JsonProperty.Access.READ_ONLY)
+    private BarUser barUser;
+
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "paymentInstructionId", referencedColumnName = "id")
     private List<CaseReference> caseReferences;

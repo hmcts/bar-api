@@ -348,3 +348,45 @@ databaseChangeLog:
                     constraints:
                       nullable: true
                tableName: payment_instruction
+  - changeSet:
+      id: 10
+      author: akiss
+      changes:
+        - createTable:
+            tableName: bar_user
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: forename
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: surname
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: idam_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: roles
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - addColumn:
+            columns:
+              - column:
+                  name: bar_user_id
+                  type: int
+                  constraints:
+                    nullable: true
+            tableName: payment_instruction

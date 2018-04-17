@@ -1,14 +1,15 @@
 package uk.gov.hmcts.bar.api.componenttests.sugar;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
 public class RestActions {
     public static final MediaType TEXT_CSV = new MediaType("text", "csv");
@@ -16,16 +17,19 @@ public class RestActions {
     private final HttpHeaders httpHeaders = new HttpHeaders();
     private final MockMvc mvc;
     private final ObjectMapper objectMapper;
+    private final UserDetails userDetails;
 
-    public RestActions(MockMvc mvc,  ObjectMapper objectMapper) {
+    public RestActions(MockMvc mvc, ObjectMapper objectMapper, UserDetails userDetails) {
         this.mvc = mvc;
         this.objectMapper = objectMapper;
+        this.userDetails = userDetails;
     }
 
     public ResultActions get(String urlTemplate) {
         try {
             return mvc.perform(MockMvcRequestBuilders
                 .get(urlTemplate)
+                .with(user(userDetails))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .headers(httpHeaders));
@@ -38,6 +42,7 @@ public class RestActions {
         try {
             return mvc.perform(MockMvcRequestBuilders
                 .get(urlTemplate)
+                .with(user(userDetails))
                 .contentType(APPLICATION_JSON)
                 .accept(TEXT_CSV)
                 .headers(httpHeaders));
@@ -51,6 +56,7 @@ public class RestActions {
         try {
             return mvc.perform(MockMvcRequestBuilders
                 .put(urlTemplate)
+                .with(user(userDetails))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .headers(httpHeaders)
@@ -65,6 +71,7 @@ public class RestActions {
         try {
             return mvc.perform(MockMvcRequestBuilders
                 .post(urlTemplate)
+                .with(user(userDetails))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .headers(httpHeaders)
@@ -79,6 +86,7 @@ public class RestActions {
         try {
             return mvc.perform(MockMvcRequestBuilders
                 .delete(urlTemplate, uriVars)
+                .with(user(userDetails))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .headers(httpHeaders)
@@ -92,6 +100,7 @@ public class RestActions {
         try {
             return mvc.perform(MockMvcRequestBuilders
                 .patch(urlTemplate, request)
+                .with(user(userDetails))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .headers(httpHeaders)
