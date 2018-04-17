@@ -66,10 +66,10 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
 //                    rpmTagger.tagTestingPassedOn('dev')
 //                }
 
-                stage('Deploy to Test') {
-                    ansible.runDeployPlaybook("{bar_api_version: ${rpmVersion}}", 'test')
-                    rpmTagger.tagDeploymentSuccessfulOn('test')
-                }
+//                stage('Deploy to Test') {
+//                    ansible.runDeployPlaybook("{bar_api_version: ${rpmVersion}}", 'test')
+//                    rpmTagger.tagDeploymentSuccessfulOn('test')
+//                }
 //
 //                stage("Trigger smoke tests in Test") {
 //                    sh 'curl -f https://test.api.bar.reform.hmcts.net:4712/health'
