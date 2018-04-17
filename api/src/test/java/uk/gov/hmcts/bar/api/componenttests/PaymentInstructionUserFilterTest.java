@@ -12,7 +12,7 @@ public class PaymentInstructionUserFilterTest extends ComponentTestBase {
 
 
     @Test
-    public void getAllPaymentInstructions() throws Exception {
+    public void whenNoUsersInPath_thenGetAllPaymentInstructions() throws Exception {
         DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
         restActions
             .get("/payment-instructions")
@@ -24,14 +24,21 @@ public class PaymentInstructionUserFilterTest extends ComponentTestBase {
     }
 
     @Test
-    public void findAllPaymentInstructionsByUser() throws Exception {
+    public void whenUsersInPath_thenFilterPaymentInstructionResultsByUser() throws Exception {
         DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
         restActions
-            .get("/user/1234/payment-instructions")
+            .get("/users/1234/payment-instructions")
             .andExpect(status().isOk())
             .andExpect(body().asListOf(CardPaymentInstruction.class, paymentInstructions -> {
                 Assert.assertTrue(paymentInstructions.size() == 1);
             }));
+    }
 
+    @Test
+    public void whenUsersInPathDoesNotMatchLoggedInUser_then403() throws Exception {
+        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
+        restActions
+            .get("/users/4321/payment-instructions")
+            .andExpect(status().isForbidden());
     }
 }

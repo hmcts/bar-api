@@ -9,7 +9,7 @@ import java.util.Set;
 @Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CompleteUserTokenDetails {
+public class UserTokenDetails {
 
     private String defaultService;
     private String email;

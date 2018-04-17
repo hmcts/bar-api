@@ -16,8 +16,8 @@ public final class DbTestUtil {
     private static final String PROPERTY_KEY_RESET_SQL_TEMPLATE = "test.reset.sql.template";
     private static final String PROPERTY_KEY_INSERT_USER_SQL_TAMPLATE = "test.user.sql.template";
     private static final String INSERT_PI_QUERY =
-        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,idam_id) VALUES (1,'John Doe',null,'cards',{ts '2018-03-25 23:32:23.871'},50000,'GBP',null,'TTB',null,'BR01',1,'P','1234');\n" +
-        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,idam_id) VALUES (2,'John Doe',null,'cards',{ts '2018-03-25 23:36:11.207'},50000,'GBP',null,'P',null,'BR01',2,null,'4321');";
+        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id) VALUES (1,'John Doe',null,'cards',{ts '2018-03-25 23:32:23.871'},50000,'GBP',null,'TTB',null,'BR01',1,'P','1234');\n" +
+        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id) VALUES (2,'John Doe',null,'cards',{ts '2018-03-25 23:36:11.207'},50000,'GBP',null,'P',null,'BR01',2,null,'4321');";
 
     /**
      * Prevents instantiation.

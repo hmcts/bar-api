@@ -356,7 +356,7 @@ databaseChangeLog:
             tableName: bar_user
             columns:
               - column:
-                  name: idam_id
+                  name: id
                   type: varchar(255)
                   constraints:
                     primaryKey: true
@@ -382,7 +382,7 @@ databaseChangeLog:
         - addColumn:
             columns:
               - column:
-                  name: idam_id
+                  name: user_id
                   type: int
                   constraints:
                     nullable: true

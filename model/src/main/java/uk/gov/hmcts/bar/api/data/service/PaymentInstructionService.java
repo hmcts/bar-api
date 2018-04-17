@@ -49,7 +49,7 @@ public class PaymentInstructionService {
     }
 
     public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction) {
-        BarUser user = barUserService.identifyUser();
+        String userId = barUserService.getCurrentUserId();
         if (PaymentStatusEnum.contains(paymentInstruction.getStatus())) {
             paymentInstruction.setStatus(paymentInstruction.getStatus());
         } else {
@@ -59,7 +59,7 @@ public class PaymentInstructionService {
         PaymentReference nextPaymentReference = paymentReferenceService.getNextPaymentReferenceSequenceBySite(SITE_ID);
         paymentInstruction.setSiteId(SITE_ID);
         paymentInstruction.setDailySequenceId(nextPaymentReference.getDailySequenceId());
-        paymentInstruction.setBarUser(user);
+        paymentInstruction.setUserId(userId);
         return paymentInstructionRepository.saveAndRefresh(paymentInstruction);
     }
 

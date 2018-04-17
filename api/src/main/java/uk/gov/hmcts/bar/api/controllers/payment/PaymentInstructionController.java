@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.data.service.BarUserService;
 import uk.gov.hmcts.bar.api.data.service.CaseFeeDetailService;
 import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
 import uk.gov.hmcts.bar.api.data.service.UnallocatedAmountService;
@@ -39,13 +41,17 @@ public class PaymentInstructionController {
 
     private final UnallocatedAmountService unallocatedAmountService;
 
+    private final BarUserService barUserService;
+
     @Autowired
     public PaymentInstructionController(PaymentInstructionService paymentInstructionService,
                                         CaseFeeDetailService caseFeeDetailService,
-                                        UnallocatedAmountService unallocatedAmountService) {
+                                        UnallocatedAmountService unallocatedAmountService,
+                                        BarUserService barUserService) {
         this.paymentInstructionService = paymentInstructionService;
         this.caseFeeDetailService = caseFeeDetailService;
         this.unallocatedAmountService = unallocatedAmountService;
+        this.barUserService = barUserService;
     }
 
     @ApiOperation(value = "Get all current payment instructions", notes = "Get all current payment instructions for a given site.",
@@ -73,12 +79,9 @@ public class PaymentInstructionController {
 		if (caseReference != null) {
 			paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByCaseReference(caseReference);
 		} else {
-			PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = PaymentInstructionSearchCriteriaDto
-					.paymentInstructionSearchCriteriaDto().status(status)
-					.startDate(startDate == null ? null : startDate.atStartOfDay())
-					.endDate(endDate == null ? null : endDate.atTime(LocalTime.now())).payerName(payerName)
-					.chequeNumber(chequeNumber).postalOrderNumer(postalOrderNumber).dailySequenceId(dailySequenceId)
-					.allPayInstructionId(allPayInstructionId).paymentType(paymentType).action(action).build();
+			PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto =
+                createPaymentInstructionCriteria(status, startDate, endDate, payerName, chequeNumber, postalOrderNumber,
+                    dailySequenceId, allPayInstructionId, paymentType, action);
 
 			paymentInstructionList = paymentInstructionService
 					.getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
@@ -92,9 +95,9 @@ public class PaymentInstructionController {
         @ApiResponse(code = 404, message = "Payment instructions not found"),
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/user/{idamId}/payment-instructions")
+    @GetMapping("/users/{id}/payment-instructions")
     public List<PaymentInstruction> getPaymentInstructionsByIdamId(
-        @PathVariable("idamId") String idamId,
+        @PathVariable("id") String id,
         @RequestParam(name = "status", required = false) String status,
         @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
         @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate,
@@ -107,10 +110,24 @@ public class PaymentInstructionController {
         @RequestParam(name = "paymentType", required = false) String paymentType,
         @RequestParam(name = "action", required = false) String action) {
 
-        // TODO: The filter by IdamId should be moved to criteria
-        List<PaymentInstruction> paymentInstructions = getPaymentInstructions(status, startDate, endDate, payerName, chequeNumber,
-            postalOrderNumber, dailySequenceId, allPayInstructionId, caseReference, paymentType, action);
-        return paymentInstructions.stream().filter(paymentInstruction -> paymentInstruction.getBarUser().getIdamId().equals(idamId)).collect(Collectors.toList());
+        List<PaymentInstruction> paymentInstructionList = null;
+        String loggedInUserId = barUserService.getCurrentUserId();
+
+        if (!id.equals(loggedInUserId)){
+            throw new AccessDeniedException("failed to identify user");
+        }
+
+        if (caseReference != null) {
+            paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByCaseReference(caseReference);
+        } else {
+            PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto =
+                createPaymentInstructionCriteria(id, status, startDate, endDate, payerName, chequeNumber, postalOrderNumber,
+                    dailySequenceId, allPayInstructionId, paymentType, action);
+
+            paymentInstructionList = paymentInstructionService
+                .getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
+        }
+        return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
     }
 
     @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction for the given id.")
@@ -353,6 +370,44 @@ public class PaymentInstructionController {
     @GetMapping("/payment-instructions/{id}/unallocated")
     public int getUnallocatedPayment(@PathVariable("id") Integer paymentId){
         return unallocatedAmountService.calculateUnallocatedAmount(paymentId);
+    }
+
+    private PaymentInstructionSearchCriteriaDto createPaymentInstructionCriteria(
+        String status,
+        LocalDate startDate,
+        LocalDate endDate,
+        String payerName,
+        String chequeNumber,
+        String postalOrderNumber,
+        Integer dailySequenceId,
+        String allPayInstructionId,
+        String paymentType,
+        String action
+    ){
+        return createPaymentInstructionCriteria(null, status, startDate, endDate, payerName, chequeNumber,
+            postalOrderNumber, dailySequenceId, allPayInstructionId, paymentType, action);
+    }
+
+    private PaymentInstructionSearchCriteriaDto createPaymentInstructionCriteria(
+        String userId,
+        String status,
+        LocalDate startDate,
+        LocalDate endDate,
+        String payerName,
+        String chequeNumber,
+        String postalOrderNumber,
+        Integer dailySequenceId,
+        String allPayInstructionId,
+        String paymentType,
+        String action
+    ){
+        return PaymentInstructionSearchCriteriaDto
+            .paymentInstructionSearchCriteriaDto().status(status)
+            .userId(userId)
+            .startDate(startDate == null ? null : startDate.atStartOfDay())
+            .endDate(endDate == null ? null : endDate.atTime(LocalTime.now())).payerName(payerName)
+            .chequeNumber(chequeNumber).postalOrderNumer(postalOrderNumber).dailySequenceId(dailySequenceId)
+            .allPayInstructionId(allPayInstructionId).paymentType(paymentType).action(action).build();
     }
 
 }

@@ -14,19 +14,14 @@ import java.util.stream.Collectors;
 public class BarUser {
 
     @Id
-    @Column(name = "idam_id", unique = true, nullable = false)
-    private String idamId;
-
+    private String id;
     private String forename;
-
     private String surname;
-
     private String email;
-
     private String roles;
 
     public BarUser(String principalId, Set<String> roles, String email, String forename, String surname) {
-        this.idamId = principalId;
+        this.id = principalId;
         this.roles = roles.stream().collect(Collectors.joining(", "));
         this.email = email;
         this.forename = forename;

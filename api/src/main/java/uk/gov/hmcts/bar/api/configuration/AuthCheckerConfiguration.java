@@ -5,9 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import uk.gov.hmcts.bar.api.auth.CompleteUserTokenDetails;
-import uk.gov.hmcts.bar.api.auth.CompleteUserResolver;
-import uk.gov.hmcts.bar.api.data.model.BarUser;
+import uk.gov.hmcts.bar.api.auth.UserResolver;
+import uk.gov.hmcts.bar.api.auth.UserTokenDetails;
 import uk.gov.hmcts.bar.api.data.service.BarUserService;
 import uk.gov.hmcts.reform.auth.checker.core.CachingSubjectResolver;
 import uk.gov.hmcts.reform.auth.checker.core.SubjectResolver;
@@ -39,14 +38,14 @@ public class AuthCheckerConfiguration {
     }
 
     @Bean
-    public UserTokenParser<CompleteUserTokenDetails> fullUserTokenParser(HttpClient userTokenParserHttpClient,
-                                                                         @Value("${auth.idam.client.baseUrl}") String baseUrl) {
-        return new HttpComponentsBasedUserTokenParser<>(userTokenParserHttpClient, baseUrl, CompleteUserTokenDetails.class);
+    public UserTokenParser<UserTokenDetails> fullUserTokenParser(HttpClient userTokenParserHttpClient,
+                                                                 @Value("${auth.idam.client.baseUrl}") String baseUrl) {
+        return new HttpComponentsBasedUserTokenParser<>(userTokenParserHttpClient, baseUrl, UserTokenDetails.class);
     }
 
     @Bean
-    public SubjectResolver<User> userResolver(UserTokenParser<CompleteUserTokenDetails> fullUserTokenParser, AuthCheckerProperties properties, BarUserService userService) {
-        return new CachingSubjectResolver<>(new CompleteUserResolver(fullUserTokenParser, userService), properties.getUser().getTtlInSeconds(), properties.getUser().getMaximumSize());
+    public SubjectResolver<User> userResolver(UserTokenParser<UserTokenDetails> fullUserTokenParser, AuthCheckerProperties properties, BarUserService userService) {
+        return new CachingSubjectResolver<>(new UserResolver(fullUserTokenParser, userService), properties.getUser().getTtlInSeconds(), properties.getUser().getMaximumSize());
     }
 
     @Bean

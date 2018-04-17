@@ -29,5 +29,6 @@ public class PaymentInstructionSearchCriteriaDto {
     private String allPayInstructionId;
     private String paymentType;
     private String action;
+    private String userId;
 
 }

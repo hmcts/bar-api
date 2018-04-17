@@ -1,10 +1,7 @@
 package uk.gov.hmcts.bar.api.data.model;
 
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -88,10 +85,8 @@ public abstract class PaymentInstruction {
     @JsonProperty(access= JsonProperty.Access.READ_ONLY)
     private PaymentType paymentType;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name="idam_id", referencedColumnName="idam_id", insertable=false, updatable=false)
-    @JsonProperty(access= JsonProperty.Access.READ_ONLY)
-    private BarUser barUser;
+    @JsonIgnore
+    private String userId;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "paymentInstructionId", referencedColumnName = "id")
