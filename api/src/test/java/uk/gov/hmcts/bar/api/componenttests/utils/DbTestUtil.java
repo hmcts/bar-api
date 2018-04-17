@@ -2,7 +2,7 @@ package uk.gov.hmcts.bar.api.componenttests.utils;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
-import uk.gov.hmcts.bar.api.auth.CompleteUserDetails;
+import uk.gov.hmcts.reform.auth.checker.spring.useronly.UserDetails;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -16,8 +16,8 @@ public final class DbTestUtil {
     private static final String PROPERTY_KEY_RESET_SQL_TEMPLATE = "test.reset.sql.template";
     private static final String PROPERTY_KEY_INSERT_USER_SQL_TAMPLATE = "test.user.sql.template";
     private static final String INSERT_PI_QUERY =
-        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,bar_user_id) VALUES (1,'John Doe',null,'cards',{ts '2018-03-25 23:32:23.871'},50000,'GBP',null,'TTB',null,'BR01',1,'P',1);\n" +
-        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,bar_user_id) VALUES (2,'John Doe',null,'cards',{ts '2018-03-25 23:36:11.207'},50000,'GBP',null,'P',null,'BR01',2,null,2);";
+        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,idam_id) VALUES (1,'John Doe',null,'cards',{ts '2018-03-25 23:32:23.871'},50000,'GBP',null,'TTB',null,'BR01',1,'P','1234');\n" +
+        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,idam_id) VALUES (2,'John Doe',null,'cards',{ts '2018-03-25 23:36:11.207'},50000,'GBP',null,'P',null,'BR01',2,null,'4321');";
 
     /**
      * Prevents instantiation.
@@ -54,18 +54,17 @@ public final class DbTestUtil {
         return environment.getRequiredProperty(key);
     }
 
-    public static void setTestUser(ApplicationContext applicationContext, CompleteUserDetails userDteails) throws SQLException {
+    public static void setTestUser(ApplicationContext applicationContext, UserDetails userDteails) throws SQLException {
         DataSource dataSource = applicationContext.getBean(DataSource.class);
         String insertUserSqlTemplate = getSqlTemplate(applicationContext, PROPERTY_KEY_INSERT_USER_SQL_TAMPLATE);
         try (Connection dbConnection = dataSource.getConnection()) {
             Statement stmt = dbConnection.createStatement();
-            String[] args1 = new String[]{"1", "'" + userDteails.getForename() + "'", "'" + userDteails.getSurname() + "'",
+            String[] args1 = new String[]{"'John'", "'Doe'",
                 "'" + userDteails.getUsername() + "'", "'" + userDteails.getAuthorities().stream().map(Object::toString).collect(Collectors.joining(", "))  + "'"};
             String[] args2 = Arrays.copyOf(args1, args1.length);
-            args2[0] = "2";
-            args2[1] = "'Jane'";
-            args2[3] = "'4321'";
-            String query = "delete from bar_user where id in (1, 2);";
+            args2[0] = "'Jane'";
+            args2[2] = "'4321'";
+            String query = "truncate table bar_user;";
             query += String.format(insertUserSqlTemplate, args1);
             query += String.format(insertUserSqlTemplate, args2);
             stmt.executeQuery(query);

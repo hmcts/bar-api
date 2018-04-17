@@ -9,10 +9,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.bar.api.auth.CompleteUserDetails;
 import uk.gov.hmcts.bar.api.componenttests.sugar.CustomResultMatcher;
 import uk.gov.hmcts.bar.api.componenttests.sugar.RestActions;
 import uk.gov.hmcts.bar.api.componenttests.utils.DbTestUtil;
+import uk.gov.hmcts.reform.auth.checker.spring.useronly.UserDetails;
 
 import javax.transaction.Transactional;
 import java.sql.SQLException;
@@ -34,8 +34,8 @@ public class ComponentTestBase {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    public final CompleteUserDetails userDetails =
-        new CompleteUserDetails("1234", "abc123", Collections.singletonList("bar-post-clerk"), "John", "Doe", "jd@gmail.com");
+    public final UserDetails userDetails =
+        new UserDetails("1234", "abc123", Collections.singletonList("bar-post-clerk"));
 
 
     RestActions restActions;

@@ -15,7 +15,6 @@ import uk.gov.hmcts.bar.api.data.service.CaseFeeDetailService;
 import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
 import uk.gov.hmcts.bar.api.data.service.UnallocatedAmountService;
 import uk.gov.hmcts.bar.api.data.utils.Util;
-import uk.gov.hmcts.bar.api.service.UserService;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -40,17 +39,13 @@ public class PaymentInstructionController {
 
     private final UnallocatedAmountService unallocatedAmountService;
 
-    private final UserService userService;
-
     @Autowired
     public PaymentInstructionController(PaymentInstructionService paymentInstructionService,
                                         CaseFeeDetailService caseFeeDetailService,
-                                        UnallocatedAmountService unallocatedAmountService,
-                                        UserService userService) {
+                                        UnallocatedAmountService unallocatedAmountService) {
         this.paymentInstructionService = paymentInstructionService;
         this.caseFeeDetailService = caseFeeDetailService;
         this.unallocatedAmountService = unallocatedAmountService;
-        this.userService = userService;
     }
 
     @ApiOperation(value = "Get all current payment instructions", notes = "Get all current payment instructions for a given site.",
@@ -157,8 +152,7 @@ public class PaymentInstructionController {
             .status(card.getStatus())
             .authorizationCode(card.getAuthorizationCode())
             .build();
-        BarUser user = userService.identifyUser();
-        return paymentInstructionService.createPaymentInstruction(cardPaymentInstruction, user);
+        return paymentInstructionService.createPaymentInstruction(cardPaymentInstruction);
     }
 
     @ApiOperation(value = "Update card payment instruction", notes = "Update card payment instruction with the given values.")
@@ -188,8 +182,7 @@ public class PaymentInstructionController {
             .currency(cheque.getCurrency())
             .status(cheque.getStatus())
             .chequeNumber(cheque.getChequeNumber()).build();
-        BarUser user = userService.identifyUser();
-        return paymentInstructionService.createPaymentInstruction(chequePaymentInstruction, user);
+        return paymentInstructionService.createPaymentInstruction(chequePaymentInstruction);
     }
 
     @ApiOperation(value = "Update cheque payment instruction", notes = "Update cheque payment instruction with the given values.")
@@ -216,8 +209,7 @@ public class PaymentInstructionController {
             .amount(cash.getAmount())
             .status(cash.getStatus())
             .currency(cash.getCurrency()).build();
-        BarUser user = userService.identifyUser();
-        return paymentInstructionService.createPaymentInstruction(cashPaymentInstruction, user);
+        return paymentInstructionService.createPaymentInstruction(cashPaymentInstruction);
     }
 
 
@@ -249,8 +241,7 @@ public class PaymentInstructionController {
             .currency(postalOrder.getCurrency())
             .status(postalOrder.getStatus())
             .postalOrderNumber(postalOrder.getPostalOrderNumber()).build();
-        BarUser user = userService.identifyUser();
-        return paymentInstructionService.createPaymentInstruction(postalOrderPaymentInstruction, user);
+        return paymentInstructionService.createPaymentInstruction(postalOrderPaymentInstruction);
     }
 
     @ApiOperation(value = "Update postal order payment instruction", notes = "Update postal order payment instruction with the given values.")
@@ -280,8 +271,7 @@ public class PaymentInstructionController {
             .currency(allPay.getCurrency())
             .status(allPay.getStatus())
             .allPayTransactionId(allPay.getAllPayTransactionId()).build();
-        BarUser user = userService.identifyUser();
-        return paymentInstructionService.createPaymentInstruction(allPayPaymentInstruction, user);
+        return paymentInstructionService.createPaymentInstruction(allPayPaymentInstruction);
     }
 
     @ApiOperation(value = "Update allpay payment instruction", notes = "Update allpay payment instruction with the given values.")

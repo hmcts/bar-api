@@ -356,9 +356,8 @@ databaseChangeLog:
             tableName: bar_user
             columns:
               - column:
-                  name: id
-                  type: int
-                  autoIncrement: true
+                  name: idam_id
+                  type: varchar(255)
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -373,10 +372,8 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: idam_id
+                  name: email
                   type: varchar(255)
-                  constraints:
-                    nullable: false
               - column:
                   name: roles
                   type: varchar(255)
@@ -385,7 +382,7 @@ databaseChangeLog:
         - addColumn:
             columns:
               - column:
-                  name: bar_user_id
+                  name: idam_id
                   type: int
                   constraints:
                     nullable: true

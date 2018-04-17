@@ -5,14 +5,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import uk.gov.hmcts.bar.api.auth.CompleteUserTokenDetails;
-import uk.gov.hmcts.bar.api.auth.CompleteUser;
 import uk.gov.hmcts.bar.api.auth.CompleteUserResolver;
-import uk.gov.hmcts.bar.api.auth.UserDetailsService;
+import uk.gov.hmcts.bar.api.data.model.BarUser;
 import uk.gov.hmcts.bar.api.data.service.BarUserService;
 import uk.gov.hmcts.reform.auth.checker.core.CachingSubjectResolver;
 import uk.gov.hmcts.reform.auth.checker.core.SubjectResolver;
+import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.auth.checker.core.user.UserRequestAuthorizer;
 import uk.gov.hmcts.reform.auth.checker.spring.AuthCheckerProperties;
 import uk.gov.hmcts.reform.auth.checker.spring.useronly.AuthCheckerUserOnlyFilter;
@@ -46,30 +45,22 @@ public class AuthCheckerConfiguration {
     }
 
     @Bean
-    public SubjectResolver<CompleteUser> userResolver(UserTokenParser<CompleteUserTokenDetails> fullUserTokenParser, AuthCheckerProperties properties, BarUserService userService) {
+    public SubjectResolver<User> userResolver(UserTokenParser<CompleteUserTokenDetails> fullUserTokenParser, AuthCheckerProperties properties, BarUserService userService) {
         return new CachingSubjectResolver<>(new CompleteUserResolver(fullUserTokenParser, userService), properties.getUser().getTtlInSeconds(), properties.getUser().getMaximumSize());
     }
 
     @Bean
-    public UserRequestAuthorizer<CompleteUser> userRequestAuthorizer(SubjectResolver<CompleteUser> userResolver,
+    public UserRequestAuthorizer<User> userRequestAuthorizer(SubjectResolver<User> userResolver,
                                                                      Function<HttpServletRequest, Optional<String>> userIdExtractor,
                                                                      Function<HttpServletRequest, Collection<String>> authorizedRolesExtractor) {
         return new UserRequestAuthorizer<>(userResolver, userIdExtractor, authorizedRolesExtractor);
     }
 
     @Bean
-    public AuthCheckerUserOnlyFilter<CompleteUser> authCheckerServiceAndUserFilter(UserRequestAuthorizer<CompleteUser> userRequestAuthorizer,
-                                                                     AuthenticationManager authenticationManager) {
-        AuthCheckerUserOnlyFilter<CompleteUser> filter = new AuthCheckerUserOnlyFilter<>(userRequestAuthorizer);
+    public AuthCheckerUserOnlyFilter<User> authCheckerServiceAndUserFilter(UserRequestAuthorizer<User> userRequestAuthorizer,
+                                                                                   AuthenticationManager authenticationManager) {
+        AuthCheckerUserOnlyFilter<User> filter = new AuthCheckerUserOnlyFilter<>(userRequestAuthorizer);
         filter.setAuthenticationManager(authenticationManager);
         return filter;
     }
-
-    @Bean
-    public PreAuthenticatedAuthenticationProvider preAuthenticatedAuthenticationProvider() {
-        PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
-        authenticationProvider.setPreAuthenticatedUserDetailsService(new UserDetailsService());
-        return authenticationProvider;
-    }
-
 }

@@ -37,6 +37,7 @@ public class PaymentInstructionService {
     private PaymentInstructionRepository paymentInstructionRepository;
     private PaymentReferenceService paymentReferenceService;
     private CaseReferenceService caseReferenceService;
+    private final BarUserService barUserService;
 
 
     public PaymentInstructionService(PaymentReferenceService paymentReferenceService, CaseReferenceService caseReferenceService,
@@ -44,10 +45,11 @@ public class PaymentInstructionService {
         this.paymentReferenceService = paymentReferenceService;
         this.caseReferenceService = caseReferenceService;
         this.paymentInstructionRepository = paymentInstructionRepository;
-
+        this.barUserService = barUserService;
     }
 
-    public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction, BarUser user) {
+    public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction) {
+        BarUser user = barUserService.identifyUser();
         if (PaymentStatusEnum.contains(paymentInstruction.getStatus())) {
             paymentInstruction.setStatus(paymentInstruction.getStatus());
         } else {

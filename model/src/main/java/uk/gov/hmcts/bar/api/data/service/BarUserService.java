@@ -1,10 +1,15 @@
 package uk.gov.hmcts.bar.api.data.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.bar.api.data.model.BarUser;
 import uk.gov.hmcts.bar.api.data.repository.BarUserRepository;
+import uk.gov.hmcts.reform.auth.checker.spring.useronly.UserDetails;
 
 import java.util.Optional;
 
@@ -25,7 +30,15 @@ public class BarUserService {
             .orElseGet(() -> barUserRepository.save(barUser));
     }
 
-    public Optional<BarUser> findBarUserByIdamId(String idamId) {
-        return barUserRepository.findBarUserByIdamId(idamId);
+    public BarUser identifyUser(){
+        Optional<BarUser> barUser;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            barUser = barUserRepository.findBarUserByIdamId(userDetails.getUsername());
+        } else {
+            barUser = Optional.empty();
+        }
+        return barUser.orElseThrow(() -> new AccessDeniedException("failed to identify user"));
     }
 }

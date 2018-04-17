@@ -89,7 +89,7 @@ public abstract class PaymentInstruction {
     private PaymentType paymentType;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name="bar_user_id", referencedColumnName="id", insertable=false, updatable=false)
+    @JoinColumn(name="idam_id", referencedColumnName="idam_id", insertable=false, updatable=false)
     @JsonProperty(access= JsonProperty.Access.READ_ONLY)
     private BarUser barUser;
 

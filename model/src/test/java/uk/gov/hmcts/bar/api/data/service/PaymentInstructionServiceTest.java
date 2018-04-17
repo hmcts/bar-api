@@ -99,7 +99,7 @@ public class PaymentInstructionServiceTest {
 		when(paymentInstructionRepository.saveAndFlush(any(ChequePaymentInstruction.class)))
 				.thenReturn(chequePaymentInstructionMock);
 		PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
-				.createPaymentInstruction(chequePaymentInstructionMock, barUser);
+				.createPaymentInstruction(chequePaymentInstructionMock);
 		verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
 		verify(paymentInstructionRepository, times(1)).saveAndRefresh(chequePaymentInstructionMock);
 	}
@@ -113,7 +113,7 @@ public class PaymentInstructionServiceTest {
 		when(paymentInstructionRepository.saveAndFlush(any(CashPaymentInstruction.class)))
 				.thenReturn(cashPaymentInstructionMock);
 		PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
-				.createPaymentInstruction(cashPaymentInstructionMock, barUser);
+				.createPaymentInstruction(cashPaymentInstructionMock);
 		verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
 		verify(paymentInstructionRepository, times(1)).saveAndRefresh(cashPaymentInstructionMock);
 
@@ -128,7 +128,7 @@ public class PaymentInstructionServiceTest {
 		when(paymentInstructionRepository.saveAndFlush(any(PostalOrderPaymentInstruction.class)))
 				.thenReturn(postalOrderPaymentInstructionMock);
 		PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
-				.createPaymentInstruction(postalOrderPaymentInstructionMock, barUser);
+				.createPaymentInstruction(postalOrderPaymentInstructionMock);
 		verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
 		verify(paymentInstructionRepository, times(1)).saveAndRefresh(postalOrderPaymentInstructionMock);
 	}
@@ -142,7 +142,7 @@ public class PaymentInstructionServiceTest {
 		when(paymentInstructionRepository.saveAndFlush(any(AllPayPaymentInstruction.class)))
 				.thenReturn(allpayPaymentInstructionMock);
 		PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
-				.createPaymentInstruction(allpayPaymentInstructionMock, barUser);
+				.createPaymentInstruction(allpayPaymentInstructionMock);
 		verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
 		verify(paymentInstructionRepository, times(1)).saveAndRefresh(allpayPaymentInstructionMock);
 	}
