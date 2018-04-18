@@ -29,6 +29,7 @@ public class PaymentInstructionsSpecifications {
 	protected Specification<PaymentInstruction> postalOrderNumerSpec = null;
 	protected Specification<PaymentInstruction> allPayTransactionIdSpec = null;
 	protected Specification<PaymentInstruction> dailySequenceIdSpec = null;
+	protected Specification<PaymentInstruction> userIdSpec = null;
 
 	public PaymentInstructionsSpecifications(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto) {
 		this.paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDto;
@@ -42,12 +43,13 @@ public class PaymentInstructionsSpecifications {
 		postalOrderNumerSpec = new PostalOrderNumberSpec();
 		allPayTransactionIdSpec = new AllPayPaymentInstructionSpec();
 		dailySequenceIdSpec = new DailySequenceIdSpec();
+		userIdSpec = new UserIdSpec();
 	}
 
 	public Specification<PaymentInstruction> getPaymentInstructionsSpecification() {
 
 		Specification<PaymentInstruction> andSpecs = Specifications.where(statusSpec).and(startDateSpec)
-				.and(endDateSpec).and(siteIdSpec);
+				.and(endDateSpec).and(siteIdSpec).and(userIdSpec);
 		Specification<PaymentInstruction> orSpecs = Specifications.where(payerNameSpec).or(allPayTransactionIdSpec)
 				.or(chequeNumberSpec).or(postalOrderNumerSpec).or(dailySequenceIdSpec);
 		return where(andSpecs).and(orSpecs);
@@ -108,7 +110,7 @@ public class PaymentInstructionsSpecifications {
 			return predicate;
 		}
 	}
-	
+
 	private class PayerNameSpec implements Specification<PaymentInstruction> {
 
 		@Override
@@ -123,7 +125,7 @@ public class PaymentInstructionsSpecifications {
 			return predicate;
 		}
 	}
-	
+
 	private class ChequeNumberSpec implements Specification<PaymentInstruction> {
 
 		@Override
@@ -137,7 +139,7 @@ public class PaymentInstructionsSpecifications {
 			return predicate;
 		}
 	}
-	
+
 	private class PostalOrderNumberSpec implements Specification<PaymentInstruction> {
 
 		@Override
@@ -151,7 +153,7 @@ public class PaymentInstructionsSpecifications {
 			return predicate;
 		}
 	}
-	
+
 	private class AllPayPaymentInstructionSpec implements Specification<PaymentInstruction> {
 
 		@Override
@@ -165,7 +167,7 @@ public class PaymentInstructionsSpecifications {
 			return predicate;
 		}
 	}
-	
+
 	private class DailySequenceIdSpec implements Specification<PaymentInstruction> {
 
 		@Override
@@ -179,5 +181,18 @@ public class PaymentInstructionsSpecifications {
 			return predicate;
 		}
 	}
+
+	private class UserIdSpec implements Specification<PaymentInstruction> {
+
+        @Override
+        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+            Predicate predicate = null;
+
+            if (paymentInstructionSearchCriteriaDto.getUserId() != null) {
+                predicate = cb.equal(root.<String>get("userId"), paymentInstructionSearchCriteriaDto.getUserId());
+            }
+            return predicate;
+        }
+    }
 
 }

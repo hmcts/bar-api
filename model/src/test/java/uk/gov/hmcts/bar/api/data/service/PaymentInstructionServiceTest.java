@@ -72,15 +72,20 @@ public class PaymentInstructionServiceTest {
 	@Mock
 	private CaseReference caseReferenceMock;
 
+	@Mock
+	private BarUserService barUserService;
+
 	private PaymentInstructionService paymentInstructionService;
 
 	private PaymentInstructionSearchCriteriaDtoBuilder paymentInstructionSearchCriteriaDtoBuilder;
+
+	private BarUser barUser = mock(BarUser.class);
 
 	@Before
 	public void setupMock() {
 		MockitoAnnotations.initMocks(this);
 		paymentInstructionService = new PaymentInstructionService(paymentReferenceService, caseReferenceService,
-				paymentInstructionRepository);
+				paymentInstructionRepository, barUserService);
 		paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto()
 				.siteId("BR01");
 	}
