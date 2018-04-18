@@ -387,3 +387,11 @@ databaseChangeLog:
                   constraints:
                     nullable: true
             tableName: payment_instruction
+  - changeSet:
+      id: 11
+      author: akiss
+      changes:
+        - modifyDataType:
+            columnName: user_id
+            newDataType: varchar(255)
+            tableName: payment_instruction
