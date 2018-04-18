@@ -22,7 +22,7 @@ public class BarUser {
 
     public BarUser(String principalId, Set<String> roles, String email, String forename, String surname) {
         this.id = principalId;
-        this.roles = roles.stream().collect(Collectors.joining(", "));
+        this.roles = roles == null ? "" : roles.stream().collect(Collectors.joining(", "));
         this.email = email;
         this.forename = forename;
         this.surname = surname;
