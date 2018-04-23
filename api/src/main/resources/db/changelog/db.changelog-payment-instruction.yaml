@@ -395,3 +395,11 @@ databaseChangeLog:
             columnName: user_id
             newDataType: varchar(255)
             tableName: payment_instruction
+  - changeSet:
+      id: 12
+      author: akiss
+      changes:
+        - modifyDataType:
+            columnName: roles
+            newDataType: varchar
+            tableName: bar_user
