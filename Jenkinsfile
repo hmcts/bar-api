@@ -35,11 +35,11 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
 
             def barApiDockerVersion
             def barDatabaseDockerVersion
-
-            stage('Build docker') {
-                barApiDockerVersion = dockerImage imageName: 'bar/bar-api'
-                barDatabaseDockerVersion = dockerImage imageName: 'bar/bar-database', context: 'docker/database'
-            }
+//
+//            stage('Build docker') {
+//                barApiDockerVersion = dockerImage imageName: 'bar/bar-api'
+//                barDatabaseDockerVersion = dockerImage imageName: 'bar/bar-database', context: 'docker/database'
+//            }
 
 //            stage("Trigger acceptance tests") {
 //                build job: '/bar/bar-app-acceptance-tests/master', parameters: [
@@ -61,20 +61,20 @@ lock(resource: "bar-app-${env.BRANCH_NAME}", inversePrecedence: true) {
                     rpmTagger.tagDeploymentSuccessfulOn('dev')
                 }
 
-//                stage("Trigger smoke tests in Dev") {
-//                    sh 'curl -f https://dev.api.bar.reform.hmcts.net:4702/health'
-//                    rpmTagger.tagTestingPassedOn('dev')
-//                }
+                stage("Trigger smoke tests in Dev") {
+                    sh 'curl -f https://dev.api.bar.reform.hmcts.net:4702/health'
+                    rpmTagger.tagTestingPassedOn('dev')
+                }
 
-//                stage('Deploy to Test') {
-//                    ansible.runDeployPlaybook("{bar_api_version: ${rpmVersion}}", 'test')
-//                    rpmTagger.tagDeploymentSuccessfulOn('test')
-//                }
-//
-//                stage("Trigger smoke tests in Test") {
-//                    sh 'curl -f https://test.api.bar.reform.hmcts.net:4712/health'
-//                    rpmTagger.tagTestingPassedOn('test')
-//                }
+                stage('Deploy to Test') {
+                    ansible.runDeployPlaybook("{bar_api_version: ${rpmVersion}}", 'test')
+                    rpmTagger.tagDeploymentSuccessfulOn('test')                
+                }
+               
+                stage("Trigger smoke tests in Test") {
+                    sh 'curl -f https://test.api.bar.reform.hmcts.net:4712/health'
+                    rpmTagger.tagTestingPassedOn('test')
+                }
             }
 
             milestone()
