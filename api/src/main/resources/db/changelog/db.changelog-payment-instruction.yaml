@@ -403,3 +403,64 @@ databaseChangeLog:
             columnName: roles
             newDataType: varchar(1024)
             tableName: bar_user
+  - changeSet:
+      id: 13
+      author: rarasan
+      changes:
+        - createTable:
+            tableName: status
+            columns:
+              - column:
+                  name: status_id
+                  type: varchar(5)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: status_description
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+        - sql: >
+            INSERT INTO status (status_id,status_description)
+            VALUES
+              ('A', 'Approved'),
+              ('D', 'Draft'),
+              ('PA', 'Pending Approval'),
+              ('P', 'Pending'),
+              ('REJ', 'Rejected'),
+              ('V', 'Validated'),
+              ('TTB', 'Transferred to bar');                 
+        - createTable:
+            tableName: payment_instruction_status
+            columns:
+              - column:
+                  name: payment_instruction_id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    foreignKeyName: fk_pis_payment_instruction_id
+                    references: payment_instruction(id)
+              - column:
+                  name: status
+                  type: varchar(5)
+                  constraints:
+                    primaryKey: true
+                    foreignKeyName: fk_pis_status_id
+                    references: status(status_id)
+              - column:
+                  name: bar_user_id
+                  type: varchar(255)
+                  constraints:
+                    foreignKeyName: fk_cr_user_id
+                    references: bar_user(id)
+              - column:
+                  name: update_time
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+        - sql: >
+            INSERT INTO payment_instruction_status (payment_instruction_id,status,bar_user_id)
+            SELECT id,status,user_id FROM payment_instruction;
