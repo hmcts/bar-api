@@ -12,6 +12,7 @@ import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto.PaymentInstructionSearchCriteriaDtoBuilder;
 import uk.gov.hmcts.bar.api.data.repository.CaseReferenceRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
+import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -74,6 +75,14 @@ public class PaymentInstructionServiceTest {
 
 	@Mock
 	private BarUserService barUserService;
+	
+
+	@Mock
+	private PaymentInstructionStatusRepository paymentInstructionStatusRepositoryMock;
+	
+	private PaymentInstructionStatus paymentInstructionStatus;
+	
+	private PaymentInstructionStatusReferenceKey paymentInstructionStatusReferenceKey;
 
 	private PaymentInstructionService paymentInstructionService;
 
@@ -85,9 +94,11 @@ public class PaymentInstructionServiceTest {
 	public void setupMock() {
 		MockitoAnnotations.initMocks(this);
 		paymentInstructionService = new PaymentInstructionService(paymentReferenceService, caseReferenceService,
-				paymentInstructionRepository, barUserService);
+				paymentInstructionRepository, barUserService,paymentInstructionStatusRepositoryMock);
 		paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto()
 				.siteId("BR01");
+		paymentInstructionStatusReferenceKey = new PaymentInstructionStatusReferenceKey(paymentInstructionMock, "status");
+		paymentInstructionStatus = new PaymentInstructionStatus(paymentInstructionStatusReferenceKey, null);
 	}
 
 	@Test
@@ -98,10 +109,14 @@ public class PaymentInstructionServiceTest {
 				.thenReturn(paymentReferenceMock);
 		when(paymentInstructionRepository.saveAndFlush(any(ChequePaymentInstruction.class)))
 				.thenReturn(chequePaymentInstructionMock);
+		when(paymentInstructionRepository.saveAndRefresh(any(ChequePaymentInstruction.class)))
+		.thenReturn(paymentInstructionMock);
+		when(paymentInstructionMock.getStatus()).thenReturn("status");
 		PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
 				.createPaymentInstruction(chequePaymentInstructionMock);
 		verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
 		verify(paymentInstructionRepository, times(1)).saveAndRefresh(chequePaymentInstructionMock);
+		verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
 	}
 
 	@Test
@@ -112,10 +127,14 @@ public class PaymentInstructionServiceTest {
 				.thenReturn(paymentReferenceMock);
 		when(paymentInstructionRepository.saveAndFlush(any(CashPaymentInstruction.class)))
 				.thenReturn(cashPaymentInstructionMock);
+		when(paymentInstructionRepository.saveAndRefresh(any(CashPaymentInstruction.class)))
+		.thenReturn(paymentInstructionMock);
+		when(paymentInstructionMock.getStatus()).thenReturn("status");
 		PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
 				.createPaymentInstruction(cashPaymentInstructionMock);
 		verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
 		verify(paymentInstructionRepository, times(1)).saveAndRefresh(cashPaymentInstructionMock);
+		verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
 
 	}
 
@@ -127,10 +146,14 @@ public class PaymentInstructionServiceTest {
 				.thenReturn(paymentReferenceMock);
 		when(paymentInstructionRepository.saveAndFlush(any(PostalOrderPaymentInstruction.class)))
 				.thenReturn(postalOrderPaymentInstructionMock);
+		when(paymentInstructionRepository.saveAndRefresh(any(PostalOrderPaymentInstruction.class)))
+		.thenReturn(paymentInstructionMock);
+		when(paymentInstructionMock.getStatus()).thenReturn("status");
 		PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
 				.createPaymentInstruction(postalOrderPaymentInstructionMock);
 		verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
 		verify(paymentInstructionRepository, times(1)).saveAndRefresh(postalOrderPaymentInstructionMock);
+		verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
 	}
 
 	@Test
@@ -141,10 +164,14 @@ public class PaymentInstructionServiceTest {
 				.thenReturn(paymentReferenceMock);
 		when(paymentInstructionRepository.saveAndFlush(any(AllPayPaymentInstruction.class)))
 				.thenReturn(allpayPaymentInstructionMock);
+		when(paymentInstructionRepository.saveAndRefresh(any(AllPayPaymentInstruction.class)))
+		.thenReturn(paymentInstructionMock);
+		when(paymentInstructionMock.getStatus()).thenReturn("status");
 		PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
 				.createPaymentInstruction(allpayPaymentInstructionMock);
 		verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
 		verify(paymentInstructionRepository, times(1)).saveAndRefresh(allpayPaymentInstructionMock);
+		verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
 	}
 
 	@Test
@@ -404,6 +431,7 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(paymentInstructionMock));
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
             .thenReturn(paymentInstructionMock);
+        when(paymentInstructionMock.getStatus()).thenReturn("status");
         PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(1, pir);
         verify(paymentInstructionRepository, times(1)).findById(anyInt());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
