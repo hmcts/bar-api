@@ -88,8 +88,6 @@ public class PaymentInstructionServiceTest {
 
 	private PaymentInstructionSearchCriteriaDtoBuilder paymentInstructionSearchCriteriaDtoBuilder;
 
-	private BarUser barUser = mock(BarUser.class);
-
 	@Before
 	public void setupMock() {
 		MockitoAnnotations.initMocks(this);
@@ -97,7 +95,7 @@ public class PaymentInstructionServiceTest {
 				paymentInstructionRepository, barUserService,paymentInstructionStatusRepositoryMock);
 		paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto()
 				.siteId("BR01");
-		paymentInstructionStatusReferenceKey = new PaymentInstructionStatusReferenceKey(paymentInstructionMock, "status");
+		paymentInstructionStatusReferenceKey = new PaymentInstructionStatusReferenceKey(0, "status");
 		paymentInstructionStatus = new PaymentInstructionStatus(paymentInstructionStatusReferenceKey, null);
 	}
 
