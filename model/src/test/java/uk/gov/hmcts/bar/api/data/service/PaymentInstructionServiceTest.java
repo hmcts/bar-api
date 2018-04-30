@@ -1,6 +1,8 @@
 package uk.gov.hmcts.bar.api.data.service;
 
 import com.google.common.collect.Lists;
+
+import org.apache.commons.collections.MultiMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.*;
@@ -16,8 +18,10 @@ import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -88,8 +92,6 @@ public class PaymentInstructionServiceTest {
 
 	private PaymentInstructionSearchCriteriaDtoBuilder paymentInstructionSearchCriteriaDtoBuilder;
 
-	private BarUser barUser = mock(BarUser.class);
-
 	@Before
 	public void setupMock() {
 		MockitoAnnotations.initMocks(this);
@@ -97,7 +99,7 @@ public class PaymentInstructionServiceTest {
 				paymentInstructionRepository, barUserService,paymentInstructionStatusRepositoryMock);
 		paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto()
 				.siteId("BR01");
-		paymentInstructionStatusReferenceKey = new PaymentInstructionStatusReferenceKey(paymentInstructionMock, "status");
+		paymentInstructionStatusReferenceKey = new PaymentInstructionStatusReferenceKey(0, "status");
 		paymentInstructionStatus = new PaymentInstructionStatus(paymentInstructionStatusReferenceKey, null);
 	}
 
@@ -436,5 +438,13 @@ public class PaymentInstructionServiceTest {
         verify(paymentInstructionRepository, times(1)).findById(anyInt());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
 
+    }
+    
+    @Test
+    public void shouldReturn200_whenUpdatePaymentInstructionOverviewIsCalled()
+        throws Exception {
+    	when(paymentInstructionStatusRepositoryMock.getPaymentOverviewStats()).thenReturn(new ArrayList<PaymentInstructionOverview>());
+    	Map<String, MultiMap> combinedPaymentInstructionOverviewMap = paymentInstructionService.getPaymentInstructionOverview();
+    	verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentOverviewStats();
     }
 }

@@ -1,7 +1,17 @@
 package uk.gov.hmcts.bar.api.data.service;
 
 
-import com.google.common.collect.Lists;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -10,20 +20,28 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
+
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.InvalidActionException;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
-import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.data.model.CaseReference;
+import uk.gov.hmcts.bar.api.data.model.CaseReferenceRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionActionRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionOverview;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatus;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusReferenceKey;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentReference;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionsSpecifications;
 import uk.gov.hmcts.bar.api.data.utils.Util;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 
 @Service
@@ -61,10 +79,7 @@ public class PaymentInstructionService {
 		paymentInstruction.setStatus(PaymentStatusEnum.DRAFT.dbKey());
 		paymentInstruction.setUserId(userId);
 		PaymentInstruction savedPaymentInstruction = paymentInstructionRepository.saveAndRefresh(paymentInstruction);
-		PaymentInstructionStatusReferenceKey pisrKey = new PaymentInstructionStatusReferenceKey(
-				savedPaymentInstruction, savedPaymentInstruction.getStatus());
-		PaymentInstructionStatus pis = new PaymentInstructionStatus(pisrKey, userId);
-		paymentInstructionStatusRepository.save(pis);
+		savePaymentInstructionStatus(savedPaymentInstruction, userId);
 		return savedPaymentInstruction;
     }
 
@@ -107,11 +122,14 @@ public class PaymentInstructionService {
     }
 
     public PaymentInstruction submitPaymentInstruction(Integer id, PaymentInstructionUpdateRequest paymentInstructionUpdateRequest) {
+    	String userId = barUserService.getCurrentUserId();
         Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
         PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
             .orElseThrow(() -> new PaymentInstructionNotFoundException(id));
         String[] nullPropertiesNamesToIgnore = Util.getNullPropertyNames(paymentInstructionUpdateRequest);
         BeanUtils.copyProperties(paymentInstructionUpdateRequest, existingPaymentInstruction, nullPropertiesNamesToIgnore);
+        existingPaymentInstruction.setUserId(userId);
+        savePaymentInstructionStatus(existingPaymentInstruction, userId);
         return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
     }
 
@@ -123,10 +141,7 @@ public class PaymentInstructionService {
         String[] nullPropertiesNamesToIgnore = Util.getNullPropertyNames(paymentInstructionRequest);
         BeanUtils.copyProperties(paymentInstructionRequest, existingPaymentInstruction, nullPropertiesNamesToIgnore);
         existingPaymentInstruction.setUserId(userId);
-        PaymentInstructionStatusReferenceKey pisrKey = new PaymentInstructionStatusReferenceKey(
-        		existingPaymentInstruction, existingPaymentInstruction.getStatus());
-		PaymentInstructionStatus pis = new PaymentInstructionStatus(pisrKey, userId);
-		paymentInstructionStatusRepository.save(pis);
+        savePaymentInstructionStatus(existingPaymentInstruction, userId);
         return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
     }
 
@@ -147,6 +162,34 @@ public class PaymentInstructionService {
             nullPropertiesNamesToIgnore);
         return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
     }
+    
+	@SuppressWarnings("unchecked")
+	public Map<String, MultiMap> getPaymentInstructionOverview() {
+		List<PaymentInstructionOverview> paymentInstructionOverviewList = paymentInstructionStatusRepository
+				.getPaymentOverviewStats();
+		Map<String, MultiMap> combinedPaymentInstructionOverviewMap = new HashMap<>();
+		MultiMap paymentInstructionOverviewRolesMap = new MultiValueMap();
+		paymentInstructionOverviewList.forEach(paymentInstructionOverview -> paymentInstructionOverviewRolesMap
+				.put(paymentInstructionOverview.getBarUserRole(), paymentInstructionOverview));
+		Set<String> paymentInstructionOverviewRolesMapKeys = paymentInstructionOverviewRolesMap.keySet();
+		paymentInstructionOverviewRolesMapKeys.forEach(paymentInstructionOverviewRolesMapKey -> {
+			MultiMap paymentInstructionOverviewUserMap = new MultiValueMap();
+			List<PaymentInstructionOverview> pioList = (ArrayList<PaymentInstructionOverview>) paymentInstructionOverviewRolesMap
+					.get(paymentInstructionOverviewRolesMapKey);
+			pioList.forEach(pio -> paymentInstructionOverviewUserMap.put(pio.getBarUserId(), pio));
+			combinedPaymentInstructionOverviewMap.put(paymentInstructionOverviewRolesMapKey,
+					paymentInstructionOverviewUserMap);
+		});
+
+		return combinedPaymentInstructionOverviewMap;
+	}
+    
+	private void savePaymentInstructionStatus(PaymentInstruction pi, String userId) {
+		PaymentInstructionStatusReferenceKey pisrKey = new PaymentInstructionStatusReferenceKey(pi.getId(),
+				pi.getStatus());
+		PaymentInstructionStatus pis = new PaymentInstructionStatus(pisrKey, userId);
+		paymentInstructionStatusRepository.save(pis);
+	}
 
 
 }
