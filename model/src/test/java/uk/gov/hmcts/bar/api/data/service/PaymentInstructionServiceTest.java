@@ -444,8 +444,8 @@ public class PaymentInstructionServiceTest {
     @Test
     public void shouldReturn200_whenUpdatePaymentInstructionOverviewIsCalled()
         throws Exception {
-    	when(paymentInstructionStatusRepositoryMock.getPaymentOverviewStats()).thenReturn(new ArrayList<PaymentInstructionOverview>());
-    	Map<String, MultiMap> combinedPaymentInstructionOverviewMap = paymentInstructionService.getPaymentInstructionOverview();
-    	verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentOverviewStats();
+    	when(paymentInstructionStatusRepositoryMock.getPaymentOverviewStats(anyString())).thenReturn(new ArrayList<PaymentInstructionOverview>());
+    	Map<String, MultiMap> combinedPaymentInstructionOverviewMap = paymentInstructionService.getPaymentInstructionStats(anyString());
+    	verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentOverviewStats(anyString());
     }
 }

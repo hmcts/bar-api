@@ -30,6 +30,7 @@ public class PaymentInstructionsSpecifications {
 	protected Specification<PaymentInstruction> allPayTransactionIdSpec = null;
 	protected Specification<PaymentInstruction> dailySequenceIdSpec = null;
 	protected Specification<PaymentInstruction> userIdSpec = null;
+	protected Specification<PaymentInstruction> actionSpec = null;
 
 	public PaymentInstructionsSpecifications(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto) {
 		this.paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDto;
@@ -44,6 +45,7 @@ public class PaymentInstructionsSpecifications {
 		allPayTransactionIdSpec = new AllPayPaymentInstructionSpec();
 		dailySequenceIdSpec = new DailySequenceIdSpec();
 		userIdSpec = new UserIdSpec();
+		actionSpec = new ActionSpec();
 	}
 
 	public Specification<PaymentInstruction> getPaymentInstructionsSpecification() {
@@ -51,7 +53,7 @@ public class PaymentInstructionsSpecifications {
 		Specification<PaymentInstruction> andSpecs = Specifications.where(statusSpec).and(startDateSpec)
 				.and(endDateSpec).and(siteIdSpec).and(userIdSpec);
 		Specification<PaymentInstruction> orSpecs = Specifications.where(payerNameSpec).or(allPayTransactionIdSpec)
-				.or(chequeNumberSpec).or(postalOrderNumerSpec).or(dailySequenceIdSpec);
+				.or(chequeNumberSpec).or(postalOrderNumerSpec).or(dailySequenceIdSpec).or(actionSpec);
 		return where(andSpecs).and(orSpecs);
 	}
 
@@ -190,6 +192,19 @@ public class PaymentInstructionsSpecifications {
 
             if (paymentInstructionSearchCriteriaDto.getUserId() != null) {
                 predicate = cb.equal(root.<String>get("userId"), paymentInstructionSearchCriteriaDto.getUserId());
+            }
+            return predicate;
+        }
+    }
+	
+	private class ActionSpec implements Specification<PaymentInstruction> {
+
+        @Override
+        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+            Predicate predicate = null;
+
+            if (paymentInstructionSearchCriteriaDto.getAction() != null) {
+                predicate = cb.equal(root.<String>get("action"), paymentInstructionSearchCriteriaDto.getAction());
             }
             return predicate;
         }
