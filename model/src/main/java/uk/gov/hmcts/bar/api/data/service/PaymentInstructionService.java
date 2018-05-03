@@ -37,6 +37,7 @@ import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatus;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusReferenceKey;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats;
 import uk.gov.hmcts.bar.api.data.model.PaymentReference;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
@@ -164,26 +165,21 @@ public class PaymentInstructionService {
     }
     
 	@SuppressWarnings("unchecked")
-	public Map<String, MultiMap> getPaymentInstructionOverview() {
-		List<PaymentInstructionOverview> paymentInstructionOverviewList = paymentInstructionStatusRepository
-				.getPaymentOverviewStats();
-		Map<String, MultiMap> combinedPaymentInstructionOverviewMap = new HashMap<>();
-		MultiMap paymentInstructionOverviewRolesMap = new MultiValueMap();
-		paymentInstructionOverviewList.forEach(paymentInstructionOverview -> paymentInstructionOverviewRolesMap
-				.put(paymentInstructionOverview.getBarUserRole(), paymentInstructionOverview));
-		Set<String> paymentInstructionOverviewRolesMapKeys = paymentInstructionOverviewRolesMap.keySet();
-		paymentInstructionOverviewRolesMapKeys.forEach(paymentInstructionOverviewRolesMapKey -> {
-			MultiMap paymentInstructionOverviewUserMap = new MultiValueMap();
-			List<PaymentInstructionOverview> pioList = (ArrayList<PaymentInstructionOverview>) paymentInstructionOverviewRolesMap
-					.get(paymentInstructionOverviewRolesMapKey);
-			pioList.forEach(pio -> paymentInstructionOverviewUserMap.put(pio.getBarUserId(), pio));
-			combinedPaymentInstructionOverviewMap.put(paymentInstructionOverviewRolesMapKey,
-					paymentInstructionOverviewUserMap);
+	public MultiMap getPaymentInstructionStats(String userRole) {
+		List<PaymentInstructionOverview> paymentInstructionStatsList = paymentInstructionStatusRepository
+				.getPaymentOverviewStats(userRole);
+		MultiMap paymentInstructionStatsUserMap = new MultiValueMap();
+		paymentInstructionStatsList.forEach(pis -> paymentInstructionStatsUserMap.put(pis.getBarUserId(), pis));
+		List<PaymentInstructionUserStats> paymentInstructionInPAList = paymentInstructionStatusRepository
+				.getPaymentInstructionsPendingApprovalByUserGroup(userRole);
+		paymentInstructionInPAList.forEach(pius -> {
+			String user = pius.getBarUserId();
+			pius.setBarUserId(null);
+			paymentInstructionStatsUserMap.put(user, pius);
 		});
-
-		return combinedPaymentInstructionOverviewMap;
+		return paymentInstructionStatsUserMap;
 	}
-    
+
 	private void savePaymentInstructionStatus(PaymentInstruction pi, String userId) {
 		PaymentInstructionStatusReferenceKey pisrKey = new PaymentInstructionStatusReferenceKey(pi.getId(),
 				pi.getStatus());

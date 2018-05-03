@@ -112,13 +112,8 @@ public class PaymentInstructionController {
         @RequestParam(name = "caseReference", required = false) String caseReference,
         @RequestParam(name = "paymentType", required = false) String paymentType,
         @RequestParam(name = "action", required = false) String action) {
-
+    	
         List<PaymentInstruction> paymentInstructionList = null;
-        String loggedInUserId = barUserService.getCurrentUserId();
-
-        if (!id.equals(loggedInUserId)){
-            throw new AccessDeniedException("failed to identify user");
-        }
 
         if (caseReference != null) {
             paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByCaseReference(caseReference);
@@ -375,16 +370,17 @@ public class PaymentInstructionController {
         return unallocatedAmountService.calculateUnallocatedAmount(paymentId);
     }
     
-	@ApiOperation(value = "Get the payments overview", notes = "Get the payment instruction's overview showing each User's activities.")
+	@ApiOperation(value = "Get the payments stats", notes = "Get the payment instruction's stats showing each User's activities.")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Return payment overview stats"),
 			@ApiResponse(code = 500, message = "Internal server error") })
 	@ResponseStatus(HttpStatus.OK)
-	@GetMapping("/payments-overview")
-	public Map<String, MultiMap> getPaymentsOverview(
-			@RequestParam(name = "userId", required = false) String userId) {
-		return paymentInstructionService.getPaymentInstructionOverview();
+	@GetMapping("/payment-stats")
+	public  MultiMap getPaymentStats(
+			@RequestParam(name = "userId", required = false) String userId,
+			@RequestParam(name = "userRole", required = true) String userRole) {
+		return paymentInstructionService.getPaymentInstructionStats(userRole);
 	}
-
+	
     private PaymentInstructionSearchCriteriaDto createPaymentInstructionCriteria(
         String status,
         LocalDate startDate,
