@@ -48,7 +48,7 @@ public class PaymentTypeServiceTest {
     @Test
     public void shouldReturnPaymentType_whenGetPaymentTypeByIdIsCalled() throws Exception {
 
-        when(paymentTypeRepository.findOne("cash")).thenReturn(paymentType);
+        when(paymentTypeRepository.getOne("cash")).thenReturn(paymentType);
 
         PaymentType retrievedPaymentType = paymentTypeService.getPaymentTypeById("cash");
 
