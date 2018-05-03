@@ -33,12 +33,4 @@ public class PaymentInstructionUserFilterTest extends ComponentTestBase {
                 Assert.assertTrue(paymentInstructions.size() == 1);
             }));
     }
-
-    @Test
-    public void whenUsersInPathDoesNotMatchLoggedInUser_then403() throws Exception {
-        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
-        restActions
-            .get("/users/4321/payment-instructions")
-            .andExpect(status().isForbidden());
-    }
 }
