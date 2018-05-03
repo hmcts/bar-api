@@ -356,8 +356,9 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error") })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/fees/{feeId}")
-    public void deleteFeeDetail(@PathVariable("feeId") Integer feeId) {
+    public ResponseEntity<Void> deleteFeeDetail(@PathVariable("feeId") Integer feeId) {
         caseFeeDetailService.deleteCaseFeeDetail(feeId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction's unallocated amount for the given id.")
@@ -369,8 +370,8 @@ public class PaymentInstructionController {
     public int getUnallocatedPayment(@PathVariable("id") Integer paymentId){
         return unallocatedAmountService.calculateUnallocatedAmount(paymentId);
     }
-    
-	@ApiOperation(value = "Get the payments stats", notes = "Get the payment instruction's stats showing each User's activities.")
+  
+  @ApiOperation(value = "Get the payments stats", notes = "Get the payment instruction's stats showing each User's activities.")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Return payment overview stats"),
 			@ApiResponse(code = 500, message = "Internal server error") })
 	@ResponseStatus(HttpStatus.OK)
