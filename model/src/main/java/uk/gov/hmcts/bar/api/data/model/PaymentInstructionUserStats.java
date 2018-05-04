@@ -15,15 +15,19 @@ import lombok.NoArgsConstructor;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class PaymentInstructionUserStats {
 
+	private String barUserFullName;
+
 	private long countOfPaymentInstructionInPendingApproval;
 
 	private String barUserId;
 
 	@JsonCreator
 	public PaymentInstructionUserStats(@JsonProperty("bar_user_id") String barUserId,
+			@JsonProperty("bar_user_full_name") String barUserFullName,
 			@JsonProperty("count_of_payment_instruction_in_pa") Long countOfPaymentInstructionInPendingApproval) {
 		this.countOfPaymentInstructionInPendingApproval = countOfPaymentInstructionInPendingApproval;
 		this.barUserId = barUserId;
+		this.barUserFullName = barUserFullName;
 	}
 
 }
