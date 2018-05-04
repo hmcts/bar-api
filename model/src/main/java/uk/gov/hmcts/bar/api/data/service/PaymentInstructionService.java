@@ -103,12 +103,7 @@ public class PaymentInstructionService {
 
     public PaymentInstruction getPaymentInstruction(Integer id) {
         Optional<PaymentInstruction> op = paymentInstructionRepository.findById(id);
-
-        if (op.isPresent()) {
-            return op.get();
-        } else {
-            return null;
-        }
+        return op.orElse(null);
     }
 
     public void deletePaymentInstruction(Integer id) {
