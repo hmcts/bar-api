@@ -101,6 +101,10 @@ dependencies {
     compile project(':bar-api')
 }
 
+jar {
+    enabled = true
+}
+
 bootJar  {
     archiveName 'bar-app.jar'
     manifest {
