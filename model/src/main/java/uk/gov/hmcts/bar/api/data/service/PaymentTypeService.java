@@ -24,7 +24,7 @@ public class PaymentTypeService {
 
 
     public PaymentType getPaymentTypeById(String id){
-        return paymentTypeRepository.findOne(id);
+        return paymentTypeRepository.getOne(id);
     }
 
 }

@@ -55,7 +55,7 @@ public class UnallocatedAmountServiceTest {
     @Test
     public void testCalculateUnallocatedAmount_whenOneEmptyCase(){
         PaymentInstruction pi = TestUtils.createPaymentInstructions("",10000);
-        when(paymentInstructionRepository.findOne(any(Integer.class))).thenReturn(pi);
+        when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
 
         CaseReference cr = TestUtils.createCaseReference("1212");
         pi.setCaseReferences(Arrays.asList(cr));
@@ -67,7 +67,7 @@ public class UnallocatedAmountServiceTest {
     @Test
     public void testCalculateUnallocatedAmount_whenNoCase(){
         PaymentInstruction pi = TestUtils.createPaymentInstructions("", 10000);
-        when(paymentInstructionRepository.findOne(any(Integer.class))).thenReturn(pi);
+        when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
 
         Assert.assertEquals(10000, unallocatedAmountService.calculateUnallocatedAmount(1));
 
@@ -77,7 +77,7 @@ public class UnallocatedAmountServiceTest {
     @UseDataProvider("dataProvider")
     public void testCalculateUnallocatedAmount_whenOneCase(int paymentAmount, int[][] caseDetails, int expected){
         PaymentInstruction pi = TestUtils.createPaymentInstructions("", paymentAmount);
-        when(paymentInstructionRepository.findOne(any(Integer.class))).thenReturn(pi);
+        when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
 
         CaseReference cr = TestUtils.createCaseReference("1212");
         cr.setCaseFeeDetails(Arrays.stream(caseDetails).map(amounts -> TestUtils.createCaseFeeDetail(amounts)).collect(Collectors.toList()));
@@ -91,7 +91,7 @@ public class UnallocatedAmountServiceTest {
     @UseDataProvider("dataProviderMultipleCase")
     public void testCalculateUnallocatedAmount_whenMultipleCase(int paymentAmount, int[][] caseDetails, int expected){
         PaymentInstruction pi = TestUtils.createPaymentInstructions("", paymentAmount);
-        when(paymentInstructionRepository.findOne(any(Integer.class))).thenReturn(pi);
+        when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
 
         CaseReference[] references = new CaseReference[2];
         references[0] = TestUtils.createCaseReference("1212");

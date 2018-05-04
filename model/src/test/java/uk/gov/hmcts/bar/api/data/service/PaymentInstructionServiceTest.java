@@ -79,13 +79,13 @@ public class PaymentInstructionServiceTest {
 
 	@Mock
 	private BarUserService barUserService;
-	
+
 
 	@Mock
 	private PaymentInstructionStatusRepository paymentInstructionStatusRepositoryMock;
-	
+
 	private PaymentInstructionStatus paymentInstructionStatus;
-	
+
 	private PaymentInstructionStatusReferenceKey paymentInstructionStatusReferenceKey;
 
 	private PaymentInstructionService paymentInstructionService;
@@ -181,7 +181,7 @@ public class PaymentInstructionServiceTest {
 
 		paymentInstructionServiceMock.deletePaymentInstruction(1);
 
-		verify(paymentInstructionRepository, times(1)).delete(1);
+		verify(paymentInstructionRepository, times(1)).deleteById(1);
 	}
 
 	@Test(expected = PaymentInstructionNotFoundException.class)
@@ -199,7 +199,7 @@ public class PaymentInstructionServiceTest {
 		ArgumentCaptor<Integer> idCapture = ArgumentCaptor.forClass(Integer.class);
 
 		paymentInstructionServiceMock.deletePaymentInstruction(1);
-		verify(paymentInstructionRepository, times(1)).delete(idCapture.capture());
+		verify(paymentInstructionRepository, times(1)).deleteById(idCapture.capture());
 
 	}
 
@@ -383,7 +383,8 @@ public class PaymentInstructionServiceTest {
 
 	@Test
 	public void shouldReturnPaymentInstruction_whenGetPaymentInstructionIsCalledForId() {
-		when(paymentInstructionRepository.findOne(Mockito.any(Integer.class))).thenReturn(paymentInstructionMock);
+	    Optional<PaymentInstruction> op = Optional.of(paymentInstructionMock);
+		when(paymentInstructionRepository.findById(Mockito.any(Integer.class))).thenReturn(op);
 
 		PaymentInstruction pi = paymentInstructionService.getPaymentInstruction(3);
 		assertEquals(paymentInstructionMock, pi);
@@ -391,7 +392,7 @@ public class PaymentInstructionServiceTest {
 
 	@Test
 	public void shouldReturnNull_whenGetPaymentInstructionIsCalledForWrongId() {
-		when(paymentInstructionRepository.findOne(Mockito.any(Integer.class))).thenReturn(null);
+		when(paymentInstructionRepository.getOne(Mockito.any(Integer.class))).thenReturn(null);
 
 		PaymentInstruction pi = paymentInstructionService.getPaymentInstruction(3);
 		assertEquals(null, pi);
@@ -439,7 +440,7 @@ public class PaymentInstructionServiceTest {
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
 
     }
-    
+
     @Test
     public void shouldReturn200_whenUpdatePaymentInstructionOverviewIsCalled()
         throws Exception {

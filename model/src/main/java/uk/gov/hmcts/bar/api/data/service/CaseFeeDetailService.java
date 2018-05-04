@@ -41,7 +41,7 @@ public class CaseFeeDetailService {
 
 	public CaseFeeDetail updateCaseFeeDetail(Integer feeId, CaseFeeDetailRequest caseFeeDetailRequest) {
 
-		CaseFeeDetail existingCaseFeeDetail = caseFeeDetailRepository.findOne(feeId);
+		CaseFeeDetail existingCaseFeeDetail = caseFeeDetailRepository.getOne(feeId);
 		if (existingCaseFeeDetail == null) {
 			throw new CaseFeeDetailNotFoundException(feeId);
 		}
@@ -55,6 +55,6 @@ public class CaseFeeDetailService {
 
 	public void deleteCaseFeeDetail(Integer feeId) {
 
-        caseFeeDetailRepository.delete(feeId);
+        caseFeeDetailRepository.deleteById(feeId);
     }
 }

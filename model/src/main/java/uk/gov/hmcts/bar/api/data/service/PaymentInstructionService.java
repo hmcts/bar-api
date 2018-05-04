@@ -1,15 +1,7 @@
 package uk.gov.hmcts.bar.api.data.service;
 
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
+import com.google.common.collect.Lists;
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.slf4j.Logger;
@@ -20,9 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Lists;
-
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.InvalidActionException;
@@ -44,6 +33,10 @@ import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionsSpecifications;
 import uk.gov.hmcts.bar.api.data.utils.Util;
 
+import java.util.*;
+
+import static org.slf4j.LoggerFactory.getLogger;
+
 
 @Service
 @Transactional
@@ -61,27 +54,27 @@ public class PaymentInstructionService {
     private final BarUserService barUserService;
 
 
-	public PaymentInstructionService(PaymentReferenceService paymentReferenceService,
-			CaseReferenceService caseReferenceService, PaymentInstructionRepository paymentInstructionRepository,
-			BarUserService barUserService, PaymentInstructionStatusRepository paymentInstructionStatusRepository) {
-		this.paymentReferenceService = paymentReferenceService;
-		this.caseReferenceService = caseReferenceService;
-		this.paymentInstructionRepository = paymentInstructionRepository;
-		this.barUserService = barUserService;
-		this.paymentInstructionStatusRepository = paymentInstructionStatusRepository;
-	}
+    public PaymentInstructionService(PaymentReferenceService paymentReferenceService,
+                                     CaseReferenceService caseReferenceService, PaymentInstructionRepository paymentInstructionRepository,
+                                     BarUserService barUserService, PaymentInstructionStatusRepository paymentInstructionStatusRepository) {
+        this.paymentReferenceService = paymentReferenceService;
+        this.caseReferenceService = caseReferenceService;
+        this.paymentInstructionRepository = paymentInstructionRepository;
+        this.barUserService = barUserService;
+        this.paymentInstructionStatusRepository = paymentInstructionStatusRepository;
+    }
 
     public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction) {
         String userId = barUserService.getCurrentUserId();
 
-		PaymentReference nextPaymentReference = paymentReferenceService.getNextPaymentReferenceSequenceBySite(SITE_ID);
-		paymentInstruction.setSiteId(SITE_ID);
-		paymentInstruction.setDailySequenceId(nextPaymentReference.getDailySequenceId());
-		paymentInstruction.setStatus(PaymentStatusEnum.DRAFT.dbKey());
-		paymentInstruction.setUserId(userId);
-		PaymentInstruction savedPaymentInstruction = paymentInstructionRepository.saveAndRefresh(paymentInstruction);
-		savePaymentInstructionStatus(savedPaymentInstruction, userId);
-		return savedPaymentInstruction;
+        PaymentReference nextPaymentReference = paymentReferenceService.getNextPaymentReferenceSequenceBySite(SITE_ID);
+        paymentInstruction.setSiteId(SITE_ID);
+        paymentInstruction.setDailySequenceId(nextPaymentReference.getDailySequenceId());
+        paymentInstruction.setStatus(PaymentStatusEnum.DRAFT.dbKey());
+        paymentInstruction.setUserId(userId);
+        PaymentInstruction savedPaymentInstruction = paymentInstructionRepository.saveAndRefresh(paymentInstruction);
+        savePaymentInstructionStatus(savedPaymentInstruction, userId);
+        return savedPaymentInstruction;
     }
 
     public CaseReference createCaseReference(Integer paymentInstructionId, CaseReferenceRequest caseReferenceRequest) {
@@ -109,12 +102,18 @@ public class PaymentInstructionService {
     }
 
     public PaymentInstruction getPaymentInstruction(Integer id) {
-        return paymentInstructionRepository.findOne(id);
+        Optional<PaymentInstruction> op = paymentInstructionRepository.findById(id);
+
+        if (op.isPresent()) {
+            return op.get();
+        } else {
+            return null;
+        }
     }
 
     public void deletePaymentInstruction(Integer id) {
         try {
-            paymentInstructionRepository.delete(id);
+            paymentInstructionRepository.deleteById(id);
         } catch (EmptyResultDataAccessException erdae) {
             LOG.error("Resource not found: " + erdae.getMessage(), erdae);
             throw new PaymentInstructionNotFoundException(id);
@@ -123,7 +122,7 @@ public class PaymentInstructionService {
     }
 
     public PaymentInstruction submitPaymentInstruction(Integer id, PaymentInstructionUpdateRequest paymentInstructionUpdateRequest) {
-    	String userId = barUserService.getCurrentUserId();
+        String userId = barUserService.getCurrentUserId();
         Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
         PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
             .orElseThrow(() -> new PaymentInstructionNotFoundException(id));
@@ -135,7 +134,7 @@ public class PaymentInstructionService {
     }
 
     public PaymentInstruction updatePaymentInstruction(Integer id, PaymentInstructionRequest paymentInstructionRequest) {
-    	String userId = barUserService.getCurrentUserId();
+        String userId = barUserService.getCurrentUserId();
         Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
         PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
             .orElseThrow(() -> new PaymentInstructionNotFoundException(id));
@@ -163,7 +162,7 @@ public class PaymentInstructionService {
             nullPropertiesNamesToIgnore);
         return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
     }
-    
+
 	@SuppressWarnings("unchecked")
 	public MultiMap getPaymentInstructionStats(String userRole) {
 		List<PaymentInstructionOverview> paymentInstructionStatsList = paymentInstructionStatusRepository

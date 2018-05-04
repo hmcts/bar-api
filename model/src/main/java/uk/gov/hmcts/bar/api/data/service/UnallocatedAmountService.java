@@ -20,7 +20,7 @@ public class UnallocatedAmountService {
     }
 
     public int calculateUnallocatedAmount(int paymentId){
-        PaymentInstruction paymentInstruction = this.paymentInstructionRepository.findOne(paymentId);
+        PaymentInstruction paymentInstruction = this.paymentInstructionRepository.getOne(paymentId);
         return paymentInstruction.getAmount() -
             (paymentInstruction.getCaseReferences() == null ? 0 : paymentInstruction.getCaseReferences().stream()
                 .mapToInt(reference -> reference.getCaseFeeDetails() == null ? 0 : reference.getCaseFeeDetails().stream()
