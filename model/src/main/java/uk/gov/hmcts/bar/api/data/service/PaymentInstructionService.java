@@ -158,7 +158,6 @@ public class PaymentInstructionService {
         return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
     }
 
-	@SuppressWarnings("unchecked")
 	public MultiMap getPaymentInstructionStats(String userRole) {
 		List<PaymentInstructionOverview> paymentInstructionStatsList = paymentInstructionStatusRepository
 				.getPaymentOverviewStats(userRole);
@@ -166,11 +165,7 @@ public class PaymentInstructionService {
 		paymentInstructionStatsList.forEach(pis -> paymentInstructionStatsUserMap.put(pis.getBarUserId(), pis));
 		List<PaymentInstructionUserStats> paymentInstructionInPAList = paymentInstructionStatusRepository
 				.getPaymentInstructionsPendingApprovalByUserGroup(userRole);
-		paymentInstructionInPAList.forEach(pius -> {
-			String user = pius.getBarUserId();
-			pius.setBarUserId(null);
-			paymentInstructionStatsUserMap.put(user, pius);
-		});
+		paymentInstructionInPAList.forEach(pius -> paymentInstructionStatsUserMap.put(pius.getBarUserId(), pius));
 		return paymentInstructionStatsUserMap;
 	}
 

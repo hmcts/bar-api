@@ -447,5 +447,6 @@ public class PaymentInstructionServiceTest {
     	when(paymentInstructionStatusRepositoryMock.getPaymentOverviewStats(anyString())).thenReturn(new ArrayList<PaymentInstructionOverview>());
     	Map<String, MultiMap> combinedPaymentInstructionOverviewMap = paymentInstructionService.getPaymentInstructionStats(anyString());
     	verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentOverviewStats(anyString());
+    	verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentInstructionsPendingApprovalByUserGroup(anyString());
     }
 }
