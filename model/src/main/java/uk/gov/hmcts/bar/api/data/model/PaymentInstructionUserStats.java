@@ -17,15 +17,15 @@ public class PaymentInstructionUserStats {
 
 	private String barUserFullName;
 
-	private long countOfPaymentInstructionInPendingApproval;
+	private long countOfPaymentInstructionInSpecifiedStatus;
 
 	private String barUserId;
 
 	@JsonCreator
 	public PaymentInstructionUserStats(@JsonProperty("bar_user_id") String barUserId,
 			@JsonProperty("bar_user_full_name") String barUserFullName,
-			@JsonProperty("count_of_payment_instruction_in_pa") Long countOfPaymentInstructionInPendingApproval) {
-		this.countOfPaymentInstructionInPendingApproval = countOfPaymentInstructionInPendingApproval;
+			@JsonProperty("count_of_payment_instruction_in_specified_status") Long countOfPaymentInstructionInSpecifiedStatus) {
+		this.countOfPaymentInstructionInSpecifiedStatus = countOfPaymentInstructionInSpecifiedStatus;
 		this.barUserId = barUserId;
 		this.barUserFullName = barUserFullName;
 	}
