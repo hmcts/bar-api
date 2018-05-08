@@ -32,8 +32,8 @@ public interface PaymentInstructionStatusRepository
 	List<PaymentInstructionOverview> getPaymentOverviewStats(@Param("userRole") String userRole);
 	
 	@Query(name = "PIByUserGroup", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats"
-			+ "(bu.id, CONCAT(bu.forename,' ',bu.surname), COUNT(pis.paymentInstructionStatusReferenceKey.paymentInstructionId)) FROM BarUser bu, PaymentInstructionStatus pis  "
-			+ "WHERE pis.paymentInstructionStatusReferenceKey.status = 'PA' AND "
-			+ "pis.barUserId = bu.id AND bu.roles LIKE CONCAT('%',:userRole,'%') GROUP BY bu.id")
+			+ "(bu.id, CONCAT(bu.forename,' ',bu.surname), COUNT(pi.id)) FROM BarUser bu, PaymentInstruction pi  "
+			+ "WHERE pi.status = 'PA' AND "
+			+ "pi.userId = bu.id AND bu.roles LIKE CONCAT('%',:userRole,'%') GROUP BY bu.id")
 	List<PaymentInstructionUserStats> getPaymentInstructionsPendingApprovalByUserGroup(@Param("userRole") String userRole);
 }
