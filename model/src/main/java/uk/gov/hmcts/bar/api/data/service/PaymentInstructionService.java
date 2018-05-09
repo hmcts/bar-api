@@ -158,13 +158,13 @@ public class PaymentInstructionService {
         return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
     }
 
-	public MultiMap getPaymentInstructionStats(String userRole) {
+	public MultiMap getPaymentInstructionStats(String userRole, String status) {
 		List<PaymentInstructionOverview> paymentInstructionStatsList = paymentInstructionStatusRepository
 				.getPaymentOverviewStats(userRole);
 		MultiMap paymentInstructionStatsUserMap = new MultiValueMap();
 		paymentInstructionStatsList.forEach(pis -> paymentInstructionStatsUserMap.put(pis.getBarUserId(), pis));
 		List<PaymentInstructionUserStats> paymentInstructionInPAList = paymentInstructionStatusRepository
-				.getPaymentInstructionsPendingApprovalByUserGroup(userRole);
+				.getPaymentInstructionsPendingApprovalByUserGroup(userRole, status);
 		paymentInstructionInPAList.forEach(pius -> paymentInstructionStatsUserMap.put(pius.getBarUserId(), pius));
 		return paymentInstructionStatsUserMap;
 	}

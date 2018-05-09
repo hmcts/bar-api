@@ -378,8 +378,9 @@ public class PaymentInstructionController {
 	@GetMapping("/payment-stats")
 	public  MultiMap getPaymentStats(
 			@RequestParam(name = "userId", required = false) String userId,
-			@RequestParam(name = "userRole", required = true) String userRole) {
-		return paymentInstructionService.getPaymentInstructionStats(userRole);
+			@RequestParam(name = "userRole", required = true) String userRole,
+			@RequestParam(name = "status", required = true) String status) {
+		return paymentInstructionService.getPaymentInstructionStats(userRole, status);
 	}
 	
     private PaymentInstructionSearchCriteriaDto createPaymentInstructionCriteria(
