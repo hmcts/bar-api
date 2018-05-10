@@ -1,7 +1,7 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Test;
-import uk.gov.hmcts.bar.api.data.model.CaseReference;
+import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 import uk.gov.hmcts.bar.api.data.model.PostalOrder;
 import uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction;
@@ -11,7 +11,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.bar.api.data.model.CaseReference.caseReferenceWith;
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith;
 import static uk.gov.hmcts.bar.api.data.model.PostalOrder.postalOrderPaymentInstructionRequestWith;
 import static uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction.postalOrderPaymentInstructionWith;
@@ -24,7 +23,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .postalOrderNumber("000000").build();
+            .postalOrderNumber("000000").status("D").build();
 
         restActions
             .post("/postal-orders", proposedPostalOrderPaymentInstructionRequest)
@@ -34,7 +33,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
                     postalOrderPaymentInstructionRequestWith()
                         .payerName("Mr Payer Payer")
                         .amount(500)
-                        .currency("GBP")
+                        .currency("GBP").status("D")
                         .postalOrderNumber("000000"));
             }));
     }
@@ -74,13 +73,13 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
         PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP")
+            .currency("GBP").status("D")
             .postalOrderNumber("000000").build();
 
         PostalOrderPaymentInstruction retrievedPostalOrderPaymentInstruction = postalOrderPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP")
+            .currency("GBP").status("D")
             .postalOrderNumber("000000").build();
 
         restActions
@@ -99,7 +98,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
     @Test
     public void givenPostalOrderPaymentInstructionDetails_retrieveOneOfThem() throws Exception {
         PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
-            .payerName("Mr Payer Payer").amount(500).currency("GBP").postalOrderNumber("000000").build();
+            .payerName("Mr Payer Payer").amount(500).currency("GBP").postalOrderNumber("000000").status("D").build();
 
         restActions.post("/postal-orders", proposedPostalOrderPaymentInstructionRequest)
             .andExpect(status().isCreated());
@@ -113,7 +112,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
     @Test
     public void givenPostalOrderPaymentInstructionDetails_retrieveOneOfThemWithWrongId() throws Exception {
         PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
-            .payerName("Mr Payer Payer").amount(500).currency("GBP").postalOrderNumber("000000").build();
+            .payerName("Mr Payer Payer").amount(500).currency("GBP").postalOrderNumber("000000").status("D").build();
 
         restActions.post("/postal-orders", proposedPostalOrderPaymentInstructionRequest)
             .andExpect(status().isCreated());
@@ -127,7 +126,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .postalOrderNumber("000000").build();
+            .postalOrderNumber("000000").status("D").build();
 
         restActions
             .post("/postal-orders", proposedPostalOrderPaymentInstructionRequest)
@@ -146,7 +145,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .postalOrderNumber("000000").build();
+            .postalOrderNumber("000000").status("D").build();
 
         restActions
             .post("/postal-orders", proposedPostalOrderPaymentInstructionRequest)
@@ -165,7 +164,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .postalOrderNumber("000000").build();
+            .postalOrderNumber("000000").status("D").build();
 
 
         PaymentInstructionUpdateRequest stattusUpdateRequest = paymentInstructionUpdateRequestWith()
@@ -188,7 +187,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .postalOrderNumber("000000").build();
+            .postalOrderNumber("000000").status("D").build();
 
 
         PaymentInstructionUpdateRequest statusUpdateRequest = paymentInstructionUpdateRequestWith()
@@ -211,10 +210,13 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .postalOrderNumber("000000").build();
+            .postalOrderNumber("000000").status("D").build();
 
-        CaseReference caseReference = caseReferenceWith()
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
             .caseReference("case102")
+            .feeCode("X001")
+            .amount(200)
+            .feeVersion("1")
             .build();
 
         restActions
@@ -223,7 +225,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
 
         restActions
-            .post("/payment-instructions/1/cases", caseReference)
+            .post("/fees", caseFeeDetailRequest)
             .andExpect(status().isCreated());
 
 
@@ -236,10 +238,10 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .postalOrderNumber("000000").build();
+            .postalOrderNumber("000000").status("D").build();
 
-        CaseReference caseReference = caseReferenceWith()
-            .caseReference("@@@@@@@@@@@@@@@@")
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .caseReference("$$$$$$$$$")
             .build();
 
         restActions
@@ -248,7 +250,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
 
         restActions
-            .post("/payment-instructions/1/cases", caseReference)
+            .post("/fees", caseFeeDetailRequest)
             .andExpect(status().isBadRequest());
 
 
@@ -261,7 +263,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .postalOrderNumber("000000").build();
+            .postalOrderNumber("000000").status("D").build();
 
         restActions
             .post("/postal-orders", proposedPostalOrderPaymentInstructionRequest)
@@ -277,6 +279,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
                         .payerName("Mr Updated Payer")
                         .amount(600)
                         .currency("GBP")
+                        .status("D")
                         .postalOrderNumber("000000"));
             }));
 
@@ -288,7 +291,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .postalOrderNumber("000000").build();
+            .postalOrderNumber("000000").status("D").build();
 
         restActions
             .post("/postal-orders", proposedPostalOrderPaymentInstructionRequest)
@@ -307,14 +310,14 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
         PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP")
+            .currency("GBP").status("D")
             .postalOrderNumber("000000").build();
 
 
         PostalOrder updatedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
             .payerName("Mr Updated Payer")
             .amount(6000)
-            .currency("GBP")
+            .currency("GBP").status("D")
             .postalOrderNumber("000000").build();
 
 
@@ -332,13 +335,13 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
         PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP")
+            .currency("GBP").status("D")
             .postalOrderNumber("000000").build();
 
         PostalOrder updatedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
             .payerName("Mr Updated Payer")
             .amount(6000)
-            .currency("GBP")
+            .currency("GBP").status("D")
             .postalOrderNumber("000000").build();
 
 

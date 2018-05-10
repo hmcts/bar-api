@@ -16,24 +16,14 @@ import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.InvalidActionException;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
-import uk.gov.hmcts.bar.api.data.model.CaseReference;
-import uk.gov.hmcts.bar.api.data.model.CaseReferenceRequest;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionActionRequest;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionOverview;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatus;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusReferenceKey;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats;
-import uk.gov.hmcts.bar.api.data.model.PaymentReference;
+import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionsSpecifications;
 import uk.gov.hmcts.bar.api.data.utils.Util;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -50,15 +40,12 @@ public class PaymentInstructionService {
     private PaymentInstructionRepository paymentInstructionRepository;
     private PaymentInstructionStatusRepository paymentInstructionStatusRepository;
     private PaymentReferenceService paymentReferenceService;
-    private CaseReferenceService caseReferenceService;
     private final BarUserService barUserService;
 
 
-    public PaymentInstructionService(PaymentReferenceService paymentReferenceService,
-                                     CaseReferenceService caseReferenceService, PaymentInstructionRepository paymentInstructionRepository,
+    public PaymentInstructionService(PaymentReferenceService paymentReferenceService, PaymentInstructionRepository paymentInstructionRepository,
                                      BarUserService barUserService, PaymentInstructionStatusRepository paymentInstructionStatusRepository) {
         this.paymentReferenceService = paymentReferenceService;
-        this.caseReferenceService = caseReferenceService;
         this.paymentInstructionRepository = paymentInstructionRepository;
         this.barUserService = barUserService;
         this.paymentInstructionStatusRepository = paymentInstructionStatusRepository;
@@ -76,18 +63,6 @@ public class PaymentInstructionService {
         savePaymentInstructionStatus(savedPaymentInstruction, userId);
         return savedPaymentInstruction;
     }
-
-    public CaseReference createCaseReference(Integer paymentInstructionId, CaseReferenceRequest caseReferenceRequest) {
-
-        Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(paymentInstructionId);
-        PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
-            .orElseThrow(() -> new PaymentInstructionNotFoundException(paymentInstructionId));
-
-        CaseReference caseReference = new CaseReference(caseReferenceRequest.getCaseReference(), existingPaymentInstruction.getId());
-
-        return caseReferenceService.saveCaseReference(caseReference);
-    }
-
 
     public List<PaymentInstruction> getAllPaymentInstructions(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto) {
 
@@ -158,23 +133,23 @@ public class PaymentInstructionService {
         return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
     }
 
-	public MultiMap getPaymentInstructionStats(String userRole, String status) {
-		List<PaymentInstructionOverview> paymentInstructionStatsList = paymentInstructionStatusRepository
-				.getPaymentOverviewStats(userRole);
-		MultiMap paymentInstructionStatsUserMap = new MultiValueMap();
-		paymentInstructionStatsList.forEach(pis -> paymentInstructionStatsUserMap.put(pis.getBarUserId(), pis));
-		List<PaymentInstructionUserStats> paymentInstructionInPAList = paymentInstructionStatusRepository
-				.getPaymentInstructionsPendingApprovalByUserGroup(userRole, status);
-		paymentInstructionInPAList.forEach(pius -> paymentInstructionStatsUserMap.put(pius.getBarUserId(), pius));
-		return paymentInstructionStatsUserMap;
-	}
+    public MultiMap getPaymentInstructionStats(String userRole, String status) {
+        List<PaymentInstructionOverview> paymentInstructionStatsList = paymentInstructionStatusRepository
+            .getPaymentOverviewStats(userRole);
+        MultiMap paymentInstructionStatsUserMap = new MultiValueMap();
+        paymentInstructionStatsList.forEach(pis -> paymentInstructionStatsUserMap.put(pis.getBarUserId(), pis));
+        List<PaymentInstructionUserStats> paymentInstructionInPAList = paymentInstructionStatusRepository
+            .getPaymentInstructionsPendingApprovalByUserGroup(userRole, status);
+        paymentInstructionInPAList.forEach(pius -> paymentInstructionStatsUserMap.put(pius.getBarUserId(), pius));
+        return paymentInstructionStatsUserMap;
+    }
 
-	private void savePaymentInstructionStatus(PaymentInstruction pi, String userId) {
-		PaymentInstructionStatusReferenceKey pisrKey = new PaymentInstructionStatusReferenceKey(pi.getId(),
-				pi.getStatus());
-		PaymentInstructionStatus pis = new PaymentInstructionStatus(pisrKey, userId);
-		paymentInstructionStatusRepository.save(pis);
-	}
+    private void savePaymentInstructionStatus(PaymentInstruction pi, String userId) {
+        PaymentInstructionStatusReferenceKey pisrKey = new PaymentInstructionStatusReferenceKey(pi.getId(),
+            pi.getStatus());
+        PaymentInstructionStatus pis = new PaymentInstructionStatus(pisrKey, userId);
+        paymentInstructionStatusRepository.save(pis);
+    }
 
 
 }

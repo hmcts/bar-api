@@ -3,7 +3,7 @@ package uk.gov.hmcts.bar.api.componenttests;
 import org.junit.Test;
 import uk.gov.hmcts.bar.api.data.model.Card;
 import uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.CaseReference;
+import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 
 import java.util.List;
@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.bar.api.data.model.Card.cardWith;
 import static uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction.cardPaymentInstructionWith;
-import static uk.gov.hmcts.bar.api.data.model.CaseReference.caseReferenceWith;
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith;
 
 public class CardInstructionCrudComponentTest extends ComponentTestBase  {
@@ -164,7 +163,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
             .amount(500).authorizationCode("qwerty")
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
 
         PaymentInstructionUpdateRequest request= paymentInstructionUpdateRequestWith()
@@ -188,7 +187,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
             .amount(500).authorizationCode("123456")
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
 
         PaymentInstructionUpdateRequest request= paymentInstructionUpdateRequestWith()
@@ -211,10 +210,13 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
             .amount(500).authorizationCode("qwerty")
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
-        CaseReference caseReference = caseReferenceWith()
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
             .caseReference("case102")
+            .feeCode("X001")
+            .amount(200)
+            .feeVersion("1")
             .build();
 
         restActions
@@ -223,7 +225,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
 
 
         restActions
-            .post("/payment-instructions/1/cases",caseReference)
+            .post("/fees",caseFeeDetailRequest)
             .andExpect(status().isCreated());
 
 
@@ -233,10 +235,10 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
             .amount(500).authorizationCode("qwerty")
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
-        CaseReference caseReference = caseReferenceWith()
-            .caseReference("????????")
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .caseReference("?????????")
             .build();
 
         restActions
@@ -245,7 +247,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
 
 
         restActions
-            .post("/payment-instructions/1/cases",caseReference)
+            .post("/fees",caseFeeDetailRequest)
             .andExpect(status().isBadRequest());
 
 
@@ -257,7 +259,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
             .amount(500).authorizationCode("qwerty")
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
         restActions
             .post("/cards",  proposedCardPaymentInstructionRequest)
@@ -281,7 +283,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
             .amount(500).authorizationCode("qwerty")
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
         restActions
             .post("/cards",  proposedCardPaymentInstructionRequest)
@@ -300,12 +302,12 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
             .amount(500).authorizationCode("qwerty")
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
         Card updatedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Updated Payer")
             .amount(6000).authorizationCode("qwerty")
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
 
         restActions
@@ -322,12 +324,12 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
             .amount(500).authorizationCode("qwerty")
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
         Card updatedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Updated Payer")
             .amount(6000).authorizationCode("qwerty")
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
 
         restActions
@@ -341,5 +343,3 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
     }
 
 }
-
-

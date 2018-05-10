@@ -4,13 +4,11 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-
 import org.apache.commons.collections.MultiMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.bar.api.data.model.*;
@@ -24,8 +22,6 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction.allPayPaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction.cardPaymentInstructionWith;
@@ -64,33 +60,33 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/payment-instructions")
-	public List<PaymentInstruction> getPaymentInstructions(
-			@RequestParam(name = "status", required = false) String status,
-			@RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
-			@RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate,
-			@RequestParam(name = "payerName", required = false) String payerName,
-			@RequestParam(name = "chequeNumber", required = false) String chequeNumber,
-			@RequestParam(name = "postalOrderNumber", required = false) String postalOrderNumber,
-			@RequestParam(name = "dailySequenceId", required = false) Integer dailySequenceId,
-			@RequestParam(name = "allPayInstructionId", required = false) String allPayInstructionId,
-			@RequestParam(name = "caseReference", required = false) String caseReference,
-			@RequestParam(name = "paymentType", required = false) String paymentType,
-			@RequestParam(name = "action", required = false) String action) {
+    public List<PaymentInstruction> getPaymentInstructions(
+        @RequestParam(name = "status", required = false) String status,
+        @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
+        @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate,
+        @RequestParam(name = "payerName", required = false) String payerName,
+        @RequestParam(name = "chequeNumber", required = false) String chequeNumber,
+        @RequestParam(name = "postalOrderNumber", required = false) String postalOrderNumber,
+        @RequestParam(name = "dailySequenceId", required = false) Integer dailySequenceId,
+        @RequestParam(name = "allPayInstructionId", required = false) String allPayInstructionId,
+        @RequestParam(name = "caseReference", required = false) String caseReference,
+        @RequestParam(name = "paymentType", required = false) String paymentType,
+        @RequestParam(name = "action", required = false) String action) {
 
-		List<PaymentInstruction> paymentInstructionList = null;
+        List<PaymentInstruction> paymentInstructionList = null;
 
-		if (caseReference != null) {
-			paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByCaseReference(caseReference);
-		} else {
-			PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto =
+        if (caseReference != null) {
+            paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByCaseReference(caseReference);
+        } else {
+            PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto =
                 createPaymentInstructionCriteria(status, startDate, endDate, payerName, chequeNumber, postalOrderNumber,
                     dailySequenceId, allPayInstructionId, paymentType, action);
 
-			paymentInstructionList = paymentInstructionService
-					.getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
-		}
-		return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
-	}
+            paymentInstructionList = paymentInstructionService
+                .getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
+        }
+        return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
+    }
 
     @ApiOperation(value = "Get all current payment instructions", notes = "Get all current payment instructions for a given site.",
         produces = "application/json, text/csv")
@@ -112,8 +108,9 @@ public class PaymentInstructionController {
         @RequestParam(name = "caseReference", required = false) String caseReference,
         @RequestParam(name = "paymentType", required = false) String paymentType,
         @RequestParam(name = "action", required = false) String action) {
-    	
+
         List<PaymentInstruction> paymentInstructionList = null;
+
 
         if (caseReference != null) {
             paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByCaseReference(caseReference);
@@ -318,46 +315,35 @@ public class PaymentInstructionController {
         return new ResponseEntity<>(submittedPaymentInstruction, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Create case reference for a payment instruction", notes = "Create case reference for a payment instruction.")
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "Case reference for a payment instruction created"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
-    @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/payment-instructions/{id}/cases")
-    public CaseReference saveCaseReference(
-        @PathVariable("id") Integer id, @RequestBody CaseReferenceRequest caseReferenceRequest) {
-        return paymentInstructionService.createCaseReference(id, caseReferenceRequest);
-    }
-
     @ApiOperation(value = "Create case fee detail for a payment instruction", notes = "Create case fee detail for a payment instruction.")
     @ApiResponses(value = {@ApiResponse(code = 201, message = "Case fee detail for a payment instruction created"),
         @ApiResponse(code = 400, message = "Bad request"),
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/payment-instructions/{id}/fees")
+    @PostMapping("/fees")
     public CaseFeeDetail saveCaseFeeDetail(@RequestBody CaseFeeDetailRequest caseFeeDetailRequest) {
         return caseFeeDetailService.saveCaseFeeDetail(caseFeeDetailRequest);
     }
 
-	@ApiOperation(value = "Update fee details", notes = "Update fee details with the given values.")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Fee details updated"),
-			@ApiResponse(code = 400, message = "Bad request"),
-			@ApiResponse(code = 500, message = "Internal server error") })
-	@ResponseStatus(HttpStatus.OK)
-	@PutMapping("/fees/{feeId}")
-	public CaseFeeDetail updateFeeDetail(@PathVariable("feeId") Integer feeId,
-			@RequestBody CaseFeeDetailRequest caseFeeDetailRequest) {
-		return caseFeeDetailService.updateCaseFeeDetail(feeId, caseFeeDetailRequest);
+    @ApiOperation(value = "Update case fee details", notes = "Update case fee details with the given values.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Case Fee details updated"),
+        @ApiResponse(code = 400, message = "Bad request"),
+        @ApiResponse(code = 500, message = "Internal server error") })
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/fees/{caseFeeId}")
+    public CaseFeeDetail updateCaseFeeDetail(@PathVariable("caseFeeId") Integer caseFeeId,
+                                             @RequestBody CaseFeeDetailRequest caseFeeDetailRequest) {
+        return caseFeeDetailService.updateCaseFeeDetail(caseFeeId, caseFeeDetailRequest);
     }
 
-    @ApiOperation(value = "Delete fee details", notes = "Delete fee details with the given values.")
-    @ApiResponses(value = { @ApiResponse(code = 204, message = "Fee details deleted"),
+    @ApiOperation(value = "Delete case fee details", notes = "Delete case fee details with the given values.")
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Case Fee details deleted"),
         @ApiResponse(code = 400, message = "Bad request"),
         @ApiResponse(code = 500, message = "Internal server error") })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/fees/{feeId}")
-    public ResponseEntity<Void> deleteFeeDetail(@PathVariable("feeId") Integer feeId) {
-        caseFeeDetailService.deleteCaseFeeDetail(feeId);
+    @DeleteMapping("/fees/{caseFeeId}")
+    public ResponseEntity<Void> deleteCaseFeeDetail(@PathVariable("caseFeeId") Integer caseFeeId) {
+        caseFeeDetailService.deleteCaseFeeDetail(caseFeeId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -370,19 +356,19 @@ public class PaymentInstructionController {
     public int getUnallocatedPayment(@PathVariable("id") Integer paymentId){
         return unallocatedAmountService.calculateUnallocatedAmount(paymentId);
     }
-  
-  @ApiOperation(value = "Get the payments stats", notes = "Get the payment instruction's stats showing each User's activities.")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Return payment overview stats"),
-			@ApiResponse(code = 500, message = "Internal server error") })
-	@ResponseStatus(HttpStatus.OK)
-	@GetMapping("/payment-stats")
-	public  MultiMap getPaymentStats(
-			@RequestParam(name = "userId", required = false) String userId,
-			@RequestParam(name = "userRole", required = true) String userRole,
-			@RequestParam(name = "status", required = true) String status) {
-		return paymentInstructionService.getPaymentInstructionStats(userRole, status);
-	}
-	
+
+    @ApiOperation(value = "Get the payments stats", notes = "Get the payment instruction's stats showing each User's activities.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Return payment overview stats"),
+        @ApiResponse(code = 500, message = "Internal server error") })
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/payment-stats")
+    public  MultiMap getPaymentStats(
+        @RequestParam(name = "userId", required = false) String userId,
+        @RequestParam(name = "userRole", required = true) String userRole,
+        @RequestParam(name = "status", required = true) String status) {
+        return paymentInstructionService.getPaymentInstructionStats(userRole, status);
+    }
+
     private PaymentInstructionSearchCriteriaDto createPaymentInstructionCriteria(
         String status,
         LocalDate startDate,

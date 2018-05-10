@@ -3,7 +3,7 @@ package uk.gov.hmcts.bar.api.componenttests;
 import org.junit.Test;
 import uk.gov.hmcts.bar.api.data.model.AllPay;
 import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.CaseReference;
+import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 
 import java.util.List;
@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.bar.api.data.model.AllPay.allPayPaymentInstructionRequestWith;
 import static uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction.allPayPaymentInstructionWith;
-import static uk.gov.hmcts.bar.api.data.model.CaseReference.caseReferenceWith;
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith;
 
 public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
@@ -75,12 +74,14 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
+            .status("D")
             .allPayTransactionId("12345").build();
 
         AllPayPaymentInstruction retrievedAllPayPaymentInstruction = allPayPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
+            .status("D")
             .allPayTransactionId("12345").build();
 
 
@@ -97,28 +98,28 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
     }
 
-	@Test
-	public void givenAllPayPaymentInstructionDetails_retrieveOneOfThem() throws Exception {
-		AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(500).currency("GBP").status("D").allPayTransactionId("12345").build();
+    @Test
+    public void givenAllPayPaymentInstructionDetails_retrieveOneOfThem() throws Exception {
+        AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer").amount(500).currency("GBP").status("D").allPayTransactionId("12345").build();
 
-		restActions.post("/allpay", proposedAllPayPaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/allpay", proposedAllPayPaymentInstructionRequest).andExpect(status().isCreated());
 
-		restActions.get("/payment-instructions/1").andExpect(status().isOk())
-				.andExpect(body().as(AllPayPaymentInstruction.class, (pi) -> {
-					assertThat(pi.getAmount() == 500);
-				}));
-	}
+        restActions.get("/payment-instructions/1").andExpect(status().isOk())
+            .andExpect(body().as(AllPayPaymentInstruction.class, (pi) -> {
+                assertThat(pi.getAmount() == 500);
+            }));
+    }
 
-	@Test
-	public void givenAllPayPaymentInstructionDetails_retrieveOneOfThemWithWrongId() throws Exception {
-		AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(500).currency("GBP").allPayTransactionId("12345").build();
+    @Test
+    public void givenAllPayPaymentInstructionDetails_retrieveOneOfThemWithWrongId() throws Exception {
+        AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer").amount(500).currency("GBP").allPayTransactionId("12345").status("D").build();
 
-		restActions.post("/allpay", proposedAllPayPaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/allpay", proposedAllPayPaymentInstructionRequest).andExpect(status().isCreated());
 
-		restActions.get("/payment-instructions/2").andExpect(status().isNotFound());
-	}
+        restActions.get("/payment-instructions/2").andExpect(status().isNotFound());
+    }
 
     @Test
     public void whenAllPayPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
@@ -126,6 +127,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
+            .status("D")
             .allPayTransactionId("12345").build();
 
         restActions
@@ -145,6 +147,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
+            .status("D")
             .allPayTransactionId("12345").build();
 
         restActions
@@ -165,6 +168,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
+            .status("D")
             .allPayTransactionId("12345").build();
 
         PaymentInstructionUpdateRequest request= paymentInstructionUpdateRequestWith()
@@ -186,6 +190,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
+            .status("D")
             .allPayTransactionId("12345").build();
 
         PaymentInstructionUpdateRequest request= paymentInstructionUpdateRequestWith()
@@ -203,15 +208,19 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
 
     @Test
-    public void whenCaseReferenceForAllPayPaymentInstructionIsCreated_expectStatus_201() throws Exception {
+    public void whenCaseFeeDetailForAllPayPaymentInstructionIsCreated_expectStatus_201() throws Exception {
         AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
+            .status("D")
             .allPayTransactionId("12345").build();
 
-        CaseReference caseReference = caseReferenceWith()
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
             .caseReference("case102")
+            .feeCode("X001")
+            .amount(200)
+            .feeVersion("1")
             .build();
 
         restActions
@@ -220,7 +229,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
 
         restActions
-            .post("/payment-instructions/1/cases",caseReference)
+            .post("/fees",caseFeeDetailRequest)
             .andExpect(status().isCreated());
 
 
@@ -232,10 +241,11 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
+            .status("D")
             .allPayTransactionId("12345").build();
 
-        CaseReference caseReference = caseReferenceWith()
-            .caseReference("<><><><>")
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .caseReference("<><<>><>")
             .build();
 
         restActions
@@ -244,7 +254,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
 
         restActions
-            .post("/payment-instructions/1/cases",caseReference)
+            .post("/fees",caseFeeDetailRequest)
             .andExpect(status().isBadRequest());
 
 
@@ -256,6 +266,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
+            .status("D")
             .allPayTransactionId("12345").build();
 
         restActions
@@ -267,12 +278,13 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .get("/payment-instructions?payerName=Mr Payer Payer")
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, allPayPaymentInstructionList-> {
-            assertThat(allPayPaymentInstructionList.get(0)).isEqualToComparingOnlyGivenFields(
-                allPayPaymentInstructionWith()
-                    .payerName("Mr Payer Payer")
-                    .amount(500)
-                    .currency("GBP").allPayTransactionId("12345").build());
-        }));
+                assertThat(allPayPaymentInstructionList.get(0)).isEqualToComparingOnlyGivenFields(
+                    allPayPaymentInstructionWith()
+                        .payerName("Mr Payer Payer")
+                        .amount(500)
+                        .status("D")
+                        .currency("GBP").allPayTransactionId("12345").build());
+            }));
     }
 
 
@@ -282,6 +294,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
+            .status("D")
             .allPayTransactionId("12345").build();
 
         restActions
@@ -303,6 +316,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
+            .status("D")
             .allPayTransactionId("12345").build();
 
 
@@ -310,6 +324,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(6000)
             .currency("GBP")
+            .status("D")
             .allPayTransactionId("12345").build();
 
 
@@ -328,6 +343,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
+            .status("D")
             .allPayTransactionId("12345").build();
 
 
@@ -335,6 +351,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(6000)
             .currency("GBP")
+            .status("D")
             .allPayTransactionId("12345").build();
 
 
@@ -351,4 +368,3 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
 
 }
-

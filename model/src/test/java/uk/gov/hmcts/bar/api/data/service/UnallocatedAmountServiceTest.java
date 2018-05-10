@@ -10,23 +10,20 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.bar.api.data.TestUtils;
-import uk.gov.hmcts.bar.api.data.model.CaseReference;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
-import uk.gov.hmcts.bar.api.data.repository.CaseReferenceRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(DataProviderRunner.class)
 public class UnallocatedAmountServiceTest {
 
     private UnallocatedAmountService unallocatedAmountService;
-
-    @Mock
-    private CaseReferenceRepository caseReferenceRepository;
 
     @Mock
     private PaymentInstructionRepository paymentInstructionRepository;
@@ -57,9 +54,6 @@ public class UnallocatedAmountServiceTest {
         PaymentInstruction pi = TestUtils.createPaymentInstructions("",10000);
         when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
 
-        CaseReference cr = TestUtils.createCaseReference("1212");
-        pi.setCaseReferences(Arrays.asList(cr));
-
         Assert.assertEquals(10000, unallocatedAmountService.calculateUnallocatedAmount(1));
 
     }
@@ -79,9 +73,7 @@ public class UnallocatedAmountServiceTest {
         PaymentInstruction pi = TestUtils.createPaymentInstructions("", paymentAmount);
         when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
 
-        CaseReference cr = TestUtils.createCaseReference("1212");
-        cr.setCaseFeeDetails(Arrays.stream(caseDetails).map(amounts -> TestUtils.createCaseFeeDetail(amounts)).collect(Collectors.toList()));
-        pi.setCaseReferences(Arrays.asList(cr));
+        pi.setCaseFeeDetails(Arrays.stream(caseDetails).map(amounts -> TestUtils.createCaseFeeDetail(amounts)).collect(Collectors.toList()));
 
         Assert.assertEquals(expected, unallocatedAmountService.calculateUnallocatedAmount(1));
 
@@ -93,12 +85,9 @@ public class UnallocatedAmountServiceTest {
         PaymentInstruction pi = TestUtils.createPaymentInstructions("", paymentAmount);
         when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
 
-        CaseReference[] references = new CaseReference[2];
-        references[0] = TestUtils.createCaseReference("1212");
-        references[1] = TestUtils.createCaseReference("3434");
-        references[0].setCaseFeeDetails(Arrays.stream(caseDetails).map(amounts -> TestUtils.createCaseFeeDetail(amounts)).collect(Collectors.toList()));
-        references[1].setCaseFeeDetails(Arrays.stream(caseDetails).map(amounts -> TestUtils.createCaseFeeDetail(amounts)).collect(Collectors.toList()));
-        pi.setCaseReferences(Arrays.asList(references));
+        pi.setCaseFeeDetails(new ArrayList<>());
+        pi.getCaseFeeDetails().addAll(Arrays.stream(caseDetails).map(amounts -> TestUtils.createCaseFeeDetail(amounts)).collect(Collectors.toList()));
+        pi.getCaseFeeDetails().addAll(Arrays.stream(caseDetails).map(amounts -> TestUtils.createCaseFeeDetail(amounts)).collect(Collectors.toList()));
 
         Assert.assertEquals(expected, unallocatedAmountService.calculateUnallocatedAmount(1));
 

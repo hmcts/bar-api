@@ -1,7 +1,7 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Test;
-import uk.gov.hmcts.bar.api.data.model.CaseReference;
+import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
 import uk.gov.hmcts.bar.api.data.model.Cash;
 import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
@@ -11,7 +11,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.bar.api.data.model.CaseReference.caseReferenceWith;
 import static uk.gov.hmcts.bar.api.data.model.Cash.cashPaymentInstructionRequestWith;
 import static uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction.cashPaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith;
@@ -24,7 +23,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
         Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
         restActions
             .post("/cash", proposedCashPaymentInstructionRequest)
@@ -34,7 +33,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
                     cashPaymentInstructionWith()
                         .payerName("Mr Payer Payer")
                         .amount(500)
-                        .currency("GBP"));
+                        .currency("GBP").status("D"));
             }));
 
     }
@@ -56,12 +55,12 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
         Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
         CashPaymentInstruction  retrievedCashPaymentInstruction = cashPaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
         restActions
             .post("/cash",  proposedCashPaymentInstructionRequest)
@@ -77,35 +76,35 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
     }
 
-	@Test
-	public void givenCashPaymentInstructionDetails_retrieveOneOfThem() throws Exception {
-		Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(500).currency("GBP").build();
+    @Test
+    public void givenCashPaymentInstructionDetails_retrieveOneOfThem() throws Exception {
+        Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer").amount(500).currency("GBP").status("D").build();
 
-		restActions.post("/cash", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/cash", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
 
-		restActions.get("/payment-instructions/1").andExpect(status().isOk())
-				.andExpect(body().as(CashPaymentInstruction.class, (pi) -> {
-					assertThat(pi.getAmount() == 500);
-				}));
-	}
+        restActions.get("/payment-instructions/1").andExpect(status().isOk())
+            .andExpect(body().as(CashPaymentInstruction.class, (pi) -> {
+                assertThat(pi.getAmount() == 500);
+            }));
+    }
 
-	@Test
-	public void givenCashPaymentInstructionDetails_retrieveOneOfThemWithWrongId() throws Exception {
-		Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(500).currency("GBP").build();
+    @Test
+    public void givenCashPaymentInstructionDetails_retrieveOneOfThemWithWrongId() throws Exception {
+        Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer").amount(500).currency("GBP").status("D").build();
 
-		restActions.post("/cash", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/cash", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
 
-		restActions.get("/payment-instructions/2").andExpect(status().isNotFound());
-	}
+        restActions.get("/payment-instructions/2").andExpect(status().isNotFound());
+    }
 
     @Test
     public void whenCashPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
         Cash proposedCashPaymentInstructionRequest =cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
         restActions
             .post("/cash",  proposedCashPaymentInstructionRequest)
@@ -125,7 +124,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
         Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
         restActions
             .post("/cash",  proposedCashPaymentInstructionRequest)
@@ -145,7 +144,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
         Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
 
         PaymentInstructionUpdateRequest request= paymentInstructionUpdateRequestWith()
@@ -169,7 +168,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
         Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
 
         PaymentInstructionUpdateRequest request= paymentInstructionUpdateRequestWith()
@@ -192,10 +191,13 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
         Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
-        CaseReference caseReference = caseReferenceWith()
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
             .caseReference("case102")
+            .feeCode("X001")
+            .amount(200)
+            .feeVersion("1")
             .build();
 
         restActions
@@ -204,7 +206,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
 
         restActions
-            .post("/payment-instructions/1/cases",caseReference)
+            .post("/fees",caseFeeDetailRequest)
             .andExpect(status().isCreated());
 
 
@@ -214,9 +216,9 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
         Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
-        CaseReference caseReference = caseReferenceWith()
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
             .caseReference("????????")
             .build();
 
@@ -226,7 +228,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
 
         restActions
-            .post("/payment-instructions/1/cases",caseReference)
+            .post("/fees",caseFeeDetailRequest)
             .andExpect(status().isBadRequest());
 
 
@@ -238,7 +240,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
         Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
         restActions
             .post("/cash",  proposedCashPaymentInstructionRequest)
@@ -252,7 +254,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
                     cashPaymentInstructionWith()
                         .payerName("Mr Payer Payer")
                         .amount(500)
-                        .currency("GBP"));
+                        .currency("GBP").status("D"));
             }));
 
 
@@ -262,7 +264,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
         Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
         restActions
             .post("/cash",  proposedCashPaymentInstructionRequest)
@@ -281,12 +283,12 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
         Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
         Cash updatedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Updated Payer")
             .amount(6000)
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
 
         restActions
@@ -303,12 +305,12 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
         Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
         Cash updatedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Updated Payer")
             .amount(6000)
-            .currency("GBP").build();
+            .currency("GBP").status("D").build();
 
 
         restActions
@@ -322,5 +324,3 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
     }
 
 }
-
-
