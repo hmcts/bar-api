@@ -70,7 +70,6 @@ public class PaymentInstructionService {
         PaymentReference nextPaymentReference = paymentReferenceService.getNextPaymentReferenceSequenceBySite(SITE_ID);
         paymentInstruction.setSiteId(SITE_ID);
         paymentInstruction.setDailySequenceId(nextPaymentReference.getDailySequenceId());
-        paymentInstruction.setStatus(PaymentStatusEnum.DRAFT.dbKey());
         paymentInstruction.setUserId(userId);
         PaymentInstruction savedPaymentInstruction = paymentInstructionRepository.saveAndRefresh(paymentInstruction);
         savePaymentInstructionStatus(savedPaymentInstruction, userId);

@@ -16,330 +16,205 @@ import static uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction.cardPayment
 import static uk.gov.hmcts.bar.api.data.model.CaseReference.caseReferenceWith;
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith;
 
-public class CardInstructionCrudComponentTest extends ComponentTestBase  {
-    @Test
-    public void whenCardPaymentInstructionDetails_thenCreateCardPaymentInstruction() throws Exception {
-        Card proposedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Payer Payer")
-            .amount(500)
-            .currency("GBP").status("D").authorizationCode("123456").build();
-
-        restActions
-            .post("/cards", proposedCardPaymentInstructionRequest)
-            .andExpect(status().isCreated())
-            .andExpect(body().as(CardPaymentInstruction.class, cardPaymentInstruction -> {
-                assertThat(cardPaymentInstruction).isEqualToComparingOnlyGivenFields(
-                    cardPaymentInstructionWith()
-                        .payerName("Mr Payer Payer")
-                        .amount(500)
-                        .status("D").authorizationCode("123456")
-                        .currency("GBP"));
-            }));
-
-    }
-
-    @Test
-    public void whenCardPaymentInstructionWithInvalidCurrency_thenReturn400() throws Exception {
-        Card proposedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Payer Payer")
-            .amount(500)
-            .status("D").authorizationCode("qwerty")
-            .currency("XXX").build();
-
-        restActions
-            .post("/cards", proposedCardPaymentInstructionRequest)
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void whenCardPaymentInstructionWithInvalidAuthorizationCode_thenReturn400() throws Exception {
-        Card proposedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Payer Payer")
-            .amount(500)
-            .status("D").authorizationCode("qwertyxxxx")
-            .currency("GBP").build();
-
-        restActions
-            .post("/cards", proposedCardPaymentInstructionRequest)
-            .andExpect(status().isBadRequest());
-    }
-
-
-    @Test
-    public void givenCardPaymentInstructionDetails_retrieveThem() throws Exception {
-        Card proposedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Payer Payer")
-            .amount(500)
-            .status("D").authorizationCode("qwerty")
-            .currency("GBP").build();
-
-        CardPaymentInstruction  expectedCardPaymentInstruction = cardPaymentInstructionWith()
-            .payerName("Mr Payer Payer")
-            .amount(500)
-            .status("D").authorizationCode("qwerty")
-            .currency("GBP").build();
-
-        restActions
-            .post("/cards",  proposedCardPaymentInstructionRequest)
-            .andExpect(status().isCreated());
+public class CardInstructionCrudComponentTest extends ComponentTestBase {
+	@Test
+	public void whenCardPaymentInstructionDetails_thenCreateCardPaymentInstruction() throws Exception {
+		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(500).currency("GBP")
+				.status("D").authorizationCode("123456").build();
 
-        restActions
-            .get("/payment-instructions")
-            .andExpect(status().isOk())
-            .andExpect(body().as(List.class, (cardList) -> {
-                assertThat(cardList.get(0).equals(expectedCardPaymentInstruction));
-            }));
-
+		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated())
+				.andExpect(body().as(CardPaymentInstruction.class, cardPaymentInstruction -> {
+					assertThat(cardPaymentInstruction)
+							.isEqualToComparingOnlyGivenFields(cardPaymentInstructionWith().payerName("Mr Payer Payer")
+									.amount(500).status("D").authorizationCode("123456").currency("GBP").status("D"));
+				}));
 
-    }
+	}
 
-    @Test
-    public void givenCardPaymentInstructionDetails_retrieveOneOfThem() throws Exception {
-        Card proposedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Payer Payer").amount(500).currency("GBP").status("D").authorizationCode("qwerty").build();
+	@Test
+	public void whenCardPaymentInstructionWithInvalidCurrency_thenReturn400() throws Exception {
+		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(500).status("D")
+				.authorizationCode("qwerty").currency("XXX").build();
 
-        restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
+		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isBadRequest());
+	}
 
-        restActions.get("/payment-instructions/1").andExpect(status().isOk())
-            .andExpect(body().as(CardPaymentInstruction.class, (pi) -> {
-                assertThat(pi.getAmount() == 500);
-            }));
-    }
+	@Test
+	public void whenCardPaymentInstructionWithInvalidAuthorizationCode_thenReturn400() throws Exception {
+		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(500).status("D")
+				.authorizationCode("qwertyxxxx").currency("GBP").status("D").build();
 
-    @Test
-    public void givenCardPaymentInstructionDetails_retrieveOneOfThemWithWrongId() throws Exception {
-        Card proposedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Payer Payer").amount(500).currency("GBP").status("D").authorizationCode("qwerty").build();
+		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isBadRequest());
+	}
 
-        restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
+	@Test
+	public void givenCardPaymentInstructionDetails_retrieveThem() throws Exception {
+		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(500).status("D")
+				.authorizationCode("qwerty").currency("GBP").status("D").build();
 
-        restActions.get("/payment-instructions/2").andExpect(status().isNotFound());
-    }
+		CardPaymentInstruction expectedCardPaymentInstruction = cardPaymentInstructionWith().payerName("Mr Payer Payer")
+				.amount(500).status("D").authorizationCode("qwerty").currency("GBP").status("D").build();
 
-    @Test
-    public void whenCardPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
-        Card proposedCardPaymentInstructionRequest =cardWith()
-            .payerName("Mr Payer Payer")
-            .amount(500)
-            .currency("GBP")
-            .status("D").authorizationCode("qwerty")
-            .build();
+		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
-        restActions
-            .post("/cards",  proposedCardPaymentInstructionRequest)
-            .andExpect(status().isCreated());
+		restActions.get("/payment-instructions").andExpect(status().isOk())
+				.andExpect(body().as(List.class, (cardList) -> {
+					assertThat(cardList.get(0).equals(expectedCardPaymentInstruction));
+				}));
 
+	}
 
-        restActions
-            .delete("/payment-instructions/1")
-            .andExpect(status().isNoContent());
+	@Test
+	public void givenCardPaymentInstructionDetails_retrieveOneOfThem() throws Exception {
+		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(500).currency("GBP")
+				.status("D").authorizationCode("qwerty").build();
 
+		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
-    }
+		restActions.get("/payment-instructions/1").andExpect(status().isOk())
+				.andExpect(body().as(CardPaymentInstruction.class, (pi) -> {
+					assertThat(pi.getAmount() == 500);
+				}));
+	}
 
+	@Test
+	public void givenCardPaymentInstructionDetails_retrieveOneOfThemWithWrongId() throws Exception {
+		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(500).currency("GBP")
+				.status("D").authorizationCode("qwerty").build();
 
-    @Test
-    public void whenNonExistingCardPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
-        Card proposedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Payer Payer")
-            .amount(500)
-            .status("D").authorizationCode("qwerty")
-            .currency("GBP").build();
+		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
-        restActions
-            .post("/cards",  proposedCardPaymentInstructionRequest)
-            .andExpect(status().isCreated());
+		restActions.get("/payment-instructions/2").andExpect(status().isNotFound());
+	}
 
+	@Test
+	public void whenCardPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
+		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(500).currency("GBP")
+				.status("D").authorizationCode("qwerty").build();
 
-        restActions
-            .delete("/payment-instructions/1000")
-            .andExpect(status().isNotFound());
+		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
+		restActions.delete("/payment-instructions/1").andExpect(status().isNoContent());
 
-    }
+	}
 
+	@Test
+	public void whenNonExistingCardPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
+		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(500).status("D")
+				.authorizationCode("qwerty").currency("GBP").status("D").build();
 
-    @Test
-    public void whenCardPaymentInstructionIsSubmittedByPostClerk_expectStatus_200() throws Exception {
-        Card proposedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Payer Payer")
-            .amount(500).authorizationCode("qwerty")
-            .currency("GBP").build();
+		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
+		restActions.delete("/payment-instructions/1000").andExpect(status().isNotFound());
 
-        PaymentInstructionUpdateRequest request= paymentInstructionUpdateRequestWith()
-            .status("P").build();
+	}
 
-        restActions
-            .post("/cards",  proposedCardPaymentInstructionRequest)
-            .andExpect(status().isCreated());
+	@Test
+	public void whenCardPaymentInstructionIsSubmittedByPostClerk_expectStatus_200() throws Exception {
+		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(500)
+				.authorizationCode("qwerty").currency("GBP").status("D").build();
 
+		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("P").build();
 
-        restActions
-            .patch("/payment-instructions/1",request)
-            .andExpect(status().isOk());
+		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
+		restActions.patch("/payment-instructions/1", request).andExpect(status().isOk());
 
-    }
+	}
 
+	@Test
+	public void whenNonExistingCardPaymentInstructionIsSubmittedByPostClerk_expectStatus_404() throws Exception {
+		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(500)
+				.authorizationCode("123456").currency("GBP").status("D").build();
 
-    @Test
-    public void whenNonExistingCardPaymentInstructionIsSubmittedByPostClerk_expectStatus_404() throws Exception {
-        Card proposedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Payer Payer")
-            .amount(500).authorizationCode("123456")
-            .currency("GBP").build();
+		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("P").build();
 
+		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
-        PaymentInstructionUpdateRequest request= paymentInstructionUpdateRequestWith()
-            .status("P").build();
+		restActions.patch("/payment-instructions/1000", request).andExpect(status().isNotFound());
 
-        restActions
-            .post("/cards",  proposedCardPaymentInstructionRequest)
-            .andExpect(status().isCreated());
+	}
 
+	@Test
+	public void whenCaseReferenceForACardPaymentInstructionIsCreated_expectStatus_201() throws Exception {
+		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(500)
+				.authorizationCode("qwerty").currency("GBP").status("D").build();
 
-        restActions
-            .patch("/payment-instructions/1000",request)
-            .andExpect(status().isNotFound());
+		CaseReference caseReference = caseReferenceWith().caseReference("case102").build();
 
+		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
-    }
+		restActions.post("/payment-instructions/1/cases", caseReference).andExpect(status().isCreated());
 
-    @Test
-    public void whenCaseReferenceForACardPaymentInstructionIsCreated_expectStatus_201() throws Exception {
-        Card proposedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Payer Payer")
-            .amount(500).authorizationCode("qwerty")
-            .currency("GBP").build();
+	}
 
-        CaseReference caseReference = caseReferenceWith()
-            .caseReference("case102")
-            .build();
+	@Test
+	public void whenInvalidCaseReferenceForACardPaymentInstructionIsCreated_expectStatus_201() throws Exception {
+		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(500)
+				.authorizationCode("qwerty").currency("GBP").status("D").build();
 
-        restActions
-            .post("/cards",  proposedCardPaymentInstructionRequest)
-            .andExpect(status().isCreated());
+		CaseReference caseReference = caseReferenceWith().caseReference("????????").build();
 
+		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
-        restActions
-            .post("/payment-instructions/1/cases",caseReference)
-            .andExpect(status().isCreated());
+		restActions.post("/payment-instructions/1/cases", caseReference).andExpect(status().isBadRequest());
 
+	}
 
-    }
-    @Test
-    public void whenInvalidCaseReferenceForACardPaymentInstructionIsCreated_expectStatus_201() throws Exception {
-        Card proposedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Payer Payer")
-            .amount(500).authorizationCode("qwerty")
-            .currency("GBP").build();
+	@Test
+	public void whenSearchCardPaymentInstructionByPayerName_expectStatus_200() throws Exception {
+		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(500)
+				.authorizationCode("qwerty").currency("GBP").status("D").build();
 
-        CaseReference caseReference = caseReferenceWith()
-            .caseReference("????????")
-            .build();
+		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
-        restActions
-            .post("/cards",  proposedCardPaymentInstructionRequest)
-            .andExpect(status().isCreated());
+		restActions.get("/payment-instructions?payerName=Mr Payer Payer").andExpect(status().isOk())
+				.andExpect(body().as(List.class, cardPaymentInstructionList -> {
+					assertThat(cardPaymentInstructionList.get(0))
+							.isEqualToComparingOnlyGivenFields(cardPaymentInstructionWith().payerName("Mr Payer Payer")
+									.amount(500).currency("GBP").status("D"));
+				}));
 
+	}
 
-        restActions
-            .post("/payment-instructions/1/cases",caseReference)
-            .andExpect(status().isBadRequest());
+	@Test
+	public void whenSearchNonExistingCardPaymentInstructionByPayerName_expectStatus_200AndEmptyList() throws Exception {
+		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(500)
+				.authorizationCode("qwerty").currency("GBP").status("D").build();
 
+		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
-    }
+		restActions.get("/payment-instructions?payerName=NonExisting").andExpect(status().isOk()).andExpect(
+				body().as(List.class, cardPaymentInstructionList -> assertTrue(cardPaymentInstructionList.isEmpty())));
 
+	}
 
-    @Test
-    public void whenSearchCardPaymentInstructionByPayerName_expectStatus_200() throws Exception {
-        Card proposedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Payer Payer")
-            .amount(500).authorizationCode("qwerty")
-            .currency("GBP").build();
+	@Test
+	public void whenCardPaymentInstructionIsUpdated_expectStatus_200() throws Exception {
+		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(500)
+				.authorizationCode("qwerty").currency("GBP").status("D").build();
 
-        restActions
-            .post("/cards",  proposedCardPaymentInstructionRequest)
-            .andExpect(status().isCreated());
+		Card updatedCardPaymentInstructionRequest = cardWith().payerName("Mr Updated Payer").amount(6000)
+				.authorizationCode("qwerty").currency("GBP").status("D").build();
 
-        restActions
-            .get("/payment-instructions?payerName=Mr Payer Payer")
-            .andExpect(status().isOk())
-            .andExpect(body().as(List.class, cardPaymentInstructionList -> {
-                assertThat(cardPaymentInstructionList.get(0)).isEqualToComparingOnlyGivenFields(
-                    cardPaymentInstructionWith()
-                        .payerName("Mr Payer Payer")
-                        .amount(500)
-                        .currency("GBP"));
-            }));
+		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
+		restActions.put("/cards/1", updatedCardPaymentInstructionRequest).andExpect(status().isOk());
 
-    }
-    @Test
-    public void whenSearchNonExistingCardPaymentInstructionByPayerName_expectStatus_200AndEmptyList() throws Exception {
-        Card proposedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Payer Payer")
-            .amount(500).authorizationCode("qwerty")
-            .currency("GBP").build();
+	}
 
-        restActions
-            .post("/cards",  proposedCardPaymentInstructionRequest)
-            .andExpect(status().isCreated());
+	@Test
+	public void whenNonExistingCardPaymentInstructionIsUpdated_expectStatus_404() throws Exception {
+		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(500)
+				.authorizationCode("qwerty").currency("GBP").status("D").build();
 
-        restActions
-            .get("/payment-instructions?payerName=NonExisting")
-            .andExpect(status().isOk())
-            .andExpect(body().as(List.class, cardPaymentInstructionList-> assertTrue(cardPaymentInstructionList.isEmpty())));
+		Card updatedCardPaymentInstructionRequest = cardWith().payerName("Mr Updated Payer").amount(6000)
+				.authorizationCode("qwerty").currency("GBP").status("D").build();
 
-    }
+		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
+		restActions.put("/cards/1000", updatedCardPaymentInstructionRequest).andExpect(status().isNotFound());
 
-    @Test
-    public void whenCardPaymentInstructionIsUpdated_expectStatus_200() throws Exception {
-        Card proposedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Payer Payer")
-            .amount(500).authorizationCode("qwerty")
-            .currency("GBP").build();
-
-        Card updatedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Updated Payer")
-            .amount(6000).authorizationCode("qwerty")
-            .currency("GBP").build();
-
-
-        restActions
-            .post("/cards",  proposedCardPaymentInstructionRequest)
-            .andExpect(status().isCreated());
-
-        restActions
-            .put("/cards/1",updatedCardPaymentInstructionRequest)
-            .andExpect(status().isOk());
-
-    }
-    @Test
-    public void whenNonExistingCardPaymentInstructionIsUpdated_expectStatus_404() throws Exception {
-        Card proposedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Payer Payer")
-            .amount(500).authorizationCode("qwerty")
-            .currency("GBP").build();
-
-        Card updatedCardPaymentInstructionRequest = cardWith()
-            .payerName("Mr Updated Payer")
-            .amount(6000).authorizationCode("qwerty")
-            .currency("GBP").build();
-
-
-        restActions
-            .post("/cards",  proposedCardPaymentInstructionRequest)
-            .andExpect(status().isCreated());
-
-        restActions
-            .put("/cards/1000",updatedCardPaymentInstructionRequest)
-            .andExpect(status().isNotFound());
-
-    }
+	}
 
 }
-
-
