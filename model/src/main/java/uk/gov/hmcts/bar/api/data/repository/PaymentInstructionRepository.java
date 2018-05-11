@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface PaymentInstructionRepository extends BaseRepository<PaymentInstruction, Integer>, JpaSpecificationExecutor<PaymentInstruction> {
     Optional<PaymentInstruction>  findById(Integer id);
 
-    @Query("SELECT pi from PaymentInstruction pi  WHERE " +
-        " pi.id in (SELECT cfd.paymentInstructionId from CaseFeeDetail cfd where cfd.caseReference like %:caseReference%)")
+    @Query("SELECT pi from PaymentInstruction pi, CaseFeeDetail cfd  WHERE " +
+        " cfd.paymentInstructionId = pi.id AND cfd.caseReference like %:caseReference%")
     List<PaymentInstruction> findByCaseReference(@Param("caseReference") String caseReference);
 }

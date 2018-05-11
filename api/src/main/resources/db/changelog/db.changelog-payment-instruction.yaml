@@ -484,3 +484,7 @@ databaseChangeLog:
             constraintName: fk_case_fee_detail_payment_instruction
             referencedColumnNames: id
             referencedTableName: payment_instruction
+        - dropTable:
+            tableName: payment_instruction_case_reference
+        - dropTable:
+            tableName: case_reference
