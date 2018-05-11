@@ -8,10 +8,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.bar.api.data.model.PostalOrder.postalOrderPaymentInstructionRequestWith;
-
 import static uk.gov.hmcts.bar.api.converters.PaymentInstructionsCsvConverter.EOL;
 import static uk.gov.hmcts.bar.api.converters.PaymentInstructionsCsvConverter.SEPARATOR;
+import static uk.gov.hmcts.bar.api.data.model.PostalOrder.postalOrderPaymentInstructionRequestWith;
 
 public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
 
@@ -22,7 +21,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(533)
-            .currency("GBP")
+            .currency("GBP").status("D")
             .postalOrderNumber("000000").build();
 
         restActions

@@ -1,7 +1,7 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Test;
-import uk.gov.hmcts.bar.api.data.model.CaseReference;
+import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
 import uk.gov.hmcts.bar.api.data.model.Cheque;
 import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
@@ -11,7 +11,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.bar.api.data.model.CaseReference.caseReferenceWith;
 import static uk.gov.hmcts.bar.api.data.model.Cheque.chequePaymentInstructionRequestWith;
 import static uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction.chequePaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith;
@@ -24,7 +23,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .chequeNumber("000000").build();
+            .chequeNumber("000000").status("D").build();
 
         restActions
             .post("/cheques", proposedChequePaymentInstructionRequest)
@@ -75,13 +74,13 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .chequeNumber("000000").build();
+            .chequeNumber("000000").status("D").build();
 
         ChequePaymentInstruction retrievedChequePaymentInstruction =chequePaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .chequeNumber("000000").build();
+            .chequeNumber("000000").status("D").build();
 
 
         restActions
@@ -97,28 +96,28 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
     }
 
-	@Test
-	public void givenChequePaymentInstructionDetails_retrieveOneOfThem() throws Exception {
-		Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(500).currency("GBP").chequeNumber("000000").build();
+    @Test
+    public void givenChequePaymentInstructionDetails_retrieveOneOfThem() throws Exception {
+        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer").amount(500).currency("GBP").chequeNumber("000000").status("D").build();
 
-		restActions.post("/cheques", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/cheques", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
 
-		restActions.get("/payment-instructions/1").andExpect(status().isOk())
-				.andExpect(body().as(ChequePaymentInstruction.class, (pi) -> {
-					assertThat(pi.getAmount() == 500);
-				}));
-	}
+        restActions.get("/payment-instructions/1").andExpect(status().isOk())
+            .andExpect(body().as(ChequePaymentInstruction.class, (pi) -> {
+                assertThat(pi.getAmount() == 500);
+            }));
+    }
 
-	@Test
-	public void givenChequePaymentInstructionDetails_retrieveOneOfThemWithWrongId() throws Exception {
-		Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(500).currency("GBP").chequeNumber("000000").build();
+    @Test
+    public void givenChequePaymentInstructionDetails_retrieveOneOfThemWithWrongId() throws Exception {
+        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer").amount(500).currency("GBP").chequeNumber("000000").status("D").build();
 
-		restActions.post("/cheques", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/cheques", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
 
-		restActions.get("/payment-instructions/2").andExpect(status().isNotFound());
-	}
+        restActions.get("/payment-instructions/2").andExpect(status().isNotFound());
+    }
 
     @Test
     public void whenChequePaymentInstructionIsDeleted_expectStatus_204() throws Exception {
@@ -126,7 +125,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .chequeNumber("000000").build();
+            .chequeNumber("000000").status("D").build();
 
         restActions
             .post("/cheques",  proposedChequePaymentInstructionRequest)
@@ -145,7 +144,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .chequeNumber("000000").build();
+            .chequeNumber("000000").status("D").build();
 
         restActions
             .post("/cheques",  proposedChequePaymentInstructionRequest)
@@ -165,7 +164,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .chequeNumber("000000").build();
+            .chequeNumber("000000").status("D").build();
 
         PaymentInstructionUpdateRequest statusUpdateRequest= paymentInstructionUpdateRequestWith()
             .status("P").build();
@@ -187,7 +186,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .chequeNumber("000000").build();
+            .chequeNumber("000000").status("D").build();
 
         PaymentInstructionUpdateRequest statusUpdateRequest= paymentInstructionUpdateRequestWith()
             .status("P").build();
@@ -209,10 +208,13 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .chequeNumber("000000").build();
+            .chequeNumber("000000").status("D").build();
 
-        CaseReference caseReference = caseReferenceWith()
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
             .caseReference("case102")
+            .feeCode("X001")
+            .amount(200)
+            .feeVersion("1")
             .build();
 
         restActions
@@ -221,7 +223,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
 
         restActions
-            .post("/payment-instructions/1/cases",caseReference)
+            .post("/fees",caseFeeDetailRequest)
             .andExpect(status().isCreated());
 
 
@@ -234,10 +236,10 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .chequeNumber("000000").build();
+            .chequeNumber("000000").status("D").build();
 
-        CaseReference caseReference = caseReferenceWith()
-            .caseReference("?????^^^^11")
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .caseReference("??????????")
             .build();
 
         restActions
@@ -246,7 +248,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
 
         restActions
-            .post("/payment-instructions/1/cases",caseReference)
+            .post("/fees",caseFeeDetailRequest)
             .andExpect(status().isBadRequest());
 
 
@@ -258,7 +260,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .chequeNumber("000000").build();
+            .chequeNumber("000000").status("D").build();
 
         restActions
             .post("/cheques", proposedChequePaymentInstructionRequest)
@@ -269,13 +271,14 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .get("/payment-instructions?payerName=Mr Payer Payer")
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, chequePaymentInstructionList -> {
-            assertThat(chequePaymentInstructionList.get(0)).isEqualToComparingOnlyGivenFields(
-                chequePaymentInstructionWith()
-                    .payerName("Mr Updated Payer")
-                    .amount(600)
-                    .currency("GBP")
-                    .chequeNumber("000000"));
-        }));
+                assertThat(chequePaymentInstructionList.get(0)).isEqualToComparingOnlyGivenFields(
+                    chequePaymentInstructionWith()
+                        .payerName("Mr Updated Payer")
+                        .amount(600)
+                        .currency("GBP")
+                        .status("D")
+                        .chequeNumber("000000"));
+            }));
     }
 
 
@@ -287,7 +290,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .chequeNumber("000000").build();
+            .chequeNumber("000000").status("D").build();
 
         restActions
             .post("/cheques", proposedChequePaymentInstructionRequest)
@@ -306,7 +309,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .chequeNumber("000000").build();
+            .chequeNumber("000000").status("D").build();
 
         restActions
             .post("/cheques", proposedChequePaymentInstructionRequest)
@@ -322,6 +325,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
                         .payerName("Mr Updated Payer")
                         .amount(600)
                         .currency("GBP")
+                        .status("D")
                         .chequeNumber("000000"));
             }));
     }
@@ -333,7 +337,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .chequeNumber("000000").build();
+            .chequeNumber("000000").status("D").build();
 
         restActions
             .post("/cheques", proposedChequePaymentInstructionRequest)
@@ -352,13 +356,14 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .chequeNumber("000000").build();
+            .chequeNumber("000000").status("D").build();
 
 
         Cheque updatedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(6000)
             .currency("GBP")
+            .status("P")
             .chequeNumber("000000").build();
 
 
@@ -377,14 +382,14 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
-            .chequeNumber("000000").build();
+            .chequeNumber("000000").status("D").build();
 
 
         Cheque updatedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(6000)
             .currency("GBP")
-            .chequeNumber("000000").build();
+            .chequeNumber("000000").status("D").build();
 
 
         restActions
@@ -398,5 +403,3 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
     }
 
 }
-
-

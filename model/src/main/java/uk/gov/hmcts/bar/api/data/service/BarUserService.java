@@ -30,22 +30,10 @@ public class BarUserService {
             .orElseGet(() -> barUserRepository.save(barUser));
     }
 
-    public BarUser getCurrentUser(){
-        Optional<BarUser> barUser;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            barUser = barUserRepository.findBarUserById(userDetails.getUsername());
-        } else {
-            barUser = Optional.empty();
-        }
-        return barUser.orElseThrow(() -> new AccessDeniedException("failed to identify user"));
-    }
-
     public String getCurrentUserId() {
-        Optional<String> userId = null;
+        Optional<String> userId = Optional.empty();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             userId = Optional.ofNullable(userDetails.getUsername());
         }

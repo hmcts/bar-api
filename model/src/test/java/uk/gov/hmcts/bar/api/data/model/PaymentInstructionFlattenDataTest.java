@@ -2,15 +2,10 @@ package uk.gov.hmcts.bar.api.data.model;
 
 import org.junit.Test;
 import uk.gov.hmcts.bar.api.data.TestUtils;
-import uk.gov.hmcts.bar.api.data.model.CaseReference;
-import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionReportLine;
 
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class PaymentInstructionFlattenDataTest {
 
@@ -60,14 +55,4 @@ public class PaymentInstructionFlattenDataTest {
         assertEquals("John Doe", flattenData.get(0).getName());
     }
 
-    @Test
-    public void testTypedPaymentInstructionWithEmptyCasereference(){
-        CashPaymentInstruction paymentInstruction = new CashPaymentInstruction();
-        CaseReference caseReference = CaseReference.caseReferenceWith().caseReference("12345").build();
-        paymentInstruction.setCaseReferences(Arrays.asList(caseReference));
-        List<PaymentInstructionReportLine> flattenData = paymentInstruction.flattenPaymentInstruction();
-        assertEquals(null, flattenData.get(0).getCashAmount());
-        assertEquals(0, flattenData.get(0).getDailyId().intValue());
-        assertEquals("12345", flattenData.get(0).getCaseRef());
-    }
 }

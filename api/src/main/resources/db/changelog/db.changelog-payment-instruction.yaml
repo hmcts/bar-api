@@ -145,7 +145,6 @@ databaseChangeLog:
              tableName: payment_instruction
          - sql: >
              DELETE from  payment_type where id=2
-
   - changeSet:
       id: 4
       author: sachi
@@ -174,7 +173,6 @@ databaseChangeLog:
               ('postal-orders', 'Postal Order'),
               ('cash', 'Cash'),
               ('allpay', 'AllPay');
-
          - renameColumn:
             columnDataType: varchar(20)
             newColumnName: payment_type_id
@@ -244,7 +242,6 @@ databaseChangeLog:
       changes:
          - sql: >
             UPDATE payment_type SET id = 'cards' WHERE id = 'card';
-
   - changeSet:
       id: 7
       author: ravi
@@ -430,7 +427,7 @@ databaseChangeLog:
               ('P', 'Pending'),
               ('REJ', 'Rejected'),
               ('V', 'Validated'),
-              ('TTB', 'Transferred to bar');                 
+              ('TTB', 'Transferred to bar');
         - createTable:
             tableName: payment_instruction_status
             columns:
@@ -464,3 +461,30 @@ databaseChangeLog:
         - sql: >
             INSERT INTO payment_instruction_status (payment_instruction_id,status,bar_user_id)
             SELECT id,status,user_id FROM payment_instruction;
+  - changeSet:
+      id: 14
+      author: sachi
+      changes:
+        - sql: >
+             UPDATE case_fee_detail SET case_reference =
+             (SELECT case_reference FROM case_reference WHERE case_reference.id = case_fee_detail.case_reference_id);
+        - dropForeignKeyConstraint:
+            baseTableName: case_fee_detail
+            constraintName: fk_cfd_case_reference_id
+        - sql: >
+            Update case_fee_detail set case_reference_id =
+            (select payment_instruction_id from case_reference where case_reference.id = case_fee_detail.case_reference_id);
+        - renameColumn:
+            newColumnName: payment_instruction_id
+            oldColumnName: case_reference_id
+            tableName: case_fee_detail
+        - addForeignKeyConstraint:
+            baseColumnNames: payment_instruction_id
+            baseTableName: case_fee_detail
+            constraintName: fk_case_fee_detail_payment_instruction
+            referencedColumnNames: id
+            referencedTableName: payment_instruction
+        - dropTable:
+            tableName: payment_instruction_case_reference
+        - dropTable:
+            tableName: case_reference

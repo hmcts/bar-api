@@ -9,12 +9,8 @@ public class TestUtils {
 
     public static PaymentInstruction createSamplePaymentInstruction(String type, int paymentAmount, int[][] caseDetails){
         PaymentInstruction pi = TestUtils.createPaymentInstructions(type, paymentAmount);
-        CaseReference[] references = new CaseReference[2];
-        references[0] = TestUtils.createCaseReference("1212");
-        references[1] = TestUtils.createCaseReference("3434");
-        references[0].setCaseFeeDetails(Arrays.stream(caseDetails).map(amounts -> TestUtils.createCaseFeeDetail(amounts)).collect(Collectors.toList()));
-        references[1].setCaseFeeDetails(Arrays.stream(caseDetails).map(amounts -> TestUtils.createCaseFeeDetail(amounts)).collect(Collectors.toList()));
-        pi.setCaseReferences(Arrays.asList(references));
+        pi.setCaseFeeDetails(Arrays.stream(caseDetails).map(amounts -> TestUtils.createCaseFeeDetail(amounts)).collect(Collectors.toList()));
+        pi.setCaseFeeDetails(Arrays.stream(caseDetails).map(amounts -> TestUtils.createCaseFeeDetail(amounts)).collect(Collectors.toList()));
         return pi;
     }
 
@@ -65,12 +61,6 @@ public class TestUtils {
             default:
                 return new CashPaymentInstruction("John Doe", amount, "GBP","D");
         }
-    }
-
-    public static CaseReference createCaseReference(String caseNumber){
-        return CaseReference.caseReferenceWith()
-            .caseReference(caseNumber)
-            .build();
     }
 
     public static CaseFeeDetail createCaseFeeDetail(int[] amounts){
