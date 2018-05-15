@@ -1,19 +1,15 @@
 package uk.gov.hmcts.bar.api.data.repository;
 
-import java.util.List;
-import java.util.Optional;
-
-import javax.persistence.LockModeType;
-
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import uk.gov.hmcts.bar.api.data.model.*;
 
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionOverview;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatus;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusReferenceKey;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats;
+import javax.persistence.LockModeType;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PaymentInstructionStatusRepository
@@ -30,9 +26,25 @@ public interface PaymentInstructionStatusRepository
 			+ "pis.paymentInstructionStatusReferenceKey.paymentInstructionId = pi.id AND pis.barUserId = bu.id AND bu.roles LIKE CONCAT('%',:userRole,'%') "
 			+ "GROUP BY bu.id,pis.paymentInstructionStatusReferenceKey.status ORDER BY bu.id")
 	List<PaymentInstructionOverview> getPaymentOverviewStats(@Param("userRole") String userRole);
-	
+
 	@Query(name = "PIByUserGroup", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats"
 			+ "(bu.id, CONCAT(bu.forename,' ',bu.surname), COUNT(pi.id)) FROM BarUser bu, PaymentInstruction pi  WHERE pi.status = :status AND "
 			+ "pi.userId = bu.id AND bu.roles LIKE CONCAT('%',:userRole,'%') GROUP BY bu.id")
 	List<PaymentInstructionUserStats> getPaymentInstructionsPendingApprovalByUserGroup(@Param("userRole") String userRole, @Param("status") String status);
+
+
+    @Query(name = "PIReportDetails", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusHistory"
+        + "(pis.paymentInstructionStatusReferenceKey.paymentInstructionId,pis.barUserId,CONCAT(bu.forename,' ',bu.surname),"
+        + "pis.paymentInstructionStatusReferenceKey.status,pis.paymentInstructionStatusReferenceKey.updateTime) "
+        + "FROM PaymentInstructionStatus pis, BarUser bu  WHERE "
+        + "bu.id = pis.barUserId AND pis.paymentInstructionStatusReferenceKey.paymentInstructionId in "
+        + "(SELECT pis1.paymentInstructionStatusReferenceKey.paymentInstructionId "
+        + " FROM PaymentInstructionStatus pis1 where pis1.paymentInstructionStatusReferenceKey.status = 'TTB') "
+        + " AND pis.paymentInstructionStatusReferenceKey.updateTime >= :historyStartDate "
+        + " AND pis.paymentInstructionStatusReferenceKey.updateTime <= :historyEndDate ORDER BY "
+        + " pis.paymentInstructionStatusReferenceKey.paymentInstructionId,pis.paymentInstructionStatusReferenceKey.updateTime")
+    List<PaymentInstructionStatusHistory>  getPaymentInstructionStatusHistoryForTTB
+        (@Param("historyStartDate") LocalDateTime historyStartDate, @Param("historyEndDate") LocalDateTime historyEndDate);
+
+
 }

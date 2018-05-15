@@ -7,7 +7,9 @@ import io.swagger.annotations.ApiResponses;
 import org.apache.commons.collections.MultiMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -60,7 +62,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/payment-instructions")
-    public List<PaymentInstruction> getPaymentInstructions(
+    public List<PaymentInstruction> getPaymentInstructions(@RequestHeader HttpHeaders headers,
         @RequestParam(name = "status", required = false) String status,
         @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
         @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate,
@@ -77,7 +79,10 @@ public class PaymentInstructionController {
 
         if (caseReference != null) {
             paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByCaseReference(caseReference);
-        } else {
+        } else if (checkAcceptHeaderForCsv(headers)){
+            paymentInstructionList =  paymentInstructionService.getAllPaymentInstructionsByTTB(startDate,endDate);
+        }
+        else {
             PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto =
                 createPaymentInstructionCriteria(status, startDate, endDate, payerName, chequeNumber, postalOrderNumber,
                     dailySequenceId, allPayInstructionId, paymentType, action);
@@ -405,6 +410,13 @@ public class PaymentInstructionController {
             .endDate(endDate == null ? null : endDate.atTime(LocalTime.now())).payerName(payerName)
             .chequeNumber(chequeNumber).postalOrderNumer(postalOrderNumber).dailySequenceId(dailySequenceId)
             .allPayInstructionId(allPayInstructionId).paymentType(paymentType).action(action).build();
+    }
+
+    private boolean checkAcceptHeaderForCsv(HttpHeaders headers){
+        if (headers.getAccept().contains(new MediaType("text","csv"))){
+            return true;
+        }
+        return false;
     }
 
 }

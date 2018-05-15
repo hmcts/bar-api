@@ -15,6 +15,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 @Data
@@ -30,7 +32,7 @@ public abstract class   PaymentInstruction {
 
     public static final String[] CSV_TABLE_HEADER = {"Daily sequential payment ID", "Date", "Payee name", "Cheque Amount",
         "Postal Order Amount", "Cash Amount", "Card Amount", "AllPay Amount", "Action Taken", "Case ref no.",
-        "Fee Amount", "Fee code", "Fee description"};
+        "Fee Amount", "Fee code", "Fee description","Recorded user","Recorded time","Validated user","Validated time","Approved user","Approved time","Transferred to BAR user","Transferred to BAR time"};
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -92,6 +94,10 @@ public abstract class   PaymentInstruction {
     @JoinColumn(name = "paymentInstructionId", referencedColumnName = "id")
     private List<CaseFeeDetail>     caseFeeDetails;
 
+    @JsonIgnore
+    @Transient
+    private List<PaymentInstructionStatusHistory>     paymentInstructionStatusHistory = Collections.EMPTY_LIST;
+
     public List<PaymentInstructionReportLine> flattenPaymentInstruction() {
 
         List<PaymentInstructionReportLine> paymentLines = new ArrayList<>();
@@ -116,8 +122,34 @@ public abstract class   PaymentInstruction {
         paymentLines.get(0).setName(this.getPayerName());
         paymentLines.get(0).setAction(this.getAction());
         fillAmount(paymentLines.get(0));
+        setUserActivity(paymentLines);
 
         return paymentLines;
+    }
+
+    private void setUserActivity(List<PaymentInstructionReportLine> paymentLines){
+
+        Iterator<PaymentInstructionStatusHistory> iterator = this.getPaymentInstructionStatusHistory().iterator();
+        while (iterator.hasNext()){
+            PaymentInstructionStatusHistory statusHistory = iterator.next();
+            if(statusHistory.getStatus().equals("D")){
+                paymentLines.get(0).setRecordedUser(statusHistory.getBarUserFullName());
+                paymentLines.get(0).setRecordedTime(statusHistory.getStatusUpdateTime());
+            }
+            if(statusHistory.getStatus().equals("V")){
+                paymentLines.get(0).setValidatedUser(statusHistory.getBarUserFullName());
+                paymentLines.get(0).setValidatedTime(statusHistory.getStatusUpdateTime());
+            }
+            if(statusHistory.getStatus().equals("A")){
+                paymentLines.get(0).setApprovedUser(statusHistory.getBarUserFullName());
+                paymentLines.get(0).setApprovedTime(statusHistory.getStatusUpdateTime());
+            }
+            if(statusHistory.getStatus().equals("TTB")){
+                paymentLines.get(0).setTransferredToBarUser(statusHistory.getBarUserFullName());
+                paymentLines.get(0).setTransferredToBarTime(statusHistory.getStatusUpdateTime());
+            }
+        }
+
     }
 
     public abstract void fillAmount(PaymentInstructionReportLine reportRow);

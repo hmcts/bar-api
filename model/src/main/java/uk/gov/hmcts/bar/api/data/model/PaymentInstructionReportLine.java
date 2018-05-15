@@ -26,6 +26,12 @@ public class PaymentInstructionReportLine {
     private Integer         feeAmount;
     private String          feeCode;
     private String          feeDescription;
-
-
+    private String          recordedUser;
+    private LocalDateTime   recordedTime;
+    private String          validatedUser;
+    private LocalDateTime   validatedTime;
+    private String          approvedUser;
+    private LocalDateTime   approvedTime;
+    private String          transferredToBarUser;
+    private LocalDateTime   transferredToBarTime;
 }
