@@ -14,6 +14,7 @@ import static uk.gov.hmcts.bar.api.data.model.PostalOrder.postalOrderPaymentInst
 
 public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
 
+
     public static final String CURRENT_DATE = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
     @Test
@@ -28,17 +29,33 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
             .post("/postal-orders", proposedPostalOrderPaymentInstructionRequest)
             .andExpect(status().isCreated());
 
+        PostalOrder updatedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(533)
+            .currency("GBP").status("TTB")
+            .postalOrderNumber("000000").build();
+
         restActions
-            .getCsv("/payment-instructions")
+            .put("/postal-orders/1",updatedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+        restActions
+            .getCsv("/payment-instructions?startDate=15052018")
             .andExpect(status().isOk())
             .andExpect(result -> {
                 Assert.assertEquals(String.format("\"Daily sequential payment ID\"%s\"Date\"%s\"Payee name\"%s\"Cheque Amount\"%s" +
-                    "\"Postal Order Amount\"%s\"Cash Amount\"%s\"Card Amount\"%s\"AllPay Amount\"%s\"Action Taken\"%s\"Case ref no.\"%s" +
-                    "\"Fee Amount\"%s\"Fee code\"%s\"Fee description\"%s\"1\"%s\"%s\"%s\"Mr Payer Payer\"%s\"\"%s\"5.33\"" +
-                    "%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s",
-                    SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR,
-                    SEPARATOR, SEPARATOR, SEPARATOR, EOL, SEPARATOR, CURRENT_DATE, SEPARATOR, SEPARATOR, SEPARATOR,
-                    SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, EOL),
+                        "\"Postal Order Amount\"%s\"Cash Amount\"%s\"Card Amount\"%s\"AllPay Amount\"%s\"Action Taken\"%s\"Case ref no.\"%s" +
+                        "\"Fee Amount\"%s\"Fee code\"%s\"Fee description\"%s\"Recorded user\"%s\"Recorded time\"%s\"Validated user\"%s\"Validated time\"%s" +
+                        "\"Approved user\"%s\"Approved time\"%s\"Transferred to BAR user\"%s\"Transferred to BAR time\"%s" +
+                        "\"1\"%s\"%s\"%s\"Mr Payer Payer\"%s\"\"%s\"5.33\"" +
+                        "%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s",
+                    SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR,
+                    SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR,
+                    SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR,
+                    SEPARATOR, SEPARATOR,SEPARATOR, EOL,
+                    SEPARATOR, CURRENT_DATE, SEPARATOR, SEPARATOR, SEPARATOR,
+                    SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR,
+                     EOL),
                     result.getResponse().getContentAsString());
             });
 

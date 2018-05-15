@@ -8,6 +8,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
@@ -39,6 +42,9 @@ public class RestActions {
     }
 
     public ResultActions getCsv(String urlTemplate) {
+        List mediatypes = new ArrayList();
+        mediatypes.add(new MediaType("text", "csv"));
+        httpHeaders.setAccept(mediatypes);
         try {
             return mvc.perform(MockMvcRequestBuilders
                 .get(urlTemplate)

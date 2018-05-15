@@ -22,8 +22,8 @@ import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionsSpecifications;
 import uk.gov.hmcts.bar.api.data.utils.Util;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -149,6 +149,50 @@ public class PaymentInstructionService {
             pi.getStatus());
         PaymentInstructionStatus pis = new PaymentInstructionStatus(pisrKey, userId);
         paymentInstructionStatusRepository.save(pis);
+    }
+
+    public Map<Integer, List<PaymentInstructionStatusHistory>> getStatusHistortMapForTTB(LocalDate startDate, LocalDate endDate) {
+
+        if (null != endDate && startDate.isAfter(endDate)) {
+            LOG.error("PaymentInstructionService - Error while generating daily fees csv file. Incorrect start and end dates ");
+            return Collections.EMPTY_MAP;
+        }
+
+        if (null == endDate || startDate.equals(endDate)) {
+            endDate = startDate.plusDays(1);
+        } else {
+            endDate = endDate.plusDays(1);
+        }
+
+        List<PaymentInstructionStatusHistory> statusHistoryList = paymentInstructionStatusRepository.getPaymentInstructionStatusHistoryForTTB
+            (startDate.atStartOfDay(), endDate.atStartOfDay());
+
+        final Map<Integer, List<PaymentInstructionStatusHistory>> statusHistoryMapByPaymentInstructionId = new HashMap<>();
+        for (final PaymentInstructionStatusHistory statusHistory : statusHistoryList) {
+            if (statusHistoryMapByPaymentInstructionId.get(statusHistory.getPaymentInstructionId()) == null) {
+                List<PaymentInstructionStatusHistory> listByPaymentInstructionId = new ArrayList<>();
+                listByPaymentInstructionId.add(statusHistory);
+                statusHistoryMapByPaymentInstructionId.put(statusHistory.getPaymentInstructionId(), listByPaymentInstructionId);
+            } else {
+                statusHistoryMapByPaymentInstructionId.get(statusHistory.getPaymentInstructionId()).add(statusHistory);
+            }
+
+        }
+        return statusHistoryMapByPaymentInstructionId;
+    }
+
+    public List<PaymentInstruction> getAllPaymentInstructionsByTTB(LocalDate startDate, LocalDate endDate) {
+        Map<Integer, List<PaymentInstructionStatusHistory>> statusHistortMapForTTB = getStatusHistortMapForTTB(startDate, endDate);
+        Iterator<Map.Entry<Integer, List<PaymentInstructionStatusHistory>>> iterator = statusHistortMapForTTB.entrySet().iterator();
+        List<PaymentInstruction> paymentInstructionsList = new ArrayList<>();
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, List<PaymentInstructionStatusHistory>> entry = iterator.next();
+            PaymentInstruction paymentInstruction = paymentInstructionRepository.getOne(entry.getKey());
+            paymentInstruction.setPaymentInstructionStatusHistory(entry.getValue());
+            paymentInstructionsList.add(paymentInstruction);
+
+        }
+        return paymentInstructionsList;
     }
 
 
