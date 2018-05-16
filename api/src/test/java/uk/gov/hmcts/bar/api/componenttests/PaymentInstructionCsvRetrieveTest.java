@@ -8,8 +8,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.bar.api.converters.PaymentInstructionsCsvConverter.EOL;
-import static uk.gov.hmcts.bar.api.converters.PaymentInstructionsCsvConverter.SEPARATOR;
 import static uk.gov.hmcts.bar.api.data.model.PostalOrder.postalOrderPaymentInstructionRequestWith;
 
 public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
@@ -32,32 +30,48 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         PostalOrder updatedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(533)
+            .currency("GBP").status("V")
+            .postalOrderNumber("000000").build();
+
+        restActions
+            .put("/postal-orders/1", updatedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+        updatedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(533)
+            .currency("GBP").status("A")
+            .postalOrderNumber("000000").build();
+
+        restActions
+            .put("/postal-orders/1", updatedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+        updatedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(533)
             .currency("GBP").status("TTB")
             .postalOrderNumber("000000").build();
 
         restActions
-            .put("/postal-orders/1",updatedPostalOrderPaymentInstructionRequest)
+            .put("/postal-orders/1", updatedPostalOrderPaymentInstructionRequest)
             .andExpect(status().isOk());
 
+
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter paramFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+        String paramStartDate = currentDate.format(paramFormatter);
+        DateTimeFormatter actualFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String actualStartDate = currentDate.format(actualFormatter);
+
+
         restActions
-            .getCsv("/payment-instructions?startDate=15052018")
+            .getCsv("/payment-instructions?startDate=" + paramStartDate)
             .andExpect(status().isOk())
             .andExpect(result -> {
-                Assert.assertEquals(String.format("\"Daily sequential payment ID\"%s\"Date\"%s\"Payee name\"%s\"Cheque Amount\"%s" +
-                        "\"Postal Order Amount\"%s\"Cash Amount\"%s\"Card Amount\"%s\"AllPay Amount\"%s\"Action Taken\"%s\"Case ref no.\"%s" +
-                        "\"Fee Amount\"%s\"Fee code\"%s\"Fee description\"%s\"Recorded user\"%s\"Recorded time\"%s\"Validated user\"%s\"Validated time\"%s" +
-                        "\"Approved user\"%s\"Approved time\"%s\"Transferred to BAR user\"%s\"Transferred to BAR time\"%s" +
-                        "\"1\"%s\"%s\"%s\"Mr Payer Payer\"%s\"\"%s\"5.33\"" +
-                        "%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s\"\"%s",
-                    SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR,
-                    SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR,
-                    SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR,
-                    SEPARATOR, SEPARATOR,SEPARATOR, EOL,
-                    SEPARATOR, CURRENT_DATE, SEPARATOR, SEPARATOR, SEPARATOR,
-                    SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR, SEPARATOR,
-                     EOL),
+                Assert.assertEquals("\"Daily sequential payment ID\",\"Date\",\"Payee name\",\"Cheque Amount\",\"Postal Order Amount\",\"Cash Amount\",\"Card Amount\",\"AllPay Amount\",\"Action Taken\",\"Case ref no.\",\"Fee Amount\",\"Fee code\",\"Fee description\",\"Recorded user\",\"Recorded time\",\"Validated user\",\"Validated time\",\"Approved user\",\"Approved time\",\"Transferred to BAR user\",\"Transferred to BAR time\"\n" +
+                        "\"1\",\"16/05/2018\",\"Mr Payer Payer\",\"\",\"5.33\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"John Doe\",\""+actualStartDate+"\",\"John Doe\",\""+actualStartDate+"\",\"John Doe\",\""+actualStartDate+"\",\"John Doe\",\""+actualStartDate+"\"\n",
                     result.getResponse().getContentAsString());
             });
-
     }
 }
