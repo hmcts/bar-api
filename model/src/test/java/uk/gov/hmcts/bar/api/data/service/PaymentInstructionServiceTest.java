@@ -19,6 +19,7 @@ import java.time.LocalTime;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -81,7 +82,7 @@ public class PaymentInstructionServiceTest {
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
         paymentInstructionService = new PaymentInstructionService(paymentReferenceService,
-            paymentInstructionRepository, barUserService,paymentInstructionStatusRepositoryMock);
+            paymentInstructionRepository, barUserService, paymentInstructionStatusRepositoryMock);
         paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto()
             .siteId("BR01");
         paymentInstructionStatusReferenceKey = new PaymentInstructionStatusReferenceKey(0, "status");
@@ -396,6 +397,7 @@ public class PaymentInstructionServiceTest {
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
 
     }
+
     @Test
     public void shouldReturnSubmittedPaymentInstructionWithAction_whenSubmitPaymentInstructionForGivenPaymentInstructionIsCalledWithAction()
         throws Exception {
@@ -409,6 +411,7 @@ public class PaymentInstructionServiceTest {
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
 
     }
+
     @Test
     public void shouldReturn200_whenUpdatePaymentInstructionForGivenPaymentInstructionIsCalled()
         throws Exception {
@@ -444,5 +447,14 @@ public class PaymentInstructionServiceTest {
         verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentInstructionStatusHistoryForTTB(LocalDate.now().atStartOfDay(), LocalDate.now().plusDays(1).atStartOfDay());
 
     }
+
+    @Test
+    public void shouldReturnEmptyPaymentInstructionList_whengetAllPaymentInstructionsByTTBWithIncorrectDates()
+        throws Exception {
+
+        List<PaymentInstruction> paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByTTB(LocalDate.now(), LocalDate.now().minusDays(1));
+        assertTrue(paymentInstructionList.isEmpty());
+    }
+
 
 }
