@@ -458,9 +458,6 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
-        - sql: >
-            INSERT INTO payment_instruction_status (payment_instruction_id,status,bar_user_id)
-            SELECT id,status,user_id FROM payment_instruction;
   - changeSet:
       id: 14
       author: sachi
