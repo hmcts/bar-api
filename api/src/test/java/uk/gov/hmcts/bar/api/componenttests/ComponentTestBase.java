@@ -38,19 +38,20 @@ public class ComponentTestBase {
         new UserDetails("1234", "abc123", Collections.singletonList("bar-post-clerk"));
 
 
-    RestActions restActions;
+    public RestActions restActions;
 
     @Before
     public void setUp() throws SQLException{
         MockMvc mvc = webAppContextSetup(webApplicationContext).apply(springSecurity()).build();
         this.restActions = new RestActions(mvc, objectMapper, userDetails);
+        DbTestUtil.emptyTable(webApplicationContext, "case_fee_detail");
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction");
         DbTestUtil.resetAutoIncrementColumns(webApplicationContext, "payment_instruction");
         DbTestUtil.setTestUser(webApplicationContext, userDetails);
 
     }
 
-    CustomResultMatcher body() {
+    public CustomResultMatcher body() {
         return new CustomResultMatcher(objectMapper);
     }
 
