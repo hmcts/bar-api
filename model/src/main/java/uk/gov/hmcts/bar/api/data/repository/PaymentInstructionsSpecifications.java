@@ -1,21 +1,15 @@
 package uk.gov.hmcts.bar.api.data.repository;
 
-import static org.springframework.data.jpa.domain.Specifications.where;
-
-import java.time.LocalDateTime;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaBuilder.In;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.domain.Specifications;
-
+import uk.gov.hmcts.bar.api.data.model.CaseFeeDetail;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
+import uk.gov.hmcts.bar.api.data.model.PaymentType;
 import uk.gov.hmcts.bar.api.data.utils.Util;
+
+import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder.In;
+import java.time.LocalDateTime;
 
 public class PaymentInstructionsSpecifications {
 
@@ -31,6 +25,8 @@ public class PaymentInstructionsSpecifications {
 	protected Specification<PaymentInstruction> dailySequenceIdSpec = null;
 	protected Specification<PaymentInstruction> userIdSpec = null;
 	protected Specification<PaymentInstruction> actionSpec = null;
+	protected Specification<PaymentInstruction> caseReferenceSpec = null;
+	protected Specification<PaymentInstruction> paymentTypeSpec = null;
 
 	public PaymentInstructionsSpecifications(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto) {
 		this.paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDto;
@@ -46,15 +42,17 @@ public class PaymentInstructionsSpecifications {
 		dailySequenceIdSpec = new DailySequenceIdSpec();
 		userIdSpec = new UserIdSpec();
 		actionSpec = new ActionSpec();
+		caseReferenceSpec = new CaseReferenceSpec();
+		paymentTypeSpec = new PaymentTypeSpec();
 	}
 
 	public Specification<PaymentInstruction> getPaymentInstructionsSpecification() {
 
-		Specification<PaymentInstruction> andSpecs = Specifications.where(statusSpec).and(startDateSpec)
-				.and(endDateSpec).and(siteIdSpec).and(userIdSpec);
-		Specification<PaymentInstruction> orSpecs = Specifications.where(payerNameSpec).or(allPayTransactionIdSpec)
-				.or(chequeNumberSpec).or(postalOrderNumerSpec).or(dailySequenceIdSpec).or(actionSpec);
-		return where(andSpecs).and(orSpecs);
+		Specification<PaymentInstruction> andSpecs = Specification.where(statusSpec).and(startDateSpec)
+				.and(endDateSpec).and(siteIdSpec).and(userIdSpec).and(paymentTypeSpec);
+		Specification<PaymentInstruction> orSpecs = Specification.where(payerNameSpec).or(allPayTransactionIdSpec)
+				.or(chequeNumberSpec).or(postalOrderNumerSpec).or(dailySequenceIdSpec).or(actionSpec).or(caseReferenceSpec);
+		return Specification.where(andSpecs).and(orSpecs);
 	}
 
 	private class StatusSpec implements Specification<PaymentInstruction> {
@@ -196,7 +194,7 @@ public class PaymentInstructionsSpecifications {
             return predicate;
         }
     }
-	
+
 	private class ActionSpec implements Specification<PaymentInstruction> {
 
         @Override
@@ -205,6 +203,32 @@ public class PaymentInstructionsSpecifications {
 
             if (paymentInstructionSearchCriteriaDto.getAction() != null) {
                 predicate = cb.equal(root.<String>get("action"), paymentInstructionSearchCriteriaDto.getAction());
+            }
+            return predicate;
+        }
+    }
+
+    private class CaseReferenceSpec implements Specification<PaymentInstruction> {
+
+        @Override
+        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+            Predicate predicate = null;
+            ListJoin<PaymentInstruction, CaseFeeDetail> feeDetails = root.joinList("caseFeeDetails", JoinType.LEFT);
+            if (paymentInstructionSearchCriteriaDto.getCaseReference() != null) {
+                predicate = criteriaBuilder.like(feeDetails.get("caseReference"), "%" + paymentInstructionSearchCriteriaDto.getCaseReference() + "%");
+            }
+            return predicate;
+        }
+    }
+
+    private class PaymentTypeSpec implements Specification<PaymentInstruction> {
+
+        @Override
+        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+            Predicate predicate = null;
+            Join<PaymentInstruction, PaymentType> paymentType = root.join("paymentType");
+            if (paymentInstructionSearchCriteriaDto.getPaymentType() != null) {
+                predicate = criteriaBuilder.equal(paymentType.get("id"), paymentInstructionSearchCriteriaDto.getPaymentType());
             }
             return predicate;
         }

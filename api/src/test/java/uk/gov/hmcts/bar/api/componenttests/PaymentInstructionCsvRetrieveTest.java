@@ -70,7 +70,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
             .andExpect(status().isOk())
             .andExpect(result -> {
                 Assert.assertEquals("\"Daily sequential payment ID\",\"Date\",\"Payee name\",\"Cheque Amount\",\"Postal Order Amount\",\"Cash Amount\",\"Card Amount\",\"AllPay Amount\",\"Action Taken\",\"Case ref no.\",\"Fee Amount\",\"Fee code\",\"Fee description\",\"Recorded user\",\"Recorded time\",\"Validated user\",\"Validated time\",\"Approved user\",\"Approved time\",\"Transferred to BAR user\",\"Transferred to BAR time\"\n" +
-                        "\"1\",\"16/05/2018\",\"Mr Payer Payer\",\"\",\"5.33\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"John Doe\",\""+actualStartDate+"\",\"John Doe\",\""+actualStartDate+"\",\"John Doe\",\""+actualStartDate+"\",\"John Doe\",\""+actualStartDate+"\"\n",
+                        "\"1\",\"" + actualStartDate + "\",\"Mr Payer Payer\",\"\",\"5.33\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"John Doe\",\""+actualStartDate+"\",\"John Doe\",\""+actualStartDate+"\",\"John Doe\",\""+actualStartDate+"\",\"John Doe\",\""+actualStartDate+"\"\n",
                     result.getResponse().getContentAsString());
             });
     }

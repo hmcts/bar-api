@@ -30,5 +30,6 @@ public class PaymentInstructionSearchCriteriaDto {
     private String paymentType;
     private String action;
     private String userId;
+    private String caseReference;
 
 }

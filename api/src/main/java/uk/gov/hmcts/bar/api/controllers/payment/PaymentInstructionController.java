@@ -77,15 +77,12 @@ public class PaymentInstructionController {
 
         List<PaymentInstruction> paymentInstructionList = null;
 
-        if (caseReference != null) {
-            paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByCaseReference(caseReference);
-        } else if (checkAcceptHeaderForCsv(headers)){
+        if (checkAcceptHeaderForCsv(headers)){
             paymentInstructionList =  paymentInstructionService.getAllPaymentInstructionsByTTB(startDate,endDate);
-        }
-        else {
+        } else {
             PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto =
                 createPaymentInstructionCriteria(status, startDate, endDate, payerName, chequeNumber, postalOrderNumber,
-                    dailySequenceId, allPayInstructionId, paymentType, action);
+                    dailySequenceId, allPayInstructionId, paymentType, action, caseReference);
 
             paymentInstructionList = paymentInstructionService
                 .getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
@@ -117,16 +114,13 @@ public class PaymentInstructionController {
         List<PaymentInstruction> paymentInstructionList = null;
 
 
-        if (caseReference != null) {
-            paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByCaseReference(caseReference);
-        } else {
-            PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto =
-                createPaymentInstructionCriteria(id, status, startDate, endDate, payerName, chequeNumber, postalOrderNumber,
-                    dailySequenceId, allPayInstructionId, paymentType, action);
+        PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto =
+            createPaymentInstructionCriteria(id, status, startDate, endDate, payerName, chequeNumber, postalOrderNumber,
+                dailySequenceId, allPayInstructionId, paymentType, action, caseReference);
 
-            paymentInstructionList = paymentInstructionService
-                .getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
-        }
+        paymentInstructionList = paymentInstructionService
+            .getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
+
         return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
     }
 
@@ -384,10 +378,11 @@ public class PaymentInstructionController {
         Integer dailySequenceId,
         String allPayInstructionId,
         String paymentType,
-        String action
+        String action,
+        String caseReference
     ){
         return createPaymentInstructionCriteria(null, status, startDate, endDate, payerName, chequeNumber,
-            postalOrderNumber, dailySequenceId, allPayInstructionId, paymentType, action);
+            postalOrderNumber, dailySequenceId, allPayInstructionId, paymentType, action, caseReference);
     }
 
     private PaymentInstructionSearchCriteriaDto createPaymentInstructionCriteria(
@@ -401,7 +396,8 @@ public class PaymentInstructionController {
         Integer dailySequenceId,
         String allPayInstructionId,
         String paymentType,
-        String action
+        String action,
+        String caseReference
     ){
         return PaymentInstructionSearchCriteriaDto
             .paymentInstructionSearchCriteriaDto().status(status)
@@ -409,7 +405,8 @@ public class PaymentInstructionController {
             .startDate(startDate == null ? null : startDate.atStartOfDay())
             .endDate(endDate == null ? null : endDate.atTime(LocalTime.now())).payerName(payerName)
             .chequeNumber(chequeNumber).postalOrderNumer(postalOrderNumber).dailySequenceId(dailySequenceId)
-            .allPayInstructionId(allPayInstructionId).paymentType(paymentType).action(action).build();
+            .allPayInstructionId(allPayInstructionId).paymentType(paymentType).action(action)
+            .caseReference(caseReference).build();
     }
 
     private boolean checkAcceptHeaderForCsv(HttpHeaders headers){
