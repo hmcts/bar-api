@@ -12,9 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
-import uk.gov.hmcts.bar.api.data.exceptions.InvalidActionException;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
@@ -117,20 +115,6 @@ public class PaymentInstructionService {
 
     public List<PaymentInstruction> getAllPaymentInstructionsByCaseReference(String caseReference) {
         return paymentInstructionRepository.findByCaseReference(caseReference);
-    }
-
-    public PaymentInstruction actionPaymentInstruction(Integer id,
-                                                       PaymentInstructionActionRequest paymentInstructionActionRequest) throws InvalidActionException {
-        if (PaymentActionEnum.getPaymentActionEnum(paymentInstructionActionRequest.getAction().trim()) == null) {
-            throw new InvalidActionException("Invalid action string: " + paymentInstructionActionRequest.getAction());
-        }
-        Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
-        PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
-            .orElseThrow(() -> new PaymentInstructionNotFoundException(id));
-        String[] nullPropertiesNamesToIgnore = Util.getNullPropertyNames(paymentInstructionActionRequest);
-        BeanUtils.copyProperties(paymentInstructionActionRequest, existingPaymentInstruction,
-            nullPropertiesNamesToIgnore);
-        return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
     }
 
     public MultiMap getPaymentInstructionStats(String userRole, String status) {

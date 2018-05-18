@@ -19,6 +19,7 @@ import java.time.LocalTime;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -443,6 +444,14 @@ public class PaymentInstructionServiceTest {
         List<PaymentInstruction> paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByTTB(LocalDate.now(), LocalDate.now());
         verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentInstructionStatusHistoryForTTB(LocalDate.now().atStartOfDay(), LocalDate.now().plusDays(1).atStartOfDay());
 
+    }
+
+    @Test
+    public void shouldReturnEmptyPaymentInstructionList_whengetAllPaymentInstructionsByTTBWithIncorrectDates()
+        throws Exception {
+
+        List<PaymentInstruction> paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByTTB(LocalDate.now(), LocalDate.now().minusDays(1));
+        assertTrue(paymentInstructionList.isEmpty());
     }
 
 }
