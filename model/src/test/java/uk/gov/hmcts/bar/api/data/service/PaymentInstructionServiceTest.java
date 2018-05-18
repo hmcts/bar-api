@@ -435,14 +435,5 @@ public class PaymentInstructionServiceTest {
         verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentInstructionsPendingApprovalByUserGroup(anyString(), anyString());
     }
 
-    @Test
-    public void shouldReturnPaymentInstructionList_whengetAllPaymentInstructionsByTTB()
-        throws Exception {
-
-        when(paymentInstructionStatusRepositoryMock.getPaymentInstructionStatusHistoryForTTB(LocalDate.now().atStartOfDay(), LocalDate.now().plusDays(1).atStartOfDay())).thenReturn(new ArrayList<PaymentInstructionStatusHistory>());
-        List<PaymentInstruction> paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByTTB(LocalDate.now(), LocalDate.now());
-        verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentInstructionStatusHistoryForTTB(LocalDate.now().atStartOfDay(), LocalDate.now().plusDays(1).atStartOfDay());
-
-    }
 
 }
