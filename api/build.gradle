@@ -29,7 +29,10 @@ idea {
 dependencies {
     compile project(':bar-model')
 
-    compile 'uk.gov.hmcts.reform.auth:auth-checker-lib'
+    compile ('uk.gov.hmcts.reform.auth:auth-checker-lib') {
+        exclude(module: 'java-logging-spring')
+    }
+
     compile 'uk.gov.hmcts.reform:java-logging-spring'
 
     compile 'org.springframework.boot:spring-boot-starter-web'
@@ -38,7 +41,10 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-actuator'
 
     compile 'org.liquibase:liquibase-core'
-    compile 'org.postgresql:postgresql'
+    compile(group: 'org.postgresql', name: 'postgresql') {
+        exclude(module: 'commons-logging')
+        exclude(module: 'slf4j-simple')
+    }
 
     compile 'io.springfox:springfox-swagger2'
     compile 'io.springfox:springfox-swagger-ui'
