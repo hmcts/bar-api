@@ -37,7 +37,7 @@ allprojects {
         }
 
         dependencies {
-            dependency 'uk.gov.hmcts.reform.auth:auth-checker-lib:2.1.2'
+
             dependency 'uk.gov.hmcts.reform:java-logging-spring:3.0.1'
             dependency 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.8'
             dependency 'com.google.guava:guava:22.0'
@@ -87,6 +87,10 @@ subprojects {
     }
 
     dependencies {
+
+        compile (group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.2') {
+            exclude(module: 'java-logging-spring')
+        }
         compileOnly 'org.projectlombok:lombok:1.16.16'
         compileOnly 'com.google.code.findbugs:annotations:3.0.1'
 

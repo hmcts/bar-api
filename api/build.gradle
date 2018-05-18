@@ -29,10 +29,6 @@ idea {
 dependencies {
     compile project(':bar-model')
 
-    compile ('uk.gov.hmcts.reform.auth:auth-checker-lib') {
-        exclude(module: 'java-logging-spring')
-    }
-
     compile 'uk.gov.hmcts.reform:java-logging-spring'
 
     compile 'org.springframework.boot:spring-boot-starter-web'
@@ -49,7 +45,9 @@ dependencies {
     compile 'io.springfox:springfox-swagger2'
     compile 'io.springfox:springfox-swagger-ui'
 
-    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
+        exclude(module: 'commons-logging')
+    }
     testCompile 'org.springframework.security:spring-security-test'
     testCompile 'org.hsqldb:hsqldb'
 
