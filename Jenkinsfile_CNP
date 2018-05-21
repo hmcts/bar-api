@@ -14,5 +14,5 @@ def product = "bar"
 def app = "api"
 
 withPipeline(type, product, app) {
-    enableSlackNotifications('#cc-payments-tech')
+    enableSlackNotifications('#bar-tech')
 }
