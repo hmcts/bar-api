@@ -73,9 +73,10 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
 
     private String[] convertReportCellToString(PaymentInstructionReportLine line){
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
         String[] csvRow = new String[21];
         csvRow[0] = line.getDailyId() == null ? null : line.getDailyId().toString();
-        csvRow[1] = line.getDate() == null ? null : line.getDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
+        csvRow[1] = Util.getFormattedDateTime(line.getDate(),dateFormatter);
         csvRow[2] = line.getName();
         csvRow[3] = formatNumber(line.getCheckAmount());
         csvRow[4] = formatNumber(line.getPostalOrderAmount());
