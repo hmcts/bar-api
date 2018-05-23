@@ -8,6 +8,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionReportLine;
+import uk.gov.hmcts.bar.api.data.utils.Util;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -71,6 +72,7 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
     }
 
     private String[] convertReportCellToString(PaymentInstructionReportLine line){
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
         String[] csvRow = new String[21];
         csvRow[0] = line.getDailyId() == null ? null : line.getDailyId().toString();
         csvRow[1] = line.getDate() == null ? null : line.getDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
@@ -86,13 +88,13 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
         csvRow[11] = line.getFeeCode();
         csvRow[12] = line.getFeeDescription();
         csvRow[13] = line.getRecordedUser();
-        csvRow[14] = line.getRecordedTime() == null ? null : line.getRecordedTime().format(DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss"));
+        csvRow[14] = Util.getFormattedDateTime(line.getRecordedTime(),dateTimeFormatter);
         csvRow[15] = line.getValidatedUser();
-        csvRow[16] = line.getValidatedTime() == null ? null : line.getValidatedTime().format(DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss"));
+        csvRow[16] = Util.getFormattedDateTime(line.getValidatedTime(),dateTimeFormatter);
         csvRow[17] = line.getApprovedUser();
-        csvRow[18] = line.getApprovedTime() == null ? null : line.getApprovedTime().format(DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss"));
+        csvRow[18] = Util.getFormattedDateTime(line.getApprovedTime(),dateTimeFormatter);
         csvRow[19] = line.getTransferredToBarUser();
-        csvRow[20] = line.getTransferredToBarTime() == null ? null : line.getTransferredToBarTime().format(DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss"));
+        csvRow[20] = Util.getFormattedDateTime(line.getTransferredToBarTime(),dateTimeFormatter);
         return csvRow;
     }
 

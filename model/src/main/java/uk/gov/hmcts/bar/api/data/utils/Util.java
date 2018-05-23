@@ -1,18 +1,18 @@
 package uk.gov.hmcts.bar.api.data.utils;
 
-import java.beans.FeatureDescriptor;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.persistence.criteria.CriteriaBuilder.In;
-
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
-
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
+
+import javax.persistence.criteria.CriteriaBuilder.In;
+import java.beans.FeatureDescriptor;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public interface Util {
 
@@ -23,7 +23,7 @@ public interface Util {
             .filter(propertyName -> wrappedSource.getPropertyValue(propertyName) == null)
             .toArray(String[]::new);
     }
-    
+
 	public static List<PaymentInstruction> updateStatusAndActionDisplayValue(
 			final List<PaymentInstruction> paymentInstructions) {
 		return paymentInstructions.stream().map(paymentInstruction -> {
@@ -36,7 +36,7 @@ public interface Util {
 			return paymentInstruction;
 		}).collect(Collectors.toList());
 	}
-    
+
 	public static In<String> getListOfStatuses(In<String> inCriteriaForStatus, String status) {
 		if (inCriteriaForStatus == null) {
 			return null;
@@ -51,5 +51,11 @@ public interface Util {
 		}
 		return inCriteriaForStatus;
 	}
+
+
+    public static String getFormattedDateTime(LocalDateTime localDateTime, DateTimeFormatter dateFormatter){
+        String localDateTimeString = (localDateTime == null || dateFormatter == null) ? null : localDateTime.format(dateFormatter);
+        return localDateTimeString;
+    }
 
 }
