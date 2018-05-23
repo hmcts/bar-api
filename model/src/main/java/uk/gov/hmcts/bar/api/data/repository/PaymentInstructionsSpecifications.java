@@ -213,6 +213,7 @@ public class PaymentInstructionsSpecifications {
         @Override
         public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
             Predicate predicate = null;
+            query.distinct(true);
             ListJoin<PaymentInstruction, CaseFeeDetail> feeDetails = root.joinList("caseFeeDetails", JoinType.LEFT);
             if (paymentInstructionSearchCriteriaDto.getCaseReference() != null) {
                 predicate = criteriaBuilder.like(feeDetails.get("caseReference"), "%" + paymentInstructionSearchCriteriaDto.getCaseReference() + "%");
