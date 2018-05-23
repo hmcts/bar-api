@@ -5,10 +5,13 @@ import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class UtilTest {
@@ -42,4 +45,25 @@ public class UtilTest {
 		piListModified = Util.updateStatusAndActionDisplayValue(piList);
 		assertTrue(piListModified.get(0).getStatus().equals("Pending"));
 	}
+
+	@Test
+    public void givenLocalDateTimeAndFormatter_shouldReturnFormattedString(){
+
+        LocalDateTime testDateTime = LocalDateTime.of(2018,05,23,00,00);
+        String expectedDate = "23 May 2018";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        assertEquals(expectedDate,Util.getFormattedDateTime(testDateTime,formatter));
+
+    }
+
+    @Test
+    public void givenLocalDateTimeAndFormatterWithSeconds_shouldReturnFormattedString(){
+
+        LocalDateTime testDateTime = LocalDateTime.of(2018,05,23,14,8,06);
+        String expectedDateTime = "23 May 2018 14:08:06";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
+        assertEquals(expectedDateTime,Util.getFormattedDateTime(testDateTime,formatter));
+
+    }
+
 }

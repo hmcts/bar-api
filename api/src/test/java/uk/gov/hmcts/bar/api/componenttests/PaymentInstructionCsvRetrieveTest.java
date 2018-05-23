@@ -5,6 +5,7 @@ import org.junit.Test;
 import uk.gov.hmcts.bar.api.data.model.PostalOrder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -59,10 +60,12 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
 
 
         LocalDate currentDate = LocalDate.now();
+        String expectedPaymentDate = currentDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
+        LocalDateTime currentDateTime = LocalDateTime.now();
         DateTimeFormatter paramFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
         String paramStartDate = currentDate.format(paramFormatter);
-        DateTimeFormatter actualFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        String actualStartDate = currentDate.format(actualFormatter);
+        DateTimeFormatter actualFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
+        String actualStartDateTime = currentDateTime.format(actualFormatter);
 
 
         restActions
@@ -70,7 +73,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
             .andExpect(status().isOk())
             .andExpect(result -> {
                 Assert.assertEquals("\"Daily sequential payment ID\",\"Date\",\"Payee name\",\"Cheque Amount\",\"Postal Order Amount\",\"Cash Amount\",\"Card Amount\",\"AllPay Amount\",\"Action Taken\",\"Case ref no.\",\"Fee Amount\",\"Fee code\",\"Fee description\",\"Recorded user\",\"Recorded time\",\"Validated user\",\"Validated time\",\"Approved user\",\"Approved time\",\"Transferred to BAR user\",\"Transferred to BAR time\"\n" +
-                        "\"1\",\"" + actualStartDate + "\",\"Mr Payer Payer\",\"\",\"5.33\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"John Doe\",\""+actualStartDate+"\",\"John Doe\",\""+actualStartDate+"\",\"John Doe\",\""+actualStartDate+"\",\"John Doe\",\""+actualStartDate+"\"\n",
+                        "\"1\",\"" + expectedPaymentDate + "\",\"Mr Payer Payer\",\"\",\"5.33\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"John Doe\",\""+actualStartDateTime+"\",\"John Doe\",\""+actualStartDateTime+"\",\"John Doe\",\""+actualStartDateTime+"\",\"John Doe\",\""+actualStartDateTime+"\"\n",
                     result.getResponse().getContentAsString());
             });
     }
