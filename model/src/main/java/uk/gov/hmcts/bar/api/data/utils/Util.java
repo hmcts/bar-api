@@ -54,8 +54,7 @@ public interface Util {
 
 
     public static String getFormattedDateTime(LocalDateTime localDateTime, DateTimeFormatter dateFormatter){
-        String localDateTimeString = (localDateTime == null || dateFormatter == null) ? null : localDateTime.format(dateFormatter);
-        return localDateTimeString;
+        return (localDateTime == null || dateFormatter == null) ? null : localDateTime.format(dateFormatter);
     }
 
 }
