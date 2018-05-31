@@ -1,6 +1,7 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.hmcts.bar.api.data.model.PostalOrder;
 
@@ -15,7 +16,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
 
 
     public static final String CURRENT_DATE = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-
+    @Ignore
     @Test
     public void givenPostalOrderPaymentInstructionDetails_retrieveAsCvs() throws Exception {
         PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
