@@ -488,3 +488,13 @@ databaseChangeLog:
             tableName: payment_instruction_case_reference
         - dropTable:
             tableName: case_reference
+  - changeSet:
+      id: 15
+      author: akiss
+      changes:
+        - sql: >
+            UPDATE payment_instruction SET action = 'Process' WHERE action = 'P';
+            UPDATE payment_instruction SET action = 'Suspense' WHERE action = 'S';
+            UPDATE payment_instruction SET action = 'Suspense Deficiency' WHERE action = 'SD';
+            UPDATE payment_instruction SET action = 'Return' WHERE action = 'R';
+            UPDATE payment_instruction SET action = 'Refund' WHERE action = 'RF';

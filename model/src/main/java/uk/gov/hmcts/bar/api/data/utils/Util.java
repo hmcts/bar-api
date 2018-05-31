@@ -2,7 +2,7 @@ package uk.gov.hmcts.bar.api.data.utils;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
-import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
+
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 
@@ -30,8 +30,7 @@ public interface Util {
 			paymentInstruction
 					.setStatus(PaymentStatusEnum.getPaymentStatusEnum(paymentInstruction.getStatus()).displayValue());
 			if (paymentInstruction.getAction() != null) {
-				paymentInstruction.setAction(
-						PaymentActionEnum.getPaymentActionEnum(paymentInstruction.getAction()).displayValue());
+				paymentInstruction.setAction(paymentInstruction.getAction());
 			}
 			return paymentInstruction;
 		}).collect(Collectors.toList());
