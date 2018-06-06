@@ -175,7 +175,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isCreated());
 
         restActions
-            .patch("/payment-instructions/1", stattusUpdateRequest)
+            .put("/payment-instructions/1", stattusUpdateRequest)
             .andExpect(status().isOk());
 
 
@@ -198,7 +198,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isCreated());
 
         restActions
-            .patch("/payment-instructions/1000", statusUpdateRequest)
+            .put("/payment-instructions/1000", statusUpdateRequest)
             .andExpect(status().isNotFound());
 
 

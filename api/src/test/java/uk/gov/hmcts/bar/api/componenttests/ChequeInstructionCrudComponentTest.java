@@ -174,7 +174,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isCreated());
 
         restActions
-            .patch("/payment-instructions/1",statusUpdateRequest)
+            .put("/payment-instructions/1",statusUpdateRequest)
             .andExpect(status().isOk());
 
 
@@ -196,7 +196,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isCreated());
 
         restActions
-            .patch("/payment-instructions/1000", statusUpdateRequest)
+            .put("/payment-instructions/1000", statusUpdateRequest)
             .andExpect(status().isNotFound());
 
 
