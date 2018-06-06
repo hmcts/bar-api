@@ -180,7 +180,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
 
         restActions
-            .patch("/payment-instructions/1",request)
+            .put("/payment-instructions/1",request)
             .andExpect(status().isOk());
     }
 
@@ -202,7 +202,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
 
         restActions
-            .patch("/payment-instructions/1000",request)
+            .put("/payment-instructions/1000",request)
             .andExpect(status().isNotFound());
     }
 
