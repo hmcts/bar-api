@@ -1,2 +1,2 @@
 name = "bar-api-aat"
-product = "bar"
+capacity = "2"
