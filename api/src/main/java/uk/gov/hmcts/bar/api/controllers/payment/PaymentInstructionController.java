@@ -9,10 +9,13 @@ import static uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction.post
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.apache.commons.collections.MultiMap;
+import org.ff4j.FF4j;
+import org.ff4j.exception.FeatureAccessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +38,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.model.AllPay;
 import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.Card;
@@ -69,15 +73,20 @@ public class PaymentInstructionController {
 
     private final BarUserService barUserService;
 
+    private final FF4j ff4j;
+
     @Autowired
     public PaymentInstructionController(PaymentInstructionService paymentInstructionService,
                                         CaseFeeDetailService caseFeeDetailService,
                                         UnallocatedAmountService unallocatedAmountService,
-                                        BarUserService barUserService) {
+                                        BarUserService barUserService,
+                                        FF4j ff4j) {
         this.paymentInstructionService = paymentInstructionService;
         this.caseFeeDetailService = caseFeeDetailService;
         this.unallocatedAmountService = unallocatedAmountService;
         this.barUserService = barUserService;
+
+        this.ff4j = ff4j;
     }
 
     @ApiOperation(value = "Get all current payment instructions", notes = "Get all current payment instructions for a given site.",
@@ -332,6 +341,10 @@ public class PaymentInstructionController {
     @PutMapping("/payment-instructions/{id}")
     public ResponseEntity<PaymentInstruction> submitPaymentInstructionsByPostClerk(@PathVariable("id") Integer id,
                                                                                    @RequestBody PaymentInstructionUpdateRequest paymentInstructionUpdateRequest) {
+        if (!checkIfActionEnabled(paymentInstructionUpdateRequest)) {
+            throw new FeatureAccessException(paymentInstructionUpdateRequest.getAction() + " is not allowed");
+        }
+
         if (null == paymentInstructionUpdateRequest) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -439,6 +452,15 @@ public class PaymentInstructionController {
             return true;
         }
         return false;
+    }
+
+    private boolean checkIfActionEnabled(PaymentInstructionUpdateRequest paymentInstructionUpdateRequest){
+        boolean[] ret = { true };
+        String action = paymentInstructionUpdateRequest.getAction();
+        PaymentActionEnum.findByDisplayValue(action).ifPresent(paymentActionEnum -> {
+            ret[0] = ff4j.check(paymentActionEnum.featureKey());
+        });
+        return ret[0];
     }
 
 }

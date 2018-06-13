@@ -1,12 +1,11 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Test;
-import uk.gov.hmcts.bar.api.data.model.AllPay;
-import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
+import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
+import uk.gov.hmcts.bar.api.data.model.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -365,6 +364,45 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
     }
 
+    @Test
+    public void updatePaymentInstructionAction() throws Exception {
 
+        Integer[] savedId = null;
+
+        AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .status("D")
+            .allPayTransactionId("12345").build();
+
+        restActions
+            .post("/allpay",  proposedAllPayPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        PaymentInstructionUpdateRequest updatedActionToProcessRequest = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
+            .status("P")
+            .action(PaymentActionEnum.PROCESS.displayValue()).build();
+
+        restActions
+            .put("/payment-instructions/1", updatedActionToProcessRequest)
+            .andExpect(status().isOk());
+
+        PaymentInstructionUpdateRequest updatedActionReturnRequest = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
+            .status("P")
+            .action(PaymentActionEnum.RETURN.displayValue()).build();
+
+        restActions
+            .put("/payment-instructions/1", updatedActionReturnRequest)
+            .andExpect(status().isBadRequest());
+
+        PaymentInstructionUpdateRequest updatedActionSuspenseDefRequest = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
+            .status("P")
+            .action(PaymentActionEnum.SUSPENSE_DEFICIENCY.displayValue()).build();
+
+        restActions
+            .put("/payment-instructions/1", updatedActionSuspenseDefRequest)
+            .andExpect(status().isOk());
+    }
 
 }

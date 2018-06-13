@@ -8,6 +8,7 @@ import java.util.Locale;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
+import org.ff4j.exception.FeatureAccessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,12 @@ public class ControllerExceptionHandler {
         ConstraintViolation<?> violation = e.getConstraintViolations().iterator().next();
         String parameterName = Iterators.getLast(violation.getPropertyPath().iterator()).getName();
         return new ResponseEntity<>(new Error(parameterName + ": " + violation.getMessage()), BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FeatureAccessException.class)
+    public ResponseEntity<Error> handleFeatureAccessException(FeatureAccessException e) {
+        LOG.debug("Feature is not accessible: " + e.getMessage());
+        return new ResponseEntity<>(new Error(e.getMessage()), BAD_REQUEST);
     }
 
 }
