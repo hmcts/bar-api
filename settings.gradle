@@ -1,9 +1,7 @@
 rootProject.name = 'bar-app'
 
-include ':bar-model'
 include ':bar-api'
 include ':bar-client'
 
-project(':bar-model').projectDir = "$rootDir/model" as File
 project(':bar-api').projectDir = "$rootDir/api" as File
 project(':bar-client').projectDir = "$rootDir/client" as File

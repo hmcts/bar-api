@@ -1,17 +1,5 @@
 package uk.gov.hmcts.bar.api.controllers.errors;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-
-import java.util.Iterator;
-import java.util.Set;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Path;
-import javax.validation.Path.Node;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -20,8 +8,18 @@ import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-
 import uk.gov.hmcts.bar.api.data.exceptions.ResourceNotFoundException;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Path;
+import javax.validation.Path.Node;
+import java.util.Iterator;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 public class ControllerExceptionHandlerTest {
 

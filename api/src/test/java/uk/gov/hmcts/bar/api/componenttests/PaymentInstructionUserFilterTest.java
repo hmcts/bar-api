@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import uk.gov.hmcts.bar.api.componenttests.utils.DbTestUtil;
 import uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

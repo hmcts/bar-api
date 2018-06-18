@@ -6,8 +6,6 @@ import uk.gov.hmcts.reform.auth.checker.core.SubjectResolver;
 import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.auth.parser.idam.core.user.token.UserTokenParser;
 
-import static java.util.stream.Collectors.joining;
-
 public class UserResolver implements SubjectResolver<User> {
 
     private final UserTokenParser<UserTokenDetails> userTokenParser;
