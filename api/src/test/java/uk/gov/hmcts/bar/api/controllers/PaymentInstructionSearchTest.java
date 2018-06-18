@@ -1,13 +1,10 @@
 package uk.gov.hmcts.bar.api.controllers;
 
-import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import uk.gov.hmcts.bar.api.componenttests.ComponentTestBase;
 import uk.gov.hmcts.bar.api.componenttests.utils.DbTestUtil;
 import uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction;
-
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

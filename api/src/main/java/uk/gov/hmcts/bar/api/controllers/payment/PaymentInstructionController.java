@@ -1,18 +1,9 @@
 package uk.gov.hmcts.bar.api.controllers.payment;
 
-import static uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction.allPayPaymentInstructionWith;
-import static uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction.cardPaymentInstructionWith;
-import static uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction.cashPaymentInstructionWith;
-import static uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction.chequePaymentInstructionWith;
-import static uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction.postalOrderPaymentInstructionWith;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-
-import javax.validation.Valid;
-
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.apache.commons.collections.MultiMap;
 import org.ff4j.FF4j;
 import org.ff4j.exception.FeatureAccessException;
@@ -23,42 +14,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
-import uk.gov.hmcts.bar.api.data.model.AllPay;
-import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.Card;
-import uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.CaseFeeDetail;
-import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
-import uk.gov.hmcts.bar.api.data.model.Cash;
-import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.Cheque;
-import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
-import uk.gov.hmcts.bar.api.data.model.PostalOrder;
-import uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.service.BarUserService;
 import uk.gov.hmcts.bar.api.data.service.CaseFeeDetailService;
 import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
 import uk.gov.hmcts.bar.api.data.service.UnallocatedAmountService;
 import uk.gov.hmcts.bar.api.data.utils.Util;
+
+import javax.validation.Valid;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 
 @RestController
 
@@ -73,20 +41,15 @@ public class PaymentInstructionController {
 
     private final BarUserService barUserService;
 
-    private final FF4j ff4j;
-
     @Autowired
     public PaymentInstructionController(PaymentInstructionService paymentInstructionService,
                                         CaseFeeDetailService caseFeeDetailService,
                                         UnallocatedAmountService unallocatedAmountService,
-                                        BarUserService barUserService,
-                                        FF4j ff4j) {
+                                        BarUserService barUserService) {
         this.paymentInstructionService = paymentInstructionService;
         this.caseFeeDetailService = caseFeeDetailService;
         this.unallocatedAmountService = unallocatedAmountService;
         this.barUserService = barUserService;
-
-        this.ff4j = ff4j;
     }
 
     @ApiOperation(value = "Get all current payment instructions", notes = "Get all current payment instructions for a given site.",
@@ -190,7 +153,7 @@ public class PaymentInstructionController {
     @PostMapping("/cards")
     public PaymentInstruction saveCardInstruction(
         @Valid @RequestBody Card card) {
-        CardPaymentInstruction cardPaymentInstruction = cardPaymentInstructionWith()
+        CardPaymentInstruction cardPaymentInstruction = CardPaymentInstruction.cardPaymentInstructionWith()
             .payerName(card.getPayerName())
             .amount(card.getAmount())
             .currency(card.getCurrency())
@@ -221,7 +184,7 @@ public class PaymentInstructionController {
     @PostMapping("/cheques")
     public PaymentInstruction saveChequeInstruction(
         @Valid @RequestBody Cheque cheque) {
-        ChequePaymentInstruction chequePaymentInstruction = chequePaymentInstructionWith()
+        ChequePaymentInstruction chequePaymentInstruction = ChequePaymentInstruction.chequePaymentInstructionWith()
             .payerName(cheque.getPayerName())
             .amount(cheque.getAmount())
             .currency(cheque.getCurrency())
@@ -249,7 +212,7 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/cash")
     public PaymentInstruction saveCashInstruction(@ApiParam(value="Cash request",required=true) @Valid @RequestBody Cash cash) {
-        CashPaymentInstruction cashPaymentInstruction = cashPaymentInstructionWith()
+        CashPaymentInstruction cashPaymentInstruction = CashPaymentInstruction.cashPaymentInstructionWith()
             .payerName(cash.getPayerName())
             .amount(cash.getAmount())
             .status(cash.getStatus())
@@ -280,7 +243,7 @@ public class PaymentInstructionController {
     @PostMapping("/postal-orders")
     public PaymentInstruction savePostalOrderInstruction(
         @ApiParam(value="Postal Order request",required=true) @Valid @RequestBody PostalOrder postalOrder) {
-        PostalOrderPaymentInstruction postalOrderPaymentInstruction = postalOrderPaymentInstructionWith()
+        PostalOrderPaymentInstruction postalOrderPaymentInstruction = PostalOrderPaymentInstruction.postalOrderPaymentInstructionWith()
             .payerName(postalOrder.getPayerName())
             .amount(postalOrder.getAmount())
             .currency(postalOrder.getCurrency())
@@ -310,7 +273,7 @@ public class PaymentInstructionController {
     @PostMapping("/allpay")
     public PaymentInstruction saveAllPayInstruction(
         @ApiParam(value="All Pay request", required=true) @Valid @RequestBody AllPay allPay) {
-        AllPayPaymentInstruction allPayPaymentInstruction = allPayPaymentInstructionWith()
+        AllPayPaymentInstruction allPayPaymentInstruction = AllPayPaymentInstruction.allPayPaymentInstructionWith()
             .payerName(allPay.getPayerName())
             .amount(allPay.getAmount())
             .currency(allPay.getCurrency())
@@ -341,10 +304,6 @@ public class PaymentInstructionController {
     @PutMapping("/payment-instructions/{id}")
     public ResponseEntity<PaymentInstruction> submitPaymentInstructionsByPostClerk(@PathVariable("id") Integer id,
                                                                                    @RequestBody PaymentInstructionUpdateRequest paymentInstructionUpdateRequest) {
-        if (!checkIfActionEnabled(paymentInstructionUpdateRequest)) {
-            throw new FeatureAccessException(paymentInstructionUpdateRequest.getAction() + " is not allowed");
-        }
-
         if (null == paymentInstructionUpdateRequest) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -452,15 +411,6 @@ public class PaymentInstructionController {
             return true;
         }
         return false;
-    }
-
-    private boolean checkIfActionEnabled(PaymentInstructionUpdateRequest paymentInstructionUpdateRequest){
-        boolean[] ret = { true };
-        String action = paymentInstructionUpdateRequest.getAction();
-        PaymentActionEnum.findByDisplayValue(action).ifPresent(paymentActionEnum -> {
-            ret[0] = ff4j.check(paymentActionEnum.featureKey());
-        });
-        return ret[0];
     }
 
 }

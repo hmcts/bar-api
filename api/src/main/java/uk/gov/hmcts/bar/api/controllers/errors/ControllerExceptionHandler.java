@@ -1,13 +1,6 @@
 package uk.gov.hmcts.bar.api.controllers.errors;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-
-import java.util.Locale;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-
+import com.google.common.collect.Iterators;
 import org.ff4j.exception.FeatureAccessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +11,14 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import com.google.common.collect.Iterators;
-
 import uk.gov.hmcts.bar.api.data.exceptions.ResourceNotFoundException;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import java.util.Locale;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestControllerAdvice
 public class ControllerExceptionHandler {

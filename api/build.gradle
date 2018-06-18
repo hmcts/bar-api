@@ -27,7 +27,6 @@ idea {
 }
 
 dependencies {
-    compile project(':bar-model')
 
     compile 'uk.gov.hmcts.reform:java-logging-spring'
 
@@ -45,6 +44,17 @@ dependencies {
 
     compile 'io.springfox:springfox-swagger2'
     compile 'io.springfox:springfox-swagger-ui'
+    compile ('uk.gov.hmcts.reform.auth:auth-checker-lib') {
+        exclude(module: 'java-logging-spring')
+    }
+
+
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compile 'com.fasterxml.jackson.core:jackson-annotations'
+    compile 'com.google.guava:guava'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    compile 'org.hibernate:hibernate-validator'
+    compile 'commons-beanutils:commons-beanutils'
 
     testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
         exclude(module: 'commons-logging')
@@ -52,8 +62,8 @@ dependencies {
     testCompile 'org.springframework.security:spring-security-test'
     testCompile 'org.hsqldb:hsqldb'
 
-    testCompile group: 'org.projectlombok', name: 'lombok', version: '1.16.10'
     testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
 
     // smoke
     smokeTestCompile sourceSets.test.runtimeClasspath

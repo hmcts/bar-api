@@ -3,13 +3,14 @@ package uk.gov.hmcts.bar.api.configuration;
 import org.ff4j.FF4j;
 import org.ff4j.core.Feature;
 import org.ff4j.web.ApiConfig;
-// import org.ff4j.web.embedded.ConsoleServlet;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
+
+// import org.ff4j.web.embedded.ConsoleServlet;
 
 @Configuration
 @ConditionalOnClass({FF4j.class})

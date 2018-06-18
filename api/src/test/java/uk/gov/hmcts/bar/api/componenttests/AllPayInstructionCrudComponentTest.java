@@ -2,10 +2,12 @@ package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Test;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
-import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.data.model.AllPay;
+import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
