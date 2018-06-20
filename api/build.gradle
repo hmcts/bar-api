@@ -35,6 +35,8 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-security'
     compile 'org.springframework.boot:spring-boot-starter-actuator'
     compile group: 'org.ff4j', name: 'ff4j-spring-boot-web-api', version: '1.7.1'
+    compile group: 'org.ff4j', name: 'ff4j-store-springjdbc', version: '1.7.1'
+
 
     compile 'org.liquibase:liquibase-core'
     compile(group: 'org.postgresql', name: 'postgresql') {

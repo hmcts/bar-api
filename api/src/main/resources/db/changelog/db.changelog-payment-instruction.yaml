@@ -498,3 +498,36 @@ databaseChangeLog:
             UPDATE payment_instruction SET action = 'Suspense Deficiency' WHERE action = 'SD';
             UPDATE payment_instruction SET action = 'Return' WHERE action = 'R';
             UPDATE payment_instruction SET action = 'Refund' WHERE action = 'RF';
+  - changeSet:
+      id: 16
+      author: akiss
+      changes:
+        - sql: >
+            CREATE TABLE FF4J_FEATURES (
+              FEAT_UID     	VARCHAR(100),
+              ENABLE 		INTEGER NOT NULL,
+              DESCRIPTION 	VARCHAR(1000),
+              STRATEGY		VARCHAR(1000),
+              EXPRESSION	    VARCHAR(255),
+              GROUPNAME		VARCHAR(100),
+              PRIMARY KEY(FEAT_UID)
+            );
+            CREATE TABLE FF4J_ROLES (
+              FEAT_UID     VARCHAR(100) REFERENCES FF4J_FEATURES(FEAT_UID),
+              ROLE_NAME    VARCHAR(100),
+              PRIMARY KEY(FEAT_UID, ROLE_NAME)
+            );
+            CREATE TABLE FF4J_CUSTOM_PROPERTIES (
+              PROPERTY_ID   VARCHAR(100) NOT NULL,
+              CLAZZ 		VARCHAR(255) NOT NULL,
+              CURRENTVALUE  VARCHAR(255),
+              FIXEDVALUES	VARCHAR(1000),
+              DESCRIPTION	VARCHAR(1000),
+              FEAT_UID      VARCHAR(100) REFERENCES FF4J_FEATURES(FEAT_UID),
+              PRIMARY KEY(PROPERTY_ID, FEAT_UID)
+            );
+            insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('payment-actions-process', 1, 'Available actions for payment');
+            insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('payment-actions-return', 0, 'Available actions for payment');
+            insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('payment-actions-suspense', 0, 'Available actions for payment');
+            insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('payment-actions-refund', 0, 'Available actions for payment');
+            insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('payment-actions-suspence-deficiency', 0, 'Available actions for payment');

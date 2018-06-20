@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public enum PaymentActionEnum {
-    PROCESS("payment-actions-action", "Process"), SUSPENSE("payment-actions-suspense", "Suspense"),
+    PROCESS("payment-actions-process", "Process"), SUSPENSE("payment-actions-suspense", "Suspense"),
     SUSPENSE_DEFICIENCY("payment-actions-suspence-deficiency", "Suspense Deficiency"),
     RETURN("payment-actions-return", "Return"), REFUND("payment-actions-refund", "Refund");
 
