@@ -369,8 +369,6 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
     @Test
     public void updatePaymentInstructionAction() throws Exception {
 
-        Integer[] savedId = null;
-
         AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
@@ -404,7 +402,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
         restActions
             .put("/payment-instructions/1", updatedActionSuspenseDefRequest)
-            .andExpect(status().isOk());
+            .andExpect(status().isBadRequest());
     }
 
 }
