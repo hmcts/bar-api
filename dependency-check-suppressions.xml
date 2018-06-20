@@ -130,6 +130,10 @@
         <cve>CVE-2017-14798</cve>
     </suppress>
     <suppress>
+        <notes>Postgres needs to be upgraded. Ticket BAR-359 has been created for this task</notes>
+        <cve>CVE-2018-1115</cve>
+    </suppress>
+    <suppress>
         <notes><![CDATA[
    file name: service-token-parser-1.0.5.jar
    ]]></notes>
