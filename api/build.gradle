@@ -26,9 +26,13 @@ idea {
     }
 }
 
+def javaLoggingVersion = '3.0.1'
+
 dependencies {
 
-    compile 'uk.gov.hmcts.reform:java-logging-spring'
+    compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: javaLoggingVersion
+  	compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: javaLoggingVersion
+  	compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: javaLoggingVersion
 
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
