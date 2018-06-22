@@ -29,6 +29,16 @@ variable "microservice" {
   default = "bar-app"
 }
 
+variable "database_name" {
+  type    = "string"
+  default = "bar"
+}
+
+variable "postgresql_user" {
+  type    = "string"
+  default = "bar"
+}
+
 variable "idam_api_url" {
   default = "http://betaDevAccidamAppLB.reform.hmcts.net"
 }
