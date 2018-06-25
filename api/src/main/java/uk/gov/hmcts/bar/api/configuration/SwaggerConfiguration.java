@@ -20,9 +20,9 @@ import static springfox.documentation.builders.RequestHandlerSelectors.basePacka
 public class SwaggerConfiguration {
 
     @Bean
-    public Docket api() {
+    public Docket barApi() {
         return new Docket(DocumentationType.SWAGGER_2)
-            .groupName("barr")
+            .groupName("bar")
             .globalOperationParameters(singletonList(
                 new ParameterBuilder()
                     .name("Authorization")
@@ -32,12 +32,12 @@ public class SwaggerConfiguration {
                     .modelRef(new ModelRef("string"))
                     .build()
             ))
-            .apiInfo(apiInfo()).select()
+            .apiInfo(barApiInfo()).select()
             .apis(basePackage(BarServiceApplication.class.getPackage().getName()))
             .build();
     }
 
-    private ApiInfo apiInfo() {
+    private ApiInfo barApiInfo() {
         return new ApiInfoBuilder()
             .title("BAR API")
             .description("BAR API to process the payments at court.")
