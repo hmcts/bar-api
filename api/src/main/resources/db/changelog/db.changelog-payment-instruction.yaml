@@ -531,3 +531,13 @@ databaseChangeLog:
             insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('payment-actions-suspense', 0, 'Available actions for payment');
             insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('payment-actions-refund', 0, 'Available actions for payment');
             insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('payment-actions-suspence-deficiency', 0, 'Available actions for payment');
+            
+  - changeSet:
+      id: 17
+      author: rarasan
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: payment_instruction_status
+            constraintName: fk_pis_payment_instruction_id
+        - sql: >
+            ALTER TABLE payment_instruction_status ADD CONSTRAINT fk_pis_payment_instruction_id FOREIGN KEY (payment_instruction_id) REFERENCES payment_instruction (id) ON DELETE CASCADE
