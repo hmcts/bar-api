@@ -1,6 +1,7 @@
 package uk.gov.hmcts.bar.api.data.repository;
 
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -8,6 +9,8 @@ import uk.gov.hmcts.bar.api.data.model.*;
 
 
 import javax.persistence.LockModeType;
+import javax.transaction.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -46,5 +49,11 @@ public interface PaymentInstructionStatusRepository
         + " pis.paymentInstructionStatusReferenceKey.paymentInstructionId,pis.paymentInstructionStatusReferenceKey.updateTime")
     List<PaymentInstructionStatusHistory>  getPaymentInstructionStatusHistoryForTTB
         (@Param("historyStartDate") LocalDateTime historyStartDate, @Param("historyEndDate") LocalDateTime historyEndDate);
+    
+    @Transactional
+    @Modifying(clearAutomatically = true)
+	@Query(name = "DeletePIById", value = "DELETE FROM uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatus pis WHERE "
+			+ "pis.paymentInstructionStatusReferenceKey.paymentInstructionId = :paymentInstructionId")
+	void deleteByPaymentInstructionId(@Param("paymentInstructionId") Integer paymentInstructionId);
 
 }

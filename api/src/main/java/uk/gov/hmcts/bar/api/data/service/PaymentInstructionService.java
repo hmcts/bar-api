@@ -88,6 +88,7 @@ public class PaymentInstructionService {
 
     public void deletePaymentInstruction(Integer id) {
         try {
+        	paymentInstructionStatusRepository.deleteByPaymentInstructionId(id);
             paymentInstructionRepository.deleteById(id);
         } catch (EmptyResultDataAccessException erdae) {
             LOG.error("Resource not found: " + erdae.getMessage(), erdae);
