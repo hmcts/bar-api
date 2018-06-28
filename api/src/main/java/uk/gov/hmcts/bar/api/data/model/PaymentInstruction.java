@@ -87,6 +87,8 @@ public abstract class   PaymentInstruction {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private PaymentType paymentType;
 
+    private String bgcNumber;
+
     @JsonIgnore
     private String userId;
 

@@ -7,6 +7,7 @@ import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -318,6 +319,36 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
             .put("/cards/1",updatedCardPaymentInstructionRequest)
             .andExpect(status().isOk());
 
+    }
+
+    @Test
+    public void whenBgcNumberIsProvidedOnUpdate_expectedToBeSaved() throws Exception {
+        Card proposedCardPaymentInstructionRequest = cardWith()
+            .payerName("Mr Payer Payer")
+            .amount(500).authorizationCode("qwerty")
+            .currency("GBP").status("D").build();
+
+        Card updatedCardPaymentInstructionRequest = cardWith()
+            .payerName("Mr Updated Payer")
+            .amount(6000).authorizationCode("qwerty")
+            .currency("GBP").status("D").bgcNumber("12345").build();
+
+
+        restActions
+            .post("/cards",  proposedCardPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        restActions
+            .put("/cards/1",updatedCardPaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+        restActions
+            .get("/payment-instructions")
+            .andExpect(status().isOk())
+            .andExpect(body().as(List.class, (allPayList) -> {
+                String bgcNumber = (String)((Map)allPayList.get(0)).get("bgc_number");
+                assertThat(bgcNumber.equals("12345"));
+            }));
     }
     @Test
     public void whenNonExistingCardPaymentInstructionIsUpdated_expectStatus_404() throws Exception {

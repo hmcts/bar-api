@@ -8,6 +8,7 @@ import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -338,6 +339,44 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isOk());
 
     }
+
+    @Test
+    public void whenBgcNumberIsProvidedOnUpdate_expectedToBeSaved() throws Exception {
+        AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .status("D")
+            .allPayTransactionId("12345").build();
+
+
+        AllPay updatedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .status("D")
+            .allPayTransactionId("12345")
+            .bgcNumber("12345").build();
+
+
+        restActions
+            .post("/allpay",  proposedAllPayPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        restActions
+            .put("/allpay/1",updatedAllPayPaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+        restActions
+            .get("/payment-instructions")
+            .andExpect(status().isOk())
+            .andExpect(body().as(List.class, (allPayList) -> {
+                String bgcNumber = (String)((Map)allPayList.get(0)).get("bgc_number");
+                assertThat(bgcNumber.equals("12345"));
+            }));
+
+    }
+
     @Test
     public void whenNonExistingAllPayPaymentInstructionIsUpdated_expectStatus_404() throws Exception {
         AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()

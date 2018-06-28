@@ -18,19 +18,22 @@ public class PaymentInstructionRequest {
     private Integer amount;
     private String currency;
     private String status;
+    private String bgcNumber;
 
     @JsonCreator
     @Builder(builderMethodName = "paymentInstructionRequestWith")
     public PaymentInstructionRequest(@JsonProperty("payer_name") String payerName,
                                      @JsonProperty("amount") Integer amount,
                                      @JsonProperty("currency") String currency,
-                                     @JsonProperty("status") String status
+                                     @JsonProperty("status") String status,
+                                     @JsonProperty("bgc_number") String bgcNumber
     ) {
 
         this.payerName = payerName;
-        this. amount =  amount;
+        this.amount =  amount;
         this.currency = currency;
         this.status = status;
+        this.bgcNumber = bgcNumber;
     }
 
 }

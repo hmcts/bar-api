@@ -1,12 +1,10 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Test;
-import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
-import uk.gov.hmcts.bar.api.data.model.PostalOrder;
-import uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -179,6 +177,39 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isOk());
 
 
+    }
+
+    @Test
+    public void whenBgcNumberIsProvidedOnUpdate_expectedToBeSaved() throws Exception {
+        PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .postalOrderNumber("000000").status("D").build();
+
+        PostalOrder updatedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(6000)
+            .currency("GBP")
+            .status("P")
+            .postalOrderNumber("000000").bgcNumber("12345").build();
+
+
+        restActions
+            .post("/cheques",  proposedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        restActions
+            .put("/cheques/1",updatedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+        restActions
+            .get("/payment-instructions")
+            .andExpect(status().isOk())
+            .andExpect(body().as(List.class, (allPayList) -> {
+                String bgcNumber = (String)((Map)allPayList.get(0)).get("bgc_number");
+                assertThat(bgcNumber.equals("12345"));
+            }));
     }
 
     @Test
