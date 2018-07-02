@@ -18,9 +18,9 @@ public class CashPaymentInstruction extends PaymentInstruction {
     @JsonCreator
     @Builder(builderMethodName = "cashPaymentInstructionWith")
     public CashPaymentInstruction(@JsonProperty("payer_name") String payerName,
-                                     @JsonProperty("amount") Integer amount,
-                                     @JsonProperty("currency") String currency,
-                                     @JsonProperty("status") String status
+                                  @JsonProperty("amount") Integer amount,
+                                  @JsonProperty("currency") String currency,
+                                  @JsonProperty("status") String status
     ) {
         super(payerName,amount,currency,status);
 
@@ -29,6 +29,11 @@ public class CashPaymentInstruction extends PaymentInstruction {
     @Override
     public void fillAmount(PaymentInstructionReportLine reportRow) {
         reportRow.setCashAmount(this.getAmount());
+    }
+
+    @Override
+    public void setBgcNumber(String bgcNumber) {
+        this.bgcNumber = bgcNumber;
     }
 
 

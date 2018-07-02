@@ -30,7 +30,8 @@ public class PostalOrder extends PaymentInstructionRequest{
                        @JsonProperty("status") String status,
                        @JsonProperty("bgc_number") String bgcNumber) {
 
-        super(payerName,amount,currency,status, bgcNumber);
+        super(payerName,amount,currency,status);
         this.postalOrderNumber = postalOrderNumber;
+        this.bgcNumber = bgcNumber;
     }
 }

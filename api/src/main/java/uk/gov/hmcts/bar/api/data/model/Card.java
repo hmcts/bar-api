@@ -27,10 +27,9 @@ public class Card extends PaymentInstructionRequest {
                 @JsonProperty("amount") Integer amount,
                 @JsonProperty("currency") String currency,
                 @JsonProperty("status") String status,
-                @JsonProperty("authorization_code") String authorizationCode,
-                @JsonProperty("bgc_number") String bgcNumber) {
+                @JsonProperty("authorization_code") String authorizationCode) {
 
-        super(payerName,amount,currency,status, bgcNumber);
+        super(payerName,amount,currency,status);
         this.authorizationCode= authorizationCode;
 
 

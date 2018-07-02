@@ -1,15 +1,14 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Test;
-import uk.gov.hmcts.bar.api.data.model.Card;
-import uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
+import uk.gov.hmcts.bar.api.data.model.*;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.bar.api.data.model.Card.cardWith;
@@ -328,9 +327,9 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
             .amount(500).authorizationCode("qwerty")
             .currency("GBP").status("D").build();
 
-        Card updatedCardPaymentInstructionRequest = cardWith()
+        Cash updatedCardPaymentInstructionRequest = Cash.cashPaymentInstructionRequestWith()
             .payerName("Mr Updated Payer")
-            .amount(6000).authorizationCode("qwerty")
+            .amount(6000)
             .currency("GBP").status("D").bgcNumber("12345").build();
 
 
@@ -347,7 +346,9 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, (allPayList) -> {
                 String bgcNumber = (String)((Map)allPayList.get(0)).get("bgc_number");
-                assertThat(bgcNumber.equals("12345"));
+                int amount = (Integer)((Map)allPayList.get(0)).get("amount");
+                assertNull(bgcNumber);
+                assertEquals(6000, amount);
             }));
     }
     @Test

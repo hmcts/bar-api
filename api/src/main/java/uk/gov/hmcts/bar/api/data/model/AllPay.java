@@ -27,10 +27,9 @@ public class AllPay extends PaymentInstructionRequest{
                   @JsonProperty("amount") Integer amount,
                   @JsonProperty("currency") String currency,
                   @JsonProperty("status") String status,
-                  @JsonProperty("all_pay_transaction_id") String allPayTransactionId,
-                  @JsonProperty("bgc_number") String bgcNumber) {
+                  @JsonProperty("all_pay_transaction_id") String allPayTransactionId) {
 
-        super(payerName,amount,currency,status,bgcNumber);
+        super(payerName,amount,currency,status);
         this.allPayTransactionId = allPayTransactionId;
     }
 

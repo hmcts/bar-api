@@ -461,10 +461,9 @@ public class PaymentInstructionServiceTest {
     }
 
     @Test
-    public void shouldReturn200_whenUpdatePaymentInstructionWithBGCForGivenPaymentInstructionIsCalled()
-        throws Exception {
+    public void shouldReturn200andBgcUpdated_whenUpdatePostalInstructionWithBGCForGivenPaymentInstructionIsCalled() {
         PaymentInstruction pi = new PostalOrderPaymentInstruction();
-        PaymentInstructionRequest pir = PaymentInstructionRequest.paymentInstructionRequestWith()
+        PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
             .amount(200)
             .payerName("Payer Name")
             .currency("GBP")
@@ -479,6 +478,25 @@ public class PaymentInstructionServiceTest {
         verify(paymentInstructionRepository, times(1)).findById(anyInt());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(pi);
 
+    }
+
+    @Test
+    public void shouldReturn200andBgcNotUpdated_whenUpdateCardInstructionWithBGCForGivenPaymentInstructionIsCalled(){
+        PaymentInstruction pi = new CardPaymentInstruction();
+        PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
+            .amount(200)
+            .payerName("Payer Name")
+            .currency("GBP")
+            .bgcNumber("12345").build();
+        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(pi));
+        when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
+            .thenAnswer(i -> i.getArguments()[0]);
+        when(bankGiroCreditRepositoryMock.save(any(BankGiroCredit.class))).thenAnswer(i -> i.getArguments()[0]);
+        // when(paymentInstructionMock.getStatus()).thenReturn("status");
+        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(1, pir);
+        assertNull(updatedPaymentInstruction.getBgcNumber());
+        verify(paymentInstructionRepository, times(1)).findById(anyInt());
+        verify(paymentInstructionRepository, times(1)).saveAndRefresh(pi);
     }
 
     @Test
