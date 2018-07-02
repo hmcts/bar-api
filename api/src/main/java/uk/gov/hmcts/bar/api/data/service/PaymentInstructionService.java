@@ -18,6 +18,7 @@ import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
 import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.data.repository.BankGiroCreditRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionsSpecifications;
@@ -42,18 +43,22 @@ public class PaymentInstructionService {
     private PaymentInstructionStatusRepository paymentInstructionStatusRepository;
     private PaymentReferenceService paymentReferenceService;
     private final BarUserService barUserService;
+    private final BankGiroCreditRepository bankGiroCreditRepository;
     private final FF4j ff4j;
 
 
     public PaymentInstructionService(PaymentReferenceService paymentReferenceService, PaymentInstructionRepository paymentInstructionRepository,
                                      BarUserService barUserService,
                                      PaymentInstructionStatusRepository paymentInstructionStatusRepository,
-                                     FF4j ff4j) {
+                                     FF4j ff4j,
+                                     BankGiroCreditRepository bankGiroCreditRepository
+                                     ) {
         this.paymentReferenceService = paymentReferenceService;
         this.paymentInstructionRepository = paymentInstructionRepository;
         this.barUserService = barUserService;
         this.paymentInstructionStatusRepository = paymentInstructionStatusRepository;
         this.ff4j = ff4j;
+        this.bankGiroCreditRepository = bankGiroCreditRepository;
     }
 
     public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction) {
@@ -116,6 +121,14 @@ public class PaymentInstructionService {
         Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
         PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
             .orElseThrow(() -> new PaymentInstructionNotFoundException(id));
+
+        // handle bgc number
+        if (paymentInstructionRequest.getBgcNumber() != null) {
+            BankGiroCredit bgc = bankGiroCreditRepository.findByBgcNumber(paymentInstructionRequest.getBgcNumber())
+                .orElseGet(() -> bankGiroCreditRepository.save(new BankGiroCredit(paymentInstructionRequest.getBgcNumber(), SITE_ID)));
+            existingPaymentInstruction.setBgcNumber(bgc.getBgcNumber());
+        }
+
         String[] nullPropertiesNamesToIgnore = Util.getNullPropertyNames(paymentInstructionRequest);
         BeanUtils.copyProperties(paymentInstructionRequest, existingPaymentInstruction, nullPropertiesNamesToIgnore);
         existingPaymentInstruction.setUserId(userId);

@@ -32,4 +32,9 @@ public class AllPayPaymentInstruction extends PaymentInstruction {
     public void fillAmount(PaymentInstructionReportLine reportRow) {
         reportRow.setAllPayAmount(this.getAmount());
     }
+
+    @Override
+    public void setBgcNumber(String bgcNumber) {
+        // We do nothing as allpay doesn't have bgc number
+    }
 }

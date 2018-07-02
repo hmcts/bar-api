@@ -32,4 +32,9 @@ public class PostalOrderPaymentInstruction extends PaymentInstruction {
     public void fillAmount(PaymentInstructionReportLine reportRow) {
         reportRow.setPostalOrderAmount(this.getAmount());
     }
+
+    @Override
+    public void setBgcNumber(String bgcNumber) {
+        this.bgcNumber = bgcNumber;
+    }
 }
