@@ -1,0 +1,583 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: sachi
+      changes:
+         - createTable:
+            tableName: payment_type
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+         - sql: >
+            INSERT INTO payment_type (id,name)
+            VALUES
+              (1, 'Cheque'),
+              (2, 'Full Remission'),
+              (3, 'Card'),
+              (4, 'Postal Order'),
+              (5, 'Cash'),
+              (6, 'AllPay');
+         - createTable:
+            tableName: payment_instruction
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: payer_name
+                  type: varchar(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: instrument_number
+                  type: char(6)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: sort_code
+                  type: char(6)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: account_number
+                  type: char(8)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: payment_type
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: all_pay_transaction_id
+                  type: numeric
+                  constraints:
+                    nullable: true
+              - column:
+                  name: status
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 2
+      author: sachi
+      changes:
+         - modifyDataType:
+             tableName: payment_instruction
+             columnName: all_pay_transaction_id
+             newDataType: varchar(20)
+  - changeSet:
+      id: 3
+      author: sachi
+      changes:
+         - createTable:
+             tableName: payment_reference
+             columns:
+               - column:
+                   name: site_id
+                   type: varchar(20)
+                   constraints:
+                     nullable: false
+               - column:
+                   name: payment_date
+                   type: date
+                   constraints:
+                     nullable: false
+               - column:
+                   name: daily_sequence_id
+                   type: int
+                   constraints:
+                     nullable: false
+         - addUniqueConstraint:
+             columnNames: site_id, payment_date
+             tableName  : payment_reference
+
+         - addColumn:
+             columns:
+               - column:
+                  name: postal_order_number
+                  type: char(6)
+                  constraints:
+                    nullable: true
+               - column:
+                   name: site_id
+                   type: varchar(20)
+                   constraints:
+                     nullable: false
+               - column:
+                   name: daily_sequence_id
+                   type: int
+             tableName: payment_instruction
+         - renameColumn:
+             columnDataType: char(6)
+             newColumnName: cheque_number
+             oldColumnName: instrument_number
+             tableName: payment_instruction
+         - sql: >
+             DELETE from  payment_type where id=2
+  - changeSet:
+      id: 4
+      author: sachi
+      changes:
+         - dropTable:
+             tableName: payment_type
+         - createTable:
+            tableName: payment_type
+            columns:
+              - column:
+                  name: id
+                  type: varchar(20)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+         - sql: >
+            INSERT INTO payment_type (id,name)
+            VALUES
+              ('cheques', 'Cheque'),
+              ('card', 'Card'),
+              ('postal-orders', 'Postal Order'),
+              ('cash', 'Cash'),
+              ('allpay', 'AllPay');
+         - renameColumn:
+            columnDataType: varchar(20)
+            newColumnName: payment_type_id
+            oldColumnName: payment_type
+            tableName: payment_instruction
+
+         - addForeignKeyConstraint:
+            baseColumnNames: payment_type_id
+            baseTableName: payment_instruction
+            constraintName: fk_payment_type
+            referencedColumnNames: id
+            referencedTableName: payment_type
+
+  - changeSet:
+      id: 5
+      author: sachi
+      changes:
+         - dropColumn:
+            columnName: sort_code
+            tableName: payment_instruction
+         - dropColumn:
+            columnName: account_number
+            tableName: payment_instruction
+
+         - createTable:
+            tableName: case_reference
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: case_reference
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+         - addUniqueConstraint:
+            columnNames: case_reference
+            tableName: case_reference
+
+
+         - createTable:
+            tableName: payment_instruction_case_reference
+            columns:
+              - column:
+                  name: payment_instruction_id
+                  type: int
+                  constraints:
+                    foreignKeyName: fk_payment_instruction_id
+                    references: payment_instruction(id)
+              - column:
+                  name: case_reference_id
+                  type: int
+                  constraints:
+                    foreignKeyName: fk_case_reference_id
+                    references: case_reference(id)
+         - addUniqueConstraint:
+            columnNames: payment_instruction_id, case_reference_id
+            tableName: payment_instruction_case_reference
+
+  - changeSet:
+      id: 6
+      author: sachi
+      changes:
+         - sql: >
+            UPDATE payment_type SET id = 'cards' WHERE id = 'card';
+  - changeSet:
+      id: 7
+      author: ravi
+      changes:
+         - addColumn:
+             columns:
+               - column:
+                  name: payment_instruction_id
+                  type: int
+                  constraints:
+                    foreignKeyName: fk_cr_payment_instruction_id
+                    references: payment_instruction(id)
+             tableName: case_reference
+
+         - createTable:
+            tableName: case_fee_detail
+            columns:
+              - column:
+                  name: case_fee_id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: case_reference_id
+                  type: int
+                  constraints:
+                    foreignKeyName: fk_cfd_case_reference_id
+                    references: case_reference(id)
+              - column:
+                  name: fee_code
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: fee_description
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: fee_version
+                  type: varchar(15)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 8
+      author: ravi
+      changes:
+         - addColumn:
+             columns:
+               - column:
+                  name: case_reference
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+               - column:
+                  name: remission_amount
+                  type: int
+                  constraints:
+                    nullable: true
+               - column:
+                  name: remission_benefiter
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+               - column:
+                  name: remission_authorisation
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+               - column:
+                  name: refund_amount
+                  type: int
+                  constraints:
+                    nullable: true
+             tableName: case_fee_detail
+         - addColumn:
+             columns:
+               - column:
+                  name: action
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+             tableName: payment_instruction
+  - changeSet:
+        id: 9
+        author: sachi
+        changes:
+           - addColumn:
+               columns:
+                 - column:
+                    name: authorization_code
+                    type: char(6)
+                    constraints:
+                      nullable: true
+               tableName: payment_instruction
+  - changeSet:
+      id: 10
+      author: akiss
+      changes:
+        - createTable:
+            tableName: bar_user
+            columns:
+              - column:
+                  name: id
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: forename
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: surname
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+              - column:
+                  name: roles
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - addColumn:
+            columns:
+              - column:
+                  name: user_id
+                  type: int
+                  constraints:
+                    nullable: true
+            tableName: payment_instruction
+  - changeSet:
+      id: 11
+      author: akiss
+      changes:
+        - modifyDataType:
+            columnName: user_id
+            newDataType: varchar(255)
+            tableName: payment_instruction
+  - changeSet:
+      id: 12
+      author: akiss
+      changes:
+        - modifyDataType:
+            columnName: roles
+            newDataType: varchar(1024)
+            tableName: bar_user
+  - changeSet:
+      id: 13
+      author: rarasan
+      changes:
+        - createTable:
+            tableName: status
+            columns:
+              - column:
+                  name: status_id
+                  type: varchar(5)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: status_description
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+        - sql: >
+            INSERT INTO status (status_id,status_description)
+            VALUES
+              ('A', 'Approved'),
+              ('D', 'Draft'),
+              ('PA', 'Pending Approval'),
+              ('P', 'Pending'),
+              ('REJ', 'Rejected'),
+              ('V', 'Validated'),
+              ('TTB', 'Transferred to bar');
+        - createTable:
+            tableName: payment_instruction_status
+            columns:
+              - column:
+                  name: payment_instruction_id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    foreignKeyName: fk_pis_payment_instruction_id
+                    references: payment_instruction(id)
+              - column:
+                  name: status
+                  type: varchar(5)
+                  constraints:
+                    primaryKey: true
+                    foreignKeyName: fk_pis_status_id
+                    references: status(status_id)
+              - column:
+                  name: bar_user_id
+                  type: varchar(255)
+                  constraints:
+                    foreignKeyName: fk_cr_user_id
+                    references: bar_user(id)
+              - column:
+                  name: update_time
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+        - sql: >
+            INSERT INTO payment_instruction_status (payment_instruction_id,status,bar_user_id)
+            SELECT id,status,user_id FROM payment_instruction;
+  - changeSet:
+      id: 14
+      author: sachi
+      changes:
+        - sql: >
+             UPDATE case_fee_detail SET case_reference =
+             (SELECT case_reference FROM case_reference WHERE case_reference.id = case_fee_detail.case_reference_id);
+        - dropForeignKeyConstraint:
+            baseTableName: case_fee_detail
+            constraintName: fk_cfd_case_reference_id
+        - sql: >
+            Update case_fee_detail set case_reference_id =
+            (select payment_instruction_id from case_reference where case_reference.id = case_fee_detail.case_reference_id);
+        - renameColumn:
+            newColumnName: payment_instruction_id
+            oldColumnName: case_reference_id
+            tableName: case_fee_detail
+        - addForeignKeyConstraint:
+            baseColumnNames: payment_instruction_id
+            baseTableName: case_fee_detail
+            constraintName: fk_case_fee_detail_payment_instruction
+            referencedColumnNames: id
+            referencedTableName: payment_instruction
+        - dropTable:
+            tableName: payment_instruction_case_reference
+        - dropTable:
+            tableName: case_reference
+  - changeSet:
+      id: 15
+      author: akiss
+      changes:
+        - sql: >
+            UPDATE payment_instruction SET action = 'Process' WHERE action = 'P';
+            UPDATE payment_instruction SET action = 'Suspense' WHERE action = 'S';
+            UPDATE payment_instruction SET action = 'Suspense Deficiency' WHERE action = 'SD';
+            UPDATE payment_instruction SET action = 'Return' WHERE action = 'R';
+            UPDATE payment_instruction SET action = 'Refund' WHERE action = 'RF';
+  - changeSet:
+      id: 16
+      author: akiss
+      changes:
+        - sql: >
+            CREATE TABLE FF4J_FEATURES (
+              FEAT_UID     	VARCHAR(100),
+              ENABLE 		INTEGER NOT NULL,
+              DESCRIPTION 	VARCHAR(1000),
+              STRATEGY		VARCHAR(1000),
+              EXPRESSION	    VARCHAR(255),
+              GROUPNAME		VARCHAR(100),
+              PRIMARY KEY(FEAT_UID)
+            );
+            CREATE TABLE FF4J_ROLES (
+              FEAT_UID     VARCHAR(100) REFERENCES FF4J_FEATURES(FEAT_UID),
+              ROLE_NAME    VARCHAR(100),
+              PRIMARY KEY(FEAT_UID, ROLE_NAME)
+            );
+            CREATE TABLE FF4J_CUSTOM_PROPERTIES (
+              PROPERTY_ID   VARCHAR(100) NOT NULL,
+              CLAZZ 		VARCHAR(255) NOT NULL,
+              CURRENTVALUE  VARCHAR(255),
+              FIXEDVALUES	VARCHAR(1000),
+              DESCRIPTION	VARCHAR(1000),
+              FEAT_UID      VARCHAR(100) REFERENCES FF4J_FEATURES(FEAT_UID),
+              PRIMARY KEY(PROPERTY_ID, FEAT_UID)
+            );
+            insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('payment-actions-process', 1, 'Available actions for payment');
+            insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('payment-actions-return', 0, 'Available actions for payment');
+            insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('payment-actions-suspense', 0, 'Available actions for payment');
+            insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('payment-actions-refund', 0, 'Available actions for payment');
+            insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('payment-actions-suspence-deficiency', 0, 'Available actions for payment');
+
+  - changeSet:
+      id: 17
+      author: rarasan
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: payment_instruction_status
+            constraintName: fk_pis_payment_instruction_id
+        - sql: >
+            ALTER TABLE payment_instruction_status ADD CONSTRAINT fk_pis_payment_instruction_id FOREIGN KEY (payment_instruction_id) REFERENCES payment_instruction (id) ON DELETE CASCADE
+  - changeSet:
+      id: 18
+      author: akiss
+      changes:
+        - createTable:
+            tableName: bank_giro_credit
+            columns:
+              - column:
+                  name: bgc_number
+                  type: varchar(50)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: site_id
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: creation_date
+                  type: timestamp
+                  constraints:
+                    nullable: true
+        - addColumn:
+            columns:
+              - column:
+                  name: bgc_number
+                  type: varchar(50)
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_bank_giro_credit_number
+                    references: bank_giro_credit(bgc_number)
+            tableName: payment_instruction
+            
+  - changeSet:
+     id: 19
+     author: rarasan
+     changes:
+       - sql: >
+           INSERT INTO status (status_id, status_description) VALUES ('RDM', 'Rejected by DM')
