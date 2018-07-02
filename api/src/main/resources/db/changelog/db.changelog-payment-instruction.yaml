@@ -531,7 +531,7 @@ databaseChangeLog:
             insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('payment-actions-suspense', 0, 'Available actions for payment');
             insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('payment-actions-refund', 0, 'Available actions for payment');
             insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('payment-actions-suspence-deficiency', 0, 'Available actions for payment');
-            
+]
   - changeSet:
       id: 17
       author: rarasan
@@ -541,3 +541,43 @@ databaseChangeLog:
             constraintName: fk_pis_payment_instruction_id
         - sql: >
             ALTER TABLE payment_instruction_status ADD CONSTRAINT fk_pis_payment_instruction_id FOREIGN KEY (payment_instruction_id) REFERENCES payment_instruction (id) ON DELETE CASCADE
+  - changeSet:
+      id: 18
+      author: akiss
+      changes:
+        - createTable:
+            tableName: bank_giro_credit
+            columns:
+              - column:
+                  name: bgc_number
+                  type: varchar(50)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: site_id
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: creation_date
+                  type: timestamp
+                  constraints:
+                    nullable: true
+        - addColumn:
+            columns:
+              - column:
+                  name: bgc_number
+                  type: varchar(50)
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_bank_giro_credit_number
+                    references: bank_giro_credit(bgc_number)
+            tableName: payment_instruction
+  
+  - changeSet:
+      id: 19
+      author: rarasan
+      changes:
+        - sql: >
+            INSERT INTO status (status_id, status_description) VALUES ('RDM', 'Rejected by DM')    

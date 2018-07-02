@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
+import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.service.BarUserService;
 import uk.gov.hmcts.bar.api.data.service.CaseFeeDetailService;
@@ -120,6 +121,20 @@ public class PaymentInstructionController {
 
         return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
     }
+    
+    @ApiOperation(value = "Get all rejected payment instructions for the given user", notes = "Get all rejected payment instructions for the given user and for a given site.",
+        produces = "application/json, text/csv")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return all rejected payment instructions for a given user"),
+        @ApiResponse(code = 404, message = "Payment instructions not found"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/users/{id}/rejected-payment-instructions")
+	public List<PaymentInstruction> getRejectedPaymentInstructionsByUser(@PathVariable("id") String id) {
+		List<PaymentInstruction> paymentInstructionList = null;
+		paymentInstructionList = paymentInstructionService.getPaymentInstructionsRejectedByDMByUser(id);
+
+		return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
+	}
 
     @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction for the given id.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return payment instruction"),
@@ -203,6 +218,29 @@ public class PaymentInstructionController {
         paymentInstructionService.updatePaymentInstruction(id,cheque);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    
+    @ApiOperation(value = "Reject the payment instruction", notes = "Reject payment instruction with the given id.")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Payment instruction rejected"),
+        @ApiResponse(code = 400, message = "Bad request"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("/reject-payment-instruction/{id}")
+	public ResponseEntity<Void> rejectPaymentInstruction(@PathVariable("id") Integer id) {
+		BarUser user = barUserService.getBarUser();
+		if (user == null) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		String status = null;
+		if (Util.isUserDeliveryManager(user.getRoles())) {
+			status = PaymentStatusEnum.REJECTEDBYDM.dbKey();
+		} else if (Util.isUserSrFeeClerk(user.getRoles())) {
+			status = PaymentStatusEnum.REJECTED.dbKey();
+		}
+		PaymentInstructionRequest paymentInstructionRequest = PaymentInstructionRequest.paymentInstructionRequestWith()
+				.status(status).build();
+		paymentInstructionService.updatePaymentInstruction(id, paymentInstructionRequest);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 
 
     @ApiOperation(value = "Create cash payment instruction", notes = "Create cash payment instruction with the given values.")

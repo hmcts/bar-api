@@ -12,6 +12,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
@@ -80,6 +82,11 @@ public class PaymentInstructionService {
             .findAll(paymentInstructionsSpecification.getPaymentInstructionsSpecification(), pageDetails)
             .iterator());
     }
+    
+	public List<PaymentInstruction> getPaymentInstructionsRejectedByDMByUser(String userId) {
+		return Lists.newArrayList(paymentInstructionRepository.getPaymentInstructionsRejectedByDMByUser(userId,
+				PaymentStatusEnum.REJECTEDBYDM.dbKey(), PaymentStatusEnum.APPROVED.dbKey()).iterator());
+	}
 
     public PaymentInstruction getPaymentInstruction(Integer id) {
         Optional<PaymentInstruction> op = paymentInstructionRepository.findById(id);
@@ -128,14 +135,25 @@ public class PaymentInstructionService {
     }
 
     public MultiMap getPaymentInstructionStats(String userRole, String status) {
-        List<PaymentInstructionOverview> paymentInstructionStatsList = paymentInstructionStatusRepository
-            .getPaymentOverviewStats(userRole);
-        MultiMap paymentInstructionStatsUserMap = new MultiValueMap();
-        paymentInstructionStatsList.forEach(pis -> paymentInstructionStatsUserMap.put(pis.getBarUserId(), pis));
-        List<PaymentInstructionUserStats> paymentInstructionInPAList = paymentInstructionStatusRepository
-            .getPaymentInstructionsPendingApprovalByUserGroup(userRole, status);
-        paymentInstructionInPAList.forEach(pius -> paymentInstructionStatsUserMap.put(pius.getBarUserId(), pius));
-        return paymentInstructionStatsUserMap;
+		MultiMap paymentInstructionStatsUserMap = new MultiValueMap();
+		BarUser user = barUserService.getBarUser();
+		if (user == null) {
+			LOG.error("Invalid BarUser.");
+			return paymentInstructionStatsUserMap;
+		}
+		if (Util.isUserSrFeeClerk(user.getRoles())) {
+			List<PaymentInstructionUserStats> paymentInstructionRejByDMList = paymentInstructionStatusRepository
+					.getPaymentInstructionsRejectedByDM(PaymentStatusEnum.REJECTEDBYDM.dbKey());
+			paymentInstructionRejByDMList
+					.forEach(pirej -> paymentInstructionStatsUserMap.put(pirej.getBarUserId(), pirej));
+		}
+		List<PaymentInstructionOverview> paymentInstructionStatsList = paymentInstructionStatusRepository
+				.getPaymentOverviewStats(userRole);
+		paymentInstructionStatsList.forEach(pis -> paymentInstructionStatsUserMap.put(pis.getBarUserId(), pis));
+		List<PaymentInstructionUserStats> paymentInstructionInPAList = paymentInstructionStatusRepository
+				.getPaymentInstructionsPendingApprovalByUserGroup(userRole, status);
+		paymentInstructionInPAList.forEach(pius -> paymentInstructionStatsUserMap.put(pius.getBarUserId(), pius));
+		return paymentInstructionStatsUserMap;
     }
 
     private void savePaymentInstructionStatus(PaymentInstruction pi, String userId) {

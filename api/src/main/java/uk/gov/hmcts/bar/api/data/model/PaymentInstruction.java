@@ -153,5 +153,6 @@ public abstract class   PaymentInstruction {
     }
 
     public abstract void fillAmount(PaymentInstructionReportLine reportRow);
+    public abstract void setBgcNumber(String bgcNumber);
 
 }

@@ -2,6 +2,8 @@ package uk.gov.hmcts.bar.api.data.utils;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+
+import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 
@@ -14,6 +16,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public interface Util {
+	
+	static final String POST_CLERK_ROLE = "bar-post-clerk";
+	static final String FEE_CLERK_ROLE = "bar-fee-clerk";
+	static final String SR_FEE_CLERK_ROLE = "bar-senior-clerk";
+	static final String DELIVERY_MANAGER_ROLE = "bar-delivery-manager";
 
     public  static String[] getNullPropertyNames(Object source) {
         final BeanWrapper wrappedSource = new BeanWrapperImpl(source);
@@ -53,6 +60,14 @@ public interface Util {
 
     public static String getFormattedDateTime(LocalDateTime localDateTime, DateTimeFormatter dateFormatter){
         return (localDateTime == null || dateFormatter == null) ? null : localDateTime.format(dateFormatter);
+    }
+    
+    public static boolean isUserDeliveryManager(String userRoles) {
+    	return StringUtils.containsIgnoreCase(userRoles, DELIVERY_MANAGER_ROLE);
+    }
+    
+    public static boolean isUserSrFeeClerk(String userRoles) {
+    	return StringUtils.containsIgnoreCase(userRoles, SR_FEE_CLERK_ROLE);
     }
 
 }
