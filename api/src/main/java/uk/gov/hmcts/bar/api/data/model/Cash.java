@@ -21,10 +21,11 @@ public class Cash extends PaymentInstructionRequest {
     public Cash(@JsonProperty("payer_name") String payerName,
                 @JsonProperty("amount") Integer amount,
                 @JsonProperty("currency") String currency,
-                @JsonProperty("status") String status) {
+                @JsonProperty("status") String status,
+                @JsonProperty("bgc_number") String bgcNumber) {
 
         super(payerName,amount,currency,status);
-
+        this.bgcNumber = bgcNumber;
     }
 
 

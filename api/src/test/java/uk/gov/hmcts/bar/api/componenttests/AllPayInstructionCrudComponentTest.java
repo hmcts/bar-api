@@ -2,14 +2,14 @@ package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Test;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
-import uk.gov.hmcts.bar.api.data.model.AllPay;
-import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
+import uk.gov.hmcts.bar.api.data.model.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.bar.api.data.model.AllPay.allPayPaymentInstructionRequestWith;
@@ -338,6 +338,45 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isOk());
 
     }
+
+    @Test
+    public void whenBgcNumberIsProvidedWronglyOnUpdate_expectedToBeSavedwithNullBgc() throws Exception {
+        AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .status("D")
+            .allPayTransactionId("12345").build();
+
+
+        Cash updatedAllPayPaymentInstructionRequest = Cash.cashPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(600)
+            .currency("GBP")
+            .status("D")
+            .bgcNumber("12345").build();
+
+
+        restActions
+            .post("/allpay",  proposedAllPayPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        restActions
+            .put("/allpay/1",updatedAllPayPaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+        restActions
+            .get("/payment-instructions")
+            .andExpect(status().isOk())
+            .andExpect(body().as(List.class, (allPayList) -> {
+                String bgcNumber = (String)((Map)allPayList.get(0)).get("bgc_number");
+                int amount = (Integer)((Map)allPayList.get(0)).get("amount");
+                assertNull(bgcNumber);
+                assertEquals(600, amount);
+            }));
+
+    }
+
     @Test
     public void whenNonExistingAllPayPaymentInstructionIsUpdated_expectStatus_404() throws Exception {
         AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()

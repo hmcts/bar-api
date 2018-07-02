@@ -20,10 +20,10 @@ public class ChequePaymentInstruction extends PaymentInstruction {
     @JsonCreator
     @Builder(builderMethodName = "chequePaymentInstructionWith")
     public ChequePaymentInstruction(@JsonProperty("payer_name") String payerName,
-                                       @JsonProperty("amount") Integer amount,
-                                       @JsonProperty("currency") String currency,
-                                       @JsonProperty("status") String status,
-                                       @JsonProperty("cheque_number") String chequeNumber) {
+                                    @JsonProperty("amount") Integer amount,
+                                    @JsonProperty("currency") String currency,
+                                    @JsonProperty("status") String status,
+                                    @JsonProperty("cheque_number") String chequeNumber) {
         super(payerName,amount,currency,status);
         this.setChequeNumber(chequeNumber);
     }
@@ -32,5 +32,10 @@ public class ChequePaymentInstruction extends PaymentInstruction {
     @Override
     public void fillAmount(PaymentInstructionReportLine reportRow) {
         reportRow.setCheckAmount(this.getAmount());
+    }
+
+    @Override
+    public void setBgcNumber(String bgcNumber) {
+        this.bgcNumber = bgcNumber;
     }
 }

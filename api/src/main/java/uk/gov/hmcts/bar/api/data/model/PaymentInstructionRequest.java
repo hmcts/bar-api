@@ -18,6 +18,7 @@ public class PaymentInstructionRequest {
     private Integer amount;
     private String currency;
     private String status;
+    protected String bgcNumber;
 
     @JsonCreator
     @Builder(builderMethodName = "paymentInstructionRequestWith")
@@ -28,7 +29,7 @@ public class PaymentInstructionRequest {
     ) {
 
         this.payerName = payerName;
-        this. amount =  amount;
+        this.amount =  amount;
         this.currency = currency;
         this.status = status;
     }

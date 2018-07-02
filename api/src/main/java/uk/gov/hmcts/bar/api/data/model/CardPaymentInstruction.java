@@ -34,4 +34,9 @@ public class CardPaymentInstruction extends PaymentInstruction {
     public void fillAmount(PaymentInstructionReportLine reportRow) {
         reportRow.setCardAmount(this.getAmount());
     }
+
+    @Override
+    public void setBgcNumber(String bgcNumber) {
+        // We do nothing as card payment doesn't have a bgc
+    }
 }

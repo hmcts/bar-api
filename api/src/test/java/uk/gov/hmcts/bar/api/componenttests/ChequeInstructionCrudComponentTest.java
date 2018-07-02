@@ -7,6 +7,7 @@ import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -376,6 +377,41 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isOk());
 
     }
+
+    @Test
+    public void whenBgcNumberIsProvidedOnUpdate_expectedToBeSaved() throws Exception {
+        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .chequeNumber("000000").status("D").build();
+
+
+        Cheque updatedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(6000)
+            .currency("GBP")
+            .status("P")
+            .chequeNumber("000000").bgcNumber("12345").build();
+
+
+        restActions
+            .post("/cheques",  proposedChequePaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        restActions
+            .put("/cheques/1",updatedChequePaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+        restActions
+            .get("/payment-instructions")
+            .andExpect(status().isOk())
+            .andExpect(body().as(List.class, (allPayList) -> {
+                String bgcNumber = (String)((Map)allPayList.get(0)).get("bgc_number");
+                assertThat(bgcNumber.equals("12345"));
+            }));
+    }
+
     @Test
     public void whenNonExistingChequePaymentInstructionIsUpdated_expectStatus_404() throws Exception {
         Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()

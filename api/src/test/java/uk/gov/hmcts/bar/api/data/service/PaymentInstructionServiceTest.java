@@ -11,10 +11,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specifications;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
-import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto.PaymentInstructionSearchCriteriaDtoBuilder;
+import uk.gov.hmcts.bar.api.data.repository.BankGiroCreditRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 
@@ -73,6 +73,9 @@ public class PaymentInstructionServiceTest {
     private FF4j ff4jMock;
 
     @Mock
+    private BankGiroCreditRepository bankGiroCreditRepositoryMock;
+
+    @Mock
     private PaymentInstructionStatusRepository paymentInstructionStatusRepositoryMock;
 
     private PaymentInstructionStatus paymentInstructionStatus;
@@ -87,7 +90,7 @@ public class PaymentInstructionServiceTest {
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
         paymentInstructionService = new PaymentInstructionService(paymentReferenceService,
-            paymentInstructionRepository, barUserService,paymentInstructionStatusRepositoryMock, ff4jMock);
+            paymentInstructionRepository, barUserService,paymentInstructionStatusRepositoryMock, ff4jMock, bankGiroCreditRepositoryMock);
         paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto()
             .siteId("BR01");
         paymentInstructionStatusReferenceKey = new PaymentInstructionStatusReferenceKey(0, "status");
@@ -455,6 +458,45 @@ public class PaymentInstructionServiceTest {
         verify(paymentInstructionRepository, times(1)).findById(anyInt());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
 
+    }
+
+    @Test
+    public void shouldReturn200andBgcUpdated_whenUpdatePostalInstructionWithBGCForGivenPaymentInstructionIsCalled() {
+        PaymentInstruction pi = new PostalOrderPaymentInstruction();
+        PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
+            .amount(200)
+            .payerName("Payer Name")
+            .currency("GBP")
+            .bgcNumber("12345").build();
+        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(pi));
+        when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
+            .thenAnswer(i -> i.getArguments()[0]);
+        when(bankGiroCreditRepositoryMock.save(any(BankGiroCredit.class))).thenAnswer(i -> i.getArguments()[0]);
+        // when(paymentInstructionMock.getStatus()).thenReturn("status");
+        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(1, pir);
+        assertEquals(pir.getBgcNumber(), updatedPaymentInstruction.getBgcNumber());
+        verify(paymentInstructionRepository, times(1)).findById(anyInt());
+        verify(paymentInstructionRepository, times(1)).saveAndRefresh(pi);
+
+    }
+
+    @Test
+    public void shouldReturn200andBgcNotUpdated_whenUpdateCardInstructionWithBGCForGivenPaymentInstructionIsCalled(){
+        PaymentInstruction pi = new CardPaymentInstruction();
+        PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
+            .amount(200)
+            .payerName("Payer Name")
+            .currency("GBP")
+            .bgcNumber("12345").build();
+        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(pi));
+        when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
+            .thenAnswer(i -> i.getArguments()[0]);
+        when(bankGiroCreditRepositoryMock.save(any(BankGiroCredit.class))).thenAnswer(i -> i.getArguments()[0]);
+        // when(paymentInstructionMock.getStatus()).thenReturn("status");
+        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(1, pir);
+        assertNull(updatedPaymentInstruction.getBgcNumber());
+        verify(paymentInstructionRepository, times(1)).findById(anyInt());
+        verify(paymentInstructionRepository, times(1)).saveAndRefresh(pi);
     }
 
     @Test
