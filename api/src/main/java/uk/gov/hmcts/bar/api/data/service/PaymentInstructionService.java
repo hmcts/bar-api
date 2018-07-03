@@ -177,7 +177,7 @@ public class PaymentInstructionService {
 
         if (null != endDate && startDate.isAfter(endDate)) {
             LOG.error("PaymentInstructionService - Error while generating daily fees csv file. Incorrect start and end dates ");
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
 
         if (null == endDate || startDate.equals(endDate)) {

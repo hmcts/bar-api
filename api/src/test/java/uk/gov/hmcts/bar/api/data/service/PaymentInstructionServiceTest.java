@@ -19,6 +19,7 @@ import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -80,6 +81,9 @@ public class PaymentInstructionServiceTest {
 
     @Mock
     private PaymentInstructionStatusRepository paymentInstructionStatusRepositoryMock;
+    
+    @Mock
+    private PaymentInstructionStatusHistory paymentInstructionStatusHistoryMock;
 
     private PaymentInstructionStatus paymentInstructionStatus;
 
@@ -503,7 +507,7 @@ public class PaymentInstructionServiceTest {
     }
 
     @Test
-    public void shouldReturn200_whenUpdatePaymentInstructionOverviewIsCalled()
+    public void shouldReturn200_whenUpdatePaymentInstructionOverviewIsCalledForSeniorClerk()
         throws Exception {
         when(paymentInstructionStatusRepositoryMock.getPaymentOverviewStats(anyString())).thenReturn(new ArrayList<PaymentInstructionOverview>());
         when(barUserServiceMock.getBarUser()).thenReturn(barUserMock);
@@ -514,7 +518,7 @@ public class PaymentInstructionServiceTest {
     }
     
     @Test
-    public void shouldReturn200_whenUpdatePaymentInstructionOverviewIsCalledByFeeClerk()
+    public void shouldReturn200_whenUpdatePaymentInstructionOverviewIsCalledForFeeClerk()
         throws Exception {
         when(paymentInstructionStatusRepositoryMock.getPaymentOverviewStats(anyString())).thenReturn(new ArrayList<PaymentInstructionOverview>());
         when(barUserServiceMock.getBarUser()).thenReturn(barUserMock);
@@ -532,5 +536,31 @@ public class PaymentInstructionServiceTest {
         List<PaymentInstruction> paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByTTB(LocalDate.now(), LocalDate.now().minusDays(1));
         assertTrue(paymentInstructionList.isEmpty());
     }
+    
+	@Test
+	public void shouldReturnPaymentInstructionList_whenGetPaymentInstructionsRejectedByDMByUserIsCalledForUser() {
+		List<PaymentInstruction> piList = Arrays.asList(paymentInstructionMock);
+		when(paymentInstructionServiceMock.getPaymentInstructionsRejectedByDMByUser("")).thenReturn(piList);
+		List<PaymentInstruction> paymentInstructionList = paymentInstructionServiceMock
+				.getPaymentInstructionsRejectedByDMByUser("");
+		assertFalse(paymentInstructionList.isEmpty());
+	}
+
+	@Test
+	public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsByCaseReferenceIsCalled() {
+		List<PaymentInstruction> piList = Arrays.asList(paymentInstructionMock);
+		when(paymentInstructionServiceMock.getAllPaymentInstructionsByCaseReference("")).thenReturn(piList);
+		List<PaymentInstruction> paymentInstructionList = paymentInstructionServiceMock
+				.getAllPaymentInstructionsByCaseReference("");
+		assertFalse(paymentInstructionList.isEmpty());
+	}
+
+	@Test
+	public void shouldReturnEmptyMap_whenGetStatusHistortMapForTTBCalledWithStartdateGreaterThanEndDate()
+			throws Exception {
+		Map<Integer, List<PaymentInstructionStatusHistory>> pishMap = paymentInstructionService
+				.getStatusHistortMapForTTB(LocalDate.now(), LocalDate.now().minusDays(1));
+		assertTrue(pishMap.isEmpty());
+	}
 
 }
