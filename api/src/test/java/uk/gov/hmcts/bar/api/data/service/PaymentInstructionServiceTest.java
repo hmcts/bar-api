@@ -2,6 +2,7 @@ package uk.gov.hmcts.bar.api.data.service;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.ff4j.FF4j;
 import org.ff4j.exception.FeatureAccessException;
 import org.junit.Before;
@@ -506,27 +507,21 @@ public class PaymentInstructionServiceTest {
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(pi);
     }
 
-    @Test
-    public void shouldReturn200_whenUpdatePaymentInstructionOverviewIsCalledForSeniorClerk()
-        throws Exception {
-        when(paymentInstructionStatusRepositoryMock.getPaymentOverviewStats(anyString())).thenReturn(new ArrayList<PaymentInstructionOverview>());
-        when(barUserServiceMock.getBarUser()).thenReturn(barUserMock);
-        when(barUserMock.getRoles()).thenReturn("bar-senior-clerk");
-        Map<String, MultiMap> combinedPaymentInstructionOverviewMap = paymentInstructionService.getPaymentInstructionStats("", "");
-        verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentInstructionsByStatusByUserGroup(anyString(), anyString());
-        verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentInstructionsRejectedByDM(anyString());
-    }
-    
-    @Test
-    public void shouldReturn200_whenUpdatePaymentInstructionOverviewIsCalledForFeeClerk()
-        throws Exception {
-        when(paymentInstructionStatusRepositoryMock.getPaymentOverviewStats(anyString())).thenReturn(new ArrayList<PaymentInstructionOverview>());
-        when(barUserServiceMock.getBarUser()).thenReturn(barUserMock);
-        when(barUserMock.getRoles()).thenReturn("bar-fee-clerk");
-        Map<String, MultiMap> combinedPaymentInstructionOverviewMap = paymentInstructionService.getPaymentInstructionStats("", "");
-        verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentInstructionsByStatusByUserGroup(anyString(), anyString());
-        verify(paymentInstructionStatusRepositoryMock, times(0)).getPaymentInstructionsRejectedByDM(anyString());
-    }
+	@Test
+	public void verifyRepositoryMethodCalls_whenGetPaymentInstructionStats() throws Exception {
+		Map<String, MultiMap> combinedPaymentInstructionOverviewMap = paymentInstructionService
+				.getPaymentInstructionStats("",new MultiValueMap());
+		verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentInstructionsByStatusByUserGroup(anyString());
+	}
+
+	@Test
+	public void verifyRepositoryMethodCalls_whenGetPaymentInstructionStatsByCurrentStatusGroupedByOldStatus()
+			throws Exception {
+		Map<String, MultiMap> combinedPaymentInstructionOverviewMap = paymentInstructionService
+				.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus("", "",new MultiValueMap());
+		verify(paymentInstructionStatusRepositoryMock, times(1))
+				.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(anyString(), anyString());
+	}
 
 
     @Test
@@ -536,15 +531,6 @@ public class PaymentInstructionServiceTest {
         List<PaymentInstruction> paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByTTB(LocalDate.now(), LocalDate.now().minusDays(1));
         assertTrue(paymentInstructionList.isEmpty());
     }
-    
-	@Test
-	public void shouldReturnPaymentInstructionList_whenGetPaymentInstructionsRejectedByDMByUserIsCalledForUser() {
-		List<PaymentInstruction> piList = Arrays.asList(paymentInstructionMock);
-		when(paymentInstructionServiceMock.getPaymentInstructionsRejectedByDMByUser("")).thenReturn(piList);
-		List<PaymentInstruction> paymentInstructionList = paymentInstructionServiceMock
-				.getPaymentInstructionsRejectedByDMByUser("");
-		assertFalse(paymentInstructionList.isEmpty());
-	}
 
 	@Test
 	public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsByCaseReferenceIsCalled() {

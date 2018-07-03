@@ -1,9 +1,18 @@
 package uk.gov.hmcts.bar.api.data.service;
 
 
-import com.google.common.collect.Lists;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.apache.commons.collections.MultiMap;
-import org.apache.commons.collections.map.MultiValueMap;
 import org.ff4j.FF4j;
 import org.ff4j.exception.FeatureAccessException;
 import org.slf4j.Logger;
@@ -12,24 +21,29 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
+
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
-import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.data.model.BankGiroCredit;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatus;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusHistory;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusReferenceKey;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats;
+import uk.gov.hmcts.bar.api.data.model.PaymentReference;
 import uk.gov.hmcts.bar.api.data.repository.BankGiroCreditRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionsSpecifications;
 import uk.gov.hmcts.bar.api.data.utils.Util;
-
-import java.time.LocalDate;
-import java.util.*;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 
 @Service
@@ -87,11 +101,6 @@ public class PaymentInstructionService {
             .findAll(paymentInstructionsSpecification.getPaymentInstructionsSpecification(), pageDetails)
             .iterator());
     }
-    
-	public List<PaymentInstruction> getPaymentInstructionsRejectedByDMByUser(String userId) {
-		return Lists.newArrayList(paymentInstructionRepository.getPaymentInstructionsRejectedByDMByUser(userId,
-				PaymentStatusEnum.REJECTEDBYDM.dbKey(), PaymentStatusEnum.APPROVED.dbKey()).iterator());
-	}
 
     public PaymentInstruction getPaymentInstruction(Integer id) {
         Optional<PaymentInstruction> op = paymentInstructionRepository.findById(id);
@@ -147,23 +156,19 @@ public class PaymentInstructionService {
         return paymentInstructionRepository.findByCaseReference(caseReference);
     }
 
-    public MultiMap getPaymentInstructionStats(String userRole, String status) {
-		MultiMap paymentInstructionStatsUserMap = new MultiValueMap();
-		BarUser user = barUserService.getBarUser();
-		if (user == null) {
-			LOG.error("Invalid BarUser.");
-			return paymentInstructionStatsUserMap;
-		}
-		if (Util.isUserSrFeeClerk(user.getRoles())) {
-			List<PaymentInstructionUserStats> paymentInstructionRejByDMList = paymentInstructionStatusRepository
-					.getPaymentInstructionsRejectedByDM(PaymentStatusEnum.REJECTEDBYDM.dbKey());
-			paymentInstructionRejByDMList
-					.forEach(pirej -> paymentInstructionStatsUserMap.put(pirej.getBarUserId(), pirej));
-		}
+    public MultiMap getPaymentInstructionStats(String status, MultiMap combinedMap) {
 		List<PaymentInstructionUserStats> paymentInstructionInStatusList = paymentInstructionStatusRepository
-				.getPaymentInstructionsByStatusByUserGroup(userRole, status);
-		paymentInstructionInStatusList.forEach(pius -> paymentInstructionStatsUserMap.put(pius.getBarUserId(), pius));
-		return paymentInstructionStatsUserMap;
+				.getPaymentInstructionsByStatusByUserGroup(status);
+		paymentInstructionInStatusList.forEach(pius -> combinedMap.put(pius.getBarUserId(), pius));
+		return combinedMap;
+    }
+    
+    public MultiMap getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(String currentStatus, String oldStatus, MultiMap combinedMap) {
+    	List<PaymentInstructionUserStats> paymentInstructionRejByDMList = paymentInstructionStatusRepository
+				.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(currentStatus, oldStatus);
+		paymentInstructionRejByDMList
+				.forEach(pirej -> combinedMap.put(pirej.getBarUserId(), pirej));
+		return combinedMap;
     }
 
     private void savePaymentInstructionStatus(PaymentInstruction pi, String userId) {

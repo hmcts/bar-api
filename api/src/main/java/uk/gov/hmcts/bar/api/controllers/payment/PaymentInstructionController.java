@@ -5,8 +5,10 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.ff4j.FF4j;
 import org.ff4j.exception.FeatureAccessException;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -25,14 +27,20 @@ import uk.gov.hmcts.bar.api.data.service.UnallocatedAmountService;
 import uk.gov.hmcts.bar.api.data.utils.Util;
 
 import javax.validation.Valid;
+
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
 
 @Validated
 public class PaymentInstructionController {
+	
+	private static final Logger LOG = getLogger(PaymentInstructionController.class);
 
     private final PaymentInstructionService paymentInstructionService;
 
@@ -121,20 +129,6 @@ public class PaymentInstructionController {
 
         return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
     }
-    
-    @ApiOperation(value = "Get all rejected payment instructions for the given user", notes = "Get all rejected payment instructions for the given user and for a given site.",
-        produces = "application/json, text/csv")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return all rejected payment instructions for a given user"),
-        @ApiResponse(code = 404, message = "Payment instructions not found"),
-        @ApiResponse(code = 500, message = "Internal server error")})
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/users/{id}/rejected-payment-instructions")
-	public List<PaymentInstruction> getRejectedPaymentInstructionsByUser(@PathVariable("id") String id) {
-		List<PaymentInstruction> paymentInstructionList = null;
-		paymentInstructionList = paymentInstructionService.getPaymentInstructionsRejectedByDMByUser(id);
-
-		return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
-	}
 
     @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction for the given id.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return payment instruction"),
@@ -397,10 +391,21 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/payment-stats")
     public  MultiMap getPaymentStats(
-        @RequestParam(name = "userId", required = false) String userId,
-        @RequestParam(name = "userRole", required = true) String userRole,
         @RequestParam(name = "status", required = true) String status) {
-        return paymentInstructionService.getPaymentInstructionStats(userRole, status);
+    	MultiMap combinedMap = new MultiValueMap();
+		BarUser user = barUserService.getBarUser();
+		if (user == null) {
+			LOG.error("Invalid BarUser");
+			return new MultiValueMap();
+		}
+		combinedMap = paymentInstructionService.getPaymentInstructionStats(status, combinedMap);
+		
+		if (Util.isUserSrFeeClerk(user.getRoles())) {
+			combinedMap = paymentInstructionService
+					.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(PaymentStatusEnum.REJECTEDBYDM.dbKey(),
+							PaymentStatusEnum.APPROVED.dbKey(), combinedMap);
+		}
+		return combinedMap;
     }
 
     private PaymentInstructionSearchCriteriaDto createPaymentInstructionCriteria(
