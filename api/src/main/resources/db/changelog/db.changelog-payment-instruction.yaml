@@ -580,4 +580,4 @@ databaseChangeLog:
      author: rarasan
      changes:
        - sql: >
-           INSERT INTO status (status_id, status_description) VALUES ('RDM', 'Rejected by DM')
+           INSERT INTO status (status_id, status_description) VALUES ('RDM', 'Rejected by DM') ON CONFLICT ON CONSTRAINT status_pkey DO NOTHING

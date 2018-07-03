@@ -160,12 +160,9 @@ public class PaymentInstructionService {
 			paymentInstructionRejByDMList
 					.forEach(pirej -> paymentInstructionStatsUserMap.put(pirej.getBarUserId(), pirej));
 		}
-		List<PaymentInstructionOverview> paymentInstructionStatsList = paymentInstructionStatusRepository
-				.getPaymentOverviewStats(userRole);
-		paymentInstructionStatsList.forEach(pis -> paymentInstructionStatsUserMap.put(pis.getBarUserId(), pis));
-		List<PaymentInstructionUserStats> paymentInstructionInPAList = paymentInstructionStatusRepository
-				.getPaymentInstructionsPendingApprovalByUserGroup(userRole, status);
-		paymentInstructionInPAList.forEach(pius -> paymentInstructionStatsUserMap.put(pius.getBarUserId(), pius));
+		List<PaymentInstructionUserStats> paymentInstructionInStatusList = paymentInstructionStatusRepository
+				.getPaymentInstructionsByStatusByUserGroup(userRole, status);
+		paymentInstructionInStatusList.forEach(pius -> paymentInstructionStatsUserMap.put(pius.getBarUserId(), pius));
 		return paymentInstructionStatsUserMap;
     }
 
