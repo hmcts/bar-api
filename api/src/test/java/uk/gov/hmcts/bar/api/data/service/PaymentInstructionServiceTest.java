@@ -509,7 +509,6 @@ public class PaymentInstructionServiceTest {
         when(barUserServiceMock.getBarUser()).thenReturn(barUserMock);
         when(barUserMock.getRoles()).thenReturn("bar-senior-clerk");
         Map<String, MultiMap> combinedPaymentInstructionOverviewMap = paymentInstructionService.getPaymentInstructionStats("", "");
-        verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentOverviewStats(anyString());
         verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentInstructionsByStatusByUserGroup(anyString(), anyString());
         verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentInstructionsRejectedByDM(anyString());
     }
@@ -521,7 +520,6 @@ public class PaymentInstructionServiceTest {
         when(barUserServiceMock.getBarUser()).thenReturn(barUserMock);
         when(barUserMock.getRoles()).thenReturn("bar-fee-clerk");
         Map<String, MultiMap> combinedPaymentInstructionOverviewMap = paymentInstructionService.getPaymentInstructionStats("", "");
-        verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentOverviewStats(anyString());
         verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentInstructionsByStatusByUserGroup(anyString(), anyString());
         verify(paymentInstructionStatusRepositoryMock, times(0)).getPaymentInstructionsRejectedByDM(anyString());
     }
