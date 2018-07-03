@@ -67,7 +67,10 @@ public class PaymentInstructionServiceTest {
     private PaymentInstructionRequest paymentRequestMock;
 
     @Mock
-    private BarUserService barUserService;
+    private BarUserService barUserServiceMock;
+    
+    @Mock
+    private BarUser barUserMock;
 
     @Mock
     private FF4j ff4jMock;
@@ -90,7 +93,7 @@ public class PaymentInstructionServiceTest {
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
         paymentInstructionService = new PaymentInstructionService(paymentReferenceService,
-            paymentInstructionRepository, barUserService,paymentInstructionStatusRepositoryMock, ff4jMock, bankGiroCreditRepositoryMock);
+            paymentInstructionRepository, barUserServiceMock,paymentInstructionStatusRepositoryMock, ff4jMock, bankGiroCreditRepositoryMock);
         paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto()
             .siteId("BR01");
         paymentInstructionStatusReferenceKey = new PaymentInstructionStatusReferenceKey(0, "status");
@@ -503,9 +506,24 @@ public class PaymentInstructionServiceTest {
     public void shouldReturn200_whenUpdatePaymentInstructionOverviewIsCalled()
         throws Exception {
         when(paymentInstructionStatusRepositoryMock.getPaymentOverviewStats(anyString())).thenReturn(new ArrayList<PaymentInstructionOverview>());
-        Map<String, MultiMap> combinedPaymentInstructionOverviewMap = paymentInstructionService.getPaymentInstructionStats(anyString(), "");
+        when(barUserServiceMock.getBarUser()).thenReturn(barUserMock);
+        when(barUserMock.getRoles()).thenReturn("bar-senior-clerk");
+        Map<String, MultiMap> combinedPaymentInstructionOverviewMap = paymentInstructionService.getPaymentInstructionStats("", "");
         verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentOverviewStats(anyString());
         verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentInstructionsPendingApprovalByUserGroup(anyString(), anyString());
+        verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentInstructionsRejectedByDM(anyString());
+    }
+    
+    @Test
+    public void shouldReturn200_whenUpdatePaymentInstructionOverviewIsCalledByFeeClerk()
+        throws Exception {
+        when(paymentInstructionStatusRepositoryMock.getPaymentOverviewStats(anyString())).thenReturn(new ArrayList<PaymentInstructionOverview>());
+        when(barUserServiceMock.getBarUser()).thenReturn(barUserMock);
+        when(barUserMock.getRoles()).thenReturn("bar-fee-clerk");
+        Map<String, MultiMap> combinedPaymentInstructionOverviewMap = paymentInstructionService.getPaymentInstructionStats("", "");
+        verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentOverviewStats(anyString());
+        verify(paymentInstructionStatusRepositoryMock, times(1)).getPaymentInstructionsPendingApprovalByUserGroup(anyString(), anyString());
+        verify(paymentInstructionStatusRepositoryMock, times(0)).getPaymentInstructionsRejectedByDM(anyString());
     }
 
 
