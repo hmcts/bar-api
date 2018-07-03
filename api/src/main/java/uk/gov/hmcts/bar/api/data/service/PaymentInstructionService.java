@@ -158,7 +158,7 @@ public class PaymentInstructionService {
 
     public MultiMap getPaymentInstructionStats(String status, MultiMap combinedMap) {
 		List<PaymentInstructionUserStats> paymentInstructionInStatusList = paymentInstructionStatusRepository
-				.getPaymentInstructionsByStatusByUserGroup(status);
+				.getPaymentInstructionsByStatusGroupedByUser(status);
 		paymentInstructionInStatusList.forEach(pius -> combinedMap.put(pius.getBarUserId(), pius));
 		return combinedMap;
     }
