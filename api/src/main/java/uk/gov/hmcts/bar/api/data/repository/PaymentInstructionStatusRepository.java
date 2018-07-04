@@ -21,15 +21,15 @@ public interface PaymentInstructionStatusRepository
 			PaymentInstructionStatusReferenceKey paymentInstructionStatusReferenceKey);
 
 	@Query(name = "PIByUserGroup", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats"
-			+ "(bu.id, CONCAT(bu.forename,' ',bu.surname), COUNT(pi.id), false) FROM BarUser bu, PaymentInstruction pi  WHERE pi.status = :status AND "
+			+ "(bu.id, CONCAT(bu.forename,' ',bu.surname), COUNT(pi.id)) FROM BarUser bu, PaymentInstruction pi  WHERE pi.status = :status AND "
 			+ "pi.userId = bu.id GROUP BY bu.id")
 	List<PaymentInstructionUserStats> getPaymentInstructionsByStatusGroupedByUser(@Param("status") String status);
 	
 	@Query(name = "PIRejectedByDM", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats"
-			+ "(bu.id, CONCAT(bu.forename,' ',bu.surname), COUNT(pi.id), true) FROM BarUser bu, PaymentInstruction pi, PaymentInstructionStatus pis WHERE "
+			+ "(bu.id, CONCAT(bu.forename,' ',bu.surname), COUNT(pi.id)) FROM BarUser bu, PaymentInstruction pi, PaymentInstructionStatus pis WHERE "
 			+ "pi.id IN (SELECT piinner.id FROM PaymentInstruction piinner WHERE piinner.status = :currentStatus) AND pi.id = pis.paymentInstructionStatusReferenceKey.paymentInstructionId "
 			+ "AND pis.paymentInstructionStatusReferenceKey.status = :oldStatus AND pis.barUserId = bu.id GROUP BY bu.id")
-	List<PaymentInstructionUserStats> getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(
+	List<PaymentInstructionUserStats> getPaymentInstructionStatsByCurrentStatusAndByOldStatusGroupedByUser(
 			@Param("currentStatus") String currentStatus, @Param("oldStatus") String oldStatus);
 
     @Query(name = "PIReportDetails", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusHistory"

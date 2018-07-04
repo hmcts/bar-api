@@ -510,7 +510,7 @@ public class PaymentInstructionServiceTest {
 	@Test
 	public void verifyRepositoryMethodCalls_whenGetPaymentInstructionStats() throws Exception {
 		Map<String, MultiMap> combinedPaymentInstructionOverviewMap = paymentInstructionService
-				.getPaymentInstructionStats("", new MultiValueMap());
+				.getPaymentInstructionStats("");
 		verify(paymentInstructionStatusRepositoryMock, times(1))
 				.getPaymentInstructionsByStatusGroupedByUser(anyString());
 	}
@@ -519,9 +519,9 @@ public class PaymentInstructionServiceTest {
 	public void verifyRepositoryMethodCalls_whenGetPaymentInstructionStatsByCurrentStatusGroupedByOldStatus()
 			throws Exception {
 		Map<String, MultiMap> combinedPaymentInstructionOverviewMap = paymentInstructionService
-				.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus("", "", new MultiValueMap());
+				.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus("", "");
 		verify(paymentInstructionStatusRepositoryMock, times(1))
-				.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(anyString(), anyString());
+				.getPaymentInstructionStatsByCurrentStatusAndByOldStatusGroupedByUser(anyString(), anyString());
 	}
 
 

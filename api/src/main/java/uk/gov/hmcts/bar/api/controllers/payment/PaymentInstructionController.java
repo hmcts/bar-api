@@ -1,14 +1,14 @@
 package uk.gov.hmcts.bar.api.controllers.payment;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+
+import javax.validation.Valid;
+
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
-import org.ff4j.FF4j;
-import org.ff4j.exception.FeatureAccessException;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -16,31 +16,53 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
-import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.data.model.AllPay;
+import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.BarUser;
+import uk.gov.hmcts.bar.api.data.model.Card;
+import uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.CaseFeeDetail;
+import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
+import uk.gov.hmcts.bar.api.data.model.Cash;
+import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.Cheque;
+import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
+import uk.gov.hmcts.bar.api.data.model.PostalOrder;
+import uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.service.BarUserService;
 import uk.gov.hmcts.bar.api.data.service.CaseFeeDetailService;
 import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
 import uk.gov.hmcts.bar.api.data.service.UnallocatedAmountService;
+import uk.gov.hmcts.bar.api.data.utils.PaymentStatusEnumConverter;
 import uk.gov.hmcts.bar.api.data.utils.Util;
-
-import javax.validation.Valid;
-
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Collections;
-import java.util.List;
 
 @RestController
 
 @Validated
 public class PaymentInstructionController {
-	
-	private static final Logger LOG = getLogger(PaymentInstructionController.class);
 
     private final PaymentInstructionService paymentInstructionService;
 
@@ -218,10 +240,13 @@ public class PaymentInstructionController {
         @ApiResponse(code = 400, message = "Bad request"),
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
-    @PatchMapping("/reject-payment-instruction/{id}")
+    @PatchMapping("/payment-instructions/{id}/reject")
 	public ResponseEntity<Void> rejectPaymentInstruction(@PathVariable("id") Integer id) {
-		BarUser user = barUserService.getBarUser();
-		if (user == null) {
+		Optional<BarUser> userOptional = barUserService.getBarUser();
+		BarUser user = null;
+		if (userOptional.isPresent()) {
+			user = userOptional.get();
+		} else {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		String status = null;
@@ -390,23 +415,39 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error") })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/payment-stats")
+    @Deprecated
     public  MultiMap getPaymentStats(
         @RequestParam(name = "status", required = true) String status) {
-    	MultiMap combinedMap = new MultiValueMap();
-		BarUser user = barUserService.getBarUser();
-		if (user == null) {
-			LOG.error("Invalid BarUser");
+    	Optional<BarUser> userOptional = barUserService.getBarUser();
+		BarUser user = null; 
+		if (userOptional.isPresent()) {
+			user = userOptional.get();
+		} else {
 			return new MultiValueMap();
 		}
-		combinedMap = paymentInstructionService.getPaymentInstructionStats(status, combinedMap);
-		
-		if (Util.isUserSrFeeClerk(user.getRoles())) {
-			combinedMap = paymentInstructionService
-					.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(PaymentStatusEnum.REJECTEDBYDM.dbKey(),
-							PaymentStatusEnum.APPROVED.dbKey(), combinedMap);
-		}
-		return combinedMap;
+		return paymentInstructionService.getPaymentInstructionStats(status);
     }
+    
+    @ApiOperation(value = "Get the payments stats", notes = "Get the payment instruction's stats showing each User's activities.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Return payment overview stats"),
+        @ApiResponse(code = 500, message = "Internal server error") })
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/users/pi-stats")
+	public MultiMap getPIStats(@RequestParam(name = "status", required = true) PaymentStatusEnum status) {
+		return paymentInstructionService.getPaymentInstructionStats(status.dbKey());
+	}
+    
+	@ApiOperation(value = "Get the rejected payments stats", notes = "Get the payment instruction's rejected stats showing each User's activities.")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Return rejected payment stats"),
+		@ApiResponse(code = 500, message = "Internal server error") })
+	@ResponseStatus(HttpStatus.OK)
+	@GetMapping("/users/pi-rejected-stats")
+	public MultiMap getPIRejectedStats(
+			@RequestParam(name = "currentStatus", required = true) PaymentStatusEnum currentStatus,
+			@RequestParam(name = "oldStatus", required = true) PaymentStatusEnum oldStatus) {
+		return paymentInstructionService
+				.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(currentStatus.dbKey(), oldStatus.dbKey());
+	}
 
     private PaymentInstructionSearchCriteriaDto createPaymentInstructionCriteria(
         String status,
@@ -455,5 +496,10 @@ public class PaymentInstructionController {
         }
         return false;
     }
+    
+    @InitBinder
+	public void initBinder(final WebDataBinder webdataBinder) {
+		webdataBinder.registerCustomEditor(PaymentStatusEnum.class, new PaymentStatusEnumConverter());
+	}
 
 }

@@ -49,5 +49,14 @@ public enum PaymentStatusEnum {
 
         return false;
     }
+    
+    /*
+     * Overridden the default toString() method for the sake of Swagger
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString() {
+    	return this.dbKey();
+    }
 
 }

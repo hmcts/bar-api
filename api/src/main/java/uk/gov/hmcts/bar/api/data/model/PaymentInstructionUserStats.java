@@ -19,18 +19,14 @@ public class PaymentInstructionUserStats {
 	private long countOfPaymentInstructionInSpecifiedStatus;
 
 	private String barUserId;
-	
-	private boolean isSrFeeClerk;
 
 	@JsonCreator
 	public PaymentInstructionUserStats(@JsonProperty("bar_user_id") String barUserId,
 			@JsonProperty("bar_user_full_name") String barUserFullName,
-			@JsonProperty("count_of_payment_instruction_in_specified_status") Long countOfPaymentInstructionInSpecifiedStatus,
-			@JsonProperty("is_sr_fee_clerk") boolean isSrFeeClerk) {
+			@JsonProperty("count_of_payment_instruction_in_specified_status") Long countOfPaymentInstructionInSpecifiedStatus) {
 		this.countOfPaymentInstructionInSpecifiedStatus = countOfPaymentInstructionInSpecifiedStatus;
 		this.barUserId = barUserId;
 		this.barUserFullName = barUserFullName;
-		this.isSrFeeClerk = isSrFeeClerk;
 	}
 
 }

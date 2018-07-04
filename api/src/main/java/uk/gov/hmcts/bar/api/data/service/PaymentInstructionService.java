@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.ff4j.FF4j;
 import org.ff4j.exception.FeatureAccessException;
 import org.slf4j.Logger;
@@ -156,19 +157,21 @@ public class PaymentInstructionService {
         return paymentInstructionRepository.findByCaseReference(caseReference);
     }
 
-    public MultiMap getPaymentInstructionStats(String status, MultiMap combinedMap) {
+    public MultiMap getPaymentInstructionStats(String status) {
+		MultiMap paymentInstructionStatsUserMap = new MultiValueMap();
 		List<PaymentInstructionUserStats> paymentInstructionInStatusList = paymentInstructionStatusRepository
 				.getPaymentInstructionsByStatusGroupedByUser(status);
-		paymentInstructionInStatusList.forEach(pius -> combinedMap.put(pius.getBarUserId(), pius));
-		return combinedMap;
+		paymentInstructionInStatusList.forEach(pius -> paymentInstructionStatsUserMap.put(pius.getBarUserId(), pius));
+		return paymentInstructionStatsUserMap;
     }
     
-    public MultiMap getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(String currentStatus, String oldStatus, MultiMap combinedMap) {
+    public MultiMap getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(String currentStatus, String oldStatus) {
+    	MultiMap paymentInstructionStatsUserMap = new MultiValueMap();
     	List<PaymentInstructionUserStats> paymentInstructionRejByDMList = paymentInstructionStatusRepository
-				.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(currentStatus, oldStatus);
+				.getPaymentInstructionStatsByCurrentStatusAndByOldStatusGroupedByUser(currentStatus, oldStatus);
 		paymentInstructionRejByDMList
-				.forEach(pirej -> combinedMap.put(pirej.getBarUserId(), pirej));
-		return combinedMap;
+				.forEach(pirej -> paymentInstructionStatsUserMap.put(pirej.getBarUserId(), pirej));
+		return paymentInstructionStatsUserMap;
     }
 
     private void savePaymentInstructionStatus(PaymentInstruction pi, String userId) {
@@ -230,6 +233,4 @@ public class PaymentInstructionService {
         });
         return ret[0];
     }
-
-
 }
