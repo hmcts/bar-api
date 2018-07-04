@@ -32,7 +32,6 @@ public class PaymentStatusEnumTest {
 
 	@Test
 	public void shouldReturnPendingEnum_whenGetPaymentStatusEnumIsCalledWithPendingDbKey() {
-		System.out.println(PaymentStatusEnum.values()[0].toString());
 		assertEquals(pendingEnum, PaymentStatusEnum.getPaymentStatusEnum("P"));
 	}
 

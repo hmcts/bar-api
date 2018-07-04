@@ -36,20 +36,36 @@ public class ComponentTestBase {
 
     public final UserDetails userDetails =
         new UserDetails("1234", "abc123", Collections.singletonList("bar-post-clerk"));
+    public final UserDetails feeClerkUserDetails =
+            new UserDetails("fee-clerk", "abc123", Collections.singletonList("bar-fee-clerk"));
+    public final UserDetails srFeeClerkUserDetails =
+            new UserDetails("sr-fee-clerk", "abc123", Collections.singletonList("bar-senior-clerk"));
+    public final UserDetails dmUserDetails =
+            new UserDetails("dm-manager", "abc123", Collections.singletonList("bar-delivery-manager"));
 
 
     public RestActions restActions;
+    public RestActions restActionsForFeeClerk;
+    public RestActions restActionsForSrFeeClerk;
+    public RestActions restActionsForDM;
 
     @Before
     public void setUp() throws SQLException{
         MockMvc mvc = webAppContextSetup(webApplicationContext).apply(springSecurity()).build();
         this.restActions = new RestActions(mvc, objectMapper, userDetails);
+        this.restActionsForFeeClerk = new RestActions(mvc, objectMapper, feeClerkUserDetails);
+        this.restActionsForSrFeeClerk = new RestActions(mvc, objectMapper, srFeeClerkUserDetails);
+        this.restActionsForDM = new RestActions(mvc, objectMapper, dmUserDetails);
         DbTestUtil.emptyTable(webApplicationContext, "case_fee_detail");
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction");
+        DbTestUtil.emptyTable(webApplicationContext, "bar_user");
         DbTestUtil.resetAutoIncrementColumns(webApplicationContext, "payment_instruction");
-        DbTestUtil.setTestUser(webApplicationContext, userDetails);
-
+        DbTestUtil.addTestUser(webApplicationContext, userDetails);
+        DbTestUtil.addTestUser(webApplicationContext, feeClerkUserDetails);
+        DbTestUtil.addTestUser(webApplicationContext, srFeeClerkUserDetails);
+        DbTestUtil.addTestUser(webApplicationContext, dmUserDetails);
     }
+    
 
     public CustomResultMatcher body() {
         return new CustomResultMatcher(objectMapper);

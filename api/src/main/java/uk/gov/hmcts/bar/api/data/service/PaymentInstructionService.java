@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.collections.MultiMap;
-import org.apache.commons.collections.map.MultiValueMap;
 import org.ff4j.FF4j;
 import org.ff4j.exception.FeatureAccessException;
 import org.slf4j.Logger;
@@ -157,22 +156,18 @@ public class PaymentInstructionService {
         return paymentInstructionRepository.findByCaseReference(caseReference);
     }
 
-    public MultiMap getPaymentInstructionStats(String status) {
-		MultiMap paymentInstructionStatsUserMap = new MultiValueMap();
+	public MultiMap getPaymentInstructionStats(String status) {
 		List<PaymentInstructionUserStats> paymentInstructionInStatusList = paymentInstructionStatusRepository
 				.getPaymentInstructionsByStatusGroupedByUser(status);
-		paymentInstructionInStatusList.forEach(pius -> paymentInstructionStatsUserMap.put(pius.getBarUserId(), pius));
-		return paymentInstructionStatsUserMap;
-    }
+		return Util.createMultimapFromList(paymentInstructionInStatusList);
+	}
     
-    public MultiMap getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(String currentStatus, String oldStatus) {
-    	MultiMap paymentInstructionStatsUserMap = new MultiValueMap();
-    	List<PaymentInstructionUserStats> paymentInstructionRejByDMList = paymentInstructionStatusRepository
+	public MultiMap getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(String currentStatus,
+			String oldStatus) {
+		List<PaymentInstructionUserStats> paymentInstructionRejByDMList = paymentInstructionStatusRepository
 				.getPaymentInstructionStatsByCurrentStatusAndByOldStatusGroupedByUser(currentStatus, oldStatus);
-		paymentInstructionRejByDMList
-				.forEach(pirej -> paymentInstructionStatsUserMap.put(pirej.getBarUserId(), pirej));
-		return paymentInstructionStatsUserMap;
-    }
+		return Util.createMultimapFromList(paymentInstructionRejByDMList);
+	}
 
     private void savePaymentInstructionStatus(PaymentInstruction pi, String userId) {
         PaymentInstructionStatusReferenceKey pisrKey = new PaymentInstructionStatusReferenceKey(pi.getId(),
