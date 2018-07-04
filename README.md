@@ -1,7 +1,6 @@
 # Bank Accounting Returns for HMCTS online services
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/7c2b85f8f9364357b1ac20e031d3bfd2)](https://app.codacy.com/app/jaleen/bar-apps?utm_source=github.com&utm_medium=referral&utm_content=hmcts/bar-apps&utm_campaign=badger)
 [![Build Status](https://travis-ci.org/hmcts/bar-app.svg?branch=master)](https://travis-ci.org/hmcts/bar-app)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/0cb10a161dc24d0092470cda7c304c87)](https://app.codacy.com/app/HMCTS/bar-app)
 [![codecov](https://codecov.io/gh/hmcts/bar-app/branch/master/graph/badge.svg)](https://codecov.io/gh/hmcts/bar-app)
 
 This project provides REST based web services for exposing BAR related information for hearing fee and award fees.
