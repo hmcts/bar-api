@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.collections.MultiMap;
 import org.ff4j.FF4j;
 import org.ff4j.exception.FeatureAccessException;
 import org.junit.Before;
@@ -42,7 +41,6 @@ import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
 import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.BankGiroCredit;
-import uk.gov.hmcts.bar.api.data.model.BarUser;
 import uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
@@ -101,9 +99,6 @@ public class PaymentInstructionServiceTest {
 
     @Mock
     private BarUserService barUserServiceMock;
-    
-    @Mock
-    private BarUser barUserMock;
 
     @Mock
     private FF4j ff4jMock;
