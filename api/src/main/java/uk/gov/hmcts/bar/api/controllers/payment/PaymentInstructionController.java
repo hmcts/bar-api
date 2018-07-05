@@ -419,10 +419,7 @@ public class PaymentInstructionController {
     public  MultiMap getPaymentStats(
         @RequestParam(name = "status", required = true) String status) {
     	Optional<BarUser> userOptional = barUserService.getBarUser();
-		BarUser user = null; 
-		if (userOptional.isPresent()) {
-			user = userOptional.get();
-		} else {
+		if (!userOptional.isPresent()) {
 			return new MultiValueMap();
 		}
 		return paymentInstructionService.getPaymentInstructionStats(status);
