@@ -597,3 +597,16 @@ databaseChangeLog:
      changes:
        - sql: >
            INSERT INTO status (status_id, status_description) VALUES ('RDM', 'Rejected by DM');
+  
+  - changeSet:
+     id: 21
+     author: rarasan
+     runInTransaction: false
+     preConditions:
+      - onFail: MARK_RAN
+      - dbms:
+          type: postgresql
+     changes:
+       - sql: >
+           CREATE INDEX CONCURRENTLY pi_status_index ON payment_instruction (status);
+           INSERT INTO status (status_id, status_description) VALUES ('RDM', 'Rejected by DM') ON CONFLICT ON CONSTRAINT status_pkey DO NOTHING;
