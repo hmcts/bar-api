@@ -1,17 +1,26 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
-import org.junit.Test;
-import uk.gov.hmcts.bar.api.data.model.*;
-
-import java.util.List;
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith;
 import static uk.gov.hmcts.bar.api.data.model.PostalOrder.postalOrderPaymentInstructionRequestWith;
 import static uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction.postalOrderPaymentInstructionWith;
+
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONParser;
+
+import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
+import uk.gov.hmcts.bar.api.data.model.PostalOrder;
+import uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction;
 
 public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
@@ -386,7 +395,184 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
     }
 
+	@Test
+	public void whenPostalOrderPaymentInstructionSubmittedToSrFeeClerkByFeeClerk_expectThePIToAppearInSrFeeClerkOverview()
+			throws Exception {
+		PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").postalOrderNumber("000000")
+				.build();
 
+		restActions.post("/allpay", proposedPostalOrderPaymentInstructionRequest).andExpect(status().isCreated());
+
+		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+
+		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+
+		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+				.build();
+
+		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+		PostalOrder modifiedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").postalOrderNumber("000000")
+				.build();
+
+		restActionsForFeeClerk.put("/allpay/1", modifiedPostalOrderPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk())
+				.andExpect(content().contentType("application/json;charset=UTF-8")).andReturn().getResponse()
+				.getContentAsString();
+		JSONObject feeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
+				.get("fee-clerk")).get(0);
+		assertEquals(feeClerk.get("bar_user_full_name"), "fee-clerk-fn fee-clerk-ln");
+		assertEquals(feeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
+	}
+
+	@Test
+	public void whenPostalOrderPaymentInstructionSubmittedToDMBySrFeeClerk_expectThePIToAppearDMOverview()
+			throws Exception {
+		PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").postalOrderNumber("000000")
+				.build();
+
+		restActions.post("/allpay", proposedPostalOrderPaymentInstructionRequest).andExpect(status().isCreated());
+
+		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+
+		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+
+		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+				.build();
+
+		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+		PostalOrder pendingApprovedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").postalOrderNumber("000000")
+				.build();
+
+		restActionsForFeeClerk.put("/allpay/1", pendingApprovedPostalOrderPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
+
+		PostalOrder approvedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("A").postalOrderNumber("000000")
+				.build();
+
+		restActionsForSrFeeClerk.put("/allpay/1", approvedPostalOrderPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		String jsonResponse = restActionsForDM.get("/users/pi-stats?status=A").andExpect(status().isOk())
+				.andExpect(content().contentType("application/json;charset=UTF-8")).andReturn().getResponse()
+				.getContentAsString();
+		JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
+				.get("sr-fee-clerk")).get(0);
+		assertEquals(srFeeClerk.get("bar_user_full_name"), "sr-fee-clerk-fn sr-fee-clerk-ln");
+		assertEquals(srFeeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
+	}
+
+	@Test
+	public void whenPostalOrderPaymentInstructionSubmittedBySrFeeClerkIsRejectedByDM_expectThePIStatusAsRDM()
+			throws Exception {
+		PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").postalOrderNumber("000000")
+				.build();
+
+		restActions.post("/allpay", proposedPostalOrderPaymentInstructionRequest).andExpect(status().isCreated());
+
+		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+
+		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+
+		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+				.build();
+
+		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+		PostalOrder pendingApprovedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").postalOrderNumber("000000")
+				.build();
+
+		restActionsForFeeClerk.put("/allpay/1", pendingApprovedPostalOrderPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
+
+		PostalOrder approvedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("A").postalOrderNumber("000000")
+				.build();
+
+		restActionsForSrFeeClerk.put("/allpay/1", approvedPostalOrderPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		PostalOrder rejectedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("RDM").postalOrderNumber("000000")
+				.build();
+
+		restActionsForDM.patch("/payment-instructions/1/reject", rejectedPostalOrderPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		restActionsForSrFeeClerk.get("/payment-instructions/1").andExpect(status().isOk())
+				.andExpect(body().as(PostalOrderPaymentInstruction.class, (pi) -> {
+					assertThat(pi.getStatus().equals("RDM"));
+				}));
+	}
+
+	@Test
+	public void whenPostalOrderPaymentInstructionSubmittedBySrFeeClerkIsRejectedByDM_expectThePIInSrFeeClerkOverviewStats()
+			throws Exception {
+		PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").postalOrderNumber("000000")
+				.build();
+
+		restActions.post("/allpay", proposedPostalOrderPaymentInstructionRequest).andExpect(status().isCreated());
+
+		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+
+		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+
+		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+				.build();
+
+		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+		PostalOrder pendingApprovedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").postalOrderNumber("000000")
+				.build();
+
+		restActionsForFeeClerk.put("/allpay/1", pendingApprovedPostalOrderPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
+
+		PostalOrder approvedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("A").postalOrderNumber("000000")
+				.build();
+
+		restActionsForSrFeeClerk.put("/allpay/1", approvedPostalOrderPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		PostalOrder rejectedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("RDM").postalOrderNumber("000000")
+				.build();
+
+		restActionsForDM.patch("/payment-instructions/1/reject", rejectedPostalOrderPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-rejected-stats?currentStatus=RDM&oldStatus=A")
+				.andExpect(status().isOk()).andExpect(content().contentType("application/json;charset=UTF-8"))
+				.andReturn().getResponse().getContentAsString();
+		System.out.println(jsonResponse);
+		JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
+				.get("sr-fee-clerk")).get(0);
+		assertEquals(srFeeClerk.get("bar_user_full_name"), "sr-fee-clerk-fn sr-fee-clerk-ln");
+		assertEquals(srFeeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
+	}
 
 
 }

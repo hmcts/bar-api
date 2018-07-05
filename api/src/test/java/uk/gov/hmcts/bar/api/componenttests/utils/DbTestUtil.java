@@ -54,8 +54,8 @@ public final class DbTestUtil {
         String insertUserSqlTemplate = getSqlTemplate(applicationContext, PROPERTY_KEY_INSERT_USER_SQL_TAMPLATE);
         try (Connection dbConnection = dataSource.getConnection();Statement stmt = dbConnection.createStatement() ) {
 
-            String[] args1 = new String[]{"'John'", "'Doe'",
-                "'" + userDteails.getUsername() + "'", "'" + userDteails.getAuthorities().stream().map(Object::toString).collect(Collectors.joining(", "))  + "'"};
+            String[] args1 = new String[]{"'" + userDteails.getUsername() + "-fn'",
+                "'" + userDteails.getUsername() + "-ln'", "'" + userDteails.getUsername() + "'", "'" + userDteails.getAuthorities().stream().map(Object::toString).collect(Collectors.joining(", "))  + "'"};
             String[] args2 = Arrays.copyOf(args1, args1.length);
             args2[0] = "'Jane'";
             args2[2] = "'4321'";
@@ -65,6 +65,19 @@ public final class DbTestUtil {
             stmt.executeQuery(query);
         }
     }
+    
+	public static void addTestUser(ApplicationContext applicationContext, UserDetails userDteails) throws SQLException {
+		DataSource dataSource = applicationContext.getBean(DataSource.class);
+		String insertUserSqlTemplate = getSqlTemplate(applicationContext, PROPERTY_KEY_INSERT_USER_SQL_TAMPLATE);
+		try (Connection dbConnection = dataSource.getConnection(); Statement stmt = dbConnection.createStatement()) {
+
+			String[] columnValues = new String[] { "'" + userDteails.getUsername() + "-fn'",
+					"'" + userDteails.getUsername() + "-ln'", "'" + userDteails.getUsername() + "'",
+					"'" + userDteails.getAuthorities().stream().map(Object::toString).collect(Collectors.joining(", "))
+							+ "'" };
+			stmt.executeQuery(String.format(insertUserSqlTemplate, columnValues));
+		}
+	}
 
     public static void insertPaymentInstructions(ApplicationContext applicationContext) throws SQLException {
         DataSource dataSource = applicationContext.getBean(DataSource.class);

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.bar.api.data.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -18,6 +19,8 @@ public class PaymentInstructionRequest {
     private Integer amount;
     private String currency;
     private String status;
+    @JsonIgnore
+    private String userId;
     protected String bgcNumber;
 
     @JsonCreator

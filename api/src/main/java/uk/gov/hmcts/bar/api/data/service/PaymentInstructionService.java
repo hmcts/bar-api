@@ -1,9 +1,18 @@
 package uk.gov.hmcts.bar.api.data.service;
 
 
-import com.google.common.collect.Lists;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.apache.commons.collections.MultiMap;
-import org.apache.commons.collections.map.MultiValueMap;
 import org.ff4j.FF4j;
 import org.ff4j.exception.FeatureAccessException;
 import org.slf4j.Logger;
@@ -14,20 +23,27 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
+
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
-import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.data.model.BankGiroCredit;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatus;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusHistory;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusReferenceKey;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats;
+import uk.gov.hmcts.bar.api.data.model.PaymentReference;
 import uk.gov.hmcts.bar.api.data.repository.BankGiroCreditRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionsSpecifications;
 import uk.gov.hmcts.bar.api.data.utils.Util;
-
-import java.time.LocalDate;
-import java.util.*;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 
 @Service
@@ -140,16 +156,18 @@ public class PaymentInstructionService {
         return paymentInstructionRepository.findByCaseReference(caseReference);
     }
 
-    public MultiMap getPaymentInstructionStats(String userRole, String status) {
-        List<PaymentInstructionOverview> paymentInstructionStatsList = paymentInstructionStatusRepository
-            .getPaymentOverviewStats(userRole);
-        MultiMap paymentInstructionStatsUserMap = new MultiValueMap();
-        paymentInstructionStatsList.forEach(pis -> paymentInstructionStatsUserMap.put(pis.getBarUserId(), pis));
-        List<PaymentInstructionUserStats> paymentInstructionInPAList = paymentInstructionStatusRepository
-            .getPaymentInstructionsPendingApprovalByUserGroup(userRole, status);
-        paymentInstructionInPAList.forEach(pius -> paymentInstructionStatsUserMap.put(pius.getBarUserId(), pius));
-        return paymentInstructionStatsUserMap;
-    }
+	public MultiMap getPaymentInstructionStats(String status) {
+		List<PaymentInstructionUserStats> paymentInstructionInStatusList = paymentInstructionStatusRepository
+				.getPaymentInstructionsByStatusGroupedByUser(status);
+		return Util.createMultimapFromList(paymentInstructionInStatusList);
+	}
+    
+	public MultiMap getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(String currentStatus,
+			String oldStatus) {
+		List<PaymentInstructionUserStats> paymentInstructionRejByDMList = paymentInstructionStatusRepository
+				.getPaymentInstructionStatsByCurrentStatusAndByOldStatusGroupedByUser(currentStatus, oldStatus);
+		return Util.createMultimapFromList(paymentInstructionRejByDMList);
+	}
 
     private void savePaymentInstructionStatus(PaymentInstruction pi, String userId) {
         PaymentInstructionStatusReferenceKey pisrKey = new PaymentInstructionStatusReferenceKey(pi.getId(),
@@ -162,7 +180,7 @@ public class PaymentInstructionService {
 
         if (null != endDate && startDate.isAfter(endDate)) {
             LOG.error("PaymentInstructionService - Error while generating daily fees csv file. Incorrect start and end dates ");
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
 
         if (null == endDate || startDate.equals(endDate)) {
@@ -210,6 +228,4 @@ public class PaymentInstructionService {
         });
         return ret[0];
     }
-
-
 }

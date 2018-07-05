@@ -574,3 +574,26 @@ databaseChangeLog:
                     foreignKeyName: fk_bank_giro_credit_number
                     references: bank_giro_credit(bgc_number)
             tableName: payment_instruction
+            
+  - changeSet:
+     id: 19
+     author: rarasan
+     preConditions:
+      - onFail: MARK_RAN
+      - dbms:
+          type: postgres
+     changes:
+       - sql: >
+           CREATE INDEX CONCURRENTLY pi_status_index ON payment_instruction (status);
+           INSERT INTO status (status_id, status_description) VALUES ('RDM', 'Rejected by DM') ON CONFLICT ON CONSTRAINT status_pkey DO NOTHING;
+           
+  - changeSet:
+     id: 20
+     author: rarasan
+     preConditions:
+      - onFail: MARK_RAN
+      - dbms:
+          type: hsqldb
+     changes:
+       - sql: >
+           INSERT INTO status (status_id, status_description) VALUES ('RDM', 'Rejected by DM');

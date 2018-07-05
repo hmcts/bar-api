@@ -1,20 +1,29 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
-import org.junit.Test;
-import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
-import uk.gov.hmcts.bar.api.data.model.*;
-
-import java.util.List;
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.bar.api.data.model.AllPay.allPayPaymentInstructionRequestWith;
 import static uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction.allPayPaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith;
+
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONParser;
+
+import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
+import uk.gov.hmcts.bar.api.data.model.AllPay;
+import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
+import uk.gov.hmcts.bar.api.data.model.Cash;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 
 public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
@@ -442,6 +451,177 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
         restActions
             .put("/payment-instructions/1", updatedActionSuspenseDefRequest)
             .andExpect(status().isBadRequest());
+    }
+    
+    @Test
+    public void whenAllPayPaymentInstructionSubmittedToSrFeeClerkByFeeClerk_expectThePIToAppearInSrFeeClerkOverview() throws Exception {
+		AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").allPayTransactionId("52345")
+				.build();
+
+		restActions.post("/allpay", proposedAllPayPaymentInstructionRequest).andExpect(status().isCreated());
+
+		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+
+		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+
+		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+				.build();
+
+		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+		AllPay modifiedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").allPayTransactionId("52345")
+				.build();
+
+		restActionsForFeeClerk.put("/allpay/1", modifiedAllPayPaymentInstructionRequest).andExpect(status().isOk());
+
+		String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk())
+				.andExpect(content().contentType("application/json;charset=UTF-8")).andReturn().getResponse()
+				.getContentAsString();
+		JSONObject feeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
+				.get("fee-clerk")).get(0);
+		assertEquals(feeClerk.get("bar_user_full_name"), "fee-clerk-fn fee-clerk-ln");
+		assertEquals(feeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
+    }
+    
+    @Test
+    public void whenAllPayPaymentInstructionSubmittedToDMBySrFeeClerk_expectThePIToAppearDMOverview() throws Exception {
+		AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").allPayTransactionId("52345")
+				.build();
+
+		restActions.post("/allpay", proposedAllPayPaymentInstructionRequest).andExpect(status().isCreated());
+
+		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+
+		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+
+		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+				.build();
+
+		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+		AllPay pendingApprovedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").allPayTransactionId("52345")
+				.build();
+
+		restActionsForFeeClerk.put("/allpay/1", pendingApprovedAllPayPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
+
+		AllPay approvedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("A").allPayTransactionId("52345")
+				.build();
+
+		restActionsForSrFeeClerk.put("/allpay/1", approvedAllPayPaymentInstructionRequest).andExpect(status().isOk());
+
+		String jsonResponse = restActionsForDM.get("/users/pi-stats?status=A").andExpect(status().isOk())
+				.andExpect(content().contentType("application/json;charset=UTF-8")).andReturn().getResponse()
+				.getContentAsString();
+		JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
+				.get("sr-fee-clerk")).get(0);
+		assertEquals(srFeeClerk.get("bar_user_full_name"), "sr-fee-clerk-fn sr-fee-clerk-ln");
+		assertEquals(srFeeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
+    }
+    
+    @Test
+    public void whenAllPayPaymentInstructionSubmittedBySrFeeClerkIsRejectedByDM_expectThePIStatusAsRDM() throws Exception {
+		AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").allPayTransactionId("52345")
+				.build();
+
+		restActions.post("/allpay", proposedAllPayPaymentInstructionRequest).andExpect(status().isCreated());
+
+		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+
+		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+
+		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+				.build();
+
+		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+		AllPay pendingApprovedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").allPayTransactionId("52345")
+				.build();
+
+		restActionsForFeeClerk.put("/allpay/1", pendingApprovedAllPayPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
+
+		AllPay approvedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("A").allPayTransactionId("52345")
+				.build();
+
+		restActionsForSrFeeClerk.put("/allpay/1", approvedAllPayPaymentInstructionRequest).andExpect(status().isOk());
+
+		AllPay rejectedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("RDM").allPayTransactionId("52345")
+				.build();
+
+		restActionsForDM.patch("/payment-instructions/1/reject", rejectedAllPayPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		restActionsForSrFeeClerk.get("/payment-instructions/1").andExpect(status().isOk())
+				.andExpect(body().as(AllPayPaymentInstruction.class, (pi) -> {
+					assertThat(pi.getStatus().equals("RDM"));
+				}));
+    }
+    
+    @Test
+    public void whenAllPayPaymentInstructionSubmittedBySrFeeClerkIsRejectedByDM_expectThePIInSrFeeClerkOverviewStats() throws Exception {
+		AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").allPayTransactionId("52345")
+				.build();
+
+		restActions.post("/allpay", proposedAllPayPaymentInstructionRequest).andExpect(status().isCreated());
+
+		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+
+		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+
+		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+				.build();
+
+		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+		AllPay pendingApprovedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").allPayTransactionId("52345")
+				.build();
+
+		restActionsForFeeClerk.put("/allpay/1", pendingApprovedAllPayPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
+
+		AllPay approvedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("A").allPayTransactionId("52345")
+				.build();
+
+		restActionsForSrFeeClerk.put("/allpay/1", approvedAllPayPaymentInstructionRequest).andExpect(status().isOk());
+
+		AllPay rejectedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("RDM").allPayTransactionId("52345")
+				.build();
+
+		restActionsForDM.patch("/payment-instructions/1/reject", rejectedAllPayPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-rejected-stats?currentStatus=RDM&oldStatus=A")
+				.andExpect(status().isOk()).andExpect(content().contentType("application/json;charset=UTF-8"))
+				.andReturn().getResponse().getContentAsString();
+		System.out.println(jsonResponse);
+		JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
+				.get("sr-fee-clerk")).get(0);
+		assertEquals(srFeeClerk.get("bar_user_full_name"), "sr-fee-clerk-fn sr-fee-clerk-ln");
+		assertEquals(srFeeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
     }
 
 }

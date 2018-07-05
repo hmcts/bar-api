@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class UtilTest {
@@ -64,6 +65,30 @@ public class UtilTest {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
         assertEquals(expectedDateTime,Util.getFormattedDateTime(testDateTime,formatter));
 
+    }
+    
+    @Test
+    public void givenDeliveryManagerRole_shouldReturnTrue() {
+    	String userRole = "bar-delivery-manager";
+    	assertTrue(Util.isUserDeliveryManager(userRole));
+    }
+    
+    @Test
+    public void givenSrFeeClerkRole_shouldReturnTrue() {
+    	String userRole = "bar-senior-clerk";
+    	assertTrue(Util.isUserSrFeeClerk(userRole));
+    }
+    
+    @Test
+    public void givenWrongDeliveryManagerRole_shouldReturnFalse() {
+    	String userRole = "bar-senior-clerk";
+    	assertFalse(Util.isUserDeliveryManager(userRole));
+    }
+    
+    @Test
+    public void givenWrongSrFeeClerkRole_shouldReturnFalse() {
+    	String userRole = "bar-delivery-manager";
+    	assertFalse(Util.isUserSrFeeClerk(userRole));
     }
 
 }

@@ -1,20 +1,26 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
-import org.junit.Test;
-import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
-import uk.gov.hmcts.bar.api.data.model.Cash;
-import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
-
-import java.util.List;
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.bar.api.data.model.Cash.cashPaymentInstructionRequestWith;
 import static uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction.cashPaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith;
+
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONParser;
+
+import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
+import uk.gov.hmcts.bar.api.data.model.Cash;
+import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 
 public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
@@ -353,5 +359,166 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isNotFound());
 
     }
+    
+	@Test
+	public void whenCashPaymentInstructionSubmittedToSrFeeClerkByFeeClerk_expectThePIToAppearInSrFeeClerkOverview()
+			throws Exception {
+		Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
+				.amount(550).currency("GBP").status("D").build();
+
+		restActions.post("/allpay", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
+
+		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+
+		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+
+		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+				.build();
+
+		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+		Cash modifiedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
+				.amount(550).currency("GBP").status("PA").build();
+
+		restActionsForFeeClerk.put("/allpay/1", modifiedCashPaymentInstructionRequest).andExpect(status().isOk());
+
+		String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk())
+				.andExpect(content().contentType("application/json;charset=UTF-8")).andReturn().getResponse()
+				.getContentAsString();
+		JSONObject feeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
+				.get("fee-clerk")).get(0);
+		assertEquals(feeClerk.get("bar_user_full_name"), "fee-clerk-fn fee-clerk-ln");
+		assertEquals(feeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
+	}
+
+	@Test
+	public void whenCashPaymentInstructionSubmittedToDMBySrFeeClerk_expectThePIToAppearDMOverview() throws Exception {
+		Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
+				.amount(550).currency("GBP").status("D").build();
+
+		restActions.post("/allpay", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
+
+		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+
+		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+
+		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+				.build();
+
+		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+		Cash pendingApprovedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").build();
+
+		restActionsForFeeClerk.put("/allpay/1", pendingApprovedCashPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
+
+		Cash approvedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
+				.amount(550).currency("GBP").status("A").build();
+
+		restActionsForSrFeeClerk.put("/allpay/1", approvedCashPaymentInstructionRequest).andExpect(status().isOk());
+
+		String jsonResponse = restActionsForDM.get("/users/pi-stats?status=A").andExpect(status().isOk())
+				.andExpect(content().contentType("application/json;charset=UTF-8")).andReturn().getResponse()
+				.getContentAsString();
+		JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
+				.get("sr-fee-clerk")).get(0);
+		assertEquals(srFeeClerk.get("bar_user_full_name"), "sr-fee-clerk-fn sr-fee-clerk-ln");
+		assertEquals(srFeeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
+	}
+
+	@Test
+	public void whenCashPaymentInstructionSubmittedBySrFeeClerkIsRejectedByDM_expectThePIStatusAsRDM()
+			throws Exception {
+		Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
+				.amount(550).currency("GBP").status("D").build();
+
+		restActions.post("/allpay", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
+
+		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+
+		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+
+		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+				.build();
+
+		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+		Cash pendingApprovedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").build();
+
+		restActionsForFeeClerk.put("/allpay/1", pendingApprovedCashPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
+
+		Cash approvedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
+				.amount(550).currency("GBP").status("A").build();
+
+		restActionsForSrFeeClerk.put("/allpay/1", approvedCashPaymentInstructionRequest).andExpect(status().isOk());
+
+		Cash rejectedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
+				.amount(550).currency("GBP").status("RDM").build();
+
+		restActionsForDM.patch("/payment-instructions/1/reject", rejectedCashPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		restActionsForSrFeeClerk.get("/payment-instructions/1").andExpect(status().isOk())
+				.andExpect(body().as(CashPaymentInstruction.class, (pi) -> {
+					assertThat(pi.getStatus().equals("RDM"));
+				}));
+	}
+
+	@Test
+	public void whenCashPaymentInstructionSubmittedBySrFeeClerkIsRejectedByDM_expectThePIInSrFeeClerkOverviewStats()
+			throws Exception {
+		Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
+				.amount(550).currency("GBP").status("D").build();
+
+		restActions.post("/allpay", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
+
+		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+
+		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+
+		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+				.build();
+
+		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+		Cash pendingApprovedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").build();
+
+		restActionsForFeeClerk.put("/allpay/1", pendingApprovedCashPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
+
+		Cash approvedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
+				.amount(550).currency("GBP").status("A").build();
+
+		restActionsForSrFeeClerk.put("/allpay/1", approvedCashPaymentInstructionRequest).andExpect(status().isOk());
+
+		Cash rejectedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
+				.amount(550).currency("GBP").status("RDM").build();
+
+		restActionsForDM.patch("/payment-instructions/1/reject", rejectedCashPaymentInstructionRequest)
+				.andExpect(status().isOk());
+
+		String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-rejected-stats?currentStatus=RDM&oldStatus=A")
+				.andExpect(status().isOk()).andExpect(content().contentType("application/json;charset=UTF-8"))
+				.andReturn().getResponse().getContentAsString();
+		System.out.println(jsonResponse);
+		JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
+				.get("sr-fee-clerk")).get(0);
+		assertEquals(srFeeClerk.get("bar_user_full_name"), "sr-fee-clerk-fn sr-fee-clerk-ln");
+		assertEquals(srFeeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
+	}
 
 }

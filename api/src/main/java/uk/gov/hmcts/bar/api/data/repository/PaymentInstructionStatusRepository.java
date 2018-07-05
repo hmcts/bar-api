@@ -20,19 +20,17 @@ public interface PaymentInstructionStatusRepository
 	Optional<PaymentInstructionStatus> findByPaymentInstructionStatusReferenceKey(
 			PaymentInstructionStatusReferenceKey paymentInstructionStatusReferenceKey);
 
-	@Query(name = "PaymentInstructionOverview", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionOverview"
-			+ "(CONCAT(bu.forename,' ',bu.surname), bu.id, COUNT(pi.id), pis.paymentInstructionStatusReferenceKey.status) "
-			+ "FROM PaymentInstruction pi, BarUser bu, PaymentInstructionStatus pis  WHERE "
-			+ "date(pis.paymentInstructionStatusReferenceKey.updateTime) = current_date AND "
-			+ "pis.paymentInstructionStatusReferenceKey.paymentInstructionId = pi.id AND pis.barUserId = bu.id AND bu.roles LIKE CONCAT('%',:userRole,'%') "
-			+ "GROUP BY bu.id,pis.paymentInstructionStatusReferenceKey.status ORDER BY bu.id")
-	List<PaymentInstructionOverview> getPaymentOverviewStats(@Param("userRole") String userRole);
-
 	@Query(name = "PIByUserGroup", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats"
 			+ "(bu.id, CONCAT(bu.forename,' ',bu.surname), COUNT(pi.id)) FROM BarUser bu, PaymentInstruction pi  WHERE pi.status = :status AND "
-			+ "pi.userId = bu.id AND bu.roles LIKE CONCAT('%',:userRole,'%') GROUP BY bu.id")
-	List<PaymentInstructionUserStats> getPaymentInstructionsPendingApprovalByUserGroup(@Param("userRole") String userRole, @Param("status") String status);
-
+			+ "pi.userId = bu.id GROUP BY bu.id")
+	List<PaymentInstructionUserStats> getPaymentInstructionsByStatusGroupedByUser(@Param("status") String status);
+	
+	@Query(name = "PIRejectedByDM", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats"
+			+ "(bu.id, CONCAT(bu.forename,' ',bu.surname), COUNT(pi.id)) FROM BarUser bu, PaymentInstruction pi, PaymentInstructionStatus pis WHERE "
+			+ "pi.id IN (SELECT piinner.id FROM PaymentInstruction piinner WHERE piinner.status = :currentStatus) AND pi.id = pis.paymentInstructionStatusReferenceKey.paymentInstructionId "
+			+ "AND pis.paymentInstructionStatusReferenceKey.status = :oldStatus AND pis.barUserId = bu.id GROUP BY bu.id")
+	List<PaymentInstructionUserStats> getPaymentInstructionStatsByCurrentStatusAndByOldStatusGroupedByUser(
+			@Param("currentStatus") String currentStatus, @Param("oldStatus") String oldStatus);
 
     @Query(name = "PIReportDetails", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusHistory"
         + "(pis.paymentInstructionStatusReferenceKey.paymentInstructionId,pis.barUserId,CONCAT(bu.forename,' ',bu.surname),"

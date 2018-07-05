@@ -39,4 +39,8 @@ public class BarUserService {
         }
         return userId.orElseThrow(() -> new AccessDeniedException("failed to identify user"));
     }
+    
+	public Optional<BarUser> getBarUser() {
+		return barUserRepository.findBarUserById(getCurrentUserId());
+	}
 }
