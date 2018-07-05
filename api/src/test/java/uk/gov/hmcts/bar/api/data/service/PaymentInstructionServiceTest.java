@@ -1,34 +1,65 @@
 package uk.gov.hmcts.bar.api.data.service;
 
-import com.google.common.collect.Lists;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.apache.commons.collections.MultiMap;
-import org.apache.commons.collections.map.MultiValueMap;
 import org.ff4j.FF4j;
 import org.ff4j.exception.FeatureAccessException;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specifications;
+
+import com.google.common.collect.Lists;
+
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
-import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.BankGiroCredit;
+import uk.gov.hmcts.bar.api.data.model.BarUser;
+import uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto.PaymentInstructionSearchCriteriaDtoBuilder;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatus;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusHistory;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusReferenceKey;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentReference;
+import uk.gov.hmcts.bar.api.data.model.PostalOrder;
+import uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.repository.BankGiroCreditRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.*;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
 
 public class PaymentInstructionServiceTest {
 
@@ -83,9 +114,6 @@ public class PaymentInstructionServiceTest {
     @Mock
     private PaymentInstructionStatusRepository paymentInstructionStatusRepositoryMock;
     
-    @Mock
-    private PaymentInstructionStatusHistory paymentInstructionStatusHistoryMock;
-
     private PaymentInstructionStatus paymentInstructionStatus;
 
     private PaymentInstructionStatusReferenceKey paymentInstructionStatusReferenceKey;
@@ -509,8 +537,7 @@ public class PaymentInstructionServiceTest {
 
 	@Test
 	public void verifyRepositoryMethodCalls_whenGetPaymentInstructionStats() throws Exception {
-		Map<String, MultiMap> combinedPaymentInstructionOverviewMap = paymentInstructionService
-				.getPaymentInstructionStats("");
+		paymentInstructionService.getPaymentInstructionStats("");
 		verify(paymentInstructionStatusRepositoryMock, times(1))
 				.getPaymentInstructionsByStatusGroupedByUser(anyString());
 	}
@@ -518,8 +545,7 @@ public class PaymentInstructionServiceTest {
 	@Test
 	public void verifyRepositoryMethodCalls_whenGetPaymentInstructionStatsByCurrentStatusGroupedByOldStatus()
 			throws Exception {
-		Map<String, MultiMap> combinedPaymentInstructionOverviewMap = paymentInstructionService
-				.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus("", "");
+		paymentInstructionService.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus("", "");
 		verify(paymentInstructionStatusRepositoryMock, times(1))
 				.getPaymentInstructionStatsByCurrentStatusAndByOldStatusGroupedByUser(anyString(), anyString());
 	}
