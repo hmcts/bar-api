@@ -11,6 +11,8 @@ import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -58,6 +60,8 @@ import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
 import uk.gov.hmcts.bar.api.data.service.UnallocatedAmountService;
 import uk.gov.hmcts.bar.api.data.utils.PaymentStatusEnumConverter;
 import uk.gov.hmcts.bar.api.data.utils.Util;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 @RestController
 
@@ -152,6 +156,22 @@ public class PaymentInstructionController {
         return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
     }
 
+    @ApiOperation(value = "collect stats for a user", notes = "Collect all payment instruction stats for a user grouped by type for a given status")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return stats for a given user"),
+        @ApiResponse(code = 400, message = "Bad request"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/users/{id}/payment-instructions/stats")
+    public Resource<MultiMap> getPaymentInstructionStatsByUser(
+        @PathVariable("id") String id,
+        @RequestParam(name = "status", required = false) String status) {
+
+        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType(id, status);
+        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUser(id, status)).withSelfRel();
+        Resource<MultiMap> result = new Resource<>(stats, link);
+        return result;
+    }
+
     @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction for the given id.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return payment instruction"),
         @ApiResponse(code = 404, message = "Payment instruction not found"),
@@ -234,7 +254,7 @@ public class PaymentInstructionController {
         paymentInstructionService.updatePaymentInstruction(id,cheque);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    
+
     @ApiOperation(value = "Reject the payment instruction", notes = "Reject payment instruction with the given id.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Payment instruction rejected"),
         @ApiResponse(code = 400, message = "Bad request"),
@@ -424,7 +444,7 @@ public class PaymentInstructionController {
 		}
 		return paymentInstructionService.getPaymentInstructionStats(status);
     }
-    
+
     @ApiOperation(value = "Get the payments stats", notes = "Get the payment instruction's stats showing each User's activities.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Return payment overview stats"),
         @ApiResponse(code = 500, message = "Internal server error") })
@@ -433,7 +453,7 @@ public class PaymentInstructionController {
 	public MultiMap getPIStats(@RequestParam(name = "status", required = true) PaymentStatusEnum status) {
 		return paymentInstructionService.getPaymentInstructionStats(status.dbKey());
 	}
-    
+
 	@ApiOperation(value = "Get the rejected payments stats", notes = "Get the payment instruction's rejected stats showing each User's activities.")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Return rejected payment stats"),
 		@ApiResponse(code = 500, message = "Internal server error") })
@@ -493,7 +513,7 @@ public class PaymentInstructionController {
         }
         return false;
     }
-    
+
     @InitBinder
 	public void initBinder(final WebDataBinder webdataBinder) {
 		webdataBinder.registerCustomEditor(PaymentStatusEnum.class, new PaymentStatusEnumConverter());
