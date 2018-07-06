@@ -40,6 +40,9 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-actuator'
     compile group: 'org.ff4j', name: 'ff4j-spring-boot-web-api', version: '1.7.1'
     compile group: 'org.ff4j', name: 'ff4j-store-springjdbc', version: '1.7.1'
+    compile group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.24.0.RELEASE'
+
+
 
 
     compile 'org.liquibase:liquibase-core'

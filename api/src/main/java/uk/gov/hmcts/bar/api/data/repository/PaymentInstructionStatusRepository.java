@@ -45,4 +45,10 @@ public interface PaymentInstructionStatusRepository
     List<PaymentInstructionStatusHistory>  getPaymentInstructionStatusHistoryForTTB
         (@Param("historyStartDate") LocalDateTime historyStartDate, @Param("historyEndDate") LocalDateTime historyEndDate);
 
+    @Query(value = "SELECT user_id as userId, count(id) as count, status, sum(amount) as totalAmount, payment_type_id as PaymentType, " +
+        "bgc_number as bgc from payment_instruction where status = :paymentStatus and user_id = :userId " +
+        "group by bgc_number, payment_type_id, status, user_id " +
+        "order by bgc_number", nativeQuery = true)
+    List<PaymentInstructionStats> getStatsByUserGroupByType(@Param("userId") String userId, @Param("paymentStatus") String paymentStatus);
+
 }

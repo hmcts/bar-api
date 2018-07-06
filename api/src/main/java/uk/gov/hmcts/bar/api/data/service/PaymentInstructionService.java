@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.ff4j.FF4j;
 import org.ff4j.exception.FeatureAccessException;
 import org.slf4j.Logger;
@@ -21,36 +22,41 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.bar.api.controllers.payment.PaymentInstructionController;
 
 import com.google.common.collect.Lists;
 
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
-import uk.gov.hmcts.bar.api.data.model.BankGiroCredit;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatus;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusHistory;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusReferenceKey;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats;
-import uk.gov.hmcts.bar.api.data.model.PaymentReference;
+import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.repository.BankGiroCreditRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionsSpecifications;
 import uk.gov.hmcts.bar.api.data.utils.Util;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 
 @Service
 @Transactional
 public class PaymentInstructionService {
 
+    public static final String STAT_GROUP_DETAILS = "stat-group-details";
+    public static final String STAT_DETAILS = "stat-details";
+
     private static final Logger LOG = getLogger(PaymentInstructionService.class);
+
+    private static final List<String> GROUPED_TYPES = Arrays.asList("cheques", "postal-orders");
 
     public static final String SITE_ID = "BR01";
     private static final int PAGE_NUMBER = 0;
@@ -161,13 +167,42 @@ public class PaymentInstructionService {
 				.getPaymentInstructionsByStatusGroupedByUser(status);
 		return Util.createMultimapFromList(paymentInstructionInStatusList);
 	}
-    
+
 	public MultiMap getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(String currentStatus,
 			String oldStatus) {
 		List<PaymentInstructionUserStats> paymentInstructionRejByDMList = paymentInstructionStatusRepository
 				.getPaymentInstructionStatsByCurrentStatusAndByOldStatusGroupedByUser(currentStatus, oldStatus);
 		return Util.createMultimapFromList(paymentInstructionRejByDMList);
 	}
+
+    public MultiMap getPaymentStatsByUserGroupByType(String userId, String status) {
+        List<PaymentInstructionStats> results = paymentInstructionStatusRepository.getStatsByUserGroupByType(userId, status);
+        MultiMap paymentInstructionStatsGroupedByBgc = new MultiValueMap();
+        results.stream().forEach(stat -> {
+            Link detailslink = linkTo(methodOn(PaymentInstructionController.class)
+                .getPaymentInstructionsByIdamId(userId, status,
+                    null, null, null, null, null,
+                    null, null, null, stat.getPaymentType(), null)
+            ).withRel(STAT_DETAILS);
+
+            Resource<PaymentInstructionStats> resource = new Resource<>(stat, detailslink.expand());
+
+            // TODO: this is just a temp solution we have to clarify with PO if we really need to group cheques and postal-orders
+            if (GROUPED_TYPES.contains(stat.getPaymentType())){
+                Link groupedLink = linkTo(methodOn(PaymentInstructionController.class)
+                    .getPaymentInstructionsByIdamId(userId, status,
+                        null, null, null, null, null,
+                        null, null, null,
+                        GROUPED_TYPES.stream().collect(Collectors.joining( "," )), null)
+                ).withRel(STAT_GROUP_DETAILS);
+                resource.add(groupedLink.expand());
+            }
+
+            paymentInstructionStatsGroupedByBgc.put(
+            stat.getBgc() == null ? "0" : stat.getBgc(), resource);
+        });
+        return paymentInstructionStatsGroupedByBgc;
+    }
 
     private void savePaymentInstructionStatus(PaymentInstruction pi, String userId) {
         PaymentInstructionStatusReferenceKey pisrKey = new PaymentInstructionStatusReferenceKey(pi.getId(),
