@@ -6,6 +6,7 @@ module "bar-api" {
   ilbIp = "${var.ilbIp}"
   subscription = "${var.subscription}"
   is_frontend  = false
+  common_tags     = "${var.common_tags}"
 
   app_settings = {
     # db
@@ -26,6 +27,7 @@ module "bar-database" {
   database_name = "${var.database_name}"
   sku_name = "GP_Gen5_2"
   sku_tier = "GeneralPurpose"
+  common_tags     = "${var.common_tags}"
 }
 
 module "key-vault" {
