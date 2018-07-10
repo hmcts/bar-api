@@ -1,17 +1,7 @@
 package uk.gov.hmcts.bar.api.data.service;
 
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import com.google.common.collect.Lists;
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.ff4j.FF4j;
@@ -27,9 +17,6 @@ import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.bar.api.controllers.payment.PaymentInstructionController;
-
-import com.google.common.collect.Lists;
-
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
@@ -40,9 +27,11 @@ import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionsSpecifications;
 import uk.gov.hmcts.bar.api.data.utils.Util;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
@@ -67,13 +56,15 @@ public class PaymentInstructionService {
     private final BarUserService barUserService;
     private final BankGiroCreditRepository bankGiroCreditRepository;
     private final FF4j ff4j;
+    private PaymentTypeService paymentTypeService;
 
 
     public PaymentInstructionService(PaymentReferenceService paymentReferenceService, PaymentInstructionRepository paymentInstructionRepository,
                                      BarUserService barUserService,
                                      PaymentInstructionStatusRepository paymentInstructionStatusRepository,
                                      FF4j ff4j,
-                                     BankGiroCreditRepository bankGiroCreditRepository
+                                     BankGiroCreditRepository bankGiroCreditRepository,
+                                     PaymentTypeService paymentTypeService
                                      ) {
         this.paymentReferenceService = paymentReferenceService;
         this.paymentInstructionRepository = paymentInstructionRepository;
@@ -81,6 +72,7 @@ public class PaymentInstructionService {
         this.paymentInstructionStatusRepository = paymentInstructionStatusRepository;
         this.ff4j = ff4j;
         this.bankGiroCreditRepository = bankGiroCreditRepository;
+        this.paymentTypeService = paymentTypeService;
     }
 
     public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction) {
@@ -99,7 +91,7 @@ public class PaymentInstructionService {
     public List<PaymentInstruction> getAllPaymentInstructions(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto) {
 
         paymentInstructionSearchCriteriaDto.setSiteId(SITE_ID);
-        PaymentInstructionsSpecifications paymentInstructionsSpecification = new PaymentInstructionsSpecifications(paymentInstructionSearchCriteriaDto);
+        PaymentInstructionsSpecifications paymentInstructionsSpecification = new PaymentInstructionsSpecifications(paymentInstructionSearchCriteriaDto,paymentTypeService);
         Sort sort = new Sort(Sort.Direction.DESC, "paymentDate");
         Pageable pageDetails = new PageRequest(PAGE_NUMBER, MAX_RECORDS_PER_PAGE, sort);
 

@@ -5,6 +5,7 @@ import uk.gov.hmcts.bar.api.data.model.CaseFeeDetail;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
 import uk.gov.hmcts.bar.api.data.model.PaymentType;
+import uk.gov.hmcts.bar.api.data.service.PaymentTypeService;
 import uk.gov.hmcts.bar.api.data.utils.Util;
 
 import javax.persistence.criteria.*;
@@ -12,7 +13,7 @@ import javax.persistence.criteria.CriteriaBuilder.In;
 import java.time.LocalDateTime;
 
 public class PaymentInstructionsSpecifications {
-
+    private PaymentTypeService paymentTypeService;
 	private PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto;
 	protected Specification<PaymentInstruction> statusSpec = null;
 	protected Specification<PaymentInstruction> startDateSpec = null;
@@ -28,8 +29,9 @@ public class PaymentInstructionsSpecifications {
 	protected Specification<PaymentInstruction> caseReferenceSpec = null;
 	protected Specification<PaymentInstruction> paymentTypeSpec = null;
 
-	public PaymentInstructionsSpecifications(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto) {
+	public PaymentInstructionsSpecifications(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto, PaymentTypeService paymentTypeService) {
 		this.paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDto;
+		this.paymentTypeService = paymentTypeService;
 
 		statusSpec = new StatusSpec();
 		startDateSpec = new StartDateSpec();
@@ -231,7 +233,7 @@ public class PaymentInstructionsSpecifications {
             if (paymentInstructionSearchCriteriaDto.getPaymentType() != null) {
                 inCriteriaForPaymentType = criteriaBuilder.in(paymentType);
             }
-            return Util.getListOfPaymentTypes(inCriteriaForPaymentType, paymentInstructionSearchCriteriaDto.getPaymentType());
+            return Util.getListOfPaymentTypes(inCriteriaForPaymentType, paymentInstructionSearchCriteriaDto.getPaymentType(),paymentTypeService);
         }
     }
 

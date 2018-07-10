@@ -5,7 +5,6 @@ import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats;
@@ -20,20 +19,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Component
-public class Util {
 
-    private static PaymentTypeService paymentTypeService;
-    private static final String SR_FEE_CLERK_ROLE = "bar-senior-clerk";
-    private static final String DELIVERY_MANAGER_ROLE = "bar-delivery-manager";
+public interface Util {
 
+    String SR_FEE_CLERK_ROLE = "bar-senior-clerk";
+    String DELIVERY_MANAGER_ROLE = "bar-delivery-manager";
 
-    public Util (PaymentTypeService paymentTypeService){
-        this.paymentTypeService = paymentTypeService;
-
-    }
-
-    public  static String[] getNullPropertyNames(Object source) {
+    static String[] getNullPropertyNames(Object source) {
         final BeanWrapper wrappedSource = new BeanWrapperImpl(source);
         return Stream.of(wrappedSource.getPropertyDescriptors())
             .map(FeatureDescriptor::getName)
@@ -41,7 +33,7 @@ public class Util {
             .toArray(String[]::new);
     }
 
-    public static List<PaymentInstruction> updateStatusAndActionDisplayValue(
+    static List<PaymentInstruction> updateStatusAndActionDisplayValue(
         final List<PaymentInstruction> paymentInstructions) {
         return paymentInstructions.stream().map(paymentInstruction -> {
             paymentInstruction
@@ -53,7 +45,7 @@ public class Util {
         }).collect(Collectors.toList());
     }
 
-    public static In<String> getListOfStatuses(In<String> inCriteriaForStatus, String status) {
+    static In<String> getListOfStatuses(In<String> inCriteriaForStatus, String status) {
         if (inCriteriaForStatus == null) {
             return null;
         }
@@ -68,8 +60,8 @@ public class Util {
         return inCriteriaForStatus;
     }
 
-    public static In<PaymentType> getListOfPaymentTypes(In<PaymentType> inCriteriaForPaymentType, String paymentType) {
-        if (inCriteriaForPaymentType == null) {
+    static In<PaymentType> getListOfPaymentTypes(In<PaymentType> inCriteriaForPaymentType, String paymentType, PaymentTypeService paymentTypeService) {
+        if (inCriteriaForPaymentType == null || paymentType == null || paymentTypeService == null) {
             return null;
         }
         String[] paymentTypesStringArray = paymentType.split(",");
@@ -84,21 +76,19 @@ public class Util {
     }
 
 
-
-
-    public static String getFormattedDateTime(LocalDateTime localDateTime, DateTimeFormatter dateFormatter){
+    static String getFormattedDateTime(LocalDateTime localDateTime, DateTimeFormatter dateFormatter) {
         return (localDateTime == null || dateFormatter == null) ? null : localDateTime.format(dateFormatter);
     }
 
-    public static boolean isUserDeliveryManager(String userRoles) {
+    static boolean isUserDeliveryManager(String userRoles) {
         return StringUtils.containsIgnoreCase(userRoles, DELIVERY_MANAGER_ROLE);
     }
 
-    public static boolean isUserSrFeeClerk(String userRoles) {
+    static boolean isUserSrFeeClerk(String userRoles) {
         return StringUtils.containsIgnoreCase(userRoles, SR_FEE_CLERK_ROLE);
     }
 
-    public static MultiMap createMultimapFromList(List<PaymentInstructionUserStats> piStatsList) {
+    static MultiMap createMultimapFromList(List<PaymentInstructionUserStats> piStatsList) {
         MultiMap paymentInstructionStatsUserMap = new MultiValueMap();
         piStatsList.forEach(pius -> paymentInstructionStatsUserMap.put(pius.getBarUserId(), pius));
         return paymentInstructionStatsUserMap;
