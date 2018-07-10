@@ -17,7 +17,7 @@ public class PaymentInstructionUserFilterTest extends ComponentTestBase {
             .get("/payment-instructions")
             .andExpect(status().isOk())
             .andExpect(body().asListOf(CardPaymentInstruction.class, paymentInstructions -> {
-                Assert.assertTrue(paymentInstructions.size() == 2);
+                Assert.assertTrue(paymentInstructions.size() == 3);
             }));
 
     }

@@ -10,6 +10,7 @@ import javax.persistence.Id;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(builderMethodName = "paymentTypeWith")
+@EqualsAndHashCode
 public class PaymentType{
 
     @Id

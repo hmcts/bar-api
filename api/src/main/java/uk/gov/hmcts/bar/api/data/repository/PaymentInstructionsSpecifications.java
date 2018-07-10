@@ -226,13 +226,14 @@ public class PaymentInstructionsSpecifications {
 
         @Override
         public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-            Predicate predicate = null;
+            In<PaymentType> inCriteriaForPaymentType  = null;
             Join<PaymentInstruction, PaymentType> paymentType = root.join("paymentType");
             if (paymentInstructionSearchCriteriaDto.getPaymentType() != null) {
-                predicate = criteriaBuilder.equal(paymentType.get("id"), paymentInstructionSearchCriteriaDto.getPaymentType());
+                inCriteriaForPaymentType = criteriaBuilder.in(paymentType);
             }
-            return predicate;
+            return Util.getListOfPaymentTypes(inCriteriaForPaymentType, paymentInstructionSearchCriteriaDto.getPaymentType());
         }
     }
+
 
 }
