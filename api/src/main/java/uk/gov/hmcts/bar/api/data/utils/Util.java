@@ -8,8 +8,6 @@ import org.springframework.beans.BeanWrapperImpl;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats;
-import uk.gov.hmcts.bar.api.data.model.PaymentType;
-import uk.gov.hmcts.bar.api.data.service.PaymentTypeService;
 
 import javax.persistence.criteria.CriteriaBuilder.In;
 import java.beans.FeatureDescriptor;
@@ -59,22 +57,6 @@ public interface Util {
         }
         return inCriteriaForStatus;
     }
-
-    static In<PaymentType> getListOfPaymentTypes(In<PaymentType> inCriteriaForPaymentType, String paymentType, PaymentTypeService paymentTypeService) {
-        if (inCriteriaForPaymentType == null || paymentType == null || paymentTypeService == null) {
-            return null;
-        }
-        String[] paymentTypesStringArray = paymentType.split(",");
-        if (paymentTypesStringArray != null && paymentTypesStringArray.length > 0) {
-            for (String paymentTypeValue : paymentTypesStringArray) {
-                inCriteriaForPaymentType.value(paymentTypeService.getPaymentTypeById(paymentTypeValue));
-            }
-        } else {
-            inCriteriaForPaymentType.value(paymentTypeService.getPaymentTypeById(paymentType));
-        }
-        return inCriteriaForPaymentType;
-    }
-
 
     static String getFormattedDateTime(LocalDateTime localDateTime, DateTimeFormatter dateFormatter) {
         return (localDateTime == null || dateFormatter == null) ? null : localDateTime.format(dateFormatter);
