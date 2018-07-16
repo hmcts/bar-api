@@ -200,21 +200,22 @@ public class PaymentInstructionService {
         paymentInstructionStatusRepository.save(pis);
     }
 
-    public Map<Integer, List<PaymentInstructionStatusHistory>> getStatusHistoryMapForTTB(LocalDate startDate, LocalDate endDate) {
+    public Map<Integer, List<PaymentInstructionStatusHistory>> getStatusHistoryMapForTTB(LocalDate startDate,  LocalDate endDate) {
 
         if (null != endDate && startDate.isAfter(endDate)) {
             LOG.error("PaymentInstructionService - Error while generating daily fees csv file. Incorrect start and end dates ");
             return Collections.emptyMap();
         }
+        LocalDate searchEndDate;
 
         if (null == endDate || startDate.equals(endDate)) {
-            endDate = startDate.plusDays(1);
+            searchEndDate = startDate.plusDays(1);
         } else {
-            endDate = endDate.plusDays(1);
+            searchEndDate = endDate.plusDays(1);
         }
 
         List<PaymentInstructionStatusHistory> statusHistoryList = paymentInstructionStatusRepository.getPaymentInstructionStatusHistoryForTTB
-            (startDate.atStartOfDay(), endDate.atStartOfDay());
+            (startDate.atStartOfDay(), searchEndDate.atStartOfDay());
 
         final Map<Integer, List<PaymentInstructionStatusHistory>> statusHistoryMapByPaymentInstructionId = new HashMap<>();
         for (final PaymentInstructionStatusHistory statusHistory : statusHistoryList) {
