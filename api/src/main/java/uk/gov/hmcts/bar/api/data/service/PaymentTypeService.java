@@ -1,6 +1,7 @@
 package uk.gov.hmcts.bar.api.data.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.bar.api.data.model.PaymentType;
 import uk.gov.hmcts.bar.api.data.repository.PaymentTypeRepository;
@@ -22,7 +23,7 @@ public class PaymentTypeService {
         return paymentTypeRepository.findAll();
     }
 
-
+    @Cacheable("paymentTypes")
     public PaymentType getPaymentTypeById(String id){
         return paymentTypeRepository.getOne(id);
     }
