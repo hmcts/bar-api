@@ -1,17 +1,7 @@
 package uk.gov.hmcts.bar.api.data.service;
 
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import com.google.common.collect.Lists;
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.ff4j.FF4j;
@@ -27,9 +17,6 @@ import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.bar.api.controllers.payment.PaymentInstructionController;
-
-import com.google.common.collect.Lists;
-
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
@@ -40,9 +27,11 @@ import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionsSpecifications;
 import uk.gov.hmcts.bar.api.data.utils.Util;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
@@ -211,7 +200,7 @@ public class PaymentInstructionService {
         paymentInstructionStatusRepository.save(pis);
     }
 
-    public Map<Integer, List<PaymentInstructionStatusHistory>> getStatusHistortMapForTTB(LocalDate startDate, LocalDate endDate) {
+    public Map<Integer, List<PaymentInstructionStatusHistory>> getStatusHistoryMapForTTB(LocalDate startDate, LocalDate endDate) {
 
         if (null != endDate && startDate.isAfter(endDate)) {
             LOG.error("PaymentInstructionService - Error while generating daily fees csv file. Incorrect start and end dates ");
@@ -242,7 +231,7 @@ public class PaymentInstructionService {
     }
 
     public List<PaymentInstruction> getAllPaymentInstructionsByTTB(LocalDate startDate, LocalDate endDate) {
-        Map<Integer, List<PaymentInstructionStatusHistory>> statusHistortMapForTTB = getStatusHistortMapForTTB(startDate, endDate);
+        Map<Integer, List<PaymentInstructionStatusHistory>> statusHistortMapForTTB = getStatusHistoryMapForTTB(startDate, endDate);
         Iterator<Map.Entry<Integer, List<PaymentInstructionStatusHistory>>> iterator = statusHistortMapForTTB.entrySet().iterator();
         List<PaymentInstruction> paymentInstructionsList = new ArrayList<>();
         while (iterator.hasNext()) {

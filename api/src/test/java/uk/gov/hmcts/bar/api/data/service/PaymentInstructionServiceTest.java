@@ -1,24 +1,5 @@
 package uk.gov.hmcts.bar.api.data.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.bar.api.data.service.PaymentInstructionService.*;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.*;
-
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
@@ -26,15 +7,10 @@ import org.ff4j.FF4j;
 import org.ff4j.exception.FeatureAccessException;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specifications;
-
 import org.springframework.hateoas.Resource;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
@@ -43,6 +19,18 @@ import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto.Payme
 import uk.gov.hmcts.bar.api.data.repository.BankGiroCreditRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.*;
+
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.bar.api.data.service.PaymentInstructionService.STAT_DETAILS;
+import static uk.gov.hmcts.bar.api.data.service.PaymentInstructionService.STAT_GROUP_DETAILS;
 
 public class PaymentInstructionServiceTest {
 
@@ -620,7 +608,7 @@ public class PaymentInstructionServiceTest {
 	public void shouldReturnEmptyMap_whenGetStatusHistortMapForTTBCalledWithStartdateGreaterThanEndDate()
 			throws Exception {
 		Map<Integer, List<PaymentInstructionStatusHistory>> pishMap = paymentInstructionService
-				.getStatusHistortMapForTTB(LocalDate.now(), LocalDate.now().minusDays(1));
+				.getStatusHistoryMapForTTB(LocalDate.now(), LocalDate.now().minusDays(1));
 		assertTrue(pishMap.isEmpty());
 	}
 

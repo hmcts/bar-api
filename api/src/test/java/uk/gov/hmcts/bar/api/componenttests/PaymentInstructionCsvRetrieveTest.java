@@ -1,7 +1,6 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.hmcts.bar.api.data.model.PostalOrder;
 
@@ -16,7 +15,6 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
 
 
     public static final String CURRENT_DATE = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-    @Ignore
     @Test
     public void givenPostalOrderPaymentInstructionDetails_retrieveAsCvs() throws Exception {
         PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
@@ -25,56 +23,52 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
             .currency("GBP").status("D")
             .postalOrderNumber("000000").build();
 
-        restActions
-            .post("/postal-orders", proposedPostalOrderPaymentInstructionRequest)
-            .andExpect(status().isCreated());
-
-        PostalOrder updatedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+        PostalOrder validatedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(533)
             .currency("GBP").status("V")
             .postalOrderNumber("000000").build();
 
-        restActions
-            .put("/postal-orders/1", updatedPostalOrderPaymentInstructionRequest)
-            .andExpect(status().isOk());
-
-        updatedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+        PostalOrder approvedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(533)
             .currency("GBP").status("A")
             .postalOrderNumber("000000").build();
 
-        restActions
-            .put("/postal-orders/1", updatedPostalOrderPaymentInstructionRequest)
-            .andExpect(status().isOk());
 
-        updatedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+        PostalOrder ttbPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(533)
             .currency("GBP").status("TTB")
             .postalOrderNumber("000000").build();
 
         restActions
-            .put("/postal-orders/1", updatedPostalOrderPaymentInstructionRequest)
+            .post("/postal-orders", proposedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+        restActions
+            .put("/postal-orders/1", validatedPostalOrderPaymentInstructionRequest)
             .andExpect(status().isOk());
-
-
+        restActions
+            .put("/postal-orders/1", approvedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isOk());
+        restActions
+            .put("/postal-orders/1", ttbPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isOk());
+        LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDate currentDate = LocalDate.now();
         String expectedPaymentDate = currentDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
-        LocalDateTime currentDateTime = LocalDateTime.now();
         DateTimeFormatter paramFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
         String paramStartDate = currentDate.format(paramFormatter);
         DateTimeFormatter actualFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
         String actualStartDateTime = currentDateTime.format(actualFormatter);
 
-
         restActions
             .getCsv("/payment-instructions?startDate=" + paramStartDate)
             .andExpect(status().isOk())
             .andExpect(result -> {
-                Assert.assertEquals("\"Daily sequential payment ID\",\"Date\",\"Payee name\",\"Cheque Amount\",\"Postal Order Amount\",\"Cash Amount\",\"Card Amount\",\"AllPay Amount\",\"Action Taken\",\"Case ref no.\",\"Fee Amount\",\"Fee code\",\"Fee description\",\"Recorded user\",\"Recorded time\",\"Validated user\",\"Validated time\",\"Approved user\",\"Approved time\",\"Transferred to BAR user\",\"Transferred to BAR time\"\n" +
-                        "\"1\",\"" + expectedPaymentDate + "\",\"Mr Payer Payer\",\"\",\"5.33\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"John Doe\",\""+actualStartDateTime+"\",\"John Doe\",\""+actualStartDateTime+"\",\"John Doe\",\""+actualStartDateTime+"\",\"John Doe\",\""+actualStartDateTime+"\"\n",
+                System.out.println(result.getResponse().getContentAsString());
+                Assert.assertEquals("\"Daily sequential payment ID\",\"Date\",\"Payee name\",\"Cheque Amount\",\"Postal Order Amount\",\"Cash Amount\",\"Card Amount\",\"AllPay Amount\",\"Action Taken\",\"Case ref no.\",\"BGC Slip No.\",\"Fee Amount\",\"Fee code\",\"Fee description\",\"Recorded user\",\"Recorded time\",\"Validated user\",\"Validated time\",\"Approved user\",\"Approved time\",\"Transferred to BAR user\",\"Transferred to BAR time\"\n" +
+                        "\"1\",\"" + expectedPaymentDate + "\",\"Mr Payer Payer\",\"\",\"5.33\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"1234-fn 1234-ln\",\""+actualStartDateTime+"\",\"1234-fn 1234-ln\",\""+actualStartDateTime+"\",\"1234-fn 1234-ln\",\""+actualStartDateTime+"\",\"1234-fn 1234-ln\",\""+actualStartDateTime+"\"\n",
                     result.getResponse().getContentAsString());
             });
     }

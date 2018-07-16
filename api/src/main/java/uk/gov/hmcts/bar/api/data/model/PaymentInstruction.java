@@ -31,7 +31,7 @@ import java.util.List;
 public abstract class   PaymentInstruction {
 
     public static final String[] CSV_TABLE_HEADER = {"Daily sequential payment ID", "Date", "Payee name", "Cheque Amount",
-        "Postal Order Amount", "Cash Amount", "Card Amount", "AllPay Amount", "Action Taken", "Case ref no.",
+        "Postal Order Amount", "Cash Amount", "Card Amount", "AllPay Amount", "Action Taken", "Case ref no.","BGC Slip No.",
         "Fee Amount", "Fee code", "Fee description","Recorded user","Recorded time","Validated user","Validated time","Approved user","Approved time","Transferred to BAR user","Transferred to BAR time"};
 
     @Id
@@ -123,6 +123,7 @@ public abstract class   PaymentInstruction {
         paymentLines.get(0).setDate(this.getPaymentDate());
         paymentLines.get(0).setName(this.getPayerName());
         paymentLines.get(0).setAction(this.getAction());
+        paymentLines.get(0).setBgcNumber(this.getBgcNumber());
         fillAmount(paymentLines.get(0));
         setUserActivity(paymentLines);
 
