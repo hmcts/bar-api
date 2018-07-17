@@ -90,11 +90,13 @@ public class PaymentInstructionServiceTest {
 
     private PaymentInstructionSearchCriteriaDtoBuilder paymentInstructionSearchCriteriaDtoBuilder;
 
+    private PaymentTypeService paymentTypeService;
+
     @Before
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
         paymentInstructionService = new PaymentInstructionService(paymentReferenceService,
-            paymentInstructionRepository, barUserServiceMock,paymentInstructionStatusRepositoryMock, ff4jMock, bankGiroCreditRepositoryMock);
+            paymentInstructionRepository, barUserServiceMock,paymentInstructionStatusRepositoryMock, ff4jMock, bankGiroCreditRepositoryMock,paymentTypeService);
         paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto()
             .siteId("BR01");
         paymentInstructionStatusReferenceKey = new PaymentInstructionStatusReferenceKey(0, "status");

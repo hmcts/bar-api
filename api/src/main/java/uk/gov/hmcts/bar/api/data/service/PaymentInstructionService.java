@@ -56,13 +56,15 @@ public class PaymentInstructionService {
     private final BarUserService barUserService;
     private final BankGiroCreditRepository bankGiroCreditRepository;
     private final FF4j ff4j;
+    private PaymentTypeService paymentTypeService;
 
 
     public PaymentInstructionService(PaymentReferenceService paymentReferenceService, PaymentInstructionRepository paymentInstructionRepository,
                                      BarUserService barUserService,
                                      PaymentInstructionStatusRepository paymentInstructionStatusRepository,
                                      FF4j ff4j,
-                                     BankGiroCreditRepository bankGiroCreditRepository
+                                     BankGiroCreditRepository bankGiroCreditRepository,
+                                     PaymentTypeService paymentTypeService
                                      ) {
         this.paymentReferenceService = paymentReferenceService;
         this.paymentInstructionRepository = paymentInstructionRepository;
@@ -70,6 +72,7 @@ public class PaymentInstructionService {
         this.paymentInstructionStatusRepository = paymentInstructionStatusRepository;
         this.ff4j = ff4j;
         this.bankGiroCreditRepository = bankGiroCreditRepository;
+        this.paymentTypeService = paymentTypeService;
     }
 
     public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction) {
@@ -88,7 +91,7 @@ public class PaymentInstructionService {
     public List<PaymentInstruction> getAllPaymentInstructions(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto) {
 
         paymentInstructionSearchCriteriaDto.setSiteId(SITE_ID);
-        PaymentInstructionsSpecifications paymentInstructionsSpecification = new PaymentInstructionsSpecifications(paymentInstructionSearchCriteriaDto);
+        PaymentInstructionsSpecifications paymentInstructionsSpecification = new PaymentInstructionsSpecifications(paymentInstructionSearchCriteriaDto,paymentTypeService);
         Sort sort = new Sort(Sort.Direction.DESC, "paymentDate");
         Pageable pageDetails = new PageRequest(PAGE_NUMBER, MAX_RECORDS_PER_PAGE, sort);
 
