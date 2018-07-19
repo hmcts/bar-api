@@ -613,7 +613,7 @@ databaseChangeLog:
            INSERT INTO status (status_id, status_description) VALUES ('RDM', 'Rejected by DM') ON CONFLICT ON CONSTRAINT status_pkey DO NOTHING;
   - changeSet:
      id: 22
-     author: akiss
+     author: sachi
      changes:
        - sql: >
-           insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('make-editpage-readonly', 1, 'Make page read only');
+           insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('make-editpage-readonly', 0, 'Make page read only');
