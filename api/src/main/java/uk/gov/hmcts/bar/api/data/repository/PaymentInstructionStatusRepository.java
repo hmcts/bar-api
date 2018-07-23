@@ -27,8 +27,10 @@ public interface PaymentInstructionStatusRepository
 	
 	@Query(name = "PIRejectedByDM", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats"
 			+ "(bu.id, CONCAT(bu.forename,' ',bu.surname), COUNT(pi.id)) FROM BarUser bu, PaymentInstruction pi, PaymentInstructionStatus pis WHERE "
-			+ "pi.id IN (SELECT piinner.id FROM PaymentInstruction piinner WHERE piinner.status = :currentStatus) AND pi.id = pis.paymentInstructionStatusReferenceKey.paymentInstructionId "
-			+ "AND pis.paymentInstructionStatusReferenceKey.status = :oldStatus AND pis.barUserId = bu.id GROUP BY bu.id")
+			+ "pi.status = :currentStatus AND pi.id = pis.paymentInstructionStatusReferenceKey.paymentInstructionId "
+			+ "AND pis.paymentInstructionStatusReferenceKey.updateTime IN (SELECT "
+			+ "MAX(pisinner.paymentInstructionStatusReferenceKey.updateTime) FROM PaymentInstructionStatus pisinner WHERE pisinner.paymentInstructionStatusReferenceKey.status= :oldStatus "
+			+ "GROUP BY pisinner.paymentInstructionStatusReferenceKey.paymentInstructionId) AND pis.barUserId = bu.id GROUP BY bu.id")
 	List<PaymentInstructionUserStats> getPaymentInstructionStatsByCurrentStatusAndByOldStatusGroupedByUser(
 			@Param("currentStatus") String currentStatus, @Param("oldStatus") String oldStatus);
 
