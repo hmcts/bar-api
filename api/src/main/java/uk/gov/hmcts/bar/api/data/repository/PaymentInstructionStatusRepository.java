@@ -52,5 +52,11 @@ public interface PaymentInstructionStatusRepository
         "group by bgc_number, payment_type_id, status, user_id " +
         "order by bgc_number", nativeQuery = true)
     List<PaymentInstructionStats> getStatsByUserGroupByType(@Param("userId") String userId, @Param("paymentStatus") String paymentStatus);
+    
+    @Query(name = "PIStatsRejectedByDMByType", value = "SELECT user_id as userId, count(id) as count, status, sum(amount) as totalAmount, payment_type_id as PaymentType, "
+			+ "bgc_number as bgc FROM payment_instruction pi, bar_user bu, payment_instruction_status pis where pi.status = :currentStatus AND pis.payment_instruction_id = pi.id AND " 
+			+ "pis.update_time in (select max(update_time) FROM payment_instruction_status WHERE status = :oldStatus GROUP BY payment_instruction_id) AND "
+			+ "pis.bar_user_id = bu.id and pis.bar_user_id = :userId GROUP BY pi.bgc_number, pi.payment_type_id, pi.status, pi.user_id order by pi.bgc_number", nativeQuery = true)
+    List<PaymentInstructionStats> getRejectedStatsByUserGroupByType(@Param("userId") String userId, @Param("currentStatus") String currentStatus, @Param("oldStatus") String oldStatus);
 
 }

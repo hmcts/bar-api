@@ -132,6 +132,7 @@ public class PaymentInstructionController {
     public List<PaymentInstruction> getPaymentInstructionsByIdamId(
         @PathVariable("id") String id,
         @RequestParam(name = "status", required = false) String status,
+        @RequestParam(name = "oldStatus", required = false) String oldStatus,
         @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
         @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate,
         @RequestParam(name = "payerName", required = false) String payerName,
@@ -144,14 +145,18 @@ public class PaymentInstructionController {
         @RequestParam(name = "action", required = false) String action) {
 
         List<PaymentInstruction> paymentInstructionList = null;
+        
+		if (isRejectedPIRequest(status, oldStatus)) {
+			paymentInstructionList = paymentInstructionService.getRejectedPaymentInstructionByUser(id, status,
+					oldStatus);
+		} else {
+			PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = createPaymentInstructionCriteria(
+					id, status, startDate, endDate, payerName, chequeNumber, postalOrderNumber, dailySequenceId,
+					allPayInstructionId, paymentType, action, caseReference);
 
-
-        PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto =
-            createPaymentInstructionCriteria(id, status, startDate, endDate, payerName, chequeNumber, postalOrderNumber,
-                dailySequenceId, allPayInstructionId, paymentType, action, caseReference);
-
-        paymentInstructionList = paymentInstructionService
-            .getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
+			paymentInstructionList = paymentInstructionService
+					.getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
+		}
 
         return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
     }
@@ -463,18 +468,6 @@ public class PaymentInstructionController {
         return result;
     }
 
-	@ApiOperation(value = "Get the payments rejected by DM", notes = "Get the payment instruction's for a user rejected by delivery manager.")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Return rejected payment instructions"),
-		@ApiResponse(code = 500, message = "Internal server error") })
-	@ResponseStatus(HttpStatus.OK)
-	@GetMapping("/users/{userId}/pi-rejected-by-dm")
-	public List<PaymentInstruction> getRejectedPI(@PathVariable("userId") String userId,
-			@RequestParam(name = "currentStatus", required = true) PaymentStatusEnum currentStatus,
-			@RequestParam(name = "oldStatus", required = true) PaymentStatusEnum oldStatus) {
-		return paymentInstructionService
-				.getRejectedPaymentInstructionByUser(userId, currentStatus.dbKey(), oldStatus.dbKey());
-	}
-
     private PaymentInstructionSearchCriteriaDto createPaymentInstructionCriteria(
         String status,
         LocalDate startDate,
@@ -522,6 +515,16 @@ public class PaymentInstructionController {
         }
         return false;
     }
+    
+	private boolean isRejectedPIRequest(String status, String oldStatus) {
+		if (status == null || oldStatus == null) {
+			return false;
+		}
+		if (PaymentStatusEnum.getPaymentStatusEnum(status).dbKey().equals(PaymentStatusEnum.REJECTEDBYDM.dbKey())) {
+			return true;
+		}
+		return false;
+	}
 
     @InitBinder
 	public void initBinder(final WebDataBinder webdataBinder) {
