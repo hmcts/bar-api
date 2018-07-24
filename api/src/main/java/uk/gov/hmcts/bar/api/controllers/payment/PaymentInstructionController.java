@@ -156,22 +156,6 @@ public class PaymentInstructionController {
         return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
     }
 
-    @ApiOperation(value = "collect stats for a user", notes = "Collect all payment instruction stats for a user grouped by type for a given status")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return stats for a given user"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/users/{id}/payment-instructions/stats")
-    public Resource<MultiMap> getPaymentInstructionStatsByUser(
-        @PathVariable("id") String id,
-        @RequestParam(name = "status", required = false) String status) {
-
-        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType(id, status);
-        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUser(id, status)).withSelfRel();
-        Resource<MultiMap> result = new Resource<>(stats, link);
-        return result;
-    }
-
     @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction for the given id.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return payment instruction"),
         @ApiResponse(code = 404, message = "Payment instruction not found"),
@@ -450,27 +434,52 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error") })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/users/pi-stats")
-	public MultiMap getPIStats(@RequestParam(name = "status", required = true) PaymentStatusEnum status) {
-		return paymentInstructionService.getPaymentInstructionStats(status.dbKey());
+	public MultiMap getPIStats(@RequestParam(name = "status", required = true) PaymentStatusEnum status,
+			@RequestParam(name = "oldStatus", required = false) PaymentStatusEnum oldStatus) {
+    	MultiMap resultMap = null;
+		if (oldStatus != null) {
+			resultMap = paymentInstructionService.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(status.dbKey(),
+					oldStatus.dbKey());
+		} else {
+			resultMap = paymentInstructionService.getPaymentInstructionStats(status.dbKey());
+		}
+		
+		return resultMap;
 	}
+    
+    @ApiOperation(value = "collect stats for a user", notes = "Collect all payment instruction stats for a user grouped by type for a given status")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return stats for a given user"),
+        @ApiResponse(code = 400, message = "Bad request"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/users/{id}/payment-instructions/stats")
+    public Resource<MultiMap> getPaymentInstructionStatsByUser(
+        @PathVariable("id") String id,
+        @RequestParam(name = "status", required = false) String status) {
 
-	@ApiOperation(value = "Get the rejected payments stats", notes = "Get the payment instruction's rejected stats showing each User's activities.")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Return rejected payment stats"),
+        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType(id, status);
+        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUser(id, status)).withSelfRel();
+        Resource<MultiMap> result = new Resource<>(stats, link);
+        return result;
+    }
+
+	@ApiOperation(value = "Get the payments rejected by DM", notes = "Get the payment instruction's for a user rejected by delivery manager.")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Return rejected payment instructions"),
 		@ApiResponse(code = 500, message = "Internal server error") })
 	@ResponseStatus(HttpStatus.OK)
-	@GetMapping("/users/pi-rejected-stats")
-	public MultiMap getPIRejectedStats(
+	@GetMapping("/users/{userId}/pi-rejected-by-dm")
+	public List<PaymentInstruction> getRejectedPI(@PathVariable("userId") String userId,
 			@RequestParam(name = "currentStatus", required = true) PaymentStatusEnum currentStatus,
 			@RequestParam(name = "oldStatus", required = true) PaymentStatusEnum oldStatus) {
 		return paymentInstructionService
-				.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(currentStatus.dbKey(), oldStatus.dbKey());
+				.getRejectedPaymentInstructionByUser(userId, currentStatus.dbKey(), oldStatus.dbKey());
 	}
 
     private PaymentInstructionSearchCriteriaDto createPaymentInstructionCriteria(
         String status,
         LocalDate startDate,
         LocalDate endDate,
-        String payerName,
+        String payerName,   
         String chequeNumber,
         String postalOrderNumber,
         Integer dailySequenceId,

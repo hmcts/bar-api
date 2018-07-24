@@ -162,9 +162,14 @@ public class PaymentInstructionService {
 
 	public MultiMap getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(String currentStatus,
 			String oldStatus) {
-		List<PaymentInstructionUserStats> paymentInstructionRejByDMList = paymentInstructionStatusRepository
+		List<PaymentInstructionUserStats> paymentInstructionRejByDMStats = paymentInstructionStatusRepository
 				.getPaymentInstructionStatsByCurrentStatusAndByOldStatusGroupedByUser(currentStatus, oldStatus);
-		return Util.createMultimapFromList(paymentInstructionRejByDMList);
+		return Util.createMultimapFromList(paymentInstructionRejByDMStats);
+	}
+	
+	public List<PaymentInstruction> getRejectedPaymentInstructionByUser(String userId, String currentStatus,
+			String oldStatus) {
+		return paymentInstructionRepository.getRejectedPaymentInstructionsByUser(userId, currentStatus, oldStatus);
 	}
 
     public MultiMap getPaymentStatsByUserGroupByType(String userId, String status) {
