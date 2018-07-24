@@ -595,7 +595,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 		restActionsForDM.patch("/payment-instructions/1/reject", rejectedChequePaymentInstructionRequest)
 				.andExpect(status().isOk());
 
-		String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-rejected-stats?currentStatus=RDM&oldStatus=A")
+		String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-stats?status=RDM&oldStatus=A")
 				.andExpect(status().isOk()).andExpect(content().contentType("application/json;charset=UTF-8"))
 				.andReturn().getResponse().getContentAsString();
 		System.out.println(jsonResponse);

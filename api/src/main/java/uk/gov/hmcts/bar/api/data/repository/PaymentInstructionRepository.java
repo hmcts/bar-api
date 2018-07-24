@@ -16,4 +16,11 @@ public interface PaymentInstructionRepository extends BaseRepository<PaymentInst
     @Query("SELECT pi FROM PaymentInstruction pi, CaseFeeDetail cfd  WHERE " +
             " cfd.paymentInstructionId = pi.id AND cfd.caseReference like %:caseReference%")
     List<PaymentInstruction> findByCaseReference(@Param("caseReference") String caseReference);
+    
+	@Query("SELECT pi FROM PaymentInstruction pi, PaymentInstructionStatus pis  WHERE pi.status = :rejectedStatus and pis.barUserId = :barUserId AND "
+			+ "pi.id = pis.paymentInstructionStatusReferenceKey.paymentInstructionId AND pis.paymentInstructionStatusReferenceKey.updateTime IN (SELECT " 
+			+ "MAX(pisinner.paymentInstructionStatusReferenceKey.updateTime) FROM PaymentInstructionStatus pisinner WHERE "
+			+ "pisinner.paymentInstructionStatusReferenceKey.status= :oldStatus GROUP BY pisinner.paymentInstructionStatusReferenceKey.paymentInstructionId)")
+	List<PaymentInstruction> getRejectedPaymentInstructionsByUser(@Param("barUserId") String barUserId,
+			@Param("rejectedStatus") String rejectedStatus, @Param("oldStatus") String oldStatus);
 }

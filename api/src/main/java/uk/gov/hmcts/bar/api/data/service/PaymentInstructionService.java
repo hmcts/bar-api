@@ -162,9 +162,14 @@ public class PaymentInstructionService {
 
 	public MultiMap getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(String currentStatus,
 			String oldStatus) {
-		List<PaymentInstructionUserStats> paymentInstructionRejByDMList = paymentInstructionStatusRepository
+		List<PaymentInstructionUserStats> paymentInstructionRejByDMStats = paymentInstructionStatusRepository
 				.getPaymentInstructionStatsByCurrentStatusAndByOldStatusGroupedByUser(currentStatus, oldStatus);
-		return Util.createMultimapFromList(paymentInstructionRejByDMList);
+		return Util.createMultimapFromList(paymentInstructionRejByDMStats);
+	}
+	
+	public List<PaymentInstruction> getRejectedPaymentInstructionByUser(String userId, String currentStatus,
+			String oldStatus) {
+		return paymentInstructionRepository.getRejectedPaymentInstructionsByUser(userId, currentStatus, oldStatus);
 	}
 
     public MultiMap getPaymentStatsByUserGroupByType(String userId, String status) {
@@ -172,7 +177,7 @@ public class PaymentInstructionService {
         MultiMap paymentInstructionStatsGroupedByBgc = new MultiValueMap();
         results.stream().forEach(stat -> {
             Link detailslink = linkTo(methodOn(PaymentInstructionController.class)
-                .getPaymentInstructionsByIdamId(userId, status,
+                .getPaymentInstructionsByIdamId(userId, status, null,
                     null, null, null, null, null,
                     null, null, null, stat.getPaymentType(), null)
             ).withRel(STAT_DETAILS);
@@ -182,7 +187,7 @@ public class PaymentInstructionService {
             // TODO: this is just a temp solution we have to clarify with PO if we really need to group cheques and postal-orders
             if (GROUPED_TYPES.contains(stat.getPaymentType())){
                 Link groupedLink = linkTo(methodOn(PaymentInstructionController.class)
-                    .getPaymentInstructionsByIdamId(userId, status,
+                    .getPaymentInstructionsByIdamId(userId, status, null,
                         null, null, null, null, null,
                         null, null, null,
                         GROUPED_TYPES.stream().collect(Collectors.joining( "," )), null)

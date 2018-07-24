@@ -132,6 +132,7 @@ public class PaymentInstructionController {
     public List<PaymentInstruction> getPaymentInstructionsByIdamId(
         @PathVariable("id") String id,
         @RequestParam(name = "status", required = false) String status,
+        @RequestParam(name = "oldStatus", required = false) String oldStatus,
         @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
         @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate,
         @RequestParam(name = "payerName", required = false) String payerName,
@@ -144,32 +145,20 @@ public class PaymentInstructionController {
         @RequestParam(name = "action", required = false) String action) {
 
         List<PaymentInstruction> paymentInstructionList = null;
+        
+		if (isRejectedPIRequest(status, oldStatus)) {
+			paymentInstructionList = paymentInstructionService.getRejectedPaymentInstructionByUser(id, status,
+					oldStatus);
+		} else {
+			PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = createPaymentInstructionCriteria(
+					id, status, startDate, endDate, payerName, chequeNumber, postalOrderNumber, dailySequenceId,
+					allPayInstructionId, paymentType, action, caseReference);
 
-
-        PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto =
-            createPaymentInstructionCriteria(id, status, startDate, endDate, payerName, chequeNumber, postalOrderNumber,
-                dailySequenceId, allPayInstructionId, paymentType, action, caseReference);
-
-        paymentInstructionList = paymentInstructionService
-            .getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
+			paymentInstructionList = paymentInstructionService
+					.getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
+		}
 
         return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
-    }
-
-    @ApiOperation(value = "collect stats for a user", notes = "Collect all payment instruction stats for a user grouped by type for a given status")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return stats for a given user"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/users/{id}/payment-instructions/stats")
-    public Resource<MultiMap> getPaymentInstructionStatsByUser(
-        @PathVariable("id") String id,
-        @RequestParam(name = "status", required = false) String status) {
-
-        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType(id, status);
-        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUser(id, status)).withSelfRel();
-        Resource<MultiMap> result = new Resource<>(stats, link);
-        return result;
     }
 
     @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction for the given id.")
@@ -450,27 +439,40 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error") })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/users/pi-stats")
-	public MultiMap getPIStats(@RequestParam(name = "status", required = true) PaymentStatusEnum status) {
-		return paymentInstructionService.getPaymentInstructionStats(status.dbKey());
+	public MultiMap getPIStats(@RequestParam(name = "status", required = true) PaymentStatusEnum status,
+			@RequestParam(name = "oldStatus", required = false) PaymentStatusEnum oldStatus) {
+    	MultiMap resultMap = null;
+		if (oldStatus != null) {
+			resultMap = paymentInstructionService.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(status.dbKey(),
+					oldStatus.dbKey());
+		} else {
+			resultMap = paymentInstructionService.getPaymentInstructionStats(status.dbKey());
+		}
+		
+		return resultMap;
 	}
+    
+    @ApiOperation(value = "collect stats for a user", notes = "Collect all payment instruction stats for a user grouped by type for a given status")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return stats for a given user"),
+        @ApiResponse(code = 400, message = "Bad request"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/users/{id}/payment-instructions/stats")
+    public Resource<MultiMap> getPaymentInstructionStatsByUser(
+        @PathVariable("id") String id,
+        @RequestParam(name = "status", required = false) String status) {
 
-	@ApiOperation(value = "Get the rejected payments stats", notes = "Get the payment instruction's rejected stats showing each User's activities.")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Return rejected payment stats"),
-		@ApiResponse(code = 500, message = "Internal server error") })
-	@ResponseStatus(HttpStatus.OK)
-	@GetMapping("/users/pi-rejected-stats")
-	public MultiMap getPIRejectedStats(
-			@RequestParam(name = "currentStatus", required = true) PaymentStatusEnum currentStatus,
-			@RequestParam(name = "oldStatus", required = true) PaymentStatusEnum oldStatus) {
-		return paymentInstructionService
-				.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(currentStatus.dbKey(), oldStatus.dbKey());
-	}
+        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType(id, status);
+        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUser(id, status)).withSelfRel();
+        Resource<MultiMap> result = new Resource<>(stats, link);
+        return result;
+    }
 
     private PaymentInstructionSearchCriteriaDto createPaymentInstructionCriteria(
         String status,
         LocalDate startDate,
         LocalDate endDate,
-        String payerName,
+        String payerName,   
         String chequeNumber,
         String postalOrderNumber,
         Integer dailySequenceId,
@@ -513,6 +515,11 @@ public class PaymentInstructionController {
         }
         return false;
     }
+    
+	private boolean isRejectedPIRequest(String status, String oldStatus) {
+		return status != null && oldStatus != null && PaymentStatusEnum.getPaymentStatusEnum(status).dbKey()
+				.equals(PaymentStatusEnum.REJECTEDBYDM.dbKey());
+	}
 
     @InitBinder
 	public void initBinder(final WebDataBinder webdataBinder) {
