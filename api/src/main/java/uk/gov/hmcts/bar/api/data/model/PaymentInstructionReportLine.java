@@ -23,6 +23,7 @@ public class PaymentInstructionReportLine {
     private Integer         allPayAmount;
     private String          action;
     private String          caseRef;
+    private String          bgcNumber;
     private Integer         feeAmount;
     private String          feeCode;
     private String          feeDescription;

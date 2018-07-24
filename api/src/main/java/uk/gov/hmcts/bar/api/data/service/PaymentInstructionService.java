@@ -203,21 +203,22 @@ public class PaymentInstructionService {
         paymentInstructionStatusRepository.save(pis);
     }
 
-    public Map<Integer, List<PaymentInstructionStatusHistory>> getStatusHistortMapForTTB(LocalDate startDate, LocalDate endDate) {
+    public Map<Integer, List<PaymentInstructionStatusHistory>> getStatusHistoryMapForTTB(LocalDate startDate,  LocalDate endDate) {
 
         if (null != endDate && startDate.isAfter(endDate)) {
             LOG.error("PaymentInstructionService - Error while generating daily fees csv file. Incorrect start and end dates ");
             return Collections.emptyMap();
         }
+        LocalDate searchEndDate;
 
         if (null == endDate || startDate.equals(endDate)) {
-            endDate = startDate.plusDays(1);
+            searchEndDate = startDate.plusDays(1);
         } else {
-            endDate = endDate.plusDays(1);
+            searchEndDate = endDate.plusDays(1);
         }
 
         List<PaymentInstructionStatusHistory> statusHistoryList = paymentInstructionStatusRepository.getPaymentInstructionStatusHistoryForTTB
-            (startDate.atStartOfDay(), endDate.atStartOfDay());
+            (startDate.atStartOfDay(), searchEndDate.atStartOfDay());
 
         final Map<Integer, List<PaymentInstructionStatusHistory>> statusHistoryMapByPaymentInstructionId = new HashMap<>();
         for (final PaymentInstructionStatusHistory statusHistory : statusHistoryList) {
@@ -234,7 +235,7 @@ public class PaymentInstructionService {
     }
 
     public List<PaymentInstruction> getAllPaymentInstructionsByTTB(LocalDate startDate, LocalDate endDate) {
-        Map<Integer, List<PaymentInstructionStatusHistory>> statusHistortMapForTTB = getStatusHistortMapForTTB(startDate, endDate);
+        Map<Integer, List<PaymentInstructionStatusHistory>> statusHistortMapForTTB = getStatusHistoryMapForTTB(startDate, endDate);
         Iterator<Map.Entry<Integer, List<PaymentInstructionStatusHistory>>> iterator = statusHistortMapForTTB.entrySet().iterator();
         List<PaymentInstruction> paymentInstructionsList = new ArrayList<>();
         while (iterator.hasNext()) {

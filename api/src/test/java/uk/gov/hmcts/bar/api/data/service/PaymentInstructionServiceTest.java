@@ -610,7 +610,7 @@ public class PaymentInstructionServiceTest {
 	public void shouldReturnEmptyMap_whenGetStatusHistortMapForTTBCalledWithStartdateGreaterThanEndDate()
 			throws Exception {
 		Map<Integer, List<PaymentInstructionStatusHistory>> pishMap = paymentInstructionService
-				.getStatusHistortMapForTTB(LocalDate.now(), LocalDate.now().minusDays(1));
+				.getStatusHistoryMapForTTB(LocalDate.now(), LocalDate.now().minusDays(1));
 		assertTrue(pishMap.isEmpty());
 	}
 
