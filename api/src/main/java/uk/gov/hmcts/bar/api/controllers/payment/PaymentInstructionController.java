@@ -517,13 +517,8 @@ public class PaymentInstructionController {
     }
     
 	private boolean isRejectedPIRequest(String status, String oldStatus) {
-		if (status == null || oldStatus == null) {
-			return false;
-		}
-		if (PaymentStatusEnum.getPaymentStatusEnum(status).dbKey().equals(PaymentStatusEnum.REJECTEDBYDM.dbKey())) {
-			return true;
-		}
-		return false;
+		return status != null && oldStatus != null && PaymentStatusEnum.getPaymentStatusEnum(status).dbKey()
+				.equals(PaymentStatusEnum.REJECTEDBYDM.dbKey());
 	}
 
     @InitBinder
