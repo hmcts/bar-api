@@ -19,6 +19,9 @@ public class PaymentInstructionUserStats {
 	private long countOfPaymentInstructionInSpecifiedStatus;
 
 	private String barUserId;
+	
+	@JsonProperty("list_of_payment_instructions")
+	private Integer[] listOfPaymentInstructions;
 
 	@JsonCreator
 	public PaymentInstructionUserStats(@JsonProperty("bar_user_id") String barUserId,

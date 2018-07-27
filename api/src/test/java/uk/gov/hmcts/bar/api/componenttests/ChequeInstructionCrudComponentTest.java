@@ -604,5 +604,29 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 		assertEquals(srFeeClerk.get("bar_user_full_name"), "sr-fee-clerk-fn sr-fee-clerk-ln");
 		assertEquals(srFeeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
 	}
+	
+	@Test
+	public void whenQueriedWithAListOfPaymentInstructionIds_receiveAllThePaymentInstructionsInTheQueryList()
+			throws Exception {
+		Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(500).currency("GBP").chequeNumber("000000").status("D").build();
+		ChequePaymentInstruction retrievedChequePaymentInstruction = chequePaymentInstructionWith()
+				.payerName("Mr Payer Payer").amount(500).currency("GBP").chequeNumber("000000").status("D").build();
+
+		restActions.post("/cheques", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
+
+		proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith().payerName("Mr Payer2 Payer2")
+				.amount(500).currency("GBP").chequeNumber("000000").status("D").build();
+		ChequePaymentInstruction retrievedChequePaymentInstruction2 = chequePaymentInstructionWith()
+				.payerName("Mr Payer2 Payer2").amount(500).currency("GBP").chequeNumber("000000").status("D").build();
+
+		restActions.post("/cheques", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
+
+		restActionsForSrFeeClerk.get("/users/2/payment-instructions?piIds=1,2").andExpect(status().isOk())
+				.andExpect(body().as(List.class, (chequePayList) -> {
+					assertThat(chequePayList.get(0).equals(retrievedChequePaymentInstruction));
+					assertThat(chequePayList.get(1).equals(retrievedChequePaymentInstruction2));
+				}));
+	}
 
 }

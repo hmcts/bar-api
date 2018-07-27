@@ -520,5 +520,29 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 		assertEquals(srFeeClerk.get("bar_user_full_name"), "sr-fee-clerk-fn sr-fee-clerk-ln");
 		assertEquals(srFeeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
 	}
+	
+	@Test
+	public void whenQueriedWithAListOfPaymentInstructionIds_receiveAllThePaymentInstructionsInTheQueryList()
+			throws Exception {
+		Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
+				.amount(500).currency("GBP").status("D").build();
+		CashPaymentInstruction retrievedCashPaymentInstruction = cashPaymentInstructionWith()
+				.payerName("Mr Payer Payer").amount(500).currency("GBP").status("D").build();
+
+		restActions.post("/cash", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
+
+		proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer2 Payer2")
+				.amount(500).currency("GBP").status("D").build();
+		CashPaymentInstruction retrievedCashPaymentInstruction2 = cashPaymentInstructionWith()
+				.payerName("Mr Payer2 Payer2").amount(500).currency("GBP").status("D").build();
+
+		restActions.post("/cash", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
+
+		restActionsForSrFeeClerk.get("/users/2/payment-instructions?piIds=1,2").andExpect(status().isOk())
+				.andExpect(body().as(List.class, (cashPayList) -> {
+					assertThat(cashPayList.get(0).equals(retrievedCashPaymentInstruction));
+					assertThat(cashPayList.get(1).equals(retrievedCashPaymentInstruction2));
+				}));
+	}
 
 }

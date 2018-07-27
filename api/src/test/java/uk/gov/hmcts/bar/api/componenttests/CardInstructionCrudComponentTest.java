@@ -543,5 +543,31 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
 		assertEquals(srFeeClerk.get("bar_user_full_name"), "sr-fee-clerk-fn sr-fee-clerk-ln");
 		assertEquals(srFeeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
 	}
+	
+	@Test
+	public void whenQueriedWithAListOfPaymentInstructionIds_receiveAllThePaymentInstructionsInTheQueryList()
+			throws Exception {
+		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
+				.status("D").authorizationCode("qwerty").build();
+		CardPaymentInstruction retrievedCardPaymentInstruction = cardPaymentInstructionWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").authorizationCode("qwerty")
+				.build();
+
+		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
+
+		proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
+				.status("D").authorizationCode("qwerty").build();
+		CardPaymentInstruction retrievedCardPaymentInstruction2 = cardPaymentInstructionWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").authorizationCode("qwerty")
+				.build();
+
+		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
+
+		restActionsForSrFeeClerk.get("/users/2/payment-instructions?piIds=1,2").andExpect(status().isOk())
+				.andExpect(body().as(List.class, (cardPayList) -> {
+					assertThat(cardPayList.get(0).equals(retrievedCardPaymentInstruction));
+					assertThat(cardPayList.get(1).equals(retrievedCardPaymentInstruction2));
+				}));
+	}
 
 }

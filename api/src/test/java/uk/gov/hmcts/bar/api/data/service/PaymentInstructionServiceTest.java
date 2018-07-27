@@ -517,7 +517,7 @@ public class PaymentInstructionServiceTest {
 			throws Exception {
 		paymentInstructionService.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus("", "");
 		verify(paymentInstructionStatusRepositoryMock, times(1))
-				.getPaymentInstructionStatsByCurrentStatusAndByOldStatusGroupedByUser(anyString(), anyString());
+				.getPaymentInstructionStatsByCurrentStatusAndByOldStatus(anyString(), anyString());
 	}
 
 

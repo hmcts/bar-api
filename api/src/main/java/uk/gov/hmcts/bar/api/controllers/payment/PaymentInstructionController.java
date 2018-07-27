@@ -106,7 +106,6 @@ public class PaymentInstructionController {
         @RequestParam(name = "caseReference", required = false) String caseReference,
         @RequestParam(name = "paymentType", required = false) String paymentType,
         @RequestParam(name = "action", required = false) String action) {
-
         List<PaymentInstruction> paymentInstructionList = null;
 
         if (checkAcceptHeaderForCsv(headers)){
@@ -114,7 +113,7 @@ public class PaymentInstructionController {
         } else {
             PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto =
                 createPaymentInstructionCriteria(status, startDate, endDate, payerName, chequeNumber, postalOrderNumber,
-                    dailySequenceId, allPayInstructionId, paymentType, action, caseReference);
+                    dailySequenceId, allPayInstructionId, paymentType, action, caseReference, null);
 
             paymentInstructionList = paymentInstructionService
                 .getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
@@ -132,7 +131,6 @@ public class PaymentInstructionController {
     public List<PaymentInstruction> getPaymentInstructionsByIdamId(
         @PathVariable("id") String id,
         @RequestParam(name = "status", required = false) String status,
-        @RequestParam(name = "oldStatus", required = false) String oldStatus,
         @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
         @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate,
         @RequestParam(name = "payerName", required = false) String payerName,
@@ -142,21 +140,18 @@ public class PaymentInstructionController {
         @RequestParam(name = "allPayInstructionId", required = false) String allPayInstructionId,
         @RequestParam(name = "caseReference", required = false) String caseReference,
         @RequestParam(name = "paymentType", required = false) String paymentType,
-        @RequestParam(name = "action", required = false) String action) {
+        @RequestParam(name = "action", required = false) String action,
+        @RequestParam(name = "piIds", required = false) String piIds) {
 
         List<PaymentInstruction> paymentInstructionList = null;
         
-		if (isRejectedPIRequest(status, oldStatus)) {
-			paymentInstructionList = paymentInstructionService.getRejectedPaymentInstructionByUser(id, status,
-					oldStatus);
-		} else {
-			PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = createPaymentInstructionCriteria(
-					id, status, startDate, endDate, payerName, chequeNumber, postalOrderNumber, dailySequenceId,
-					allPayInstructionId, paymentType, action, caseReference);
+		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = createPaymentInstructionCriteria(
+				id, status, startDate, endDate, payerName, chequeNumber, postalOrderNumber, dailySequenceId,
+				allPayInstructionId, paymentType, action, caseReference, piIds);
 
-			paymentInstructionList = paymentInstructionService
-					.getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
-		}
+		paymentInstructionList = paymentInstructionService
+				.getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
+		
 
         return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
     }
@@ -479,10 +474,11 @@ public class PaymentInstructionController {
         String allPayInstructionId,
         String paymentType,
         String action,
-        String caseReference
+        String caseReference,
+        String multiplePiIds
     ){
         return createPaymentInstructionCriteria(null, status, startDate, endDate, payerName, chequeNumber,
-            postalOrderNumber, dailySequenceId, allPayInstructionId, paymentType, action, caseReference);
+            postalOrderNumber, dailySequenceId, allPayInstructionId, paymentType, action, caseReference, multiplePiIds);
     }
 
     private PaymentInstructionSearchCriteriaDto createPaymentInstructionCriteria(
@@ -497,7 +493,8 @@ public class PaymentInstructionController {
         String allPayInstructionId,
         String paymentType,
         String action,
-        String caseReference
+        String caseReference,
+        String multiplePiIds
     ){
         return PaymentInstructionSearchCriteriaDto
             .paymentInstructionSearchCriteriaDto().status(status)
@@ -506,7 +503,7 @@ public class PaymentInstructionController {
             .endDate(endDate == null ? null : endDate.atTime(LocalTime.now())).payerName(payerName)
             .chequeNumber(chequeNumber).postalOrderNumer(postalOrderNumber).dailySequenceId(dailySequenceId)
             .allPayInstructionId(allPayInstructionId).paymentType(paymentType).action(action)
-            .caseReference(caseReference).build();
+            .caseReference(caseReference).multiplePiIds(multiplePiIds).build();
     }
 
     private boolean checkAcceptHeaderForCsv(HttpHeaders headers){
@@ -515,11 +512,6 @@ public class PaymentInstructionController {
         }
         return false;
     }
-    
-	private boolean isRejectedPIRequest(String status, String oldStatus) {
-		return status != null && oldStatus != null && PaymentStatusEnum.getPaymentStatusEnum(status).dbKey()
-				.equals(PaymentStatusEnum.REJECTEDBYDM.dbKey());
-	}
 
     @InitBinder
 	public void initBinder(final WebDataBinder webdataBinder) {
