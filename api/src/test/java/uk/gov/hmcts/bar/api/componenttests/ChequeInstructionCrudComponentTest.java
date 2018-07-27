@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.bar.api.data.model.Cash.cashPaymentInstructionRequestWith;
+import static uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction.cashPaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.Cheque.chequePaymentInstructionRequestWith;
 import static uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction.chequePaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith;
@@ -18,6 +20,8 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONParser;
 
 import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
+import uk.gov.hmcts.bar.api.data.model.Cash;
+import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.Cheque;
 import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
@@ -603,6 +607,30 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 				.get("sr-fee-clerk")).get(0);
 		assertEquals(srFeeClerk.get("bar_user_full_name"), "sr-fee-clerk-fn sr-fee-clerk-ln");
 		assertEquals(srFeeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
+	}
+	
+	@Test
+	public void whenQueriedWithAListOfPaymentInstructionIds_receiveAllThePaymentInstructionsInTheQueryList()
+			throws Exception {
+		Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(500).currency("GBP").chequeNumber("000000").status("D").build();
+		ChequePaymentInstruction retrievedChequePaymentInstruction = chequePaymentInstructionWith()
+				.payerName("Mr Payer Payer").amount(500).currency("GBP").chequeNumber("000000").status("D").build();
+
+		restActions.post("/cheques", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
+
+		proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith().payerName("Mr Payer2 Payer2")
+				.amount(500).currency("GBP").chequeNumber("000000").status("D").build();
+		ChequePaymentInstruction retrievedChequePaymentInstruction2 = chequePaymentInstructionWith()
+				.payerName("Mr Payer2 Payer2").amount(500).currency("GBP").chequeNumber("000000").status("D").build();
+
+		restActions.post("/cheques", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
+
+		restActionsForSrFeeClerk.get("/users/2/payment-instructions?piIds=1,2").andExpect(status().isOk())
+				.andExpect(body().as(List.class, (chequePayList) -> {
+					assertThat(chequePayList.get(0).equals(retrievedChequePaymentInstruction));
+					assertThat(chequePayList.get(1).equals(retrievedChequePaymentInstruction2));
+				}));
 	}
 
 }

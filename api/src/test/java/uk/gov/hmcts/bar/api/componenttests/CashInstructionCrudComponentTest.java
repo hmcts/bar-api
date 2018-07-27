@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.bar.api.data.model.Card.cardWith;
+import static uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction.cardPaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.Cash.cashPaymentInstructionRequestWith;
 import static uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction.cashPaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith;
@@ -17,6 +19,8 @@ import org.json.JSONObject;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONParser;
 
+import uk.gov.hmcts.bar.api.data.model.Card;
+import uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
 import uk.gov.hmcts.bar.api.data.model.Cash;
 import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
@@ -519,6 +523,30 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 				.get("sr-fee-clerk")).get(0);
 		assertEquals(srFeeClerk.get("bar_user_full_name"), "sr-fee-clerk-fn sr-fee-clerk-ln");
 		assertEquals(srFeeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
+	}
+	
+	@Test
+	public void whenQueriedWithAListOfPaymentInstructionIds_receiveAllThePaymentInstructionsInTheQueryList()
+			throws Exception {
+		Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
+				.amount(500).currency("GBP").status("D").build();
+		CashPaymentInstruction retrievedCashPaymentInstruction = cashPaymentInstructionWith()
+				.payerName("Mr Payer Payer").amount(500).currency("GBP").status("D").build();
+
+		restActions.post("/cash", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
+
+		proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer2 Payer2")
+				.amount(500).currency("GBP").status("D").build();
+		CashPaymentInstruction retrievedCashPaymentInstruction2 = cashPaymentInstructionWith()
+				.payerName("Mr Payer2 Payer2").amount(500).currency("GBP").status("D").build();
+
+		restActions.post("/cash", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
+
+		restActionsForSrFeeClerk.get("/users/2/payment-instructions?piIds=1,2").andExpect(status().isOk())
+				.andExpect(body().as(List.class, (cashPayList) -> {
+					assertThat(cashPayList.get(0).equals(retrievedCashPaymentInstruction));
+					assertThat(cashPayList.get(1).equals(retrievedCashPaymentInstruction2));
+				}));
 	}
 
 }

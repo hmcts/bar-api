@@ -23,6 +23,7 @@ import uk.gov.hmcts.bar.api.data.model.AllPay;
 import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
 import uk.gov.hmcts.bar.api.data.model.Cash;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 
 public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
@@ -623,5 +624,32 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 		assertEquals(srFeeClerk.get("bar_user_full_name"), "sr-fee-clerk-fn sr-fee-clerk-ln");
 		assertEquals(srFeeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
     }
+    
+    @Test
+	public void whenQueriedWithAListOfPaymentInstructionIds_receiveAllThePaymentInstructionsInTheQueryList()
+			throws Exception {
+		AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").allPayTransactionId("52345")
+				.build();
+		AllPayPaymentInstruction retrievedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").allPayTransactionId("52345")
+				.build();
+
+		restActions.post("/allpay", proposedAllPayPaymentInstructionRequest).andExpect(status().isCreated());
+
+		proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith().payerName("Mr Payer2 Payer2")
+				.amount(550).currency("GBP").status("D").allPayTransactionId("52390").build();
+		AllPayPaymentInstruction retrievedAllPayPaymentInstruction2 = allPayPaymentInstructionWith()
+				.payerName("Mr Payer2 Payer2").amount(550).currency("GBP").status("D").allPayTransactionId("52390")
+				.build();
+
+		restActions.post("/allpay", proposedAllPayPaymentInstructionRequest).andExpect(status().isCreated());
+
+		restActionsForSrFeeClerk.get("/users/2/payment-instructions?piIds=1,2").andExpect(status().isOk())
+				.andExpect(body().as(List.class, (allPayList) -> {
+					assertThat(allPayList.get(0).equals(retrievedAllPayPaymentInstruction));
+					assertThat(allPayList.get(1).equals(retrievedAllPayPaymentInstruction2));
+				}));
+	}
 
 }

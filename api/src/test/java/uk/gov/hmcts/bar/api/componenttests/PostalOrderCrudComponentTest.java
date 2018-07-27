@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.bar.api.data.model.Cheque.chequePaymentInstructionRequestWith;
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith;
 import static uk.gov.hmcts.bar.api.data.model.PostalOrder.postalOrderPaymentInstructionRequestWith;
 import static uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction.postalOrderPaymentInstructionWith;
@@ -18,6 +19,7 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONParser;
 
 import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
+import uk.gov.hmcts.bar.api.data.model.Cheque;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 import uk.gov.hmcts.bar.api.data.model.PostalOrder;
 import uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction;
@@ -573,6 +575,35 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 		assertEquals(srFeeClerk.get("bar_user_full_name"), "sr-fee-clerk-fn sr-fee-clerk-ln");
 		assertEquals(srFeeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
 	}
+	
+	@Test
+	public void whenQueriedWithAListOfPaymentInstructionIds_receiveAllThePaymentInstructionsInTheQueryList()
+			throws Exception {
+		PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+				.payerName("Mr Payer Payer").amount(500).currency("GBP").postalOrderNumber("000000").status("D")
+				.build();
+		PostalOrderPaymentInstruction retrievedPostalOrderPaymentInstruction = postalOrderPaymentInstructionWith()
+				.payerName("Mr Payer Payer").amount(500).currency("GBP").postalOrderNumber("000000").status("D")
+				.build();
 
+		restActions.post("/postal-orders", proposedPostalOrderPaymentInstructionRequest)
+				.andExpect(status().isCreated());
+
+		proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+				.payerName("Mr Payer2 Payer2").amount(500).currency("GBP").postalOrderNumber("000000").status("D")
+				.build();
+		PostalOrderPaymentInstruction retrievedPostalOrderPaymentInstruction2 = postalOrderPaymentInstructionWith()
+				.payerName("Mr Payer2 Payer2").amount(500).currency("GBP").postalOrderNumber("000000").status("D")
+				.build();
+
+		restActions.post("/postal-orders", proposedPostalOrderPaymentInstructionRequest)
+				.andExpect(status().isCreated());
+
+		restActionsForSrFeeClerk.get("/users/2/payment-instructions?piIds=1,2").andExpect(status().isOk())
+				.andExpect(body().as(List.class, (postalOrderPayList) -> {
+					assertThat(postalOrderPayList.get(0).equals(retrievedPostalOrderPaymentInstruction));
+					assertThat(postalOrderPayList.get(1).equals(retrievedPostalOrderPaymentInstruction2));
+				}));
+	}
 
 }

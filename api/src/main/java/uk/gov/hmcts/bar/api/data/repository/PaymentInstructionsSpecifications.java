@@ -28,6 +28,7 @@ public class PaymentInstructionsSpecifications {
     protected Specification<PaymentInstruction> actionSpec = null;
     protected Specification<PaymentInstruction> caseReferenceSpec = null;
     protected Specification<PaymentInstruction> paymentTypeSpec = null;
+    protected Specification<PaymentInstruction> multiplsIdSpec = null;
 
     public PaymentInstructionsSpecifications(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto, PaymentTypeService paymentTypeService) {
         this.paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDto;
@@ -46,6 +47,7 @@ public class PaymentInstructionsSpecifications {
         actionSpec = new ActionSpec();
         caseReferenceSpec = new CaseReferenceSpec();
         paymentTypeSpec = new PaymentTypeSpec();
+        multiplsIdSpec = new MultiIdSpec();
     }
 
     public Specification<PaymentInstruction> getPaymentInstructionsSpecification() {
@@ -55,6 +57,24 @@ public class PaymentInstructionsSpecifications {
         Specification<PaymentInstruction> orSpecs = Specification.where(payerNameSpec).or(allPayTransactionIdSpec)
             .or(chequeNumberSpec).or(postalOrderNumerSpec).or(dailySequenceIdSpec).or(actionSpec).or(caseReferenceSpec);
         return Specification.where(andSpecs).and(orSpecs);
+    }
+    
+    public Specification<PaymentInstruction> getPaymentInstructionsMultipleIdSpecification() {
+    	return Specification.where(multiplsIdSpec);
+    }
+    
+    private class MultiIdSpec implements Specification<PaymentInstruction> {
+
+        @Override
+        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+
+            In<Integer> inCriteriaForId = null;
+
+            if (paymentInstructionSearchCriteriaDto.getMultiplePiIds() != null) {
+            	inCriteriaForId = builder.in(root.<Integer>get("id"));
+            }
+            return Util.getInCriteriaWithIntegerValues(inCriteriaForId, paymentInstructionSearchCriteriaDto.getMultiplePiIds());
+        }
     }
 
     private class StatusSpec implements Specification<PaymentInstruction> {
@@ -67,7 +87,7 @@ public class PaymentInstructionsSpecifications {
             if (paymentInstructionSearchCriteriaDto.getStatus() != null) {
                 inCriteriaForStatus = builder.in(root.<String>get("status"));
             }
-            return Util.getListOfStatuses(inCriteriaForStatus, paymentInstructionSearchCriteriaDto.getStatus());
+            return Util.getInCriteriaWithStringValues(inCriteriaForStatus, paymentInstructionSearchCriteriaDto.getStatus());
         }
     }
 

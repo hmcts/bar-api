@@ -12,6 +12,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
@@ -93,11 +94,16 @@ public class PaymentInstructionService {
         paymentInstructionSearchCriteriaDto.setSiteId(SITE_ID);
         PaymentInstructionsSpecifications paymentInstructionsSpecification = new PaymentInstructionsSpecifications(paymentInstructionSearchCriteriaDto,paymentTypeService);
         Sort sort = new Sort(Sort.Direction.DESC, "paymentDate");
-        Pageable pageDetails = new PageRequest(PAGE_NUMBER, MAX_RECORDS_PER_PAGE, sort);
+        Pageable pageDetails = PageRequest.of(PAGE_NUMBER, MAX_RECORDS_PER_PAGE, sort);
+        
+		Specification<PaymentInstruction> piSpecification = null;
+		if (paymentInstructionSearchCriteriaDto.getMultiplePiIds() != null) {
+			piSpecification = paymentInstructionsSpecification.getPaymentInstructionsMultipleIdSpecification();
+		} else {
+			piSpecification = paymentInstructionsSpecification.getPaymentInstructionsSpecification();
+		}
 
-        return Lists.newArrayList(paymentInstructionRepository
-            .findAll(paymentInstructionsSpecification.getPaymentInstructionsSpecification(), pageDetails)
-            .iterator());
+		return Lists.newArrayList(paymentInstructionRepository.findAll(piSpecification, pageDetails).iterator());
     }
 
     public PaymentInstruction getPaymentInstruction(Integer id) {
@@ -162,14 +168,10 @@ public class PaymentInstructionService {
 
 	public MultiMap getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(String currentStatus,
 			String oldStatus) {
-		List<PaymentInstructionUserStats> paymentInstructionRejByDMStats = paymentInstructionStatusRepository
-				.getPaymentInstructionStatsByCurrentStatusAndByOldStatusGroupedByUser(currentStatus, oldStatus);
-		return Util.createMultimapFromList(paymentInstructionRejByDMStats);
-	}
-	
-	public List<PaymentInstruction> getRejectedPaymentInstructionByUser(String userId, String currentStatus,
-			String oldStatus) {
-		return paymentInstructionRepository.getRejectedPaymentInstructionsByUser(userId, currentStatus, oldStatus);
+		List<PaymentInstructionStaticsByUser> paymentInstructionStaticsByUserObjects = paymentInstructionStatusRepository
+				.getPaymentInstructionStatsByCurrentStatusAndByOldStatus(currentStatus, oldStatus);
+		paymentInstructionStaticsByUserObjects = Util.getFilteredPisList(paymentInstructionStaticsByUserObjects);
+		return Util.createMultimapFromPisByUserList(paymentInstructionStaticsByUserObjects);
 	}
 
     public MultiMap getPaymentStatsByUserGroupByType(String userId, String status) {
@@ -177,9 +179,9 @@ public class PaymentInstructionService {
         MultiMap paymentInstructionStatsGroupedByBgc = new MultiValueMap();
         results.stream().forEach(stat -> {
             Link detailslink = linkTo(methodOn(PaymentInstructionController.class)
-                .getPaymentInstructionsByIdamId(userId, status, null,
+                .getPaymentInstructionsByIdamId(userId, status,
                     null, null, null, null, null,
-                    null, null, null, stat.getPaymentType(), null)
+                    null, null, null, stat.getPaymentType(), null, null)
             ).withRel(STAT_DETAILS);
 
             Resource<PaymentInstructionStats> resource = new Resource<>(stat, detailslink.expand());
@@ -187,10 +189,10 @@ public class PaymentInstructionService {
             // TODO: this is just a temp solution we have to clarify with PO if we really need to group cheques and postal-orders
             if (GROUPED_TYPES.contains(stat.getPaymentType())){
                 Link groupedLink = linkTo(methodOn(PaymentInstructionController.class)
-                    .getPaymentInstructionsByIdamId(userId, status, null,
+                    .getPaymentInstructionsByIdamId(userId, status,
                         null, null, null, null, null,
                         null, null, null,
-                        GROUPED_TYPES.stream().collect(Collectors.joining( "," )), null)
+                        GROUPED_TYPES.stream().collect(Collectors.joining( "," )), null, null)
                 ).withRel(STAT_GROUP_DETAILS);
                 resource.add(groupedLink.expand());
             }
