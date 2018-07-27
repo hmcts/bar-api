@@ -1,17 +1,5 @@
 package uk.gov.hmcts.bar.api.data.utils;
 
-import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
-import org.apache.commons.collections.MultiMap;
-import org.apache.commons.collections.map.MultiValueMap;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
-import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStaticsByUser;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatus;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats;
-
-import javax.persistence.criteria.CriteriaBuilder.In;
 import java.beans.FeatureDescriptor;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,6 +10,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.persistence.criteria.CriteriaBuilder.In;
+
+import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.map.MultiValueMap;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+
+import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
+import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStaticsByUser;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats;
 
 
 public interface Util {
