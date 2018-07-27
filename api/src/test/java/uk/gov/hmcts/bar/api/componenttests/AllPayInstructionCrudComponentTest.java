@@ -640,7 +640,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 				.amount(550).currency("GBP").status("D").allPayTransactionId("52390").build();
 		AllPayPaymentInstruction retrievedAllPayPaymentInstruction2 = allPayPaymentInstructionWith()
 				.payerName("Mr Payer2 Payer2").amount(550).currency("GBP").status("D").allPayTransactionId("52390")
-				.build();
+				.build(); 
 
 		restActions.post("/allpay", proposedAllPayPaymentInstructionRequest).andExpect(status().isCreated());
 
