@@ -556,15 +556,17 @@ public class PaymentInstructionServiceTest {
 
     private List<PaymentInstructionStats> createStats() {
         List<PaymentInstructionStats> stats = new ArrayList<>();
-        stats.add(createPaymentStat("1234", 1, "PA", 10000L, "cards", null));
-        stats.add(createPaymentStat("1234", 4, "PA", 15000L, "cheques", "bgc123"));
-        stats.add(createPaymentStat("1234", 1, "PA", 33000L, "postal-orders", "bgc123"));
-        stats.add(createPaymentStat("1234", 1, "PA", 10000L, "cash", "bgc456"));
+        stats.add(createPaymentStat("James Black","1234", 1, "PA", 10000L, "cards", null));
+        stats.add(createPaymentStat("James Black","1234", 4, "PA", 15000L, "cheques", "bgc123"));
+        stats.add(createPaymentStat("James Black","1234", 1, "PA", 33000L, "postal-orders", "bgc123"));
+        stats.add(createPaymentStat("James Black","1234", 1, "PA", 10000L, "cash", "bgc456"));
         return stats;
     }
 
-    private PaymentInstructionStats createPaymentStat(String userId, Integer count, String status, Long totalAmount, String paymentType, String bgc) {
+    private PaymentInstructionStats createPaymentStat(String name, String userId, Integer count, String status, Long totalAmount, String paymentType, String bgc) {
         return new PaymentInstructionStats() {
+            @Override
+            public String getName() { return name; }
             @Override
             public String getUserId() {
                 return userId;
