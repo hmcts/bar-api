@@ -37,7 +37,6 @@ def versions = [
 
 sonarqube {
     properties {
-        property "sonar.host.url", "https://sonar.reform.hmcts.net/"
         property "sonar.pitest.mode", "reuseReport"
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     }
@@ -118,9 +117,9 @@ task functionalTest(type: Test, description: 'Runs the smoke functional', group:
 
 pitest {
     targetClasses = ['uk.gov.hmcts.bar.api.*']
-    excludedClasses = ['uk.gov.hmcts.bar.api.config.*']
+    excludedClasses = ['uk.gov.hmcts.bar.api.configuration.*']
     threads = 10
     outputFormats = ['XML', 'HTML']
     timestampedReports = false
-    mutationThreshold = 50
+    mutationThreshold = 75
 }
