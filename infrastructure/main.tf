@@ -15,6 +15,10 @@ module "bar-api" {
     SPRING_DATASOURCE_URL = "jdbc:postgresql://${module.bar-database.host_name}:${module.bar-database.postgresql_listen_port}/${module.bar-database.postgresql_database}?ssl=true"
     # idam
     IDAM_CLIENT_BASE_URL = "${var.idam_api_url}"
+    S2S_SECRET = "${module.bar-s2s.secret}"
+    S2S_AUTH_URL = "${var.s2s_auth_url}"
+    # payhub
+    PAYMENT_API_URL = "${var.payment_api_url}"
   }
 }
 
@@ -71,3 +75,8 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
+resource "azurerm_key_vault_secret" "S2S-SECRET" {
+  name      = "bar-S2S-SECRET"
+  value     = "${module.bar-s2s.secret}"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}

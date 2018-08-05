@@ -30,6 +30,7 @@ public class PaymentInstructionsSpecifications {
     protected Specification<PaymentInstruction> paymentTypeSpec = null;
     protected Specification<PaymentInstruction> multiplsIdSpec = null;
     protected Specification<PaymentInstruction> bgcNumberSpec = null;
+    protected Specification<PaymentInstruction> transferredToPayhubSpec = null;
 
     public PaymentInstructionsSpecifications(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto, PaymentTypeService paymentTypeService) {
         this.paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDto;
@@ -50,22 +51,23 @@ public class PaymentInstructionsSpecifications {
         paymentTypeSpec = new PaymentTypeSpec();
         multiplsIdSpec = new MultiIdSpec();
         bgcNumberSpec = new BgcNumberSpec();
+        transferredToPayhubSpec = new TransferredToPayhubSpec();
     }
 
     public Specification<PaymentInstruction> getPaymentInstructionsSpecification() {
 
         Specification<PaymentInstruction> andSpecs = Specification.where(statusSpec).and(startDateSpec)
-            .and(endDateSpec).and(siteIdSpec).and(userIdSpec).and(paymentTypeSpec);
+            .and(endDateSpec).and(siteIdSpec).and(userIdSpec).and(paymentTypeSpec).and(transferredToPayhubSpec);
 		Specification<PaymentInstruction> orSpecs = Specification.where(payerNameSpec).or(allPayTransactionIdSpec)
 				.or(chequeNumberSpec).or(postalOrderNumerSpec).or(dailySequenceIdSpec).or(actionSpec)
 				.or(caseReferenceSpec).or(bgcNumberSpec);
         return Specification.where(andSpecs).and(orSpecs);
     }
-    
+
     public Specification<PaymentInstruction> getPaymentInstructionsMultipleIdSpecification() {
     	return Specification.where(multiplsIdSpec);
     }
-    
+
     private class MultiIdSpec implements Specification<PaymentInstruction> {
 
         @Override
@@ -265,7 +267,7 @@ public class PaymentInstructionsSpecifications {
             return inCriteriaForPaymentType;
         }
     }
-    
+
 	private class BgcNumberSpec implements Specification<PaymentInstruction> {
 
 		@Override
@@ -281,4 +283,17 @@ public class PaymentInstructionsSpecifications {
 		}
 	}
 
+    private class TransferredToPayhubSpec implements Specification<PaymentInstruction> {
+
+        @Override
+        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+            Predicate predicate = null;
+
+            if (paymentInstructionSearchCriteriaDto.getTransferredToPayhub() != null) {
+                predicate = criteriaBuilder.equal(root.<String>get("transferredToPayhub"), paymentInstructionSearchCriteriaDto.getTransferredToPayhub());
+            }
+            return predicate;
+        }
+
+    }
 }

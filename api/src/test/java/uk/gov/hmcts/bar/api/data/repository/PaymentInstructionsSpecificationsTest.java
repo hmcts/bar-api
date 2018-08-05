@@ -52,7 +52,7 @@ public class PaymentInstructionsSpecificationsTest {
 	}
 
 	private PaymentInstructionSearchCriteriaDtoBuilder paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto
-			.paymentInstructionSearchCriteriaDto().siteId("BR01");
+			.paymentInstructionSearchCriteriaDto().siteId("Y431");
 
 	@Test
 	public void shouldReturnAllSpecs_whenAllParamsAreProvided() {
@@ -193,7 +193,7 @@ public class PaymentInstructionsSpecificationsTest {
 
 	@Test
 	public void shouldReturnSiteIdSpecs_whenAllParamsAreProvidedUsingToPredicate() {
-		String siteId = "BR01";
+		String siteId = "Y431";
 		when(root.<String>get("siteId")).thenReturn(stringPath);
 		when(builder.equal(stringPath, siteId)).thenReturn(predicate);
 		Predicate siteIdPredicate = getSiteIdSpec("D", LocalDateTime.now(), LocalDateTime.now()).toPredicate(root, query, builder);

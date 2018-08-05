@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
 import javax.persistence.*;
@@ -66,6 +67,10 @@ public abstract class   PaymentInstruction {
     protected String postalOrderNumber;
     @Pattern(regexp = "^[a-zA-Z0-9]{6,6}$", message = "invalid authorization code")
     protected String authorizationCode;
+
+    private boolean transferredToPayhub = false;
+    @Length(max = 1024)
+    private String payhubError;
 
 
     public PaymentInstruction(String payerName, Integer amount, String currency, String status) {
@@ -130,6 +135,13 @@ public abstract class   PaymentInstruction {
         return paymentLines;
     }
 
+    public String getExternalReference() {
+        return convertNullToEmpty(authorizationCode) +
+            convertNullToEmpty(postalOrderNumber) +
+            convertNullToEmpty(chequeNumber) +
+            convertNullToEmpty(allPayTransactionId);
+    }
+
     private void setUserActivity(List<PaymentInstructionReportLine> paymentLines){
 
         Iterator<PaymentInstructionStatusHistory> iterator = this.getPaymentInstructionStatusHistory().iterator();
@@ -153,6 +165,10 @@ public abstract class   PaymentInstruction {
             }
         }
 
+    }
+
+    private String convertNullToEmpty(String value) {
+        return value == null ? "" : value;
     }
 
     public abstract void fillAmount(PaymentInstructionReportLine reportRow);

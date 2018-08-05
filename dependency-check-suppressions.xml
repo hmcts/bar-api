@@ -153,5 +153,13 @@
         <cpe>cpe:/a:pivotal:spring_framework</cpe>
         <cpe>cpe:/a:pivotal_software:spring_boot</cpe>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: rxnetty-0.4.9.jar,
+   service-auth-provider-client-1.0.1.jar has dependency to it
+   ]]></notes>
+        <gav regex="true">^io\.reactivex:rxnetty.*:.*$</gav>
+        <cpe>cpe:/a:netty_project:netty</cpe>
+    </suppress>
 </suppressions>
 

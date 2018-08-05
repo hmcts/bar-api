@@ -68,7 +68,7 @@ public class PaymentInstructionService {
 
     private static final List<String> GROUPED_TYPES = Arrays.asList("cheques", "postal-orders");
 
-    public static final String SITE_ID = "BR01";
+    public static final String SITE_ID = "Y431";
     private static final int PAGE_NUMBER = 0;
     private static final int MAX_RECORDS_PER_PAGE = 200;
     private PaymentInstructionRepository paymentInstructionRepository;
@@ -116,7 +116,7 @@ public class PaymentInstructionService {
 				paymentInstructionSearchCriteriaDto, paymentTypeService);
         Sort sort = new Sort(Sort.Direction.DESC, "paymentDate");
         Pageable pageDetails = PageRequest.of(PAGE_NUMBER, MAX_RECORDS_PER_PAGE, sort);
-        
+
 		Specification<PaymentInstruction> piSpecification = null;
 		if (paymentInstructionSearchCriteriaDto.getMultiplePiIds() != null) {
 			piSpecification = paymentInstructionsSpecification.getPaymentInstructionsMultipleIdSpecification();
@@ -274,6 +274,16 @@ public class PaymentInstructionService {
 
         }
         return paymentInstructionsList;
+    }
+
+    public void updateTransferredToPayHub(int id, boolean status, String errorMessage) {
+        String msg = errorMessage;
+        if (status) {
+            msg = null;
+        } else if (errorMessage != null && errorMessage.length() > 1024){
+            msg = errorMessage.substring(0, 1024);
+        }
+        paymentInstructionRepository.updateTransferredToPayHub(id, status, msg);
     }
 
     private boolean checkIfActionEnabled(PaymentInstructionUpdateRequest paymentInstructionUpdateRequest){

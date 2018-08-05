@@ -36,7 +36,7 @@ public class PaymentReferenceServiceTest {
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
         paymentReferenceService = new PaymentReferenceService(paymentReferenceRepository);
-        paymentReference = new PaymentReference(new PaymentReferenceKey("BR01", LocalDate.now()),1);
+        paymentReference = new PaymentReference(new PaymentReferenceKey("Y431", LocalDate.now()),1);
 
     }
 
@@ -45,7 +45,7 @@ public class PaymentReferenceServiceTest {
 
         when(paymentReferenceRepository.findByPaymentReferenceKey(any(PaymentReferenceKey.class))).thenReturn(Optional.empty());
 
-       PaymentReference retrievedPaymentReference = paymentReferenceService.getNextPaymentReferenceSequenceBySite("BR01");
+       PaymentReference retrievedPaymentReference = paymentReferenceService.getNextPaymentReferenceSequenceBySite("Y431");
 
         assertThat(retrievedPaymentReference).isEqualTo (paymentReference);
 
@@ -56,7 +56,7 @@ public class PaymentReferenceServiceTest {
 
         when(paymentReferenceRepository.findByPaymentReferenceKey(any(PaymentReferenceKey.class))).thenReturn(Optional.of(paymentReference));
 
-        PaymentReference retrievedPaymentReference = paymentReferenceService.getNextPaymentReferenceSequenceBySite("BR01");
+        PaymentReference retrievedPaymentReference = paymentReferenceService.getNextPaymentReferenceSequenceBySite("Y431");
 
         assertThat(retrievedPaymentReference).isEqualTo (paymentReference);
 
