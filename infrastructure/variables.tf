@@ -43,12 +43,12 @@ variable "idam_api_url" {
   default = "http://betaDevAccidamAppLB.reform.hmcts.net"
 }
 
-variable "s2s_auth_url" {
-  default = "https://rpe-service-auth-provider-${local.local_env}.service.core-compute-${local.local_env}.internal"
+variable "payment_api_url_prefix" {
+  default = "payment-api"
 }
 
-variable "payment_api_url" {
-  default = "https://payment-api-${local.local_env}.service.core-compute-${local.local_env}.internal"
+variable "idam_s2s_url_prefix" {
+  default = "rpe-service-auth-provider"
 }
 
 variable "capacity" {

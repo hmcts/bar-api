@@ -16,9 +16,9 @@ module "bar-api" {
     # idam
     IDAM_CLIENT_BASE_URL = "${var.idam_api_url}"
     S2S_SECRET = "${module.bar-s2s.secret}"
-    S2S_AUTH_URL = "${var.s2s_auth_url}"
+    S2S_AUTH_URL = "${local.s2s_auth_url}"
     # payhub
-    PAYMENT_API_URL = "${var.payment_api_url}"
+    PAYMENT_API_URL = "${local.payment_api_url}"
   }
 }
 
