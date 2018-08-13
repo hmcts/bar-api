@@ -36,8 +36,8 @@ import static org.mockito.Mockito.*;
 
 public class PayHubServiceTest {
 
-    public static final String payload1 = "{\"amount\":10000,\"currency\":\"GBP\",\"site_id\":\"Y431\",\"giro_slip_no\":\"\",\"fees\":[{\"code\":\"x00335\",\"calculated_amount\":5000,\"version\":\"1\",\"reference\":\"12345\"},{\"code\":\"x00335\",\"calculated_amount\":5000,\"version\":\"1\",\"reference\":\"12345\"}],\"requestor-reference\":\"Y431-201808131\",\"payment_method\":\"cheque\",\"requestor\":\"BAR\",\"external_reference\":\"D\",\"external_provider\":\"\"}";
-    public static final String payload2 = "{\"amount\":20000,\"currency\":\"GBP\",\"site_id\":\"Y431\",\"giro_slip_no\":\"\",\"fees\":[{\"code\":\"x00335\",\"calculated_amount\":10000,\"version\":\"1\",\"reference\":\"12345\"},{\"code\":\"x00335\",\"calculated_amount\":10000,\"version\":\"1\",\"reference\":\"12345\"}],\"requestor-reference\":\"Y431-201808132\",\"payment_method\":\"cards\",\"requestor\":\"BAR\",\"external_reference\":\"123456\",\"external_provider\":\"\"}";
+    public static final String payload1 = "{\"amount\":10000,\"currency\":\"GBP\",\"site_id\":\"Y431\",\"giro_slip_no\":\"\",\"fees\":[{\"code\":\"x00335\",\"calculated_amount\":5000,\"version\":\"1\",\"reference\":\"12345\"},{\"code\":\"x00335\",\"calculated_amount\":5000,\"version\":\"1\",\"reference\":\"12345\"}],\"requestor-reference\":\"Y431-201808131\",\"payment_method\":\"cheque\",\"requestor\":\"DIGITAL_BAR\",\"external_reference\":\"D\",\"external_provider\":\"barclaycard\"}";
+    public static final String payload2 = "{\"amount\":20000,\"currency\":\"GBP\",\"site_id\":\"Y431\",\"giro_slip_no\":\"\",\"fees\":[{\"code\":\"x00335\",\"calculated_amount\":10000,\"version\":\"1\",\"reference\":\"12345\"},{\"code\":\"x00335\",\"calculated_amount\":10000,\"version\":\"1\",\"reference\":\"12345\"}],\"requestor-reference\":\"Y431-201808132\",\"payment_method\":\"cards\",\"requestor\":\"DIGITAL_BAR\",\"external_reference\":\"123456\",\"external_provider\":\"barclaycard\"}";
 
     private PayHubService payHubService;
 

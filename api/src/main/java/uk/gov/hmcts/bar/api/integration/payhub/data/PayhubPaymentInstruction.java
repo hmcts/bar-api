@@ -19,7 +19,8 @@ import java.util.List;
     "postal_order_number", "all_pay_transaction_id"})
 public class PayhubPaymentInstruction extends BasePaymentInstruction {
 
-    public static final String SERVICE = "BAR";
+    public static final String SERVICE = "DIGITAL_BAR";
+    public static final String EXTERNAL_PROVIDER = "barclaycard";
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "paymentInstructionId", referencedColumnName = "id")
@@ -57,7 +58,7 @@ public class PayhubPaymentInstruction extends BasePaymentInstruction {
 
     @JsonProperty("external_provider")
     public String getExternalProvider() {
-        return "";
+        return EXTERNAL_PROVIDER;
     }
 
     @Override
