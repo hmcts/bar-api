@@ -17,6 +17,7 @@ import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto.PaymentInstructionSearchCriteriaDtoBuilder;
 import uk.gov.hmcts.bar.api.data.repository.BankGiroCreditRepository;
+import uk.gov.hmcts.bar.api.data.repository.PayhubPaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 
@@ -39,6 +40,9 @@ public class PaymentInstructionServiceTest {
 
     @Mock
     private PaymentInstructionRepository paymentInstructionRepository;
+
+    @Mock
+    private PayhubPaymentInstructionRepository payhubPaymentInstructionRepository;
 
     @Mock
     private PaymentReferenceService paymentReferenceService;
@@ -95,8 +99,15 @@ public class PaymentInstructionServiceTest {
     @Before
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
-        paymentInstructionService = new PaymentInstructionService(paymentReferenceService,
-            paymentInstructionRepository, barUserServiceMock,paymentInstructionStatusRepositoryMock, ff4jMock, bankGiroCreditRepositoryMock,paymentTypeService);
+        paymentInstructionService = new PaymentInstructionService(
+            paymentReferenceService,
+            paymentInstructionRepository,
+            barUserServiceMock,
+            paymentInstructionStatusRepositoryMock,
+            ff4jMock,
+            bankGiroCreditRepositoryMock,
+            paymentTypeService,
+            payhubPaymentInstructionRepository);
         paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto()
             .siteId("Y431");
         paymentInstructionStatusReferenceKey = new PaymentInstructionStatusReferenceKey(0, "status");

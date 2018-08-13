@@ -1,10 +1,7 @@
 package uk.gov.hmcts.bar.api.data.repository;
 
 import org.springframework.data.jpa.domain.Specification;
-import uk.gov.hmcts.bar.api.data.model.CaseFeeDetail;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
-import uk.gov.hmcts.bar.api.data.model.PaymentType;
+import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.service.PaymentTypeService;
 import uk.gov.hmcts.bar.api.data.utils.Util;
 
@@ -12,25 +9,25 @@ import javax.persistence.criteria.*;
 import javax.persistence.criteria.CriteriaBuilder.In;
 import java.time.LocalDateTime;
 
-public class PaymentInstructionsSpecifications {
+public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction> {
     private PaymentTypeService paymentTypeService;
     private PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto;
-    protected Specification<PaymentInstruction> statusSpec = null;
-    protected Specification<PaymentInstruction> startDateSpec = null;
-    protected Specification<PaymentInstruction> endDateSpec = null;
-    protected Specification<PaymentInstruction> siteIdSpec = null;
-    protected Specification<PaymentInstruction> payerNameSpec = null;
-    protected Specification<PaymentInstruction> chequeNumberSpec = null;
-    protected Specification<PaymentInstruction> postalOrderNumerSpec = null;
-    protected Specification<PaymentInstruction> allPayTransactionIdSpec = null;
-    protected Specification<PaymentInstruction> dailySequenceIdSpec = null;
-    protected Specification<PaymentInstruction> userIdSpec = null;
-    protected Specification<PaymentInstruction> actionSpec = null;
-    protected Specification<PaymentInstruction> caseReferenceSpec = null;
-    protected Specification<PaymentInstruction> paymentTypeSpec = null;
-    protected Specification<PaymentInstruction> multiplsIdSpec = null;
-    protected Specification<PaymentInstruction> bgcNumberSpec = null;
-    protected Specification<PaymentInstruction> transferredToPayhubSpec = null;
+    protected Specification<T> statusSpec = null;
+    protected Specification<T> startDateSpec = null;
+    protected Specification<T> endDateSpec = null;
+    protected Specification<T> siteIdSpec = null;
+    protected Specification<T> payerNameSpec = null;
+    protected Specification<T> chequeNumberSpec = null;
+    protected Specification<T> postalOrderNumerSpec = null;
+    protected Specification<T> allPayTransactionIdSpec = null;
+    protected Specification<T> dailySequenceIdSpec = null;
+    protected Specification<T> userIdSpec = null;
+    protected Specification<T> actionSpec = null;
+    protected Specification<T> caseReferenceSpec = null;
+    protected Specification<T> paymentTypeSpec = null;
+    protected Specification<T> multiplsIdSpec = null;
+    protected Specification<T> bgcNumberSpec = null;
+    protected Specification<T> transferredToPayhubSpec = null;
 
     public PaymentInstructionsSpecifications(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto, PaymentTypeService paymentTypeService) {
         this.paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDto;
@@ -54,24 +51,24 @@ public class PaymentInstructionsSpecifications {
         transferredToPayhubSpec = new TransferredToPayhubSpec();
     }
 
-    public Specification<PaymentInstruction> getPaymentInstructionsSpecification() {
+    public Specification<T> getPaymentInstructionsSpecification() {
 
-        Specification<PaymentInstruction> andSpecs = Specification.where(statusSpec).and(startDateSpec)
+        Specification<T> andSpecs = Specification.where(statusSpec).and(startDateSpec)
             .and(endDateSpec).and(siteIdSpec).and(userIdSpec).and(paymentTypeSpec).and(transferredToPayhubSpec);
-		Specification<PaymentInstruction> orSpecs = Specification.where(payerNameSpec).or(allPayTransactionIdSpec)
+		Specification<T> orSpecs = Specification.where(payerNameSpec).or(allPayTransactionIdSpec)
 				.or(chequeNumberSpec).or(postalOrderNumerSpec).or(dailySequenceIdSpec).or(actionSpec)
 				.or(caseReferenceSpec).or(bgcNumberSpec);
         return Specification.where(andSpecs).and(orSpecs);
     }
 
-    public Specification<PaymentInstruction> getPaymentInstructionsMultipleIdSpecification() {
+    public Specification<T> getPaymentInstructionsMultipleIdSpecification() {
     	return Specification.where(multiplsIdSpec);
     }
 
-    private class MultiIdSpec implements Specification<PaymentInstruction> {
+    private class MultiIdSpec implements Specification<T> {
 
         @Override
-        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 
             In<Integer> inCriteriaForId = null;
 
@@ -82,10 +79,10 @@ public class PaymentInstructionsSpecifications {
         }
     }
 
-    private class StatusSpec implements Specification<PaymentInstruction> {
+    private class StatusSpec implements Specification<T> {
 
         @Override
-        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 
             In<String> inCriteriaForStatus = null;
 
@@ -96,10 +93,10 @@ public class PaymentInstructionsSpecifications {
         }
     }
 
-    private class SiteIdSpec implements Specification<PaymentInstruction> {
+    private class SiteIdSpec implements Specification<T> {
 
         @Override
-        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 
             Predicate predicate = null;
 
@@ -110,10 +107,10 @@ public class PaymentInstructionsSpecifications {
         }
     }
 
-    private class StartDateSpec implements Specification<PaymentInstruction> {
+    private class StartDateSpec implements Specification<T> {
 
         @Override
-        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 
             Predicate predicate = null;
 
@@ -124,10 +121,10 @@ public class PaymentInstructionsSpecifications {
         }
     }
 
-    private class EndDateSpec implements Specification<PaymentInstruction> {
+    private class EndDateSpec implements Specification<T> {
 
         @Override
-        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 
             Predicate predicate = null;
 
@@ -138,10 +135,10 @@ public class PaymentInstructionsSpecifications {
         }
     }
 
-    private class PayerNameSpec implements Specification<PaymentInstruction> {
+    private class PayerNameSpec implements Specification<T> {
 
         @Override
-        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 
             Predicate predicate = null;
 
@@ -153,10 +150,10 @@ public class PaymentInstructionsSpecifications {
         }
     }
 
-    private class ChequeNumberSpec implements Specification<PaymentInstruction> {
+    private class ChequeNumberSpec implements Specification<T> {
 
         @Override
-        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 
             Predicate predicate = null;
 
@@ -167,10 +164,10 @@ public class PaymentInstructionsSpecifications {
         }
     }
 
-    private class PostalOrderNumberSpec implements Specification<PaymentInstruction> {
+    private class PostalOrderNumberSpec implements Specification<T> {
 
         @Override
-        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 
             Predicate predicate = null;
 
@@ -181,10 +178,10 @@ public class PaymentInstructionsSpecifications {
         }
     }
 
-    private class AllPayPaymentInstructionSpec implements Specification<PaymentInstruction> {
+    private class AllPayPaymentInstructionSpec implements Specification<T> {
 
         @Override
-        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 
             Predicate predicate = null;
 
@@ -195,10 +192,10 @@ public class PaymentInstructionsSpecifications {
         }
     }
 
-    private class DailySequenceIdSpec implements Specification<PaymentInstruction> {
+    private class DailySequenceIdSpec implements Specification<T> {
 
         @Override
-        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 
             Predicate predicate = null;
 
@@ -209,10 +206,10 @@ public class PaymentInstructionsSpecifications {
         }
     }
 
-    private class UserIdSpec implements Specification<PaymentInstruction> {
+    private class UserIdSpec implements Specification<T> {
 
         @Override
-        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
             Predicate predicate = null;
 
             if (paymentInstructionSearchCriteriaDto.getUserId() != null) {
@@ -222,10 +219,10 @@ public class PaymentInstructionsSpecifications {
         }
     }
 
-    private class ActionSpec implements Specification<PaymentInstruction> {
+    private class ActionSpec implements Specification<T> {
 
         @Override
-        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
             Predicate predicate = null;
 
             if (paymentInstructionSearchCriteriaDto.getAction() != null) {
@@ -235,13 +232,13 @@ public class PaymentInstructionsSpecifications {
         }
     }
 
-    private class CaseReferenceSpec implements Specification<PaymentInstruction> {
+    private class CaseReferenceSpec implements Specification<T> {
 
         @Override
-        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
             Predicate predicate = null;
             query.distinct(true);
-            ListJoin<PaymentInstruction, CaseFeeDetail> feeDetails = root.joinList("caseFeeDetails", JoinType.LEFT);
+            ListJoin<T, CaseFeeDetail> feeDetails = root.joinList("caseFeeDetails", JoinType.LEFT);
             if (paymentInstructionSearchCriteriaDto.getCaseReference() != null) {
                 predicate = criteriaBuilder.like(feeDetails.get("caseReference"), "%" + paymentInstructionSearchCriteriaDto.getCaseReference() + "%");
             }
@@ -249,12 +246,12 @@ public class PaymentInstructionsSpecifications {
         }
     }
 
-    private class PaymentTypeSpec implements Specification<PaymentInstruction> {
+    private class PaymentTypeSpec implements Specification<T> {
 
         @Override
-        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
             In<PaymentType> inCriteriaForPaymentType = null;
-            Join<PaymentInstruction, PaymentType> paymentType = root.join("paymentType");
+            Join<T, PaymentType> paymentType = root.join("paymentType");
             String criteriaPaymentType = paymentInstructionSearchCriteriaDto.getPaymentType();
             String[] criteriaPaymentTypesStringArray;
             if (criteriaPaymentType != null) {
@@ -268,25 +265,25 @@ public class PaymentInstructionsSpecifications {
         }
     }
 
-	private class BgcNumberSpec implements Specification<PaymentInstruction> {
-
-		@Override
-		public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-
-			Predicate predicate = null;
-
-			if (paymentInstructionSearchCriteriaDto.getBgcNumber() != null) {
-				predicate = builder.equal(root.<String>get("bgcNumber"),
-						paymentInstructionSearchCriteriaDto.getBgcNumber());
-			}
-			return predicate;
-		}
-	}
-
-    private class TransferredToPayhubSpec implements Specification<PaymentInstruction> {
+    private class BgcNumberSpec implements Specification<T> {
 
         @Override
-        public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+
+            Predicate predicate = null;
+
+            if (paymentInstructionSearchCriteriaDto.getBgcNumber() != null) {
+                predicate = builder.equal(root.<String>get("bgcNumber"),
+                    paymentInstructionSearchCriteriaDto.getBgcNumber());
+            }
+            return predicate;
+        }
+    }
+
+    private class TransferredToPayhubSpec implements Specification<T> {
+
+        @Override
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
             Predicate predicate = null;
 
             if (paymentInstructionSearchCriteriaDto.getTransferredToPayhub() != null) {

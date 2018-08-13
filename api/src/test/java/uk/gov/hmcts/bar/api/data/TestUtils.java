@@ -1,7 +1,10 @@
 package uk.gov.hmcts.bar.api.data;
 
 import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubCaseFeeDetail;
+import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -10,8 +13,14 @@ public class TestUtils {
     public static PaymentInstruction createSamplePaymentInstruction(String type, int paymentAmount, int[][] caseDetails){
         PaymentInstruction pi = TestUtils.createPaymentInstructions(type, paymentAmount);
         pi.setCaseFeeDetails(Arrays.stream(caseDetails).map(amounts -> TestUtils.createCaseFeeDetail(amounts)).collect(Collectors.toList()));
-        pi.setCaseFeeDetails(Arrays.stream(caseDetails).map(amounts -> TestUtils.createCaseFeeDetail(amounts)).collect(Collectors.toList()));
         return pi;
+    }
+
+    public static PayhubPaymentInstruction createSamplePayhuPaymentInstruction(int paymentAmount, int[][] caseDetails) {
+        PayhubPaymentInstruction ppi = new PayhubPaymentInstruction("John Doe", paymentAmount, "GBP", "TTB");
+        ppi.setPaymentDate(LocalDateTime.of(2018, 8, 13, 0, 0));
+        ppi.setCaseFeeDetails(Arrays.stream(caseDetails).map(amounts -> TestUtils.createPayhubCaseFeeDetail(amounts)).collect(Collectors.toList()));
+        return ppi;
     }
 
     public static Object[] dataProvider() {
@@ -63,11 +72,28 @@ public class TestUtils {
         }
     }
 
-    public static CaseFeeDetail createCaseFeeDetail(int[] amounts){
+    public static CaseFeeDetail createCaseFeeDetail(int[] amounts) {
         CaseFeeDetail cf = CaseFeeDetail.caseFeeDetailWith()
             .amount(amounts[0])
             .feeCode("x00335")
             .feeDescription("Recovery of Land - Online (County Court)")
+            .build();
+        if (amounts[1] != 0){
+            cf.setRefundAmount(amounts[1]);
+        }
+        if (amounts[2] != 0){
+            cf.setRemissionAmount(amounts[2]);
+        }
+        return cf;
+    }
+
+    public static PayhubCaseFeeDetail createPayhubCaseFeeDetail(int[] amounts) {
+        PayhubCaseFeeDetail cf = PayhubCaseFeeDetail.payhubCaseFeeDetailWith()
+            .amount(amounts[0])
+            .feeCode("x00335")
+            .feeDescription("Recovery of Land - Online (County Court)")
+            .feeVersion("1")
+            .caseReference("12345")
             .build();
         if (amounts[1] != 0){
             cf.setRefundAmount(amounts[1]);

@@ -41,7 +41,8 @@ import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.service.*;
 import uk.gov.hmcts.bar.api.data.utils.PaymentStatusEnumConverter;
-import uk.gov.hmcts.bar.api.data.utils.Util;https://github.com/hmcts/bar-apps/pull/124
+import uk.gov.hmcts.bar.api.data.utils.Util;
+import uk.gov.hmcts.bar.api.integration.payhub.service.PayHubService;
 import uk.gov.hmcts.reform.auth.checker.core.user.UserRequestAuthorizer;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
@@ -69,7 +70,7 @@ public class PaymentInstructionController {
                                         PayHubService payHubService) {
         this.paymentInstructionService = paymentInstructionService;
         this.caseFeeDetailService = caseFeeDetailService;
-        this.unallocatedAmountService = unallohttps://github.com/hmcts/bar-apps/pull/124catedAmountService;
+        this.unallocatedAmountService = unallocatedAmountService;
         this.barUserService = barUserService;
         this.payHubService = payHubService;
     }
@@ -456,7 +457,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 400, message = "Bad request"),
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/send-to-payhub")
+    @GetMapping("/payment-instructions/send-to-payhub")
 	public ResponseEntity<PayHubResponseReport> sendToPayHub(@RequestHeader HttpHeaders headers) throws IOException {
         String bearerToken = headers.getFirst(UserRequestAuthorizer.AUTHORISATION);
         PayHubResponseReport report = payHubService.sendPaymentInstructionToPayHub(bearerToken);

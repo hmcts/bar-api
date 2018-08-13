@@ -54,7 +54,10 @@ import uk.gov.hmcts.bar.api.data.repository.BankGiroCreditRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionsSpecifications;
+import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.data.repository.*;
 import uk.gov.hmcts.bar.api.data.utils.Util;
+import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
 
 
 @Service
@@ -78,6 +81,7 @@ public class PaymentInstructionService {
     private final BankGiroCreditRepository bankGiroCreditRepository;
     private final FF4j ff4j;
     private PaymentTypeService paymentTypeService;
+    private final PayhubPaymentInstructionRepository payhubPaymentInstructionRepository;
 
 
     public PaymentInstructionService(PaymentReferenceService paymentReferenceService, PaymentInstructionRepository paymentInstructionRepository,
@@ -85,7 +89,8 @@ public class PaymentInstructionService {
                                      PaymentInstructionStatusRepository paymentInstructionStatusRepository,
                                      FF4j ff4j,
                                      BankGiroCreditRepository bankGiroCreditRepository,
-                                     PaymentTypeService paymentTypeService
+                                     PaymentTypeService paymentTypeService,
+                                     PayhubPaymentInstructionRepository payhubPaymentInstructionRepository
                                      ) {
         this.paymentReferenceService = paymentReferenceService;
         this.paymentInstructionRepository = paymentInstructionRepository;
@@ -94,6 +99,7 @@ public class PaymentInstructionService {
         this.ff4j = ff4j;
         this.bankGiroCreditRepository = bankGiroCreditRepository;
         this.paymentTypeService = paymentTypeService;
+        this.payhubPaymentInstructionRepository = payhubPaymentInstructionRepository;
     }
 
     public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction) {
@@ -112,8 +118,7 @@ public class PaymentInstructionService {
     public List<PaymentInstruction> getAllPaymentInstructions(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto) {
 
         paymentInstructionSearchCriteriaDto.setSiteId(SITE_ID);
-		PaymentInstructionsSpecifications paymentInstructionsSpecification = new PaymentInstructionsSpecifications(
-				paymentInstructionSearchCriteriaDto, paymentTypeService);
+        PaymentInstructionsSpecifications<PaymentInstruction> paymentInstructionsSpecification = new PaymentInstructionsSpecifications<>(paymentInstructionSearchCriteriaDto,paymentTypeService);
         Sort sort = new Sort(Sort.Direction.DESC, "paymentDate");
         Pageable pageDetails = PageRequest.of(PAGE_NUMBER, MAX_RECORDS_PER_PAGE, sort);
 
@@ -125,6 +130,18 @@ public class PaymentInstructionService {
 		}
 
 		return Lists.newArrayList(paymentInstructionRepository.findAll(piSpecification, pageDetails).iterator());
+    }
+
+    public List<PayhubPaymentInstruction> getAllPaymentInstructionsForPayhub(
+        PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto
+    ) {
+
+        paymentInstructionSearchCriteriaDto.setSiteId(SITE_ID);
+        PaymentInstructionsSpecifications<PayhubPaymentInstruction> paymentInstructionsSpecification =
+            new PaymentInstructionsSpecifications<>(paymentInstructionSearchCriteriaDto, paymentTypeService);
+
+        Specification<PayhubPaymentInstruction> piForPayhubSpecification = paymentInstructionsSpecification.getPaymentInstructionsSpecification();
+        return payhubPaymentInstructionRepository.findAll(piForPayhubSpecification);
     }
 
     public PaymentInstruction getPaymentInstruction(Integer id) {

@@ -2,48 +2,14 @@ package uk.gov.hmcts.bar.api.data.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.persistence.Entity;
 
-@Data
 @Entity
 @NoArgsConstructor
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class CaseFeeDetail {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CASE_FEE_ID")
-    @JsonProperty(access= JsonProperty.Access.READ_ONLY)
-    private int caseFeeId;
-
-    private Integer paymentInstructionId;
-
-    private String feeCode;
-
-    private Integer amount;
-
-    private String feeDescription;
-
-    private String feeVersion;
-    @NotNull
-    @Pattern(regexp ="^[a-zA-Z0-9]{1,11}",message = "invalid case reference number")
-    private String caseReference;
-
-    private Integer remissionAmount;
-
-    private String remissionBenefiter;
-
-    private String remissionAuthorisation;
-
-    private Integer refundAmount;
+public class CaseFeeDetail extends BaseCaseFeeDetail {
 
     @JsonCreator
     @Builder(builderMethodName = "caseFeeDetailWith")
@@ -57,16 +23,18 @@ public class CaseFeeDetail {
                          @JsonProperty("remission_benefiter") String remissionBenefiter,
                          @JsonProperty("remission_authorisation") String remissionAuthorisation,
                          @JsonProperty("refund_amount") Integer refundAmount) {
-
-        this.paymentInstructionId = paymentInstructionId;
-        this.amount = amount;
-        this.feeCode = feeCode;
-        this.feeDescription = feeDescription;
-        this.feeVersion =  feeVersion;
-        this.caseReference = caseReference;
-        this.remissionAmount = remissionAmount;
-        this.remissionBenefiter = remissionBenefiter;
-        this.remissionAuthorisation = remissionAuthorisation;
-        this.refundAmount = refundAmount;
+        super(paymentInstructionId, feeCode, amount, feeDescription, feeVersion, caseReference, remissionAmount,
+            remissionBenefiter, remissionAuthorisation, refundAmount);
     }
 }
+
+
+
+
+
+
+
+
+
+
+

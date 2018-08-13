@@ -1,4 +1,4 @@
-package uk.gov.hmcts.bar.api.data.service;
+package uk.gov.hmcts.bar.api.integration.payhub.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -14,11 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.bar.api.converters.PaymentInstructionPayHubConverter;
-import uk.gov.hmcts.bar.api.data.model.PayHubPayload;
-import uk.gov.hmcts.bar.api.data.model.PayHubResponseReport;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
+import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
+import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
 import javax.transaction.Transactional;
@@ -62,10 +60,9 @@ public class PayHubService {
         PayHubResponseReport resp = new PayHubResponseReport();
         // oneTimePassword for s2s auth
         String oneTimePassword = this.serviceAuthTokenGenerator.generate();
-        System.out.println("service token: " + oneTimePassword);
 
         // collect payment instructions
-        List<PayHubPayload> payloads = collectPaymentInstructions();
+        List<PayhubPaymentInstruction> payloads = collectPaymentInstructions();
 
         // send to payhub
         HttpPost httpPost = new HttpPost(payHubUrl + "/payment-records");
@@ -94,19 +91,17 @@ public class PayHubService {
             if (payHubStatus){
                 resp.increaseSuccess();
             }
-            paymentInstructionService.updateTransferredToPayHub(payHubPayload.getPaymentInstructionId(), payHubStatus, payHubErrorMessage.toString());
+            paymentInstructionService.updateTransferredToPayHub(payHubPayload.getId(), payHubStatus, payHubErrorMessage.toString());
         });
         return resp;
     }
 
 
-    private List<PayHubPayload> collectPaymentInstructions() {
+    private List<PayhubPaymentInstruction> collectPaymentInstructions() {
         PaymentInstructionSearchCriteriaDto criteriaDto = new PaymentInstructionSearchCriteriaDto();
         criteriaDto.setStatus("TTB");
         criteriaDto.setTransferredToPayhub(false);
-        List<PaymentInstruction> pis = paymentInstructionService.getAllPaymentInstructions(criteriaDto);
-        return pis.stream()
-            .map(PaymentInstructionPayHubConverter::convert).collect(Collectors.toList());
+        return paymentInstructionService.getAllPaymentInstructionsForPayhub(criteriaDto);
     }
 
     private boolean handlePayHubResponse(CloseableHttpResponse response, ObjectMapper objectMapper, StringBuilder payHubErrorMessage) throws IOException {
