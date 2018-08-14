@@ -146,8 +146,8 @@ public class PaymentInstructionController {
 
         List<PaymentInstruction> paymentInstructionList = null;
         
-		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = createPaymentInstructionCriteria(
-				id, status, startDate, endDate, payerName, chequeNumber, postalOrderNumber, dailySequenceId,
+		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = createPaymentInstructionCriteria(id,
+				status, startDate, endDate, payerName, chequeNumber, postalOrderNumber, dailySequenceId,
 				allPayInstructionId, paymentType, action, caseReference, piIds, bgcNumber);
 
 		paymentInstructionList = paymentInstructionService
