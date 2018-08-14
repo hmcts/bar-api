@@ -499,14 +499,12 @@ public class PaymentInstructionController {
         String multiplePiIds,
         String bgcNumber
     ){
-        return PaymentInstructionSearchCriteriaDto
-            .paymentInstructionSearchCriteriaDto().status(status)
-            .userId(userId)
-            .startDate(startDate == null ? null : startDate.atStartOfDay())
-            .endDate(endDate == null ? null : endDate.atTime(LocalTime.now())).payerName(payerName)
-            .chequeNumber(chequeNumber).postalOrderNumer(postalOrderNumber).dailySequenceId(dailySequenceId)
-            .allPayInstructionId(allPayInstructionId).paymentType(paymentType).action(action)
-            .caseReference(caseReference).multiplePiIds(multiplePiIds).bgcNumber(bgcNumber).build();
+		return PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto().status(status).userId(userId)
+				.startDate(startDate == null ? null : startDate.atStartOfDay())
+				.endDate(endDate == null ? null : endDate.atTime(LocalTime.now())).payerName(payerName)
+				.chequeNumber(chequeNumber).postalOrderNumer(postalOrderNumber).dailySequenceId(dailySequenceId)
+				.allPayInstructionId(allPayInstructionId).paymentType(paymentType).action(action)
+				.caseReference(caseReference).multiplePiIds(multiplePiIds).bgcNumber(bgcNumber).build();
     }
 
     private boolean checkAcceptHeaderForCsv(HttpHeaders headers){
