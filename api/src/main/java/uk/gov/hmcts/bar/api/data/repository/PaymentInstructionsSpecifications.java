@@ -29,6 +29,7 @@ public class PaymentInstructionsSpecifications {
     protected Specification<PaymentInstruction> caseReferenceSpec = null;
     protected Specification<PaymentInstruction> paymentTypeSpec = null;
     protected Specification<PaymentInstruction> multiplsIdSpec = null;
+    protected Specification<PaymentInstruction> bgcNumberSpec = null;
 
     public PaymentInstructionsSpecifications(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto, PaymentTypeService paymentTypeService) {
         this.paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDto;
@@ -48,14 +49,16 @@ public class PaymentInstructionsSpecifications {
         caseReferenceSpec = new CaseReferenceSpec();
         paymentTypeSpec = new PaymentTypeSpec();
         multiplsIdSpec = new MultiIdSpec();
+        bgcNumberSpec = new BgcNumberSpec();
     }
 
     public Specification<PaymentInstruction> getPaymentInstructionsSpecification() {
 
         Specification<PaymentInstruction> andSpecs = Specification.where(statusSpec).and(startDateSpec)
             .and(endDateSpec).and(siteIdSpec).and(userIdSpec).and(paymentTypeSpec);
-        Specification<PaymentInstruction> orSpecs = Specification.where(payerNameSpec).or(allPayTransactionIdSpec)
-            .or(chequeNumberSpec).or(postalOrderNumerSpec).or(dailySequenceIdSpec).or(actionSpec).or(caseReferenceSpec);
+		Specification<PaymentInstruction> orSpecs = Specification.where(payerNameSpec).or(allPayTransactionIdSpec)
+				.or(chequeNumberSpec).or(postalOrderNumerSpec).or(dailySequenceIdSpec).or(actionSpec)
+				.or(caseReferenceSpec).or(bgcNumberSpec);
         return Specification.where(andSpecs).and(orSpecs);
     }
     
@@ -262,6 +265,20 @@ public class PaymentInstructionsSpecifications {
             return inCriteriaForPaymentType;
         }
     }
+    
+	private class BgcNumberSpec implements Specification<PaymentInstruction> {
 
+		@Override
+		public Predicate toPredicate(Root<PaymentInstruction> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+
+			Predicate predicate = null;
+
+			if (paymentInstructionSearchCriteriaDto.getBgcNumber() != null) {
+				predicate = builder.equal(root.<String>get("bgcNumber"),
+						paymentInstructionSearchCriteriaDto.getBgcNumber());
+			}
+			return predicate;
+		}
+	}
 
 }

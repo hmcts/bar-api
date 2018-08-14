@@ -113,7 +113,7 @@ public class PaymentInstructionController {
         } else {
             PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto =
                 createPaymentInstructionCriteria(status, startDate, endDate, payerName, chequeNumber, postalOrderNumber,
-                    dailySequenceId, allPayInstructionId, paymentType, action, caseReference, null);
+                    dailySequenceId, allPayInstructionId, paymentType, action, caseReference, null, null);
 
             paymentInstructionList = paymentInstructionService
                 .getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
@@ -141,13 +141,14 @@ public class PaymentInstructionController {
         @RequestParam(name = "caseReference", required = false) String caseReference,
         @RequestParam(name = "paymentType", required = false) String paymentType,
         @RequestParam(name = "action", required = false) String action,
-        @RequestParam(name = "piIds", required = false) String piIds) {
+        @RequestParam(name = "piIds", required = false) String piIds,
+        @RequestParam(name = "bgcNumber", required = false) String bgcNumber) {
 
         List<PaymentInstruction> paymentInstructionList = null;
         
 		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = createPaymentInstructionCriteria(
 				id, status, startDate, endDate, payerName, chequeNumber, postalOrderNumber, dailySequenceId,
-				allPayInstructionId, paymentType, action, caseReference, piIds);
+				allPayInstructionId, paymentType, action, caseReference, piIds, bgcNumber);
 
 		paymentInstructionList = paymentInstructionService
 				.getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
@@ -475,10 +476,11 @@ public class PaymentInstructionController {
         String paymentType,
         String action,
         String caseReference,
-        String multiplePiIds
+        String multiplePiIds,
+        String bgcNumber
     ){
         return createPaymentInstructionCriteria(null, status, startDate, endDate, payerName, chequeNumber,
-            postalOrderNumber, dailySequenceId, allPayInstructionId, paymentType, action, caseReference, multiplePiIds);
+            postalOrderNumber, dailySequenceId, allPayInstructionId, paymentType, action, caseReference, multiplePiIds, bgcNumber);
     }
 
     private PaymentInstructionSearchCriteriaDto createPaymentInstructionCriteria(
@@ -494,7 +496,8 @@ public class PaymentInstructionController {
         String paymentType,
         String action,
         String caseReference,
-        String multiplePiIds
+        String multiplePiIds,
+        String bgcNumber
     ){
         return PaymentInstructionSearchCriteriaDto
             .paymentInstructionSearchCriteriaDto().status(status)
@@ -503,7 +506,7 @@ public class PaymentInstructionController {
             .endDate(endDate == null ? null : endDate.atTime(LocalTime.now())).payerName(payerName)
             .chequeNumber(chequeNumber).postalOrderNumer(postalOrderNumber).dailySequenceId(dailySequenceId)
             .allPayInstructionId(allPayInstructionId).paymentType(paymentType).action(action)
-            .caseReference(caseReference).multiplePiIds(multiplePiIds).build();
+            .caseReference(caseReference).multiplePiIds(multiplePiIds).bgcNumber(bgcNumber).build();
     }
 
     private boolean checkAcceptHeaderForCsv(HttpHeaders headers){
