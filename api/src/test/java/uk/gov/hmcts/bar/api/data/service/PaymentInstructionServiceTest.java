@@ -20,6 +20,7 @@ import uk.gov.hmcts.bar.api.data.repository.BankGiroCreditRepository;
 import uk.gov.hmcts.bar.api.data.repository.PayhubPaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
+import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -55,6 +56,12 @@ public class PaymentInstructionServiceTest {
 
     @Mock
     private Iterator<PaymentInstruction> piIteratorMock;
+
+    @Mock
+    private Page<PayhubPaymentInstruction> payhubPiPageMock;
+
+    @Mock
+    private Iterator<PayhubPaymentInstruction> payhubPiIteratorMock;
 
     @Mock
     private PaymentInstruction paymentInstructionMock;
@@ -612,6 +619,20 @@ public class PaymentInstructionServiceTest {
         paymentInstructionService.updateTransferredToPayHub(id, status, tooLongErrorMessage);
         assertEquals(1024, truncatedErrorMessage.length());
         verify(paymentInstructionRepository, times(1)).updateTransferredToPayHub(id, status, truncatedErrorMessage);
+    }
+
+    @Test
+    public void testGetAllPaymentInstructionsForPayhub() {
+        when(payhubPaymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
+            .thenReturn(payhubPiPageMock);
+        when(payhubPiPageMock.iterator()).thenReturn(payhubPiIteratorMock);
+
+        PaymentInstructionSearchCriteriaDto dto = new PaymentInstructionSearchCriteriaDto();
+        dto.setStatus("TTB");
+        dto.setTransferredToPayhub(false);
+
+        List<PayhubPaymentInstruction> pis = paymentInstructionService.getAllPaymentInstructionsForPayhub(dto);
+        assertEquals(Lists.newArrayList(payhubPiIteratorMock), pis);
     }
 
     private List<PaymentInstructionStats> createStats() {

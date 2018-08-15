@@ -87,6 +87,7 @@ dependencies {
 
     testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'com.github.tomakehurst:wiremock:2.6.0'
 
     // smoke
     smokeTestCompile sourceSets.test.runtimeClasspath
