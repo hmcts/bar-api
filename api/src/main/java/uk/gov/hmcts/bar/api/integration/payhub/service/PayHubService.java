@@ -117,7 +117,7 @@ public class PayHubService {
             errorResponse = objectMapper.readValue(response.getEntity().getContent(), typeRef);
             errorResponse.put("rawMessage", rawMessage);
         }
-        LOG.info("Saving payment instruction was failed: " + rawMessage);
+        LOG.info("Saving payment instruction was failed: {0}", rawMessage);
         payHubErrorMessage.append("Failed: ");
         String convertedMsg = new ArrayList<>(errorResponse.keySet()).stream().map(key -> {
             if ("error".equals(key) || "message".equals(key)) {
@@ -127,8 +127,8 @@ public class PayHubService {
         }).filter(StringUtils::isNotBlank).collect( Collectors.joining( ", " ) );
         if (StringUtils.isNotBlank(convertedMsg)) {
             payHubErrorMessage.append(convertedMsg);
-        } else if (errorResponse.get("rawMessage") != null) {
-            payHubErrorMessage.append(errorResponse.get("rawMessage"));
+        } else if (rawMessage != null) {
+            payHubErrorMessage.append(rawMessage);
         }
         return false;
     }

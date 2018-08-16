@@ -12,7 +12,7 @@ import javax.persistence.Entity;
 @ToString(callSuper = true)
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@DiscriminatorValue("cash")
+@DiscriminatorValue("CASH")
 public class CashPaymentInstruction extends PaymentInstruction {
 
     @JsonCreator

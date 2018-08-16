@@ -635,3 +635,23 @@ databaseChangeLog:
                   constraints:
                     nullable: true
             tableName: payment_instruction
+  - changeSet:
+      id: 24
+      author: akiss
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: payment_instruction
+            constraintName: fk_payment_type
+        - addForeignKeyConstraint:
+            baseColumnNames: payment_type_id
+            baseTableName: payment_instruction
+            constraintName: fk_payment_type
+            onUpdate: CASCADE
+            referencedColumnNames: id
+            referencedTableName: payment_type
+        - sql: >
+            UPDATE payment_type SET id = 'CARD' WHERE id = 'cards';
+            UPDATE payment_type SET id = 'CHEQUE' WHERE id = 'cheques';
+            UPDATE payment_type SET id = 'CASH' WHERE id = 'cash';
+            UPDATE payment_type SET id = 'POSTAL_ORDER' WHERE id = 'postal-orders';
+            UPDATE payment_type SET id = 'ALLPAY' WHERE id = 'allpay';

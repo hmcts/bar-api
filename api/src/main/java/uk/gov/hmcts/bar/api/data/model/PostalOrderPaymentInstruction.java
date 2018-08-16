@@ -14,7 +14,7 @@ import javax.persistence.Entity;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@DiscriminatorValue("postal-orders")
+@DiscriminatorValue("POSTAL_ORDER")
 public class PostalOrderPaymentInstruction extends PaymentInstruction {
 
     @JsonCreator

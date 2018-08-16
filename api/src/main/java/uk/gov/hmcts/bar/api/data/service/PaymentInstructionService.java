@@ -69,7 +69,7 @@ public class PaymentInstructionService {
 
     private static final Logger LOG = getLogger(PaymentInstructionService.class);
 
-    private static final List<String> GROUPED_TYPES = Arrays.asList("cheques", "postal-orders");
+    private static final List<String> GROUPED_TYPES = Arrays.asList("CHEQUE", "POSTAL_ORDER");
 
     public static final String SITE_ID = "Y431";
     private static final int PAGE_NUMBER = 0;

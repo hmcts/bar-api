@@ -36,7 +36,7 @@ public class PayhubPaymentInstruction extends BasePaymentInstruction {
         return super.getPaymentType().getId();
     }
 
-    @JsonProperty("requestor-reference")
+    @JsonProperty("requestor_reference")
     public String getReference() {
         return super.getSiteId() + "-" +
             super.getPaymentDate().format(DateTimeFormatter.ofPattern("yyyyMMdd")) +

@@ -26,7 +26,7 @@ public class PaymentInstructionStatsTest extends ComponentTestBase {
                 Map stats = ((ArrayList<Map>)((Map)item.get("content")).get("0")).get(0);
                 assertNull(stats.get("bgc"));
                 assertEquals(1, stats.get("count"));
-                assertEquals("cards", stats.get("payment_type"));
+                assertEquals("CARD", stats.get("payment_type"));
             }));
     }
 }

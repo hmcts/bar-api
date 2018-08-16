@@ -14,7 +14,7 @@ import javax.persistence.Entity;
 @ToString(callSuper = true)
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@DiscriminatorValue("cheques")
+@DiscriminatorValue("CHEQUE")
 public class ChequePaymentInstruction extends PaymentInstruction {
 
     @JsonCreator

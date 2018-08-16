@@ -25,7 +25,7 @@ public class ChequePaymentInstructionDto extends PaymentInstructionDto {
     @Pattern(regexp ="^\\d{6,6}$",message = "invalid cheque number")
     private final String chequeNumber;
 
-    private static final String PAYMENT_INSTRUCTION_TYPE = "cheques";
+    private static final String PAYMENT_INSTRUCTION_TYPE = "CHEQUE";
 
     @JsonCreator
     @Builder(builderMethodName = "chequePaymentInstructionDtoWith")

@@ -568,8 +568,8 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString())).thenReturn(rawStats);
         MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType("1234", "PA");
         Resource<PaymentInstructionStats> resource = (Resource<PaymentInstructionStats>)((List)stats.get("bgc123")).get(0);
-        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=cheques&bgcNumber=bgc123", resource.getLink(STAT_DETAILS).getHref());
-        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=cheques,postal-orders&bgcNumber=bgc123", resource.getLink(STAT_GROUP_DETAILS).getHref());
+        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE&bgcNumber=bgc123", resource.getLink(STAT_DETAILS).getHref());
+        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE,POSTAL_ORDER&bgcNumber=bgc123", resource.getLink(STAT_GROUP_DETAILS).getHref());
     }
 
     @Test
@@ -637,10 +637,10 @@ public class PaymentInstructionServiceTest {
 
     private List<PaymentInstructionStats> createStats() {
         List<PaymentInstructionStats> stats = new ArrayList<>();
-        stats.add(createPaymentStat("James Black","1234", 1, "PA", 10000L, "cards", null));
-        stats.add(createPaymentStat("James Black","1234", 4, "PA", 15000L, "cheques", "bgc123"));
-        stats.add(createPaymentStat("James Black","1234", 1, "PA", 33000L, "postal-orders", "bgc123"));
-        stats.add(createPaymentStat("James Black","1234", 1, "PA", 10000L, "cash", "bgc456"));
+        stats.add(createPaymentStat("James Black","1234", 1, "PA", 10000L, "CARD", null));
+        stats.add(createPaymentStat("James Black","1234", 4, "PA", 15000L, "CHEQUE", "bgc123"));
+        stats.add(createPaymentStat("James Black","1234", 1, "PA", 33000L, "POSTAL_ORDER", "bgc123"));
+        stats.add(createPaymentStat("James Black","1234", 1, "PA", 10000L, "CASH", "bgc456"));
         return stats;
     }
 

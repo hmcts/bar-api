@@ -1,13 +1,9 @@
 package uk.gov.hmcts.bar.api.controllers.payment;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-
-import javax.validation.Valid;
-
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,32 +16,26 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.model.*;
-import uk.gov.hmcts.bar.api.data.service.*;
+import uk.gov.hmcts.bar.api.data.service.BarUserService;
+import uk.gov.hmcts.bar.api.data.service.CaseFeeDetailService;
+import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
+import uk.gov.hmcts.bar.api.data.service.UnallocatedAmountService;
 import uk.gov.hmcts.bar.api.data.utils.PaymentStatusEnumConverter;
 import uk.gov.hmcts.bar.api.data.utils.Util;
 import uk.gov.hmcts.bar.api.integration.payhub.service.PayHubService;
 import uk.gov.hmcts.reform.auth.checker.core.user.UserRequestAuthorizer;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+import javax.validation.Valid;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 
@@ -458,7 +448,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/payment-instructions/send-to-payhub")
-	public ResponseEntity<PayHubResponseReport> sendToPayHub(@RequestHeader HttpHeaders headers) throws IOException {
+	public ResponseEntity<PayHubResponseReport> sendToPayHub(@RequestHeader HttpHeaders headers) {
         String bearerToken = headers.getFirst(UserRequestAuthorizer.AUTHORISATION);
         PayHubResponseReport report = payHubService.sendPaymentInstructionToPayHub(bearerToken);
         return ResponseEntity.ok(report);
