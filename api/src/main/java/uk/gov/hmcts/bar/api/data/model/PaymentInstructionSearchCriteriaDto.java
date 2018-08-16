@@ -32,5 +32,6 @@ public class PaymentInstructionSearchCriteriaDto {
     private String userId;
     private String caseReference;
     private String multiplePiIds;
+    private String bgcNumber;
 
 }

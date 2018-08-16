@@ -550,8 +550,8 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString())).thenReturn(rawStats);
         MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType("1234", "PA");
         Resource<PaymentInstructionStats> resource = (Resource<PaymentInstructionStats>)((List)stats.get("bgc123")).get(0);
-        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=cheques", resource.getLink(STAT_DETAILS).getHref());
-        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=cheques,postal-orders", resource.getLink(STAT_GROUP_DETAILS).getHref());
+        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=cheques&bgcNumber=bgc123", resource.getLink(STAT_DETAILS).getHref());
+        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=cheques,postal-orders&bgcNumber=bgc123", resource.getLink(STAT_GROUP_DETAILS).getHref());
     }
 
     private List<PaymentInstructionStats> createStats() {

@@ -1,7 +1,21 @@
 package uk.gov.hmcts.bar.api.data.service;
 
 
-import com.google.common.collect.Lists;
+import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.ff4j.FF4j;
@@ -17,24 +31,30 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
+
 import uk.gov.hmcts.bar.api.controllers.payment.PaymentInstructionController;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
-import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.data.model.BankGiroCredit;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStaticsByUser;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStats;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatus;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusHistory;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusReferenceKey;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats;
+import uk.gov.hmcts.bar.api.data.model.PaymentReference;
 import uk.gov.hmcts.bar.api.data.repository.BankGiroCreditRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionsSpecifications;
 import uk.gov.hmcts.bar.api.data.utils.Util;
-
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.slf4j.LoggerFactory.getLogger;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 
 @Service
@@ -92,7 +112,8 @@ public class PaymentInstructionService {
     public List<PaymentInstruction> getAllPaymentInstructions(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto) {
 
         paymentInstructionSearchCriteriaDto.setSiteId(SITE_ID);
-        PaymentInstructionsSpecifications paymentInstructionsSpecification = new PaymentInstructionsSpecifications(paymentInstructionSearchCriteriaDto,paymentTypeService);
+		PaymentInstructionsSpecifications paymentInstructionsSpecification = new PaymentInstructionsSpecifications(
+				paymentInstructionSearchCriteriaDto, paymentTypeService);
         Sort sort = new Sort(Sort.Direction.DESC, "paymentDate");
         Pageable pageDetails = PageRequest.of(PAGE_NUMBER, MAX_RECORDS_PER_PAGE, sort);
         
@@ -181,7 +202,7 @@ public class PaymentInstructionService {
             Link detailslink = linkTo(methodOn(PaymentInstructionController.class)
                 .getPaymentInstructionsByIdamId(userId, status,
                     null, null, null, null, null,
-                    null, null, null, stat.getPaymentType(), null, null)
+                    null, null, null, stat.getPaymentType(), null, null, stat.getBgc())
             ).withRel(STAT_DETAILS);
 
             Resource<PaymentInstructionStats> resource = new Resource<>(stat, detailslink.expand());
@@ -192,7 +213,7 @@ public class PaymentInstructionService {
                     .getPaymentInstructionsByIdamId(userId, status,
                         null, null, null, null, null,
                         null, null, null,
-                        GROUPED_TYPES.stream().collect(Collectors.joining( "," )), null, null)
+                        GROUPED_TYPES.stream().collect(Collectors.joining( "," )), null, null, stat.getBgc())
                 ).withRel(STAT_GROUP_DETAILS);
                 resource.add(groupedLink.expand());
             }
