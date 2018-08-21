@@ -15,6 +15,8 @@ module "bar-api" {
     SPRING_DATASOURCE_URL = "jdbc:postgresql://${module.bar-database.host_name}:${module.bar-database.postgresql_listen_port}/${module.bar-database.postgresql_database}?ssl=true"
     # idam
     IDAM_CLIENT_BASE_URL = "${var.idam_api_url}"
+     # enable/disables liquibase run
+    SPRING_LIQUIBASE_ENABLED = "${var.liquibase_enabled}"
   }
 }
 
