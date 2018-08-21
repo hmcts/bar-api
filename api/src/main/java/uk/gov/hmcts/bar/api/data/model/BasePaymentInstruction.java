@@ -101,9 +101,9 @@ public class BasePaymentInstruction {
     public String getSentToPayhub(){
 
         String sentToPayhub;
-        if(this.transferredToPayhub == true)
+        if(this.transferredToPayhub)
             sentToPayhub =SENT_TO_PAYHUB_YES;
-        else if ((this.payhubError != null) && (this.transferredToPayhub == false))
+        else if ((this.payhubError != null) && (!this.transferredToPayhub))
             sentToPayhub = SENT_TO_PAYHUB_FAIL;
         else{
             sentToPayhub =SENT_TO_PAYHUB_NO;
