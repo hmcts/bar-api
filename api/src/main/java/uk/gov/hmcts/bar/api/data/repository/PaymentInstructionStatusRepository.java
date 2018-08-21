@@ -47,10 +47,10 @@ public interface PaymentInstructionStatusRepository
         (@Param("historyStartDate") LocalDateTime historyStartDate, @Param("historyEndDate") LocalDateTime historyEndDate);
 
     @Query(value = "SELECT pi.user_id as userId, CONCAT(bu.forename,' ',bu.surname) as name, count(pi.id) as count, pi.status, sum(pi.amount) as totalAmount, pi.payment_type_id as PaymentType, " +
-        "pi.bgc_number as bgc from payment_instruction pi, bar_user bu where pi.status = :paymentStatus and pi.user_id = :userId and pi.user_id = bu.id " +
+        "pi.bgc_number as bgc from payment_instruction pi, bar_user bu where pi.status = :paymentStatus and pi.user_id = :userId and pi.user_id = bu.id and pi.transferred_to_payhub = :sentToPayhub " +
         "group by bgc_number, payment_type_id, status, user_id, name " +
         "order by bgc_number", nativeQuery = true)
-    List<PaymentInstructionStats> getStatsByUserGroupByType(@Param("userId") String userId, @Param("paymentStatus") String paymentStatus);
+    List<PaymentInstructionStats> getStatsByUserGroupByType(@Param("userId") String userId, @Param("paymentStatus") String paymentStatus, @Param("sentToPayhub") boolean sentToPayhub);
 
     @Query(name = "PIStatsRejectedByDMByType", value = "SELECT user_id as userId, count(id) as count, status, sum(amount) as totalAmount, payment_type_id as PaymentType, "
 			+ "bgc_number as bgc FROM payment_instruction pi, bar_user bu, payment_instruction_status pis where pi.status = :currentStatus AND pis.payment_instruction_id = pi.id AND "
