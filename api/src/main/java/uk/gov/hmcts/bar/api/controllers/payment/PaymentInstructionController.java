@@ -1,12 +1,9 @@
 package uk.gov.hmcts.bar.api.controllers.payment;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-
-import javax.validation.Valid;
-
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,49 +16,26 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
-import uk.gov.hmcts.bar.api.data.model.AllPay;
-import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.BarUser;
-import uk.gov.hmcts.bar.api.data.model.Card;
-import uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.CaseFeeDetail;
-import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
-import uk.gov.hmcts.bar.api.data.model.Cash;
-import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.Cheque;
-import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
-import uk.gov.hmcts.bar.api.data.model.PostalOrder;
-import uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.service.BarUserService;
 import uk.gov.hmcts.bar.api.data.service.CaseFeeDetailService;
 import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
 import uk.gov.hmcts.bar.api.data.service.UnallocatedAmountService;
 import uk.gov.hmcts.bar.api.data.utils.PaymentStatusEnumConverter;
 import uk.gov.hmcts.bar.api.data.utils.Util;
+import uk.gov.hmcts.bar.api.integration.payhub.service.PayHubService;
+import uk.gov.hmcts.reform.auth.checker.core.user.UserRequestAuthorizer;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+import javax.validation.Valid;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 
@@ -76,15 +50,19 @@ public class PaymentInstructionController {
 
     private final BarUserService barUserService;
 
+    private final PayHubService payHubService;
+
     @Autowired
     public PaymentInstructionController(PaymentInstructionService paymentInstructionService,
                                         CaseFeeDetailService caseFeeDetailService,
                                         UnallocatedAmountService unallocatedAmountService,
-                                        BarUserService barUserService) {
+                                        BarUserService barUserService,
+                                        PayHubService payHubService) {
         this.paymentInstructionService = paymentInstructionService;
         this.caseFeeDetailService = caseFeeDetailService;
         this.unallocatedAmountService = unallocatedAmountService;
         this.barUserService = barUserService;
+        this.payHubService = payHubService;
     }
 
     @ApiOperation(value = "Get all current payment instructions", notes = "Get all current payment instructions for a given site.",
@@ -145,14 +123,14 @@ public class PaymentInstructionController {
         @RequestParam(name = "bgcNumber", required = false) String bgcNumber) {
 
         List<PaymentInstruction> paymentInstructionList = null;
-        
+
 		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = createPaymentInstructionCriteria(id,
 				status, startDate, endDate, payerName, chequeNumber, postalOrderNumber, dailySequenceId,
 				allPayInstructionId, paymentType, action, caseReference, piIds, bgcNumber);
 
 		paymentInstructionList = paymentInstructionService
 				.getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
-		
+
 
         return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
     }
@@ -444,10 +422,10 @@ public class PaymentInstructionController {
 		} else {
 			resultMap = paymentInstructionService.getPaymentInstructionStats(status.dbKey());
 		}
-		
+
 		return resultMap;
 	}
-    
+
     @ApiOperation(value = "collect stats for a user", notes = "Collect all payment instruction stats for a user grouped by type for a given status")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return stats for a given user"),
         @ApiResponse(code = 400, message = "Bad request"),
@@ -464,11 +442,23 @@ public class PaymentInstructionController {
         return result;
     }
 
+    @ApiOperation(value = "Send to payhub", notes = "Send all payment-instructions with TTB status to payhub")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = ""),
+        @ApiResponse(code = 400, message = "Bad request"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/payment-instructions/send-to-payhub")
+	public ResponseEntity<PayHubResponseReport> sendToPayHub(@RequestHeader HttpHeaders headers) {
+        String bearerToken = headers.getFirst(UserRequestAuthorizer.AUTHORISATION);
+        PayHubResponseReport report = payHubService.sendPaymentInstructionToPayHub(bearerToken);
+        return ResponseEntity.ok(report);
+    }
+
     private PaymentInstructionSearchCriteriaDto createPaymentInstructionCriteria(
         String status,
         LocalDate startDate,
         LocalDate endDate,
-        String payerName,   
+        String payerName,
         String chequeNumber,
         String postalOrderNumber,
         Integer dailySequenceId,

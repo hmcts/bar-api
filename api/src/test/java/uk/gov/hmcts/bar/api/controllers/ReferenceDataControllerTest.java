@@ -59,11 +59,11 @@ public class ReferenceDataControllerTest {
 
     public List<PaymentType> getPaymentTyes() {
         return new ArrayList<PaymentType>() {{
-            add(new PaymentType("cheques","Cheque"));
-            add(new PaymentType("card","Card"));
-            add(new PaymentType("postal-orders","Postal Order"));
-            add(new PaymentType("cash","Cash"));
-            add(new PaymentType("allpay","AllPay"));
+            add(new PaymentType("CHEQUE","Cheque"));
+            add(new PaymentType("CARD","Card"));
+            add(new PaymentType("POSTAL_ORDER","Postal Order"));
+            add(new PaymentType("CASH","Cash"));
+            add(new PaymentType("ALLPAY","AllPay"));
         }};
     }
 

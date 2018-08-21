@@ -617,3 +617,47 @@ databaseChangeLog:
      changes:
        - sql: >
            insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('make-editpage-readonly', 0, 'Make page read only');
+  - changeSet:
+      id: 23
+      author: akiss
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                 name: transferred_to_payhub
+                 type: boolean
+                 defaultValue: false
+                 constraints:
+                   nullable: false
+              - column:
+                  name: payhub_error
+                  type: varchar(1024)
+                  constraints:
+                    nullable: true
+            tableName: payment_instruction
+  - changeSet:
+      id: 24
+      author: akiss
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: payment_instruction
+            constraintName: fk_payment_type
+        - addForeignKeyConstraint:
+            baseColumnNames: payment_type_id
+            baseTableName: payment_instruction
+            constraintName: fk_payment_type
+            onUpdate: CASCADE
+            referencedColumnNames: id
+            referencedTableName: payment_type
+        - sql: >
+            UPDATE payment_type SET id = 'CARD' WHERE id = 'cards';
+            UPDATE payment_type SET id = 'CHEQUE' WHERE id = 'cheques';
+            UPDATE payment_type SET id = 'CASH' WHERE id = 'cash';
+            UPDATE payment_type SET id = 'POSTAL_ORDER' WHERE id = 'postal-orders';
+            UPDATE payment_type SET id = 'ALLPAY' WHERE id = 'allpay';
+  - changeSet:
+      id: 25
+      author: akiss
+      changes:
+        - sql: >
+            UPDATE payment_instruction SET site_id = 'Y431' WHERE site_id = 'BR01';

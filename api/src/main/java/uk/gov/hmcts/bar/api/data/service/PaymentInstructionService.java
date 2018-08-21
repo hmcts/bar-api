@@ -54,7 +54,10 @@ import uk.gov.hmcts.bar.api.data.repository.BankGiroCreditRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionsSpecifications;
+import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.data.repository.*;
 import uk.gov.hmcts.bar.api.data.utils.Util;
+import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
 
 
 @Service
@@ -66,9 +69,9 @@ public class PaymentInstructionService {
 
     private static final Logger LOG = getLogger(PaymentInstructionService.class);
 
-    private static final List<String> GROUPED_TYPES = Arrays.asList("cheques", "postal-orders");
+    private static final List<String> GROUPED_TYPES = Arrays.asList("CHEQUE", "POSTAL_ORDER");
 
-    public static final String SITE_ID = "BR01";
+    public static final String SITE_ID = "Y431";
     private static final int PAGE_NUMBER = 0;
     private static final int MAX_RECORDS_PER_PAGE = 200;
     private PaymentInstructionRepository paymentInstructionRepository;
@@ -78,6 +81,7 @@ public class PaymentInstructionService {
     private final BankGiroCreditRepository bankGiroCreditRepository;
     private final FF4j ff4j;
     private PaymentTypeService paymentTypeService;
+    private final PayhubPaymentInstructionRepository payhubPaymentInstructionRepository;
 
 
     public PaymentInstructionService(PaymentReferenceService paymentReferenceService, PaymentInstructionRepository paymentInstructionRepository,
@@ -85,7 +89,8 @@ public class PaymentInstructionService {
                                      PaymentInstructionStatusRepository paymentInstructionStatusRepository,
                                      FF4j ff4j,
                                      BankGiroCreditRepository bankGiroCreditRepository,
-                                     PaymentTypeService paymentTypeService
+                                     PaymentTypeService paymentTypeService,
+                                     PayhubPaymentInstructionRepository payhubPaymentInstructionRepository
                                      ) {
         this.paymentReferenceService = paymentReferenceService;
         this.paymentInstructionRepository = paymentInstructionRepository;
@@ -94,6 +99,7 @@ public class PaymentInstructionService {
         this.ff4j = ff4j;
         this.bankGiroCreditRepository = bankGiroCreditRepository;
         this.paymentTypeService = paymentTypeService;
+        this.payhubPaymentInstructionRepository = payhubPaymentInstructionRepository;
     }
 
     public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction) {
@@ -112,11 +118,10 @@ public class PaymentInstructionService {
     public List<PaymentInstruction> getAllPaymentInstructions(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto) {
 
         paymentInstructionSearchCriteriaDto.setSiteId(SITE_ID);
-		PaymentInstructionsSpecifications paymentInstructionsSpecification = new PaymentInstructionsSpecifications(
-				paymentInstructionSearchCriteriaDto, paymentTypeService);
+        PaymentInstructionsSpecifications<PaymentInstruction> paymentInstructionsSpecification = new PaymentInstructionsSpecifications<>(paymentInstructionSearchCriteriaDto,paymentTypeService);
         Sort sort = new Sort(Sort.Direction.DESC, "paymentDate");
         Pageable pageDetails = PageRequest.of(PAGE_NUMBER, MAX_RECORDS_PER_PAGE, sort);
-        
+
 		Specification<PaymentInstruction> piSpecification = null;
 		if (paymentInstructionSearchCriteriaDto.getMultiplePiIds() != null) {
 			piSpecification = paymentInstructionsSpecification.getPaymentInstructionsMultipleIdSpecification();
@@ -125,6 +130,18 @@ public class PaymentInstructionService {
 		}
 
 		return Lists.newArrayList(paymentInstructionRepository.findAll(piSpecification, pageDetails).iterator());
+    }
+
+    public List<PayhubPaymentInstruction> getAllPaymentInstructionsForPayhub(
+        PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto
+    ) {
+
+        paymentInstructionSearchCriteriaDto.setSiteId(SITE_ID);
+        PaymentInstructionsSpecifications<PayhubPaymentInstruction> paymentInstructionsSpecification =
+            new PaymentInstructionsSpecifications<>(paymentInstructionSearchCriteriaDto, paymentTypeService);
+
+        Specification<PayhubPaymentInstruction> piForPayhubSpecification = paymentInstructionsSpecification.getPaymentInstructionsSpecification();
+        return payhubPaymentInstructionRepository.findAll(piForPayhubSpecification);
     }
 
     public PaymentInstruction getPaymentInstruction(Integer id) {
@@ -274,6 +291,16 @@ public class PaymentInstructionService {
 
         }
         return paymentInstructionsList;
+    }
+
+    public void updateTransferredToPayHub(int id, boolean status, String errorMessage) {
+        String msg = errorMessage;
+        if (status) {
+            msg = null;
+        } else if (errorMessage != null && errorMessage.length() > 1024){
+            msg = errorMessage.substring(0, 1024);
+        }
+        paymentInstructionRepository.updateTransferredToPayHub(id, status, msg);
     }
 
     private boolean checkIfActionEnabled(PaymentInstructionUpdateRequest paymentInstructionUpdateRequest){

@@ -33,5 +33,6 @@ public class PaymentInstructionSearchCriteriaDto {
     private String caseReference;
     private String multiplePiIds;
     private String bgcNumber;
+    private Boolean transferredToPayhub;
 
 }

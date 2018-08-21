@@ -15,14 +15,14 @@ public class PaymentInstructionSearchTest extends ComponentTestBase {
         DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
 
         restActions
-            .get("/payment-instructions?paymentType=cache")
+            .get("/payment-instructions?paymentType=CACHE")
             .andExpect(status().isOk())
             .andExpect(body().asListOf(CardPaymentInstruction.class, paymentInstructions -> {
                 Assert.assertTrue(paymentInstructions.size() == 0);
             }));
 
         restActions
-            .get("/payment-instructions?paymentType=cards")
+            .get("/payment-instructions?paymentType=CARD")
             .andExpect(status().isOk())
             .andExpect(body().asListOf(CardPaymentInstruction.class, paymentInstructions -> {
                 Assert.assertTrue(paymentInstructions.size() == 2);
@@ -34,7 +34,7 @@ public class PaymentInstructionSearchTest extends ComponentTestBase {
         DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
 
         restActions
-            .get("/payment-instructions?paymentType=cards,cash")
+            .get("/payment-instructions?paymentType=CARD,CASH")
             .andExpect(status().isOk())
             .andExpect(body().asListOf(CardPaymentInstruction.class, paymentInstructions -> {
                 Assert.assertTrue(paymentInstructions.size() == 3);
@@ -64,7 +64,7 @@ public class PaymentInstructionSearchTest extends ComponentTestBase {
             }));
 
         restActions
-            .get("/payment-instructions?caseReference=123&paymentType=cards")
+            .get("/payment-instructions?caseReference=123&paymentType=CARD")
             .andExpect(status().isOk())
             .andExpect(body().asListOf(CardPaymentInstruction.class, paymentInstructions -> {
                 Assert.assertTrue(paymentInstructions.size() == 1);

@@ -132,7 +132,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
             .andExpect(status().isOk());
 
         LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter actualFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
+        DateTimeFormatter actualFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
         String recordedDateTime = currentDateTime.format(actualFormatter);
         LocalDate currentDate = LocalDate.now();
         String paymentDate = currentDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy"));

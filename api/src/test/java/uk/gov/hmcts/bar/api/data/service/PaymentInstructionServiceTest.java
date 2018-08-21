@@ -17,8 +17,10 @@ import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto.PaymentInstructionSearchCriteriaDtoBuilder;
 import uk.gov.hmcts.bar.api.data.repository.BankGiroCreditRepository;
+import uk.gov.hmcts.bar.api.data.repository.PayhubPaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
+import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -41,6 +43,9 @@ public class PaymentInstructionServiceTest {
     private PaymentInstructionRepository paymentInstructionRepository;
 
     @Mock
+    private PayhubPaymentInstructionRepository payhubPaymentInstructionRepository;
+
+    @Mock
     private PaymentReferenceService paymentReferenceService;
 
     @Mock
@@ -51,6 +56,12 @@ public class PaymentInstructionServiceTest {
 
     @Mock
     private Iterator<PaymentInstruction> piIteratorMock;
+
+    @Mock
+    private Page<PayhubPaymentInstruction> payhubPiPageMock;
+
+    @Mock
+    private Iterator<PayhubPaymentInstruction> payhubPiIteratorMock;
 
     @Mock
     private PaymentInstruction paymentInstructionMock;
@@ -95,10 +106,17 @@ public class PaymentInstructionServiceTest {
     @Before
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
-        paymentInstructionService = new PaymentInstructionService(paymentReferenceService,
-            paymentInstructionRepository, barUserServiceMock,paymentInstructionStatusRepositoryMock, ff4jMock, bankGiroCreditRepositoryMock,paymentTypeService);
+        paymentInstructionService = new PaymentInstructionService(
+            paymentReferenceService,
+            paymentInstructionRepository,
+            barUserServiceMock,
+            paymentInstructionStatusRepositoryMock,
+            ff4jMock,
+            bankGiroCreditRepositoryMock,
+            paymentTypeService,
+            payhubPaymentInstructionRepository);
         paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto()
-            .siteId("BR01");
+            .siteId("Y431");
         paymentInstructionStatusReferenceKey = new PaymentInstructionStatusReferenceKey(0, "status");
         paymentInstructionStatus = new PaymentInstructionStatus(paymentInstructionStatusReferenceKey, null);
     }
@@ -550,16 +568,79 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString())).thenReturn(rawStats);
         MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType("1234", "PA");
         Resource<PaymentInstructionStats> resource = (Resource<PaymentInstructionStats>)((List)stats.get("bgc123")).get(0);
-        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=cheques&bgcNumber=bgc123", resource.getLink(STAT_DETAILS).getHref());
-        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=cheques,postal-orders&bgcNumber=bgc123", resource.getLink(STAT_GROUP_DETAILS).getHref());
+        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE&bgcNumber=bgc123", resource.getLink(STAT_DETAILS).getHref());
+        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE,POSTAL_ORDER&bgcNumber=bgc123", resource.getLink(STAT_GROUP_DETAILS).getHref());
+    }
+
+    @Test
+    public void updateTransferredToPayhubWhenUpdateFailedAndErrorMessage() {
+        int id = 1;
+        boolean status = false;
+        String errorMessage = "asdfafsdfsfds";
+        paymentInstructionService.updateTransferredToPayHub(id, status, errorMessage);
+        verify(paymentInstructionRepository, times(1)).updateTransferredToPayHub(id, status, errorMessage);
+    }
+
+    @Test
+    public void updateTransferredToPayhubWhenUpdateTrueButErrorMessage() {
+        int id = 1;
+        boolean status = true;
+        String errorMessage = "asdfafsdfsfds";
+        paymentInstructionService.updateTransferredToPayHub(id, status, errorMessage);
+        verify(paymentInstructionRepository, times(1)).updateTransferredToPayHub(id, status, null);
+    }
+
+    @Test
+    public void updateTransferredToPayhubWhenUpdateFalseAndTooLongErrorMessage() {
+        int id = 1;
+        boolean status = false;
+        String tooLongErrorMessage = "yIggqcYno1d1QgDtY8oCfaaFCX808SOwkvO3SBOiwpsfaG5FdysyrTX0RgI1XYlB35BANX6iqFFxavccLhMHQ1" +
+            "RvNT3covgG3yhKTF1rOh0DYthzawjAYmswJb2Ty2MYX4861G2fLRuMNR6uHcHgjPCPZdLXW0Q5iiweiIoCaVmn0ac6mnlnKfqC9HF5Vs" +
+            "8Ww82tE6kJ0Sh5CARelpj6exYbPHdSKcOlkOLaZZYW91ZjRHoxA5Vxn0tMPkIKbgak8frLeTnXVILRBiilmPO5W0aZXfiyC1F3w2KcMc" +
+            "2duAFS4G3eUo2dTxqKHB5ZHyrgESrccRP0SYONCvEdUlLmvc9s4JDNCq5406DAEybSpiSKgR538j3eUQGzjX07YL0i4gnvj6HezdV8IA" +
+            "euwxZXdc2NHYxgOcpa1gVmDXtSdhM1VqWzmIXIMnObhpl9xdnQKWRCrI29cLp0kOOkPfgkb0x0GPuEvphBNbD10FWK39MxuYCVDnyuqT" +
+            "W6q2BINY5JITZiIls4kAlw33SaPs5XiUH0hHAODt1MokCmVp7WpL8cSublwMj3Di1B7U1rsHN8QASCYAf2usO5XxWE1q2Ho98DKFRuU6" +
+            "mjIvxHzpmAudOBpanjPdfSmnuWEH7wIwIERjMLImAld0HvJPuOG5etLdp9OsSe4KuOTWZtd9HqNZqpsundPSw3mPEskdsIOzDS5tC1Vg" +
+            "5d5D8yPM53xRH8HSmLfelZeYeN054DSiunT5K8a1CGtarlsIBHMheRvZdVyx5Gk3rhIPJHmXJqhDYmX6KBFb5weoFlh4PbOFAIAl1mAh" +
+            "PgE0QXZ9EvGaeu9ix9eprFOPRCxHWrJPZxKOwkGoFMeNcJTxLiMmapml2VfNdSt0lqnsfDWbPhNiky35Wlum7RYFutBJ0hx4RZSK03Gx" +
+            "9KUmv49Iv1jpBu11U8PfuaB7PhWuNtCKZjHutoOsH9YJWvnWOHCEVQOXwAfDxgQ4OG8m5x2Z73ZRVkFeq9uQshnEZWSXMq4agcdqLqhg" +
+            "Vi and the rest which not fit";
+        String truncatedErrorMessage = "yIggqcYno1d1QgDtY8oCfaaFCX808SOwkvO3SBOiwpsfaG5FdysyrTX0RgI1XYlB35BANX6iqFFxavccLhMHQ1" +
+            "RvNT3covgG3yhKTF1rOh0DYthzawjAYmswJb2Ty2MYX4861G2fLRuMNR6uHcHgjPCPZdLXW0Q5iiweiIoCaVmn0ac6mnlnKfqC9HF5Vs" +
+            "8Ww82tE6kJ0Sh5CARelpj6exYbPHdSKcOlkOLaZZYW91ZjRHoxA5Vxn0tMPkIKbgak8frLeTnXVILRBiilmPO5W0aZXfiyC1F3w2KcMc" +
+            "2duAFS4G3eUo2dTxqKHB5ZHyrgESrccRP0SYONCvEdUlLmvc9s4JDNCq5406DAEybSpiSKgR538j3eUQGzjX07YL0i4gnvj6HezdV8IA" +
+            "euwxZXdc2NHYxgOcpa1gVmDXtSdhM1VqWzmIXIMnObhpl9xdnQKWRCrI29cLp0kOOkPfgkb0x0GPuEvphBNbD10FWK39MxuYCVDnyuqT" +
+            "W6q2BINY5JITZiIls4kAlw33SaPs5XiUH0hHAODt1MokCmVp7WpL8cSublwMj3Di1B7U1rsHN8QASCYAf2usO5XxWE1q2Ho98DKFRuU6" +
+            "mjIvxHzpmAudOBpanjPdfSmnuWEH7wIwIERjMLImAld0HvJPuOG5etLdp9OsSe4KuOTWZtd9HqNZqpsundPSw3mPEskdsIOzDS5tC1Vg" +
+            "5d5D8yPM53xRH8HSmLfelZeYeN054DSiunT5K8a1CGtarlsIBHMheRvZdVyx5Gk3rhIPJHmXJqhDYmX6KBFb5weoFlh4PbOFAIAl1mAh" +
+            "PgE0QXZ9EvGaeu9ix9eprFOPRCxHWrJPZxKOwkGoFMeNcJTxLiMmapml2VfNdSt0lqnsfDWbPhNiky35Wlum7RYFutBJ0hx4RZSK03Gx" +
+            "9KUmv49Iv1jpBu11U8PfuaB7PhWuNtCKZjHutoOsH9YJWvnWOHCEVQOXwAfDxgQ4OG8m5x2Z73ZRVkFeq9uQshnEZWSXMq4agcdqLqhg" +
+            "Vi";
+        paymentInstructionService.updateTransferredToPayHub(id, status, tooLongErrorMessage);
+        assertEquals(1024, truncatedErrorMessage.length());
+        verify(paymentInstructionRepository, times(1)).updateTransferredToPayHub(id, status, truncatedErrorMessage);
+    }
+
+    @Test
+    public void testGetAllPaymentInstructionsForPayhub() {
+        when(payhubPaymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
+            .thenReturn(payhubPiPageMock);
+        when(payhubPiPageMock.iterator()).thenReturn(payhubPiIteratorMock);
+
+        PaymentInstructionSearchCriteriaDto dto = new PaymentInstructionSearchCriteriaDto();
+        dto.setStatus("TTB");
+        dto.setTransferredToPayhub(false);
+
+        List<PayhubPaymentInstruction> pis = paymentInstructionService.getAllPaymentInstructionsForPayhub(dto);
+        assertEquals(Lists.newArrayList(payhubPiIteratorMock), pis);
     }
 
     private List<PaymentInstructionStats> createStats() {
         List<PaymentInstructionStats> stats = new ArrayList<>();
-        stats.add(createPaymentStat("James Black","1234", 1, "PA", 10000L, "cards", null));
-        stats.add(createPaymentStat("James Black","1234", 4, "PA", 15000L, "cheques", "bgc123"));
-        stats.add(createPaymentStat("James Black","1234", 1, "PA", 33000L, "postal-orders", "bgc123"));
-        stats.add(createPaymentStat("James Black","1234", 1, "PA", 10000L, "cash", "bgc456"));
+        stats.add(createPaymentStat("James Black","1234", 1, "PA", 10000L, "CARD", null));
+        stats.add(createPaymentStat("James Black","1234", 4, "PA", 15000L, "CHEQUE", "bgc123"));
+        stats.add(createPaymentStat("James Black","1234", 1, "PA", 33000L, "POSTAL_ORDER", "bgc123"));
+        stats.add(createPaymentStat("James Black","1234", 1, "PA", 10000L, "CASH", "bgc456"));
         return stats;
     }
 
