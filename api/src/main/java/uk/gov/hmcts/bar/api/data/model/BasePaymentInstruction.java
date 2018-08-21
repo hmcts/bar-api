@@ -26,11 +26,13 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @MappedSuperclass
 public class BasePaymentInstruction {
+    public static final String SENT_TO_PAYHUB_YES = "Yes";
+    public static final String SENT_TO_PAYHUB_NO = "No";
+    public static final String SENT_TO_PAYHUB_FAIL = "Fail";
 
     public static final String[] CSV_TABLE_HEADER = {"Daily sequential payment ID", "Date", "Payee name", "Cheque Amount",
         "Postal Order Amount", "Cash Amount", "Card Amount", "AllPay Amount", "Action Taken", "Case ref no.","BGC Slip No.",
-        "Fee Amount", "Fee code", "Fee description","Recorded user","Recorded time","Validated user","Validated time","Approved user","Approved time","Transferred to BAR user","Transferred to BAR time"};
-
+        "Fee Amount", "Fee code", "Fee description","Recorded user","Recorded time","Validated user","Validated time","Approved user","Approved time","Transferred to BAR user","Transferred to BAR time","Sent to PayHub"};
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -94,5 +96,20 @@ public class BasePaymentInstruction {
     public String getPaymentDateAsString() {
         return this.paymentDate.toString();
     }
+
+    @JsonIgnore
+    public String getSentToPayhub(){
+
+        String sentToPayhub;
+        if(this.transferredToPayhub == true)
+            sentToPayhub =SENT_TO_PAYHUB_YES;
+        else if ((this.payhubError != null) && (this.transferredToPayhub == false))
+            sentToPayhub = SENT_TO_PAYHUB_FAIL;
+        else{
+            sentToPayhub =SENT_TO_PAYHUB_NO;
+        }
+        return sentToPayhub;
+    }
+
 
 }

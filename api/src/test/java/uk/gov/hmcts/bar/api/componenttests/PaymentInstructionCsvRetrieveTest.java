@@ -70,6 +70,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         String payeeName = "Mr Payer Payer";
         String amount = "5.33";
         String bgcNumber = "123456";
+        String sentToPayhub="No";
 
         restActions
             .getCsv("/payment-instructions?startDate=" + paramStartDate)
@@ -87,6 +88,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
                 Assert.assertTrue(csv.contains(bgcNumber));
                 Assert.assertTrue(csv.contains(recordedUser));
                 Assert.assertTrue(csv.contains(recordedDateTime));
+                Assert.assertTrue(csv.contains(sentToPayhub));
             });
     }
 
@@ -143,6 +145,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         String dailySequenceId = "1";
         String payeeName = "Mr Payer Payer";
         String amount = "6.00";
+        String sentToPayhub="No";
 
         restActions
             .getCsv("/payment-instructions?startDate=" + paramStartDate)
@@ -159,6 +162,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
                 Assert.assertTrue(csv.contains(amount));
                 Assert.assertTrue(csv.contains(recordedUser));
                 Assert.assertTrue(csv.contains(recordedDateTime));
+                Assert.assertTrue(csv.contains(sentToPayhub));
             });
     }
 
