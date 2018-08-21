@@ -655,3 +655,9 @@ databaseChangeLog:
             UPDATE payment_type SET id = 'CASH' WHERE id = 'cash';
             UPDATE payment_type SET id = 'POSTAL_ORDER' WHERE id = 'postal-orders';
             UPDATE payment_type SET id = 'ALLPAY' WHERE id = 'allpay';
+  - changeSet:
+      id: 25
+      author: akiss
+      changes:
+        - sql: >
+            UPDATE payment_instruction SET site_id = 'Y431' WHERE site_id = 'BR01';
