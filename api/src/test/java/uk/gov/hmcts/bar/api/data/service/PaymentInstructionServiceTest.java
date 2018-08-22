@@ -564,6 +564,14 @@ public class PaymentInstructionServiceTest {
     }
 
     @Test
+    public void testGettingPaymentInstructionStatsWhenSentToPayhub() {
+        List<PaymentInstructionStats> rawStats = createStats();
+        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString(),anyBoolean())).thenReturn(rawStats);
+        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType("1234", "PA",true);
+        assertEquals(2, ((List)stats.get("bgc123")).size());
+    }
+
+    @Test
     public void testCreatingLinksInTheStatResource() {
         List<PaymentInstructionStats> rawStats = createStats();
         when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString(),anyBoolean())).thenReturn(rawStats);
