@@ -113,30 +113,10 @@ public class PayHubServiceTest {
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(403, "{\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}"));
         PayHubResponseReport stat = payHubService.sendPaymentInstructionToPayHub("1234ABCD");
-        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(1, false, "Failed: Forbidden, Access Denied");
-        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(2, false, "Failed: Forbidden, Access Denied");
+        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(1, false, "Failed(403): {\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}");
+        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(2, false, "Failed(403): {\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}");
         assertThat(stat.getTotal(), Is.is(2));
         assertThat(stat.getSuccess(), Is.is(0));
-    }
-
-    @Test
-    public void testUpdatePaymentInstructionWhenFailedResponseReceivedWithNotParsableResponse() throws IOException {
-        when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
-        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
-        when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(403, "{\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"err\": \"Forbidden\", \"msg\": \"Access Denied\", \"path\": \"/payment-records\"}"));
-        payHubService.sendPaymentInstructionToPayHub("1234ABCD");
-        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(1, false, "Failed: {\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"err\": \"Forbidden\", \"msg\": \"Access Denied\", \"path\": \"/payment-records\"}");
-        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(2, false, "Failed: {\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"err\": \"Forbidden\", \"msg\": \"Access Denied\", \"path\": \"/payment-records\"}");
-    }
-
-    @Test
-    public void testUpdatePaymentInstructionWhenFailedResponseReceivedWithMessageOnlyResponse() throws IOException {
-        when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
-        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
-        when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(403, "{\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"err\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}"));
-        payHubService.sendPaymentInstructionToPayHub("1234ABCD");
-        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(1, false, "Failed: Access Denied");
-        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(2, false, "Failed: Access Denied");
     }
 
     @Test

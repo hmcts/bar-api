@@ -1,29 +1,31 @@
 package uk.gov.hmcts.bar.api.integration.payhub.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.bar.api.data.model.*;
+import uk.gov.hmcts.bar.api.data.model.PayHubResponseReport;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
 import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
 import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.text.MessageFormat;
+import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -32,7 +34,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class PayHubService {
 
     private static final Logger LOG = getLogger(PayHubService.class);
-    private static final TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
 
     @Autowired
     private final PaymentInstructionService paymentInstructionService;
@@ -65,13 +66,13 @@ public class PayHubService {
         List<PayhubPaymentInstruction> payloads = collectPaymentInstructions();
 
         // send to payhub
-        HttpPost httpPost = new HttpPost(payHubUrl + "/payment-records");
-        httpPost.setHeader("Content-type", "application/json");
-        httpPost.setHeader("Authorization", userToken);
-        httpPost.setHeader("ServiceAuthorization", oneTimePassword);
         ObjectMapper objectMapper = new ObjectMapper();
         resp.setTotal(payloads.size());
         payloads.forEach(payHubPayload -> {
+            HttpPost httpPost = new HttpPost(payHubUrl + "/payment-records");
+            httpPost.setHeader("Content-type", "application/json");
+            httpPost.setHeader("Authorization", userToken);
+            httpPost.setHeader("ServiceAuthorization", oneTimePassword);
             StringBuilder payHubErrorMessage = new StringBuilder("");
             boolean payHubStatus = false;
             try {
@@ -79,7 +80,7 @@ public class PayHubService {
                 StringEntity entity = new StringEntity(payload);
                 httpPost.setEntity(entity);
                 CloseableHttpResponse response = httpClient.execute(httpPost);
-                payHubStatus = handlePayHubResponse(response, objectMapper, payHubErrorMessage);
+                payHubStatus = handlePayHubResponse(response, payHubErrorMessage);
                 response.close();
             } catch (JsonProcessingException e) {
                 LOG.error("Failed to parse message: " + e.getMessage(), e);
@@ -104,33 +105,31 @@ public class PayHubService {
         return paymentInstructionService.getAllPaymentInstructionsForPayhub(criteriaDto);
     }
 
-    private boolean handlePayHubResponse(CloseableHttpResponse response, ObjectMapper objectMapper, StringBuilder payHubErrorMessage) throws IOException {
-
-        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED ||
-            response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            return true;
-        }
-        Map<String, String> errorResponse;
+    private boolean handlePayHubResponse(CloseableHttpResponse response, StringBuilder payHubErrorMessage) throws IOException {
         String rawMessage;
-        try (Scanner scanner = new Scanner(response.getEntity().getContent(), StandardCharsets.UTF_8.name())) {
-            rawMessage = scanner.useDelimiter("\\A").next();
-            errorResponse = objectMapper.readValue(response.getEntity().getContent(), typeRef);
-            errorResponse.put("rawMessage", rawMessage);
+        try(InputStream is = response.getEntity().getContent()) {
+            rawMessage = inputToString(is);
         }
-        LOG.info("Saving payment instruction was failed: {0}", rawMessage);
-        payHubErrorMessage.append("Failed: ");
-        String convertedMsg = new ArrayList<>(errorResponse.keySet()).stream().map(key -> {
-            if ("error".equals(key) || "message".equals(key)) {
-                return errorResponse.get(key);
-            }
-            return null;
-        }).filter(StringUtils::isNotBlank).collect( Collectors.joining( ", " ) );
-        if (StringUtils.isNotBlank(convertedMsg)) {
-            payHubErrorMessage.append(convertedMsg);
-        } else if (rawMessage != null) {
-            payHubErrorMessage.append(rawMessage);
+        StatusLine status = response.getStatusLine();
+        EntityUtils.consume(response.getEntity());
+
+        if (status.getStatusCode() == HttpStatus.SC_CREATED ||
+            status.getStatusCode() == HttpStatus.SC_OK) {
+
+            // Handle response in https://tools.hmcts.net/jira/browse/BAR-398 will come here
+            return true;
+        } else {
+            payHubErrorMessage.append("Failed(" + status.getStatusCode() + "): " + rawMessage);
+            LOG.info(MessageFormat.format("Saving payment instruction has failed({0}): {1}", status.getStatusCode(), rawMessage));
+            return false;
         }
-        return false;
+    }
+
+    private String inputToString(InputStream is) throws IOException {
+        int n = is.available();
+        byte[] bytes = new byte[n];
+        is.read(bytes, 0, n);
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 
 }
