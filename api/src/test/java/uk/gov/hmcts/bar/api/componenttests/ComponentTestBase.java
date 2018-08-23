@@ -57,15 +57,16 @@ public class ComponentTestBase {
         this.restActionsForSrFeeClerk = new RestActions(mvc, objectMapper, srFeeClerkUserDetails);
         this.restActionsForDM = new RestActions(mvc, objectMapper, dmUserDetails);
         DbTestUtil.emptyTable(webApplicationContext, "case_fee_detail");
-        DbTestUtil.emptyTable(webApplicationContext, "payment_instruction");
+        DbTestUtil.emptyTable(webApplicationContext, "payment_instruction_status");
         DbTestUtil.emptyTable(webApplicationContext, "bar_user");
+        DbTestUtil.emptyTable(webApplicationContext, "payment_instruction");
         DbTestUtil.resetAutoIncrementColumns(webApplicationContext, "payment_instruction");
         DbTestUtil.addTestUser(webApplicationContext, userDetails);
         DbTestUtil.addTestUser(webApplicationContext, feeClerkUserDetails);
         DbTestUtil.addTestUser(webApplicationContext, srFeeClerkUserDetails);
         DbTestUtil.addTestUser(webApplicationContext, dmUserDetails);
     }
-    
+
 
     public CustomResultMatcher body() {
         return new CustomResultMatcher(objectMapper);

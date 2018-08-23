@@ -2,6 +2,7 @@ package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Assert;
 import org.junit.Test;
+import uk.gov.hmcts.bar.api.componenttests.utils.DbTestUtil;
 import uk.gov.hmcts.bar.api.data.model.Card;
 import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PostalOrder;
@@ -77,7 +78,6 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
             .andExpect(status().isOk())
             .andExpect(result -> {
                 String csv  = result.getResponse().getContentAsString();
-                System.out.println(csv);
                 int indexOfdailySequenceId = result.getResponse().getContentAsString().indexOf("1");
                 String actualHeader = csv.substring(0,indexOfdailySequenceId - 2);
                 Assert.assertEquals(expectedHeader,actualHeader);
@@ -91,7 +91,6 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
                 Assert.assertTrue(csv.contains(sentToPayhub));
             });
     }
-
 
     @Test
     public void givenCardPaymentInstructionDetails_retrieveAsCsv() throws Exception {
@@ -121,17 +120,19 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
             .authorizationCode("000000").build();
 
         restActions
-            .post("/postal-orders", proposedCardPaymentInstructionRequest)
+            .post("/cards", proposedCardPaymentInstructionRequest)
             .andExpect(status().isCreated());
+
         restActions
-            .put("/postal-orders/1", validatedCardPaymentInstructionRequest)
+            .put("/cards/1", validatedCardPaymentInstructionRequest)
             .andExpect(status().isOk());
         restActions
-            .put("/postal-orders/1", approvedCardPaymentInstructionRequest)
+            .put("/cards/1", approvedCardPaymentInstructionRequest)
             .andExpect(status().isOk());
+
         restActions
-            .put("/postal-orders/1", ttbCardPaymentInstructionRequest)
-            .andExpect(status().isOk());
+            .put("/cards/1", ttbCardPaymentInstructionRequest)
+            .andExpect(status().isOk()).andReturn().getResponse();
 
         LocalDateTime currentDateTime = LocalDateTime.now();
         DateTimeFormatter actualFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
@@ -152,7 +153,6 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
             .andExpect(status().isOk())
             .andExpect(result -> {
                 String csv  = result.getResponse().getContentAsString();
-                System.out.println(csv);
                 int indexOfdailySequenceId = result.getResponse().getContentAsString().indexOf("1");
                 String actualHeader = csv.substring(0,indexOfdailySequenceId - 2);
                 Assert.assertEquals(expectedHeader,actualHeader);
@@ -165,6 +165,147 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
                 Assert.assertTrue(csv.contains(sentToPayhub));
             });
     }
+
+    @Test
+    public void givenCardPIDetailsWhichIsSentToPayhub_retrieveAsCsv() throws Exception {
+
+        DbTestUtil.insertBGCNumber(getWebApplicationContext());
+        DbTestUtil.insertPaymentInstructionWhichIsSentToPayhub(getWebApplicationContext());
+
+        Card validatedCardPaymentInstructionRequest = cardWith()
+            .payerName("\"Mr Payer Payer")
+            .amount(600)
+            .currency("GBP").status("V")
+            .authorizationCode("000000").build();
+
+        Card approvedCardPaymentInstructionRequest = cardWith()
+            .payerName("Mr Payer Payer")
+            .amount(600)
+            .currency("GBP").status("A")
+            .authorizationCode("000000").build();
+
+
+        Card ttbCardPaymentInstructionRequest = cardWith()
+            .payerName("Mr Payer Payer")
+            .amount(600)
+            .currency("GBP").status("TTB")
+            .authorizationCode("000000").build();
+
+        restActions
+            .put("/cards/1", validatedCardPaymentInstructionRequest)
+            .andExpect(status().isOk());
+        restActions
+            .put("/cards/1", approvedCardPaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+        restActions
+            .put("/cards/1", ttbCardPaymentInstructionRequest)
+            .andExpect(status().isOk()).andReturn().getResponse();
+
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter actualFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
+        String recordedDateTime = currentDateTime.format(actualFormatter);
+        LocalDate currentDate = LocalDate.now();
+        String paymentDate = currentDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
+        DateTimeFormatter paramFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+        String paramStartDate = currentDate.format(paramFormatter);
+        String recordedUser = "1234-fn 1234-ln";
+        String expectedHeader =convertLine(CashPaymentInstruction.CSV_TABLE_HEADER);
+        String dailySequenceId = "1";
+        String payeeName = "Mr Payer Payer";
+        String amount = "6.00";
+        String bgcNumber = "123456";
+        String sentToPayhub="Yes";
+
+        restActions
+            .getCsv("/payment-instructions?startDate=" + paramStartDate)
+            .andExpect(status().isOk())
+            .andExpect(result -> {
+                String csv  = result.getResponse().getContentAsString();
+                int indexOfdailySequenceId = result.getResponse().getContentAsString().indexOf("1");
+                String actualHeader = csv.substring(0,indexOfdailySequenceId - 2);
+                Assert.assertEquals(expectedHeader,actualHeader);
+                Assert.assertTrue(csv.contains(dailySequenceId));
+                Assert.assertTrue(csv.contains(paymentDate));
+                Assert.assertTrue(csv.contains(payeeName));
+                Assert.assertTrue(csv.contains(amount));
+                Assert.assertTrue(csv.contains(bgcNumber));
+                Assert.assertTrue(csv.contains(recordedUser));
+                Assert.assertTrue(csv.contains(recordedDateTime));
+                Assert.assertTrue(csv.contains(sentToPayhub));
+            });
+    }
+
+    @Test
+    public void givenCardPIDetailsWhichIsSentToPayhubAndFailed_retrieveAsCsv() throws Exception {
+
+        DbTestUtil.insertBGCNumber(getWebApplicationContext());
+        DbTestUtil.insertPaymentInstructionWhichIsSentToPayhubAndFailed(getWebApplicationContext());
+
+        Card validatedCardPaymentInstructionRequest = cardWith()
+            .payerName("Mr Payer Payer")
+            .amount(600)
+            .currency("GBP").status("V")
+            .authorizationCode("000000").build();
+
+        Card approvedCardPaymentInstructionRequest = cardWith()
+            .payerName("Mr Payer Payer")
+            .amount(600)
+            .currency("GBP").status("A")
+            .authorizationCode("000000").build();
+
+
+        Card ttbCardPaymentInstructionRequest = cardWith()
+            .payerName("Mr Payer Payer")
+            .amount(600)
+            .currency("GBP").status("TTB")
+            .authorizationCode("000000").build();
+
+        restActions
+            .put("/cards/1", validatedCardPaymentInstructionRequest)
+            .andExpect(status().isOk());
+        restActions
+            .put("/cards/1", approvedCardPaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+        restActions
+            .put("/cards/1", ttbCardPaymentInstructionRequest)
+            .andExpect(status().isOk()).andReturn().getResponse();
+
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter actualFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
+        String recordedDateTime = currentDateTime.format(actualFormatter);
+        LocalDate currentDate = LocalDate.now();
+        String paymentDate = currentDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
+        DateTimeFormatter paramFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+        String paramStartDate = currentDate.format(paramFormatter);
+        String recordedUser = "1234-fn 1234-ln";
+        String expectedHeader =convertLine(CashPaymentInstruction.CSV_TABLE_HEADER);
+        String dailySequenceId = "1";
+        String payeeName = "Mr Payer Payer";
+        String amount = "6.00";
+        String bgcNumber = "123456";
+        String sentToPayhub="Fail";
+
+        restActions
+            .getCsv("/payment-instructions?startDate=" + paramStartDate)
+            .andExpect(status().isOk())
+            .andExpect(result -> {
+                String csv  = result.getResponse().getContentAsString();
+                int indexOfdailySequenceId = result.getResponse().getContentAsString().indexOf("1");
+                String actualHeader = csv.substring(0,indexOfdailySequenceId - 2);
+                Assert.assertEquals(expectedHeader,actualHeader);
+                Assert.assertTrue(csv.contains(dailySequenceId));
+                Assert.assertTrue(csv.contains(paymentDate));
+                Assert.assertTrue(csv.contains(payeeName));
+                Assert.assertTrue(csv.contains(amount));
+                Assert.assertTrue(csv.contains(bgcNumber));
+                Assert.assertTrue(csv.contains(recordedUser));
+                Assert.assertTrue(csv.contains(recordedDateTime));
+                Assert.assertTrue(csv.contains(sentToPayhub));
+            });
+    }
+
 
 
 
