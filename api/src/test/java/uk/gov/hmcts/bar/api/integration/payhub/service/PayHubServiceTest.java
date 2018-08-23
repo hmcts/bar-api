@@ -139,6 +139,16 @@ public class PayHubServiceTest {
         verify(paymentInstructionService, times(1)).updateTransferredToPayHub(2, false, "Failed: Access Denied");
     }
 
+    @Test
+    public void testUpdatePaymentInstructionWhenSendingMessageThrowsException() throws IOException {
+        when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
+        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
+        when(httpClient.execute(any(HttpPost.class))).thenThrow(new RuntimeException("something went wrong"));
+        payHubService.sendPaymentInstructionToPayHub("1234ABCD");
+        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(1, false, "Failed to send payment instruction to PayHub: something went wrong");
+        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(2, false, "Failed to send payment instruction to PayHub: something went wrong");
+    }
+
     public static class PayHubHttpResponse implements CloseableHttpResponse {
 
         private String message;

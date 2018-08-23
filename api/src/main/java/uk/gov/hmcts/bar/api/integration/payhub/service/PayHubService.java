@@ -83,10 +83,10 @@ public class PayHubService {
                 response.close();
             } catch (JsonProcessingException e) {
                 LOG.error("Failed to parse message: " + e.getMessage(), e);
-                payHubErrorMessage.append("Failed to parse request payload");
+                payHubErrorMessage.append("Failed to parse request payload: " + e.getMessage());
             } catch (Exception e) {
                 LOG.error("Failed to send payment instruction to PayHub" + e.getMessage(), e);
-                payHubErrorMessage.append("Failed to send payment instruction to PayHub");
+                payHubErrorMessage.append("Failed to send payment instruction to PayHub: " + e.getMessage());
             }
             if (payHubStatus){
                 resp.increaseSuccess();
