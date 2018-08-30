@@ -30,6 +30,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.bar.api.data.service.PaymentInstructionService.STAT_DETAILS;
 import static uk.gov.hmcts.bar.api.data.service.PaymentInstructionService.STAT_GROUP_DETAILS;
@@ -523,20 +524,20 @@ public class PaymentInstructionServiceTest {
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(pi);
     }
 
-	@Test
-	public void verifyRepositoryMethodCalls_whenGetPaymentInstructionStats() throws Exception {
-		paymentInstructionService.getPaymentInstructionStats("");
-		verify(paymentInstructionStatusRepositoryMock, times(1))
-				.getPaymentInstructionsByStatusGroupedByUser(anyString());
-	}
+    @Test
+    public void verifyRepositoryMethodCalls_whenGetPaymentInstructionStats() throws Exception {
+        paymentInstructionService.getPaymentInstructionStats("");
+        verify(paymentInstructionStatusRepositoryMock, times(1))
+            .getPaymentInstructionsByStatusGroupedByUser(anyString());
+    }
 
-	@Test
-	public void verifyRepositoryMethodCalls_whenGetPaymentInstructionStatsByCurrentStatusGroupedByOldStatus()
-			throws Exception {
-		paymentInstructionService.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus("", "");
-		verify(paymentInstructionStatusRepositoryMock, times(1))
-				.getPaymentInstructionStatsByCurrentStatusAndByOldStatus(anyString(), anyString());
-	}
+    @Test
+    public void verifyRepositoryMethodCalls_whenGetPaymentInstructionStatsByCurrentStatusGroupedByOldStatus()
+        throws Exception {
+        paymentInstructionService.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus("", "");
+        verify(paymentInstructionStatusRepositoryMock, times(1))
+            .getPaymentInstructionStatsByCurrentStatusAndByOldStatus(anyString(), anyString());
+    }
 
 
     @Test
@@ -549,24 +550,32 @@ public class PaymentInstructionServiceTest {
 
     @Test
     public void testGettingPaymentInstructionStats_whenNoPayments() {
-        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString())).thenReturn(new ArrayList<PaymentInstructionStats>());
+        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString(),anyBoolean())).thenReturn(new ArrayList<PaymentInstructionStats>());
         MultiMap stats = new MultiValueMap();
-        assertEquals(stats, paymentInstructionService.getPaymentStatsByUserGroupByType("1234", "PA"));
+        assertEquals(stats, paymentInstructionService.getPaymentStatsByUserGroupByType("1234", "PA",false));
     }
 
     @Test
     public void testGettingPaymentInstructionStats() {
         List<PaymentInstructionStats> rawStats = createStats();
-        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString())).thenReturn(rawStats);
-        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType("1234", "PA");
+        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString(),anyBoolean())).thenReturn(rawStats);
+        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType("1234", "PA",false);
+        assertEquals(2, ((List)stats.get("bgc123")).size());
+    }
+
+    @Test
+    public void testGettingPaymentInstructionStatsWhenSentToPayhub() {
+        List<PaymentInstructionStats> rawStats = createStats();
+        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString(),anyBoolean())).thenReturn(rawStats);
+        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType("1234", "PA",true);
         assertEquals(2, ((List)stats.get("bgc123")).size());
     }
 
     @Test
     public void testCreatingLinksInTheStatResource() {
         List<PaymentInstructionStats> rawStats = createStats();
-        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString())).thenReturn(rawStats);
-        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType("1234", "PA");
+        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString(),anyBoolean())).thenReturn(rawStats);
+        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType("1234", "PA",false);
         Resource<PaymentInstructionStats> resource = (Resource<PaymentInstructionStats>)((List)stats.get("bgc123")).get(0);
         assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE&bgcNumber=bgc123", resource.getLink(STAT_DETAILS).getHref());
         assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE,POSTAL_ORDER&bgcNumber=bgc123", resource.getLink(STAT_GROUP_DETAILS).getHref());
@@ -681,20 +690,20 @@ public class PaymentInstructionServiceTest {
     }
 
     @Test
-	public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsByCaseReferenceIsCalled() {
-		List<PaymentInstruction> piList = Arrays.asList(paymentInstructionMock);
-		when(paymentInstructionServiceMock.getAllPaymentInstructionsByCaseReference("")).thenReturn(piList);
-		List<PaymentInstruction> paymentInstructionList = paymentInstructionServiceMock
-				.getAllPaymentInstructionsByCaseReference("");
-		assertFalse(paymentInstructionList.isEmpty());
-	}
+    public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsByCaseReferenceIsCalled() {
+        List<PaymentInstruction> piList = Arrays.asList(paymentInstructionMock);
+        when(paymentInstructionServiceMock.getAllPaymentInstructionsByCaseReference("")).thenReturn(piList);
+        List<PaymentInstruction> paymentInstructionList = paymentInstructionServiceMock
+            .getAllPaymentInstructionsByCaseReference("");
+        assertFalse(paymentInstructionList.isEmpty());
+    }
 
-	@Test
-	public void shouldReturnEmptyMap_whenGetStatusHistortMapForTTBCalledWithStartdateGreaterThanEndDate()
-			throws Exception {
-		Map<Integer, List<PaymentInstructionStatusHistory>> pishMap = paymentInstructionService
-				.getStatusHistoryMapForTTB(LocalDate.now(), LocalDate.now().minusDays(1));
-		assertTrue(pishMap.isEmpty());
-	}
+    @Test
+    public void shouldReturnEmptyMap_whenGetStatusHistortMapForTTBCalledWithStartdateGreaterThanEndDate()
+        throws Exception {
+        Map<Integer, List<PaymentInstructionStatusHistory>> pishMap = paymentInstructionService
+            .getStatusHistoryMapForTTB(LocalDate.now(), LocalDate.now().minusDays(1));
+        assertTrue(pishMap.isEmpty());
+    }
 
 }

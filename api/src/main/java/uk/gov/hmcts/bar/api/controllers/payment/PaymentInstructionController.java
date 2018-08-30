@@ -434,10 +434,11 @@ public class PaymentInstructionController {
     @GetMapping("/users/{id}/payment-instructions/stats")
     public Resource<MultiMap> getPaymentInstructionStatsByUser(
         @PathVariable("id") String id,
-        @RequestParam(name = "status", required = false) String status) {
+        @RequestParam(name = "status", required = false) String status,
+        @RequestParam(name = "sentToPayhub", required = false, defaultValue = "false") boolean sentToPayhub) {
 
-        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType(id, status);
-        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUser(id, status)).withSelfRel();
+        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType(id, status,sentToPayhub);
+        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUser(id, status,sentToPayhub)).withSelfRel();
         Resource<MultiMap> result = new Resource<>(stats, link);
         return result;
     }
