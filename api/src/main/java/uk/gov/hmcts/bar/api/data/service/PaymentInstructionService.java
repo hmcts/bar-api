@@ -66,7 +66,7 @@ public class PaymentInstructionService {
                                      BankGiroCreditRepository bankGiroCreditRepository,
                                      PaymentTypeService paymentTypeService,
                                      PayhubPaymentInstructionRepository payhubPaymentInstructionRepository
-                                     ) {
+    ) {
         this.paymentReferenceService = paymentReferenceService;
         this.paymentInstructionRepository = paymentInstructionRepository;
         this.barUserService = barUserService;
@@ -97,14 +97,14 @@ public class PaymentInstructionService {
         Sort sort = new Sort(Sort.Direction.DESC, "paymentDate");
         Pageable pageDetails = PageRequest.of(PAGE_NUMBER, MAX_RECORDS_PER_PAGE, sort);
 
-		Specification<PaymentInstruction> piSpecification = null;
-		if (paymentInstructionSearchCriteriaDto.getMultiplePiIds() != null) {
-			piSpecification = paymentInstructionsSpecification.getPaymentInstructionsMultipleIdSpecification();
-		} else {
-			piSpecification = paymentInstructionsSpecification.getPaymentInstructionsSpecification();
-		}
+        Specification<PaymentInstruction> piSpecification = null;
+        if (paymentInstructionSearchCriteriaDto.getMultiplePiIds() != null) {
+            piSpecification = paymentInstructionsSpecification.getPaymentInstructionsMultipleIdSpecification();
+        } else {
+            piSpecification = paymentInstructionsSpecification.getPaymentInstructionsSpecification();
+        }
 
-		return Lists.newArrayList(paymentInstructionRepository.findAll(piSpecification, pageDetails).iterator());
+        return Lists.newArrayList(paymentInstructionRepository.findAll(piSpecification, pageDetails).iterator());
     }
 
     public List<PayhubPaymentInstruction> getAllPaymentInstructionsForPayhub(
@@ -173,19 +173,19 @@ public class PaymentInstructionService {
         return paymentInstructionRepository.findByCaseReference(caseReference);
     }
 
-	public MultiMap getPaymentInstructionStats(String status) {
-		List<PaymentInstructionUserStats> paymentInstructionInStatusList = paymentInstructionStatusRepository
-				.getPaymentInstructionsByStatusGroupedByUser(status);
-		return Util.createMultimapFromList(paymentInstructionInStatusList);
-	}
+    public MultiMap getPaymentInstructionStats(String status,boolean sentToPayhub) {
+        List<PaymentInstructionUserStats> paymentInstructionInStatusList = paymentInstructionStatusRepository
+            .getPaymentInstructionsByStatusGroupedByUser(status,sentToPayhub);
+        return Util.createMultimapFromList(paymentInstructionInStatusList);
+    }
 
-	public MultiMap getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(String currentStatus,
-			String oldStatus) {
-		List<PaymentInstructionStaticsByUser> paymentInstructionStaticsByUserObjects = paymentInstructionStatusRepository
-				.getPaymentInstructionStatsByCurrentStatusAndByOldStatus(currentStatus, oldStatus);
-		paymentInstructionStaticsByUserObjects = Util.getFilteredPisList(paymentInstructionStaticsByUserObjects);
-		return Util.createMultimapFromPisByUserList(paymentInstructionStaticsByUserObjects);
-	}
+    public MultiMap getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(String currentStatus,
+                                                                                String oldStatus) {
+        List<PaymentInstructionStaticsByUser> paymentInstructionStaticsByUserObjects = paymentInstructionStatusRepository
+            .getPaymentInstructionStatsByCurrentStatusAndByOldStatus(currentStatus, oldStatus);
+        paymentInstructionStaticsByUserObjects = Util.getFilteredPisList(paymentInstructionStaticsByUserObjects);
+        return Util.createMultimapFromPisByUserList(paymentInstructionStaticsByUserObjects);
+    }
 
     public MultiMap getPaymentStatsByUserGroupByType(String userId, String status, boolean sentToPayhub) {
         List<PaymentInstructionStats> results = paymentInstructionStatusRepository.getStatsByUserGroupByType(userId, status, sentToPayhub);

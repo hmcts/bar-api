@@ -526,9 +526,9 @@ public class PaymentInstructionServiceTest {
 
     @Test
     public void verifyRepositoryMethodCalls_whenGetPaymentInstructionStats() throws Exception {
-        paymentInstructionService.getPaymentInstructionStats("");
+        paymentInstructionService.getPaymentInstructionStats("",false);
         verify(paymentInstructionStatusRepositoryMock, times(1))
-            .getPaymentInstructionsByStatusGroupedByUser(anyString());
+            .getPaymentInstructionsByStatusGroupedByUser(anyString(),anyBoolean());
     }
 
     @Test

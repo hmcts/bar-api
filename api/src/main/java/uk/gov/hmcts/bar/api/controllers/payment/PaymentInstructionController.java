@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.apache.commons.collections.MultiMap;
-import org.apache.commons.collections.map.MultiValueMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
@@ -397,34 +396,20 @@ public class PaymentInstructionController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Return payment overview stats"),
         @ApiResponse(code = 500, message = "Internal server error") })
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/payment-stats")
-    @Deprecated
-    public  MultiMap getPaymentStats(
-        @RequestParam(name = "status", required = true) String status) {
-    	Optional<BarUser> userOptional = barUserService.getBarUser();
-		if (!userOptional.isPresent()) {
-			return new MultiValueMap();
-		}
-		return paymentInstructionService.getPaymentInstructionStats(status);
-    }
-
-    @ApiOperation(value = "Get the payments stats", notes = "Get the payment instruction's stats showing each User's activities.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Return payment overview stats"),
-        @ApiResponse(code = 500, message = "Internal server error") })
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/users/pi-stats")
-	public MultiMap getPIStats(@RequestParam(name = "status", required = true) PaymentStatusEnum status,
-			@RequestParam(name = "oldStatus", required = false) PaymentStatusEnum oldStatus) {
-    	MultiMap resultMap = null;
-		if (oldStatus != null) {
-			resultMap = paymentInstructionService.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(status.dbKey(),
-					oldStatus.dbKey());
-		} else {
-			resultMap = paymentInstructionService.getPaymentInstructionStats(status.dbKey());
-		}
+    public MultiMap getPIStats(@RequestParam(name = "status", required = true) PaymentStatusEnum status,
+                               @RequestParam(name = "oldStatus", required = false) PaymentStatusEnum oldStatus,
+                               @RequestParam(name = "sentToPayhub", required = false, defaultValue = "false") boolean sentToPayhub) {
+        MultiMap resultMap = null;
+        if (oldStatus != null) {
+            resultMap = paymentInstructionService.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(status.dbKey(),
+                oldStatus.dbKey());
+        } else {
+            resultMap = paymentInstructionService.getPaymentInstructionStats(status.dbKey(),sentToPayhub);
+        }
 
-		return resultMap;
-	}
+        return resultMap;
+    }
 
     @ApiOperation(value = "collect stats for a user", notes = "Collect all payment instruction stats for a user grouped by type for a given status")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return stats for a given user"),

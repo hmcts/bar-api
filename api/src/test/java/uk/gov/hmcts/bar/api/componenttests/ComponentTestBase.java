@@ -56,6 +56,7 @@ public class ComponentTestBase {
         this.restActionsForFeeClerk = new RestActions(mvc, objectMapper, feeClerkUserDetails);
         this.restActionsForSrFeeClerk = new RestActions(mvc, objectMapper, srFeeClerkUserDetails);
         this.restActionsForDM = new RestActions(mvc, objectMapper, dmUserDetails);
+        DbTestUtil.emptyTable(webApplicationContext, "payment_instruction_status");
         DbTestUtil.emptyTable(webApplicationContext, "case_fee_detail");
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction");
         DbTestUtil.emptyTable(webApplicationContext, "bar_user");
