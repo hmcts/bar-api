@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.hateoas.Resource;
+import uk.gov.hmcts.bar.api.audit.AuditRepository;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
 import uk.gov.hmcts.bar.api.data.model.*;
@@ -85,6 +86,9 @@ public class PaymentInstructionServiceTest {
     private BarUserService barUserServiceMock;
 
     @Mock
+    private BarUser barUserMock;
+
+    @Mock
     private FF4j ff4jMock;
 
     @Mock
@@ -92,6 +96,9 @@ public class PaymentInstructionServiceTest {
 
     @Mock
     private PaymentInstructionStatusRepository paymentInstructionStatusRepositoryMock;
+
+    @Mock
+    private AuditRepository auditRepository;
 
     private PaymentInstructionStatus paymentInstructionStatus;
 
@@ -114,7 +121,8 @@ public class PaymentInstructionServiceTest {
             ff4jMock,
             bankGiroCreditRepositoryMock,
             paymentTypeService,
-            payhubPaymentInstructionRepository);
+            payhubPaymentInstructionRepository,
+            auditRepository);
         paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto()
             .siteId("Y431");
         paymentInstructionStatusReferenceKey = new PaymentInstructionStatusReferenceKey(0, "status");
@@ -132,11 +140,16 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.saveAndRefresh(any(ChequePaymentInstruction.class)))
             .thenReturn(paymentInstructionMock);
         when(paymentInstructionMock.getStatus()).thenReturn("status");
+
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
+
+
         PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
             .createPaymentInstruction(chequePaymentInstructionMock);
         verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(chequePaymentInstructionMock);
         verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",chequePaymentInstructionMock,barUserMock);
     }
 
     @Test
@@ -150,18 +163,21 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.saveAndRefresh(any(CashPaymentInstruction.class)))
             .thenReturn(paymentInstructionMock);
         when(paymentInstructionMock.getStatus()).thenReturn("status");
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
             .createPaymentInstruction(cashPaymentInstructionMock);
         verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(cashPaymentInstructionMock);
         verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",cashPaymentInstructionMock,barUserMock);
+
 
     }
 
     @Test
     public void shouldReturnPaymentInstruction_whenSavePaymentInstructionForGivenPostalOrderInstructionIsCalled()
         throws Exception {
-
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         when(paymentReferenceService.getNextPaymentReferenceSequenceBySite(anyString()))
             .thenReturn(paymentReferenceMock);
         when(paymentInstructionRepository.saveAndFlush(any(PostalOrderPaymentInstruction.class)))
@@ -174,6 +190,7 @@ public class PaymentInstructionServiceTest {
         verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(postalOrderPaymentInstructionMock);
         verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",postalOrderPaymentInstructionMock,barUserMock);
     }
 
     @Test
@@ -187,11 +204,14 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.saveAndRefresh(any(AllPayPaymentInstruction.class)))
             .thenReturn(paymentInstructionMock);
         when(paymentInstructionMock.getStatus()).thenReturn("status");
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
             .createPaymentInstruction(allpayPaymentInstructionMock);
         verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(allpayPaymentInstructionMock);
         verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
+
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",allpayPaymentInstructionMock,barUserMock);
     }
 
     @Test
@@ -424,10 +444,11 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(paymentInstructionMock));
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
             .thenReturn(paymentInstructionMock);
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         PaymentInstruction updatedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(1, pir);
         verify(paymentInstructionRepository, times(1)).findById(anyInt());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
-
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",paymentInstructionMock,barUserMock);
     }
     @Test
     public void shouldReturnSubmittedPaymentInstructionWithAction_whenSubmitPaymentInstructionForGivenPaymentInstructionIsCalledWithAction()
@@ -435,13 +456,16 @@ public class PaymentInstructionServiceTest {
         when(ff4jMock.check(PaymentActionEnum.SUSPENSE.featureKey())).thenReturn(true);
         PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
             .status("D").action("Suspense").build();
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(paymentInstructionMock));
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
             .thenReturn(paymentInstructionMock);
+
         PaymentInstruction updatedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(1, pir);
         verify(paymentInstructionRepository, times(1)).findById(anyInt());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
-
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",paymentInstructionMock,barUserMock);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",paymentInstructionMock,barUserMock);
         PaymentInstructionUpdateRequest anotherPir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
             .status("D").action("Process").build();
         try {
@@ -474,6 +498,7 @@ public class PaymentInstructionServiceTest {
             .amount(200)
             .payerName("Payer Name")
             .currency("GBP").build();
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(paymentInstructionMock));
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
             .thenReturn(paymentInstructionMock);
@@ -481,6 +506,7 @@ public class PaymentInstructionServiceTest {
         PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(1, pir);
         verify(paymentInstructionRepository, times(1)).findById(anyInt());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",paymentInstructionMock,barUserMock);
 
     }
 
@@ -492,6 +518,7 @@ public class PaymentInstructionServiceTest {
             .payerName("Payer Name")
             .currency("GBP")
             .bgcNumber("12345").build();
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(pi));
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
             .thenAnswer(i -> i.getArguments()[0]);
@@ -501,17 +528,19 @@ public class PaymentInstructionServiceTest {
         assertEquals(pir.getBgcNumber(), updatedPaymentInstruction.getBgcNumber());
         verify(paymentInstructionRepository, times(1)).findById(anyInt());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(pi);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",pi,barUserMock);
 
     }
 
     @Test
-    public void shouldReturn200andBgcNotUpdated_whenUpdateCardInstructionWithBGCForGivenPaymentInstructionIsCalled(){
+    public void shouldReturn200andBgcNotUpdated_whenUpdateCardPaymentInstructionWithBGCForGivenPaymentInstructionIsCalled(){
         PaymentInstruction pi = new CardPaymentInstruction();
         PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
             .amount(200)
             .payerName("Payer Name")
             .currency("GBP")
             .bgcNumber("12345").build();
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(pi));
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
             .thenAnswer(i -> i.getArguments()[0]);
@@ -521,6 +550,7 @@ public class PaymentInstructionServiceTest {
         assertNull(updatedPaymentInstruction.getBgcNumber());
         verify(paymentInstructionRepository, times(1)).findById(anyInt());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(pi);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",pi,barUserMock);
     }
 
 	@Test
