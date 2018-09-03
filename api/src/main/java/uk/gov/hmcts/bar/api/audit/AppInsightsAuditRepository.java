@@ -4,8 +4,6 @@ package uk.gov.hmcts.bar.api.audit;
 import com.google.common.collect.ImmutableMap;
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.TelemetryConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -19,7 +17,6 @@ import java.util.Map;
 @Component
 public class AppInsightsAuditRepository implements AuditRepository{
 
-    private static final Logger LOG = LoggerFactory.getLogger(AppInsightsAuditRepository.class);
     private final TelemetryClient telemetry;
 
 
