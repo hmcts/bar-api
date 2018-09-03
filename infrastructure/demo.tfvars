@@ -1,3 +1,3 @@
 name = "bar-api-demo"
-idam_api_url = "http://idam-api-idam-demo.service.core-compute-demo.internal"
+idam_api_url = "https://idam-api.demo.platform.hmcts.net"
 capacity = "2"
