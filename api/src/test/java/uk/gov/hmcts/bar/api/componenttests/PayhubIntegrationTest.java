@@ -37,7 +37,7 @@ public class PayhubIntegrationTest extends ComponentTestBase {
             .willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", MediaType.APPLICATION_JSON)
-                .withBody("OK")
+                .withBody("{\"reference\": \"RC-1534-8634-8352-6509\", \"date_created\": \"2018-08-21T14:58:03.630+0000\", \"status\": \"Initiated\", \"payment_group_reference\": \"2018-15348634835\"}")
             )
         );
     }
