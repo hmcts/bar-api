@@ -178,7 +178,9 @@ public class PaymentInstructionService {
         existingPaymentInstruction.setUserId(userId);
         savePaymentInstructionStatus(existingPaymentInstruction, userId);
         PaymentInstruction paymentInstruction = paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
-        auditRepository.trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUserService.getBarUser().get());
+        Optional<BarUser> optBarUser = barUserService.getBarUser();
+        BarUser barUser = (optBarUser.isPresent())? optBarUser.get(): null;
+        auditRepository.trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUser);
         return paymentInstruction;
     }
 
