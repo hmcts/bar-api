@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.bar.api.data.exceptions.BadRequestException;
 import uk.gov.hmcts.bar.api.data.model.PayHubResponseReport;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionPayhubReference;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
@@ -29,6 +30,8 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +75,9 @@ public class PayHubService {
     }
 
     @PreAuthorize("hasAuthority(T(uk.gov.hmcts.bar.api.data.enums.BarUserRoleEnum).BAR_DELIVERY_MANAGER.getIdamRole())")
-    public PayHubResponseReport sendPaymentInstructionToPayHub(String userToken) {
+    public PayHubResponseReport sendPaymentInstructionToPayHub(String userToken, LocalDateTime transferDate) {
+        validateTransferDate(transferDate);
+
         PayHubResponseReport resp = new PayHubResponseReport();
 
         // oneTimePassword for s2s auth
@@ -111,7 +116,11 @@ public class PayHubService {
                 entityManager.merge(reference);
                 resp.increaseSuccess();
             }
-            paymentInstructionService.updateTransferredToPayHub(payHubPayload.getId(), payHubStatus, payHubErrorMessage.toString());
+            updatePaymentInstruction(
+                payHubPayload,
+                payHubStatus,
+                payHubErrorMessage.substring(0, payHubErrorMessage.length() > 1024 ? 1024 : payHubErrorMessage.length()),
+                transferDate);
         });
         return resp;
     }
@@ -166,6 +175,20 @@ public class PayHubService {
     private boolean isValidPayhubResponse(Map<String, String> response) {
         return StringUtils.isNotEmpty(response.get(REFERENCE_KEY)) &&
             StringUtils.isNotEmpty(response.get(GROUP_REFERENCE_KEY));
+    }
+
+    private void updatePaymentInstruction(PayhubPaymentInstruction pi, boolean status, String errorMessage, LocalDateTime transferDate) {
+        pi.setTransferredToPayhub(status);
+        pi.setPayhubError(status ? null : errorMessage);
+        pi.setTransferDate(transferDate);
+    }
+
+    private void validateTransferDate(LocalDateTime transferDate) {
+        LocalDateTime now = LocalDate.now().atTime(23, 59, 59);
+        if (transferDate.isAfter(now)) {
+            LOG.error("transfer date validation failed. It can not be in a future date.");
+            throw new BadRequestException(transferDate.toString(), "The transfer date can not be a future date");
+        }
     }
 
 }

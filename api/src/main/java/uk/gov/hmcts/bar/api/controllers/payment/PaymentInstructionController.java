@@ -29,10 +29,13 @@ import uk.gov.hmcts.bar.api.integration.payhub.service.PayHubService;
 import uk.gov.hmcts.reform.auth.checker.core.user.UserRequestAuthorizer;
 
 import javax.validation.Valid;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -447,10 +450,19 @@ public class PaymentInstructionController {
         @ApiResponse(code = 400, message = "Bad request"),
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/payment-instructions/send-to-payhub")
-	public ResponseEntity<PayHubResponseReport> sendToPayHub(@RequestHeader HttpHeaders headers) {
+    @GetMapping({"/payment-instructions/send-to-payhub/", "/payment-instructions/send-to-payhub/{timestamp}"})
+	public ResponseEntity<PayHubResponseReport> sendToPayHub(@RequestHeader HttpHeaders headers,
+                                                             @PathVariable(name = "timestamp", required = false)
+                                                             Optional<Long> transferTimestamp) {
         String bearerToken = headers.getFirst(UserRequestAuthorizer.AUTHORISATION);
-        PayHubResponseReport report = payHubService.sendPaymentInstructionToPayHub(bearerToken);
+        LocalDateTime transferDate;
+        if (!transferTimestamp.isPresent()) {
+            transferDate = LocalDateTime.now();
+        } else {
+            transferDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(transferTimestamp.get()), TimeZone
+                .getDefault().toZoneId());
+        }
+        PayHubResponseReport report = payHubService.sendPaymentInstructionToPayHub(bearerToken, transferDate);
         return ResponseEntity.ok(report);
     }
 
