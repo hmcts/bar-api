@@ -84,8 +84,7 @@ public class PaymentInstructionService {
     public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction) {
         String userId = barUserService.getCurrentUserId();
         Optional<BarUser> optBarUser = barUserService.getBarUser();
-        BarUser barUser= optBarUser.get();
-
+        BarUser barUser = (optBarUser.isPresent())? optBarUser.get(): null;
         PaymentReference nextPaymentReference = paymentReferenceService.getNextPaymentReferenceSequenceBySite(SITE_ID);
         paymentInstruction.setSiteId(SITE_ID);
         paymentInstruction.setDailySequenceId(nextPaymentReference.getDailySequenceId());
@@ -154,8 +153,9 @@ public class PaymentInstructionService {
         existingPaymentInstruction.setUserId(userId);
         savePaymentInstructionStatus(existingPaymentInstruction, userId);
         PaymentInstruction paymentInstruction = paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
-
-        auditRepository.trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUserService.getBarUser().get());
+        Optional<BarUser> optBarUser = barUserService.getBarUser();
+        BarUser barUser = (optBarUser.isPresent())? optBarUser.get(): null;
+        auditRepository.trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUser);
 
         return paymentInstruction;
     }
@@ -178,9 +178,7 @@ public class PaymentInstructionService {
         existingPaymentInstruction.setUserId(userId);
         savePaymentInstructionStatus(existingPaymentInstruction, userId);
         PaymentInstruction paymentInstruction = paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
-
         auditRepository.trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUserService.getBarUser().get());
-
         return paymentInstruction;
     }
 

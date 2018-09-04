@@ -1,6 +1,5 @@
 package uk.gov.hmcts.bar.api.data.service;
 
-import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,13 +14,10 @@ import uk.gov.hmcts.bar.api.data.utils.Util;
 
 import java.util.Optional;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 @Service
 @Transactional
 public class CaseFeeDetailService {
 
-    private static final Logger LOG = getLogger(CaseFeeDetailService.class);
     private CaseFeeDetailRepository caseFeeDetailRepository;
     private final BarUserService barUserService;
     private final AuditRepository auditRepository;
@@ -36,9 +32,7 @@ public class CaseFeeDetailService {
 
     public CaseFeeDetail saveCaseFeeDetail(CaseFeeDetailRequest caseFeeDetailRequest) {
         Optional<BarUser> optBarUser = barUserService.getBarUser();
-        BarUser barUser= optBarUser.get();
-
-        LOG.info("Saving case details for user ='{}' , case reference ='{}' and fee code = '{}",barUserService.getCurrentUserId(),caseFeeDetailRequest.getCaseReference(),caseFeeDetailRequest.getFeeCode());
+        BarUser barUser = (optBarUser.isPresent())? optBarUser.get(): null;
 
         CaseFeeDetail caseFeeDetail = caseFeeDetailRepository.saveAndRefresh(CaseFeeDetail.caseFeeDetailWith()
             .amount(caseFeeDetailRequest.getAmount()).feeCode(caseFeeDetailRequest.getFeeCode())
