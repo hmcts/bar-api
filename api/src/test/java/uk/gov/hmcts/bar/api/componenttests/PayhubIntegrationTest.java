@@ -10,6 +10,8 @@ import uk.gov.hmcts.bar.api.componenttests.utils.DbTestUtil;
 
 import javax.ws.rs.core.MediaType;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -46,7 +48,7 @@ public class PayhubIntegrationTest extends ComponentTestBase {
     public void testSendPaymentInstrucitonToPayhub() throws Exception {
         DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
         restActionsForDM
-            .get("/payment-instructions/send-to-payhub")
+            .get("/payment-instructions/send-to-payhub/")
             .andExpect(status().isOk())
             .andExpect(body().as(Map.class, map -> {
                 Assert.assertEquals(2, map.get("total"));
@@ -55,10 +57,32 @@ public class PayhubIntegrationTest extends ComponentTestBase {
     }
 
     @Test
+    public void testSendPaymentInstrucitonToPayhubWithTransferDate() throws Exception {
+        Long transferDate = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli();
+        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
+        restActionsForDM
+            .get("/payment-instructions/send-to-payhub/" + transferDate)
+            .andExpect(status().isOk())
+            .andExpect(body().as(Map.class, map -> {
+                Assert.assertEquals(2, map.get("total"));
+                Assert.assertEquals(2, map.get("success"));
+            }));
+    }
+
+    @Test
+    public void testSendPaymentInstrucitonToPayhubWithInvalidTransferDate() throws Exception {
+        Long transferDate = LocalDateTime.now().plusDays(1).toInstant(ZoneOffset.UTC).toEpochMilli();
+        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
+        restActionsForDM
+            .get("/payment-instructions/send-to-payhub/" + transferDate)
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void testSendPaymentInstrucitonToPayhub_withWrongUser() throws Exception {
         DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
         restActions
-            .get("/payment-instructions/send-to-payhub")
+            .get("/payment-instructions/send-to-payhub/")
             .andExpect(status().isForbidden());
     }
 }

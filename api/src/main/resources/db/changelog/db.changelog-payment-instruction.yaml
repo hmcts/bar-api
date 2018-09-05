@@ -685,3 +685,14 @@ databaseChangeLog:
                   type: varchar(50)
                   constraints:
                     nullable: true
+  - changeSet:
+      id: 27
+      author: akiss
+      changes:
+      - addColumn:
+          columns:
+          - column:
+              name: transfer_date
+              type: timestamp
+          tableName: payment_instruction
+

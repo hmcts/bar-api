@@ -290,16 +290,6 @@ public class PaymentInstructionService {
         return paymentInstructionsList;
     }
 
-    public void updateTransferredToPayHub(int id, boolean status, String errorMessage) {
-        String msg = errorMessage;
-        if (status) {
-            msg = null;
-        } else if (errorMessage != null && errorMessage.length() > 1024){
-            msg = errorMessage.substring(0, 1024);
-        }
-        paymentInstructionRepository.updateTransferredToPayHub(id, status, msg);
-    }
-
     private boolean checkIfActionEnabled(PaymentInstructionUpdateRequest paymentInstructionUpdateRequest){
         boolean[] ret = { true };
         String action = paymentInstructionUpdateRequest.getAction();
