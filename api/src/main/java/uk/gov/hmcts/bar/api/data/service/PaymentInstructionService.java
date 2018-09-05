@@ -1,21 +1,7 @@
 package uk.gov.hmcts.bar.api.data.service;
 
 
-import static org.slf4j.LoggerFactory.getLogger;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import com.google.common.collect.Lists;
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.ff4j.FF4j;
@@ -31,33 +17,22 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Lists;
-
 import uk.gov.hmcts.bar.api.controllers.payment.PaymentInstructionController;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
-import uk.gov.hmcts.bar.api.data.model.BankGiroCredit;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionRequest;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStaticsByUser;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStats;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatus;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusHistory;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusReferenceKey;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats;
-import uk.gov.hmcts.bar.api.data.model.PaymentReference;
-import uk.gov.hmcts.bar.api.data.repository.BankGiroCreditRepository;
-import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
-import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
-import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionsSpecifications;
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.repository.*;
 import uk.gov.hmcts.bar.api.data.utils.Util;
 import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
+
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 
 @Service
@@ -91,7 +66,7 @@ public class PaymentInstructionService {
                                      BankGiroCreditRepository bankGiroCreditRepository,
                                      PaymentTypeService paymentTypeService,
                                      PayhubPaymentInstructionRepository payhubPaymentInstructionRepository
-                                     ) {
+    ) {
         this.paymentReferenceService = paymentReferenceService;
         this.paymentInstructionRepository = paymentInstructionRepository;
         this.barUserService = barUserService;
@@ -122,14 +97,14 @@ public class PaymentInstructionService {
         Sort sort = new Sort(Sort.Direction.DESC, "paymentDate");
         Pageable pageDetails = PageRequest.of(PAGE_NUMBER, MAX_RECORDS_PER_PAGE, sort);
 
-		Specification<PaymentInstruction> piSpecification = null;
-		if (paymentInstructionSearchCriteriaDto.getMultiplePiIds() != null) {
-			piSpecification = paymentInstructionsSpecification.getPaymentInstructionsMultipleIdSpecification();
-		} else {
-			piSpecification = paymentInstructionsSpecification.getPaymentInstructionsSpecification();
-		}
+        Specification<PaymentInstruction> piSpecification = null;
+        if (paymentInstructionSearchCriteriaDto.getMultiplePiIds() != null) {
+            piSpecification = paymentInstructionsSpecification.getPaymentInstructionsMultipleIdSpecification();
+        } else {
+            piSpecification = paymentInstructionsSpecification.getPaymentInstructionsSpecification();
+        }
 
-		return Lists.newArrayList(paymentInstructionRepository.findAll(piSpecification, pageDetails).iterator());
+        return Lists.newArrayList(paymentInstructionRepository.findAll(piSpecification, pageDetails).iterator());
     }
 
     public List<PayhubPaymentInstruction> getAllPaymentInstructionsForPayhub(
@@ -198,22 +173,22 @@ public class PaymentInstructionService {
         return paymentInstructionRepository.findByCaseReference(caseReference);
     }
 
-	public MultiMap getPaymentInstructionStats(String status) {
-		List<PaymentInstructionUserStats> paymentInstructionInStatusList = paymentInstructionStatusRepository
-				.getPaymentInstructionsByStatusGroupedByUser(status);
-		return Util.createMultimapFromList(paymentInstructionInStatusList);
-	}
+    public MultiMap getPaymentInstructionStats(String status,boolean sentToPayhub) {
+        List<PaymentInstructionUserStats> paymentInstructionInStatusList = paymentInstructionStatusRepository
+            .getPaymentInstructionsByStatusGroupedByUser(status,sentToPayhub);
+        return Util.createMultimapFromList(paymentInstructionInStatusList);
+    }
 
-	public MultiMap getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(String currentStatus,
-			String oldStatus) {
-		List<PaymentInstructionStaticsByUser> paymentInstructionStaticsByUserObjects = paymentInstructionStatusRepository
-				.getPaymentInstructionStatsByCurrentStatusAndByOldStatus(currentStatus, oldStatus);
-		paymentInstructionStaticsByUserObjects = Util.getFilteredPisList(paymentInstructionStaticsByUserObjects);
-		return Util.createMultimapFromPisByUserList(paymentInstructionStaticsByUserObjects);
-	}
+    public MultiMap getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(String currentStatus,
+                                                                                String oldStatus) {
+        List<PaymentInstructionStaticsByUser> paymentInstructionStaticsByUserObjects = paymentInstructionStatusRepository
+            .getPaymentInstructionStatsByCurrentStatusAndByOldStatus(currentStatus, oldStatus);
+        paymentInstructionStaticsByUserObjects = Util.getFilteredPisList(paymentInstructionStaticsByUserObjects);
+        return Util.createMultimapFromPisByUserList(paymentInstructionStaticsByUserObjects);
+    }
 
-    public MultiMap getPaymentStatsByUserGroupByType(String userId, String status) {
-        List<PaymentInstructionStats> results = paymentInstructionStatusRepository.getStatsByUserGroupByType(userId, status);
+    public MultiMap getPaymentStatsByUserGroupByType(String userId, String status, boolean sentToPayhub) {
+        List<PaymentInstructionStats> results = paymentInstructionStatusRepository.getStatsByUserGroupByType(userId, status, sentToPayhub);
         MultiMap paymentInstructionStatsGroupedByBgc = new MultiValueMap();
         results.stream().forEach(stat -> {
             Link detailslink = linkTo(methodOn(PaymentInstructionController.class)
@@ -236,7 +211,7 @@ public class PaymentInstructionService {
             }
 
             paymentInstructionStatsGroupedByBgc.put(
-            stat.getBgc() == null ? "0" : stat.getBgc(), resource);
+                stat.getBgc() == null ? "0" : stat.getBgc(), resource);
         });
         return paymentInstructionStatsGroupedByBgc;
     }
