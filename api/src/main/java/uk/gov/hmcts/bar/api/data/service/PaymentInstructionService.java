@@ -17,6 +17,9 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import uk.gov.hmcts.bar.api.audit.AuditRepository;
+
 import uk.gov.hmcts.bar.api.controllers.payment.PaymentInstructionController;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
@@ -57,6 +60,7 @@ public class PaymentInstructionService {
     private final FF4j ff4j;
     private PaymentTypeService paymentTypeService;
     private final PayhubPaymentInstructionRepository payhubPaymentInstructionRepository;
+    private final AuditRepository auditRepository;
 
 
     public PaymentInstructionService(PaymentReferenceService paymentReferenceService, PaymentInstructionRepository paymentInstructionRepository,
@@ -65,7 +69,10 @@ public class PaymentInstructionService {
                                      FF4j ff4j,
                                      BankGiroCreditRepository bankGiroCreditRepository,
                                      PaymentTypeService paymentTypeService,
-                                     PayhubPaymentInstructionRepository payhubPaymentInstructionRepository
+
+                                     PayhubPaymentInstructionRepository payhubPaymentInstructionRepository,
+                                     AuditRepository auditRepository
+
     ) {
         this.paymentReferenceService = paymentReferenceService;
         this.paymentInstructionRepository = paymentInstructionRepository;
@@ -75,11 +82,13 @@ public class PaymentInstructionService {
         this.bankGiroCreditRepository = bankGiroCreditRepository;
         this.paymentTypeService = paymentTypeService;
         this.payhubPaymentInstructionRepository = payhubPaymentInstructionRepository;
+        this.auditRepository = auditRepository;
     }
 
     public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction) {
         String userId = barUserService.getCurrentUserId();
-
+        Optional<BarUser> optBarUser = barUserService.getBarUser();
+        BarUser barUser = (optBarUser.isPresent())? optBarUser.get(): null;
         PaymentReference nextPaymentReference = paymentReferenceService.getNextPaymentReferenceSequenceBySite(SITE_ID);
         paymentInstruction.setSiteId(SITE_ID);
         paymentInstruction.setDailySequenceId(nextPaymentReference.getDailySequenceId());
@@ -87,6 +96,7 @@ public class PaymentInstructionService {
         paymentInstruction.setUserId(userId);
         PaymentInstruction savedPaymentInstruction = paymentInstructionRepository.saveAndRefresh(paymentInstruction);
         savePaymentInstructionStatus(savedPaymentInstruction, userId);
+        auditRepository.trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT", paymentInstruction, barUser);
         return savedPaymentInstruction;
     }
 
@@ -146,7 +156,12 @@ public class PaymentInstructionService {
         BeanUtils.copyProperties(paymentInstructionUpdateRequest, existingPaymentInstruction, nullPropertiesNamesToIgnore);
         existingPaymentInstruction.setUserId(userId);
         savePaymentInstructionStatus(existingPaymentInstruction, userId);
-        return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
+        PaymentInstruction paymentInstruction = paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
+        Optional<BarUser> optBarUser = barUserService.getBarUser();
+        BarUser barUser = (optBarUser.isPresent())? optBarUser.get(): null;
+        auditRepository.trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUser);
+
+        return paymentInstruction;
     }
 
     public PaymentInstruction updatePaymentInstruction(Integer id, PaymentInstructionRequest paymentInstructionRequest) {
@@ -166,16 +181,22 @@ public class PaymentInstructionService {
         BeanUtils.copyProperties(paymentInstructionRequest, existingPaymentInstruction, nullPropertiesNamesToIgnore);
         existingPaymentInstruction.setUserId(userId);
         savePaymentInstructionStatus(existingPaymentInstruction, userId);
-        return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
+        PaymentInstruction paymentInstruction = paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
+        Optional<BarUser> optBarUser = barUserService.getBarUser();
+        BarUser barUser = (optBarUser.isPresent())? optBarUser.get(): null;
+        auditRepository.trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUser);
+        return paymentInstruction;
     }
 
     public List<PaymentInstruction> getAllPaymentInstructionsByCaseReference(String caseReference) {
         return paymentInstructionRepository.findByCaseReference(caseReference);
     }
 
+
     public MultiMap getPaymentInstructionStats(String status,boolean sentToPayhub) {
         List<PaymentInstructionUserStats> paymentInstructionInStatusList = paymentInstructionStatusRepository
             .getPaymentInstructionsByStatusGroupedByUser(status,sentToPayhub);
+
         return Util.createMultimapFromList(paymentInstructionInStatusList);
     }
 
@@ -189,6 +210,7 @@ public class PaymentInstructionService {
 
     public MultiMap getPaymentStatsByUserGroupByType(String userId, String status, boolean sentToPayhub) {
         List<PaymentInstructionStats> results = paymentInstructionStatusRepository.getStatsByUserGroupByType(userId, status, sentToPayhub);
+
         MultiMap paymentInstructionStatsGroupedByBgc = new MultiValueMap();
         results.stream().forEach(stat -> {
             Link detailslink = linkTo(methodOn(PaymentInstructionController.class)
