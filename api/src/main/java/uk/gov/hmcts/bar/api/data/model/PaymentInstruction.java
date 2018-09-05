@@ -58,6 +58,7 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
         paymentLines.get(0).setBgcNumber(this.getBgcNumber());
         fillAmount(paymentLines.get(0));
         setUserActivity(paymentLines);
+        paymentLines.get(0).setSentToPayhub(this.getSentToPayhub());
 
         return paymentLines;
     }

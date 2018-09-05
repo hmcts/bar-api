@@ -18,12 +18,14 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.internal.util.io.IOUtil;
 import uk.gov.hmcts.bar.api.data.TestUtils;
 import uk.gov.hmcts.bar.api.data.model.PayHubResponseReport;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionPayhubReference;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
 import uk.gov.hmcts.bar.api.data.model.PaymentType;
 import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
 import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
+import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -50,12 +52,19 @@ public class PayHubServiceTest {
     @Mock
     private CloseableHttpClient httpClient;
 
+    @Mock
+    private EntityManager entityManager;
+
     private List<PayhubPaymentInstruction> paymentInstructions;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        payHubService = new PayHubService(serviceAuthTokenGenerator, paymentInstructionService, httpClient, "http://localhost:8080");
+        payHubService = new PayHubService(serviceAuthTokenGenerator,
+                                            paymentInstructionService,
+                                            httpClient,
+                                            "http://localhost:8080",
+                                            entityManager);
         paymentInstructions = new ArrayList<>();
         paymentInstructions.add(
             TestUtils.createSamplePayhuPaymentInstruction(10000, new int [][] {{5000, 0, 0}, {5000, 0, 0}})
@@ -90,18 +99,19 @@ public class PayHubServiceTest {
             assertThat(httpPost.getURI().toString(), Is.is("http://localhost:8080/payment-records"));
             assertThat(httpPost.getHeaders("Authorization")[0].getValue(), Is.is("1234ABCD"));
             assertThat(httpPost.getHeaders("ServiceAuthorization")[0].getValue(), Is.is("this_is_a_one_time_password"));
-            return new PayHubHttpResponse(200, "");
+            return createPayhubResponse();
         });
         PayHubResponseReport stat = payHubService.sendPaymentInstructionToPayHub("1234ABCD");
         assertThat(stat.getTotal(), Is.is(2));
         assertThat(stat.getSuccess(), Is.is(2));
+        verify(entityManager, times(2)).merge(any(PaymentInstructionPayhubReference.class));
     }
 
     @Test
     public void testUpdatePaymentInstructionWhenSuccessResponseReceived() throws IOException {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
-        when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(200, ""));
+        when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> createPayhubResponse());
         payHubService.sendPaymentInstructionToPayHub("1234ABCD");
         verify(paymentInstructionService, times(1)).updateTransferredToPayHub(1, true, "");
         verify(paymentInstructionService, times(1)).updateTransferredToPayHub(2, true, "");
@@ -117,6 +127,7 @@ public class PayHubServiceTest {
         verify(paymentInstructionService, times(1)).updateTransferredToPayHub(2, false, "Failed(403): {\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}");
         assertThat(stat.getTotal(), Is.is(2));
         assertThat(stat.getSuccess(), Is.is(0));
+        verify(entityManager, times(0)).merge(any(PaymentInstructionPayhubReference.class));
     }
 
     @Test
@@ -127,6 +138,40 @@ public class PayHubServiceTest {
         payHubService.sendPaymentInstructionToPayHub("1234ABCD");
         verify(paymentInstructionService, times(1)).updateTransferredToPayHub(1, false, "Failed to send payment instruction to PayHub: something went wrong");
         verify(paymentInstructionService, times(1)).updateTransferredToPayHub(2, false, "Failed to send payment instruction to PayHub: something went wrong");
+        verify(entityManager, times(0)).merge(any(PaymentInstructionPayhubReference.class));
+    }
+
+    @Test
+    public void testWhenReceivedInvalidResponseFromPayhub() throws IOException {
+        when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
+        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
+        when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(200, "{ \"somekey\" : \"somevalue\" }"));
+        payHubService.sendPaymentInstructionToPayHub("1234ABCD");
+        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(1, false, "Unable to parse response: { \"somekey\" : \"somevalue\" }");
+        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(2, false, "Unable to parse response: { \"somekey\" : \"somevalue\" }");
+        verify(entityManager, times(0)).merge(any(PaymentInstructionPayhubReference.class));
+    }
+
+    @Test
+    public void testWhenReceivedUnParsableResponseFromPayhub() throws IOException {
+        when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
+        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
+        when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(200, "some unparsable message"));
+        payHubService.sendPaymentInstructionToPayHub("1234ABCD");
+        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(1, false, "Failed to parse payhub response: \"some unparsable message\": Unrecognized token 'some': was expecting ('true', 'false' or 'null')\n" +
+            " at [Source: (String)\"some unparsable message\"; line: 1, column: 5]");
+        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(2, false, "Failed to parse payhub response: \"some unparsable message\": Unrecognized token 'some': was expecting ('true', 'false' or 'null')\n" +
+            " at [Source: (String)\"some unparsable message\"; line: 1, column: 5]");
+        verify(entityManager, times(0)).merge(any(PaymentInstructionPayhubReference.class));
+    }
+
+    private PayHubHttpResponse createPayhubResponse() {
+        return new PayHubHttpResponse(200, "{\n" +
+            "      \"reference\": \"RC-1534-8634-8352-6509\",\n" +
+            "      \"date_created\": \"2018-08-21T14:58:03.630+0000\",\n" +
+            "      \"status\": \"Initiated\",\n" +
+            "      \"payment_group_reference\": \"2018-15348634835\"\n" +
+            "    }");
     }
 
     public static class PayHubHttpResponse implements CloseableHttpResponse {

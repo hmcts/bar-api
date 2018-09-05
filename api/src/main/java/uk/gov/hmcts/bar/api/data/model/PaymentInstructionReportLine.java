@@ -35,4 +35,6 @@ public class PaymentInstructionReportLine {
     private LocalDateTime   approvedTime;
     private String          transferredToBarUser;
     private LocalDateTime   transferredToBarTime;
+    private String          sentToPayhub;
 }
+

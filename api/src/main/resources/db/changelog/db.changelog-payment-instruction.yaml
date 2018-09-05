@@ -661,3 +661,27 @@ databaseChangeLog:
       changes:
         - sql: >
             UPDATE payment_instruction SET site_id = 'Y431' WHERE site_id = 'BR01';
+  - changeSet:
+      id: 26
+      author: akiss
+      changes:
+        - createTable:
+            tableName: payment_instruction_payhub_reference
+            columns:
+              - column:
+                  name: payment_instruction_id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    foreignKeyName: fk_payment_instruction_id
+                    references: payment_instruction(id)
+              - column:
+                  name: reference
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_group_reference
+                  type: varchar(50)
+                  constraints:
+                    nullable: true

@@ -17,7 +17,9 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import uk.gov.hmcts.bar.api.audit.AuditRepository;
+
 import uk.gov.hmcts.bar.api.controllers.payment.PaymentInstructionController;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
@@ -67,8 +69,10 @@ public class PaymentInstructionService {
                                      FF4j ff4j,
                                      BankGiroCreditRepository bankGiroCreditRepository,
                                      PaymentTypeService paymentTypeService,
+
                                      PayhubPaymentInstructionRepository payhubPaymentInstructionRepository,
                                      AuditRepository auditRepository
+
     ) {
         this.paymentReferenceService = paymentReferenceService;
         this.paymentInstructionRepository = paymentInstructionRepository;
@@ -188,9 +192,11 @@ public class PaymentInstructionService {
         return paymentInstructionRepository.findByCaseReference(caseReference);
     }
 
-    public MultiMap getPaymentInstructionStats(String status) {
+
+    public MultiMap getPaymentInstructionStats(String status,boolean sentToPayhub) {
         List<PaymentInstructionUserStats> paymentInstructionInStatusList = paymentInstructionStatusRepository
-            .getPaymentInstructionsByStatusGroupedByUser(status);
+            .getPaymentInstructionsByStatusGroupedByUser(status,sentToPayhub);
+
         return Util.createMultimapFromList(paymentInstructionInStatusList);
     }
 
@@ -202,8 +208,9 @@ public class PaymentInstructionService {
         return Util.createMultimapFromPisByUserList(paymentInstructionStaticsByUserObjects);
     }
 
-    public MultiMap getPaymentStatsByUserGroupByType(String userId, String status) {
-        List<PaymentInstructionStats> results = paymentInstructionStatusRepository.getStatsByUserGroupByType(userId, status);
+    public MultiMap getPaymentStatsByUserGroupByType(String userId, String status, boolean sentToPayhub) {
+        List<PaymentInstructionStats> results = paymentInstructionStatusRepository.getStatsByUserGroupByType(userId, status, sentToPayhub);
+
         MultiMap paymentInstructionStatsGroupedByBgc = new MultiValueMap();
         results.stream().forEach(stat -> {
             Link detailslink = linkTo(methodOn(PaymentInstructionController.class)

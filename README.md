@@ -11,7 +11,7 @@ This is SpringBoot+maven based java application. Please see the Jenkinsfile in r
 
 ### Prerequisites
 
-You will need jdk and maven installed on your machine or use mvnw to install the prerequisites
+You will need jdk and maven installed on your machine or use mvnw to install the prerequisites.
 
 ### Installing
 1. Clone the repo to your machine using git clone git@git.reform.hmcts.net:bar/bar-app.git
