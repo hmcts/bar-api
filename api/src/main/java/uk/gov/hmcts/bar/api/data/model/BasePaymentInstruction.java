@@ -82,7 +82,7 @@ public class BasePaymentInstruction {
 
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private LocalDateTime transferDate = LocalDateTime.now();
+    private LocalDateTime reportDate;
 
     @JsonIgnore
     @Transient

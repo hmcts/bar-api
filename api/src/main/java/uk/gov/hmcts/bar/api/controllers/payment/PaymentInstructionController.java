@@ -439,16 +439,16 @@ public class PaymentInstructionController {
     @GetMapping({"/payment-instructions/send-to-payhub/", "/payment-instructions/send-to-payhub/{timestamp}"})
 	public ResponseEntity<PayHubResponseReport> sendToPayHub(@RequestHeader HttpHeaders headers,
                                                              @PathVariable(name = "timestamp", required = false)
-                                                             Optional<Long> transferTimestamp) {
+                                                             Optional<Long> reportTimestamp) {
         String bearerToken = headers.getFirst(UserRequestAuthorizer.AUTHORISATION);
-        LocalDateTime transferDate;
-        if (!transferTimestamp.isPresent()) {
-            transferDate = LocalDateTime.now();
+        LocalDateTime reportDate;
+        if (!reportTimestamp.isPresent()) {
+            reportDate = LocalDateTime.now();
         } else {
-            transferDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(transferTimestamp.get()), TimeZone
+            reportDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(reportTimestamp.get()), TimeZone
                 .getDefault().toZoneId());
         }
-        PayHubResponseReport report = payHubService.sendPaymentInstructionToPayHub(bearerToken, transferDate);
+        PayHubResponseReport report = payHubService.sendPaymentInstructionToPayHub(bearerToken, reportDate);
         return ResponseEntity.ok(report);
     }
 

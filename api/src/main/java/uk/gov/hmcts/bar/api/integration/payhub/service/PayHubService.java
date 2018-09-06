@@ -75,8 +75,8 @@ public class PayHubService {
     }
 
     @PreAuthorize("hasAuthority(T(uk.gov.hmcts.bar.api.data.enums.BarUserRoleEnum).BAR_DELIVERY_MANAGER.getIdamRole())")
-    public PayHubResponseReport sendPaymentInstructionToPayHub(String userToken, LocalDateTime transferDate) {
-        validateTransferDate(transferDate);
+    public PayHubResponseReport sendPaymentInstructionToPayHub(String userToken, LocalDateTime reportDate) {
+        validateReportDate(reportDate);
 
         PayHubResponseReport resp = new PayHubResponseReport();
 
@@ -120,7 +120,7 @@ public class PayHubService {
                 payHubPayload,
                 payHubStatus,
                 payHubErrorMessage.substring(0, payHubErrorMessage.length() > 1024 ? 1024 : payHubErrorMessage.length()),
-                transferDate);
+                reportDate);
         });
         return resp;
     }
@@ -177,17 +177,17 @@ public class PayHubService {
             StringUtils.isNotEmpty(response.get(GROUP_REFERENCE_KEY));
     }
 
-    private void updatePaymentInstruction(PayhubPaymentInstruction pi, boolean status, String errorMessage, LocalDateTime transferDate) {
+    private void updatePaymentInstruction(PayhubPaymentInstruction pi, boolean status, String errorMessage, LocalDateTime reportDate) {
         pi.setTransferredToPayhub(status);
         pi.setPayhubError(status ? null : errorMessage);
-        pi.setTransferDate(transferDate);
+        pi.setReportDate(reportDate);
     }
 
-    private void validateTransferDate(LocalDateTime transferDate) {
+    private void validateReportDate(LocalDateTime reportDate) {
         LocalDateTime now = LocalDate.now().atTime(23, 59, 59);
-        if (transferDate.isAfter(now)) {
+        if (reportDate.isAfter(now)) {
             LOG.error("transfer date validation failed. It can not be in a future date.");
-            throw new BadRequestException(transferDate.toString(), "The transfer date can not be a future date");
+            throw new BadRequestException(reportDate.toString(), "The transfer date can not be a future date");
         }
     }
 

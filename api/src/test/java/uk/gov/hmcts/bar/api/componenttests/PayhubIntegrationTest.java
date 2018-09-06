@@ -57,11 +57,11 @@ public class PayhubIntegrationTest extends ComponentTestBase {
     }
 
     @Test
-    public void testSendPaymentInstrucitonToPayhubWithTransferDate() throws Exception {
-        Long transferDate = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli();
+    public void testSendPaymentInstrucitonToPayhubWithReportDate() throws Exception {
+        Long reportDate = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli();
         DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
         restActionsForDM
-            .get("/payment-instructions/send-to-payhub/" + transferDate)
+            .get("/payment-instructions/send-to-payhub/" + reportDate)
             .andExpect(status().isOk())
             .andExpect(body().as(Map.class, map -> {
                 Assert.assertEquals(2, map.get("total"));
@@ -70,11 +70,11 @@ public class PayhubIntegrationTest extends ComponentTestBase {
     }
 
     @Test
-    public void testSendPaymentInstrucitonToPayhubWithInvalidTransferDate() throws Exception {
-        Long transferDate = LocalDateTime.now().plusDays(1).toInstant(ZoneOffset.UTC).toEpochMilli();
+    public void testSendPaymentInstrucitonToPayhubWithInvalidReportDate() throws Exception {
+        Long reportDate = LocalDateTime.now().plusDays(1).toInstant(ZoneOffset.UTC).toEpochMilli();
         DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
         restActionsForDM
-            .get("/payment-instructions/send-to-payhub/" + transferDate)
+            .get("/payment-instructions/send-to-payhub/" + reportDate)
             .andExpect(status().isBadRequest());
     }
 

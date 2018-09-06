@@ -111,7 +111,7 @@ public class PayHubServiceTest {
         assertThat(stat.getSuccess(), Is.is(2));
         verify(entityManager, times(2)).merge(any(PaymentInstructionPayhubReference.class));
         this.paymentInstructions.forEach(it -> {
-            assertThat(it.getTransferDate(), Is.is(TRANSFER_DATE));
+            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
             assertThat(it.isTransferredToPayhub(), Is.is(true));
             Assert.assertEquals(null, it.getPayhubError());
         });
@@ -124,7 +124,7 @@ public class PayHubServiceTest {
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(403, "{\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}"));
         PayHubResponseReport stat = payHubService.sendPaymentInstructionToPayHub("1234ABCD", TRANSFER_DATE);
         this.paymentInstructions.forEach(it -> {
-            assertThat(it.getTransferDate(), Is.is(TRANSFER_DATE));
+            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
             assertThat(it.isTransferredToPayhub(), Is.is(false));
             assertThat(it.getPayhubError(), Is.is("Failed(403): {\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}"));
         });
@@ -140,7 +140,7 @@ public class PayHubServiceTest {
         when(httpClient.execute(any(HttpPost.class))).thenThrow(new RuntimeException("something went wrong"));
         payHubService.sendPaymentInstructionToPayHub("1234ABCD", TRANSFER_DATE);
         this.paymentInstructions.forEach(it -> {
-            assertThat(it.getTransferDate(), Is.is(TRANSFER_DATE));
+            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
             assertThat(it.isTransferredToPayhub(), Is.is(false));
             assertThat(it.getPayhubError(), Is.is("Failed to send payment instruction to PayHub: something went wrong"));
         });
@@ -154,7 +154,7 @@ public class PayHubServiceTest {
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(200, "{ \"somekey\" : \"somevalue\" }"));
         payHubService.sendPaymentInstructionToPayHub("1234ABCD", TRANSFER_DATE);
         this.paymentInstructions.forEach(it -> {
-            assertThat(it.getTransferDate(), Is.is(TRANSFER_DATE));
+            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
             assertThat(it.isTransferredToPayhub(), Is.is(false));
             assertThat(it.getPayhubError(), Is.is("Unable to parse response: { \"somekey\" : \"somevalue\" }"));
         });
@@ -168,7 +168,7 @@ public class PayHubServiceTest {
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(200, "some unparsable message"));
         payHubService.sendPaymentInstructionToPayHub("1234ABCD", TRANSFER_DATE);
         this.paymentInstructions.forEach(it -> {
-            assertThat(it.getTransferDate(), Is.is(TRANSFER_DATE));
+            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
             assertThat(it.isTransferredToPayhub(), Is.is(false));
             assertThat(it.getPayhubError(), Is.is("Failed to parse payhub response: \"some unparsable message\": Unrecognized token 'some': was expecting ('true', 'false' or 'null')\n" +
                 " at [Source: (String)\"some unparsable message\"; line: 1, column: 5]"));
@@ -206,7 +206,7 @@ public class PayHubServiceTest {
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(500, tooLongErrorMessage));
         payHubService.sendPaymentInstructionToPayHub("1234ABCD", TRANSFER_DATE);
         this.paymentInstructions.forEach(it -> {
-            assertThat(it.getTransferDate(), Is.is(TRANSFER_DATE));
+            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
             assertThat(it.isTransferredToPayhub(), Is.is(false));
             assertThat(it.getPayhubError(), Is.is(truncatedErrorMessage));
         });
@@ -215,11 +215,11 @@ public class PayHubServiceTest {
 
     @Test(expected = BadRequestException.class)
     public void testInvalidTimeStamp() throws IOException {
-        LocalDateTime transferDate = LocalDate.now().plusDays(3).atTime(20, 20);
+        LocalDateTime reportDate = LocalDate.now().plusDays(3).atTime(20, 20);
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> createPayhubResponse());
-        payHubService.sendPaymentInstructionToPayHub("1234ABCD", transferDate);
+        payHubService.sendPaymentInstructionToPayHub("1234ABCD", reportDate);
     }
 
     private PayHubHttpResponse createPayhubResponse() {

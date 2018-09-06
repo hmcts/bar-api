@@ -692,7 +692,7 @@ databaseChangeLog:
       - addColumn:
           columns:
           - column:
-              name: transfer_date
+              name: report_date
               type: timestamp
           tableName: payment_instruction
 
