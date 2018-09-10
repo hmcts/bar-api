@@ -80,6 +80,10 @@ public class BasePaymentInstruction {
     @JsonIgnore
     private String userId;
 
+    @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private LocalDateTime reportDate;
+
     @JsonIgnore
     @Transient
     private List<PaymentInstructionStatusHistory> paymentInstructionStatusHistory = Collections.EMPTY_LIST;

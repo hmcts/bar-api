@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.internal.util.io.IOUtil;
 import uk.gov.hmcts.bar.api.data.TestUtils;
+import uk.gov.hmcts.bar.api.data.exceptions.BadRequestException;
 import uk.gov.hmcts.bar.api.data.model.PayHubResponseReport;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionPayhubReference;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
@@ -28,6 +29,8 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -40,6 +43,8 @@ public class PayHubServiceTest {
 
     public static final String payload1 = "{\"amount\":10000,\"currency\":\"GBP\",\"site_id\":\"Y431\",\"giro_slip_no\":\"\",\"fees\":[{\"code\":\"x00335\",\"calculated_amount\":5000,\"version\":\"1\",\"reference\":\"12345\"},{\"code\":\"x00335\",\"calculated_amount\":5000,\"version\":\"1\",\"reference\":\"12345\"}],\"requestor_reference\":\"Y431-201808131\",\"payment_method\":\"CHEQUE\",\"requestor\":\"DIGITAL_BAR\",\"external_reference\":\"D\",\"external_provider\":\"barclaycard\"}";
     public static final String payload2 = "{\"amount\":20000,\"currency\":\"GBP\",\"site_id\":\"Y431\",\"giro_slip_no\":\"\",\"fees\":[{\"code\":\"x00335\",\"calculated_amount\":10000,\"version\":\"1\",\"reference\":\"12345\"},{\"code\":\"x00335\",\"calculated_amount\":10000,\"version\":\"1\",\"reference\":\"12345\"}],\"requestor_reference\":\"Y431-201808132\",\"payment_method\":\"CARD\",\"requestor\":\"DIGITAL_BAR\",\"external_reference\":\"123456\",\"external_provider\":\"barclaycard\"}";
+
+    public static final LocalDateTime TRANSFER_DATE = LocalDateTime.now();
 
     private PayHubService payHubService;
 
@@ -101,20 +106,15 @@ public class PayHubServiceTest {
             assertThat(httpPost.getHeaders("ServiceAuthorization")[0].getValue(), Is.is("this_is_a_one_time_password"));
             return createPayhubResponse();
         });
-        PayHubResponseReport stat = payHubService.sendPaymentInstructionToPayHub("1234ABCD");
+        PayHubResponseReport stat = payHubService.sendPaymentInstructionToPayHub("1234ABCD", TRANSFER_DATE);
         assertThat(stat.getTotal(), Is.is(2));
         assertThat(stat.getSuccess(), Is.is(2));
         verify(entityManager, times(2)).merge(any(PaymentInstructionPayhubReference.class));
-    }
-
-    @Test
-    public void testUpdatePaymentInstructionWhenSuccessResponseReceived() throws IOException {
-        when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
-        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
-        when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> createPayhubResponse());
-        payHubService.sendPaymentInstructionToPayHub("1234ABCD");
-        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(1, true, "");
-        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(2, true, "");
+        this.paymentInstructions.forEach(it -> {
+            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
+            assertThat(it.isTransferredToPayhub(), Is.is(true));
+            Assert.assertEquals(null, it.getPayhubError());
+        });
     }
 
     @Test
@@ -122,9 +122,12 @@ public class PayHubServiceTest {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(403, "{\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}"));
-        PayHubResponseReport stat = payHubService.sendPaymentInstructionToPayHub("1234ABCD");
-        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(1, false, "Failed(403): {\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}");
-        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(2, false, "Failed(403): {\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}");
+        PayHubResponseReport stat = payHubService.sendPaymentInstructionToPayHub("1234ABCD", TRANSFER_DATE);
+        this.paymentInstructions.forEach(it -> {
+            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
+            assertThat(it.isTransferredToPayhub(), Is.is(false));
+            assertThat(it.getPayhubError(), Is.is("Failed(403): {\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}"));
+        });
         assertThat(stat.getTotal(), Is.is(2));
         assertThat(stat.getSuccess(), Is.is(0));
         verify(entityManager, times(0)).merge(any(PaymentInstructionPayhubReference.class));
@@ -135,9 +138,12 @@ public class PayHubServiceTest {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenThrow(new RuntimeException("something went wrong"));
-        payHubService.sendPaymentInstructionToPayHub("1234ABCD");
-        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(1, false, "Failed to send payment instruction to PayHub: something went wrong");
-        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(2, false, "Failed to send payment instruction to PayHub: something went wrong");
+        payHubService.sendPaymentInstructionToPayHub("1234ABCD", TRANSFER_DATE);
+        this.paymentInstructions.forEach(it -> {
+            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
+            assertThat(it.isTransferredToPayhub(), Is.is(false));
+            assertThat(it.getPayhubError(), Is.is("Failed to send payment instruction to PayHub: something went wrong"));
+        });
         verify(entityManager, times(0)).merge(any(PaymentInstructionPayhubReference.class));
     }
 
@@ -146,9 +152,12 @@ public class PayHubServiceTest {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(200, "{ \"somekey\" : \"somevalue\" }"));
-        payHubService.sendPaymentInstructionToPayHub("1234ABCD");
-        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(1, false, "Unable to parse response: { \"somekey\" : \"somevalue\" }");
-        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(2, false, "Unable to parse response: { \"somekey\" : \"somevalue\" }");
+        payHubService.sendPaymentInstructionToPayHub("1234ABCD", TRANSFER_DATE);
+        this.paymentInstructions.forEach(it -> {
+            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
+            assertThat(it.isTransferredToPayhub(), Is.is(false));
+            assertThat(it.getPayhubError(), Is.is("Unable to parse response: { \"somekey\" : \"somevalue\" }"));
+        });
         verify(entityManager, times(0)).merge(any(PaymentInstructionPayhubReference.class));
     }
 
@@ -157,12 +166,60 @@ public class PayHubServiceTest {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(200, "some unparsable message"));
-        payHubService.sendPaymentInstructionToPayHub("1234ABCD");
-        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(1, false, "Failed to parse payhub response: \"some unparsable message\": Unrecognized token 'some': was expecting ('true', 'false' or 'null')\n" +
-            " at [Source: (String)\"some unparsable message\"; line: 1, column: 5]");
-        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(2, false, "Failed to parse payhub response: \"some unparsable message\": Unrecognized token 'some': was expecting ('true', 'false' or 'null')\n" +
-            " at [Source: (String)\"some unparsable message\"; line: 1, column: 5]");
+        payHubService.sendPaymentInstructionToPayHub("1234ABCD", TRANSFER_DATE);
+        this.paymentInstructions.forEach(it -> {
+            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
+            assertThat(it.isTransferredToPayhub(), Is.is(false));
+            assertThat(it.getPayhubError(), Is.is("Failed to parse payhub response: \"some unparsable message\": Unrecognized token 'some': was expecting ('true', 'false' or 'null')\n" +
+                " at [Source: (String)\"some unparsable message\"; line: 1, column: 5]"));
+        });
         verify(entityManager, times(0)).merge(any(PaymentInstructionPayhubReference.class));
+    }
+
+    @Test
+    public void testTooLongErrorMessage() throws IOException {
+        String tooLongErrorMessage = "yIggqcYno1d1QgDtY8oCfaaFCX808SOwkvO3SBOiwpsfaG5FdysyrTX0RgI1XYlB35BANX6iqFFxavccLhMHQ1" +
+            "RvNT3covgG3yhKTF1rOh0DYthzawjAYmswJb2Ty2MYX4861G2fLRuMNR6uHcHgjPCPZdLXW0Q5iiweiIoCaVmn0ac6mnlnKfqC9HF5Vs" +
+            "8Ww82tE6kJ0Sh5CARelpj6exYbPHdSKcOlkOLaZZYW91ZjRHoxA5Vxn0tMPkIKbgak8frLeTnXVILRBiilmPO5W0aZXfiyC1F3w2KcMc" +
+            "2duAFS4G3eUo2dTxqKHB5ZHyrgESrccRP0SYONCvEdUlLmvc9s4JDNCq5406DAEybSpiSKgR538j3eUQGzjX07YL0i4gnvj6HezdV8IA" +
+            "euwxZXdc2NHYxgOcpa1gVmDXtSdhM1VqWzmIXIMnObhpl9xdnQKWRCrI29cLp0kOOkPfgkb0x0GPuEvphBNbD10FWK39MxuYCVDnyuqT" +
+            "W6q2BINY5JITZiIls4kAlw33SaPs5XiUH0hHAODt1MokCmVp7WpL8cSublwMj3Di1B7U1rsHN8QASCYAf2usO5XxWE1q2Ho98DKFRuU6" +
+            "mjIvxHzpmAudOBpanjPdfSmnuWEH7wIwIERjMLImAld0HvJPuOG5etLdp9OsSe4KuOTWZtd9HqNZqpsundPSw3mPEskdsIOzDS5tC1Vg" +
+            "5d5D8yPM53xRH8HSmLfelZeYeN054DSiunT5K8a1CGtarlsIBHMheRvZdVyx5Gk3rhIPJHmXJqhDYmX6KBFb5weoFlh4PbOFAIAl1mAh" +
+            "PgE0QXZ9EvGaeu9ix9eprFOPRCxHWrJPZxKOwkGoFMeNcJTxLiMmapml2VfNdSt0lqnsfDWbPhNiky35Wlum7RYFutBJ0hx4RZSK03Gx" +
+            "9KUmv49Iv1jpBu11U8PfuaB7PhWuNtCKZjHutoOsH9YJWvnWOHCEVQOXwAfDxgQ4OG8m5x2Z73ZRVkFeq9uQshnEZWSXMq4agcdqLqhg" +
+            "Vi and the rest which not fit";
+        String truncatedErrorMessage = "Failed(500): yIggqcYno1d1QgDtY8oCfaaFCX808SOwkvO3SBOiwpsfaG5FdysyrTX0RgI1XYlB" +
+            "35BANX6iqFFxavccLhMHQ1RvNT3covgG3yhKTF1rOh0DYthzawjAYmswJb2Ty2MYX4861G2fLRuMNR6uHcHgjPCPZdLXW0Q5iiweiIoC" +
+            "aVmn0ac6mnlnKfqC9HF5Vs8Ww82tE6kJ0Sh5CARelpj6exYbPHdSKcOlkOLaZZYW91ZjRHoxA5Vxn0tMPkIKbgak8frLeTnXVILRBiil" +
+            "mPO5W0aZXfiyC1F3w2KcMc2duAFS4G3eUo2dTxqKHB5ZHyrgESrccRP0SYONCvEdUlLmvc9s4JDNCq5406DAEybSpiSKgR538j3eUQGz" +
+            "jX07YL0i4gnvj6HezdV8IAeuwxZXdc2NHYxgOcpa1gVmDXtSdhM1VqWzmIXIMnObhpl9xdnQKWRCrI29cLp0kOOkPfgkb0x0GPuEvphB" +
+            "NbD10FWK39MxuYCVDnyuqTW6q2BINY5JITZiIls4kAlw33SaPs5XiUH0hHAODt1MokCmVp7WpL8cSublwMj3Di1B7U1rsHN8QASCYAf2" +
+            "usO5XxWE1q2Ho98DKFRuU6mjIvxHzpmAudOBpanjPdfSmnuWEH7wIwIERjMLImAld0HvJPuOG5etLdp9OsSe4KuOTWZtd9HqNZqpsund" +
+            "PSw3mPEskdsIOzDS5tC1Vg5d5D8yPM53xRH8HSmLfelZeYeN054DSiunT5K8a1CGtarlsIBHMheRvZdVyx5Gk3rhIPJHmXJqhDYmX6KB" +
+            "Fb5weoFlh4PbOFAIAl1mAhPgE0QXZ9EvGaeu9ix9eprFOPRCxHWrJPZxKOwkGoFMeNcJTxLiMmapml2VfNdSt0lqnsfDWbPhNiky35Wl" +
+            "um7RYFutBJ0hx4RZSK03Gx9KUmv49Iv1jpBu11U8PfuaB7PhWuNtCKZjHutoOsH9YJWvnWOHCEVQOXwAfDxgQ4OG8m5x2Z73ZRVkFeq9" +
+            "uQshnEZWSXM";
+
+        when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
+        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
+        when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(500, tooLongErrorMessage));
+        payHubService.sendPaymentInstructionToPayHub("1234ABCD", TRANSFER_DATE);
+        this.paymentInstructions.forEach(it -> {
+            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
+            assertThat(it.isTransferredToPayhub(), Is.is(false));
+            assertThat(it.getPayhubError(), Is.is(truncatedErrorMessage));
+        });
+        verify(entityManager, times(0)).merge(any(PaymentInstructionPayhubReference.class));
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void testInvalidTimeStamp() throws IOException {
+        LocalDateTime reportDate = LocalDate.now().plusDays(3).atTime(20, 20);
+        when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
+        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
+        when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> createPayhubResponse());
+        payHubService.sendPaymentInstructionToPayHub("1234ABCD", reportDate);
     }
 
     private PayHubHttpResponse createPayhubResponse() {
