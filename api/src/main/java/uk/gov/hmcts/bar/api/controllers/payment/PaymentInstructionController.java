@@ -436,7 +436,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 400, message = "Bad request"),
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping({"/payment-instructions/send-to-payhub/", "/payment-instructions/send-to-payhub/{timestamp}"})
+    @GetMapping({"/payment-instructions/send-to-payhub", "/payment-instructions/send-to-payhub/{timestamp}"})
 	public ResponseEntity<PayHubResponseReport> sendToPayHub(@RequestHeader HttpHeaders headers,
                                                              @PathVariable(name = "timestamp", required = false)
                                                              Optional<Long> reportTimestamp) {
