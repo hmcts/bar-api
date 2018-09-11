@@ -1,4 +1,4 @@
-FROM hmcts/cnp-java-base:openjdk-jre-8-alpine-1.2
+FROM hmcts/cnp-java-base:openjdk-jre-8-alpine-1.4
 
 
 ENV APP bar-app.jar
