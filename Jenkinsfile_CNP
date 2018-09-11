@@ -12,7 +12,7 @@ def type = "java"
 def product = "bar"
 
 def app = "api"
-
+def component = "bar-apps"
 withPipeline(type, product, component) {
     enableDockerBuild()
 }
