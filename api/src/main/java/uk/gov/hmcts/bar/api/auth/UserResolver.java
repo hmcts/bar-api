@@ -2,6 +2,7 @@ package uk.gov.hmcts.bar.api.auth;
 
 import uk.gov.hmcts.bar.api.data.model.BarUser;
 import uk.gov.hmcts.bar.api.data.service.BarUserService;
+import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
 import uk.gov.hmcts.reform.auth.checker.core.SubjectResolver;
 import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.auth.parser.idam.core.user.token.UserTokenParser;
@@ -24,7 +25,8 @@ public class UserResolver implements SubjectResolver<User> {
             details.getRoles(),
             details.getEmail(),
             details.getForename(),
-            details.getSurname()
+            details.getSurname(),
+            PaymentInstructionService.SITE_ID
         );
         barUserService.saveUser(barUser);
         return new User(details.getId(), details.getRoles());
