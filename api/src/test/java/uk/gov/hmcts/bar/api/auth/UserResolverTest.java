@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.bar.api.data.model.BarUser;
 import uk.gov.hmcts.bar.api.data.service.BarUserService;
-import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
 import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.auth.parser.idam.core.user.token.UserTokenParser;
 
@@ -40,7 +39,7 @@ public class UserResolverTest {
     @Before
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
-       barUserMock = new BarUser("id",new HashSet<>(),"testting@testing.com","post","clerk", PaymentInstructionService.SITE_ID);
+       barUserMock = new BarUser("id",new HashSet<>(),"testting@testing.com","post","clerk");
        userTokenDetailsMock = new UserTokenDetails("defaultService","testting@testing.com","post","clerk","id", Collections.EMPTY_SET);
     }
 

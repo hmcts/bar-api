@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.internal.util.io.IOUtil;
+import uk.gov.hmcts.bar.api.auth.BarUserNotFoundException;
 import uk.gov.hmcts.bar.api.data.TestUtils;
 import uk.gov.hmcts.bar.api.data.exceptions.BadRequestException;
 import uk.gov.hmcts.bar.api.data.model.PayHubResponseReport;
@@ -92,7 +93,7 @@ public class PayHubServiceTest {
     }
 
     @Test
-    public void testSendValidRequestToPayHub() throws IOException {
+    public void testSendValidRequestToPayHub() throws IOException, BarUserNotFoundException {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> {
@@ -118,7 +119,17 @@ public class PayHubServiceTest {
     }
 
     @Test
-    public void testUpdatePaymentInstructionWhenFailedResponseReceived() throws IOException {
+    public void testUpdatePaymentInstructionWhenSuccessResponseReceived() throws IOException,BarUserNotFoundException {
+        when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
+        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
+        when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> createPayhubResponse());
+        payHubService.sendPaymentInstructionToPayHub("1234ABCD");
+        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(1, true, "");
+        verify(paymentInstructionService, times(1)).updateTransferredToPayHub(2, true, "");
+    }
+
+    @Test
+    public void testUpdatePaymentInstructionWhenFailedResponseReceived() throws IOException,BarUserNotFoundException {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(403, "{\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}"));
@@ -134,7 +145,7 @@ public class PayHubServiceTest {
     }
 
     @Test
-    public void testUpdatePaymentInstructionWhenSendingMessageThrowsException() throws IOException {
+    public void testUpdatePaymentInstructionWhenSendingMessageThrowsException() throws IOException,BarUserNotFoundException {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenThrow(new RuntimeException("something went wrong"));
@@ -148,7 +159,7 @@ public class PayHubServiceTest {
     }
 
     @Test
-    public void testWhenReceivedInvalidResponseFromPayhub() throws IOException {
+    public void testWhenReceivedInvalidResponseFromPayhub() throws IOException, BarUserNotFoundException {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(200, "{ \"somekey\" : \"somevalue\" }"));
@@ -162,7 +173,7 @@ public class PayHubServiceTest {
     }
 
     @Test
-    public void testWhenReceivedUnParsableResponseFromPayhub() throws IOException {
+    public void testWhenReceivedUnParsableResponseFromPayhub() throws IOException, BarUserNotFoundException {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(200, "some unparsable message"));

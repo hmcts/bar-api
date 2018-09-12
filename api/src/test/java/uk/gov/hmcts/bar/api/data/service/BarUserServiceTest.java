@@ -89,7 +89,7 @@ public class BarUserServiceTest {
             }
         };
 
-        barUser = new BarUser("user1", Collections.emptySet(), "user1@mail.com", "user", "one",PaymentInstructionService.SITE_ID);
+        barUser = new BarUser("user1", Collections.emptySet(), "user1@mail.com", "user", "one");
     }
 
     @Test(expected = AccessDeniedException.class)

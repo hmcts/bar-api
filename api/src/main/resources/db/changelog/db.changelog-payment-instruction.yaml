@@ -723,4 +723,3 @@ databaseChangeLog:
             onUpdate: CASCADE
             referencedColumnNames: site_id
             referencedTableName: sites
-

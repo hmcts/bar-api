@@ -30,7 +30,7 @@ public final class DbTestUtil {
     private static final String INSERT_BGC_QUERY =
         "INSERT INTO bank_giro_credit values (123456,'BR01',CURRENT_TIMESTAMP);";
     private static final String INSERT_BAR_USER =
-        "INSERT INTO bar_user values ('1234','1234-fn','1234-ln','post.clerk@hmcts.net','bar_post_clerk','Y431');";
+        "INSERT INTO bar_user values ('1234','1234-fn','1234-ln','post.clerk@hmcts.net','bar_post_clerk');";
     private static final String INSERT_PIS_QUERY =
         "INSERT INTO payment_instruction_status values (1,'D','1234',CURRENT_TIMESTAMP);";
     private static final String INSERT_PI_QUERY =
