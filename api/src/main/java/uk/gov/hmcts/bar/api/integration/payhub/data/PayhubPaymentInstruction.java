@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.bar.api.data.model.BasePaymentInstruction;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -29,6 +31,13 @@ public class PayhubPaymentInstruction extends BasePaymentInstruction {
 
     public PayhubPaymentInstruction(String payerName, Integer amount, String currency, String status) {
         super(payerName, amount, currency, status);
+    }
+
+    @JsonProperty("amount")
+    public BigDecimal getAmountAsDecimal() {
+        BigDecimal bd = new BigDecimal(getAmount()/100d);
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
+        return bd;
     }
 
     @JsonProperty("payment_method")
