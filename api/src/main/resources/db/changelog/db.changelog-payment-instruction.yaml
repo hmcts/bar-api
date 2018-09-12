@@ -696,3 +696,30 @@ databaseChangeLog:
               type: timestamp
           tableName: payment_instruction
 
+  - changeSet:
+      id: 28
+      author: sachi
+      changes:
+        - createTable:
+            tableName: sites
+            columns:
+              - column:
+                  name: site_id
+                  type: varchar(20)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: site_no
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+        - sql: >
+            INSERT into sites (site_id,site_no) values ('Y431','31');
+        - addForeignKeyConstraint:
+            baseColumnNames: site_id
+            baseTableName: payment_instruction
+            constraintName: fk_site_id
+            onUpdate: CASCADE
+            referencedColumnNames: site_id
+            referencedTableName: sites

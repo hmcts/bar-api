@@ -113,7 +113,7 @@ public class PaymentInstructionServiceTest {
 
     @Before
     public void setupMock() {
-        MockitoAnnotations.initMocks(this);
+       MockitoAnnotations.initMocks(this);
         paymentInstructionService = new PaymentInstructionService(
             paymentReferenceService,
             paymentInstructionRepository,
@@ -134,15 +134,18 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnPaymentInstruction_whenSavePaymentInstructionForGivenChequeInstructionIsCalled()
         throws Exception {
 
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
+        when(barUserMock.getSiteId()).thenReturn("Y431");
         when(paymentReferenceService.getNextPaymentReferenceSequenceBySite(anyString()))
             .thenReturn(paymentReferenceMock);
+        when(paymentReferenceMock.getDailySequenceId()).thenReturn(1);
         when(paymentInstructionRepository.saveAndFlush(any(ChequePaymentInstruction.class)))
             .thenReturn(chequePaymentInstructionMock);
         when(paymentInstructionRepository.saveAndRefresh(any(ChequePaymentInstruction.class)))
             .thenReturn(paymentInstructionMock);
         when(paymentInstructionMock.getStatus()).thenReturn("status");
 
-        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
+       // when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
 
 
         PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
@@ -156,7 +159,7 @@ public class PaymentInstructionServiceTest {
     @Test
     public void shouldReturnPaymentInstruction_whenSavePaymentInstructionForGivenCashInstructionIsCalled()
         throws Exception {
-
+        when(barUserMock.getSiteId()).thenReturn("Y431");
         when(paymentReferenceService.getNextPaymentReferenceSequenceBySite(anyString()))
             .thenReturn(paymentReferenceMock);
         when(paymentInstructionRepository.saveAndFlush(any(CashPaymentInstruction.class)))
@@ -179,7 +182,8 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnPaymentInstruction_whenSavePaymentInstructionForGivenPostalOrderInstructionIsCalled()
         throws Exception {
         when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
-        when(paymentReferenceService.getNextPaymentReferenceSequenceBySite(anyString()))
+        when(barUserMock.getSiteId()).thenReturn("Y431");
+        when(paymentReferenceService.getNextPaymentReferenceSequenceBySite(barUserMock.getSiteId()))
             .thenReturn(paymentReferenceMock);
         when(paymentInstructionRepository.saveAndFlush(any(PostalOrderPaymentInstruction.class)))
             .thenReturn(postalOrderPaymentInstructionMock);
@@ -190,24 +194,26 @@ public class PaymentInstructionServiceTest {
             .createPaymentInstruction(postalOrderPaymentInstructionMock);
         verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(postalOrderPaymentInstructionMock);
-        verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
         verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",postalOrderPaymentInstructionMock,barUserMock);
     }
 
     @Test
     public void shouldReturnPaymentInstruction_whenSavePaymentInstructionForGivenAllPayInstructionIsCalled()
         throws Exception {
-
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
+        when(barUserMock.getSiteId()).thenReturn("Y431");
         when(paymentReferenceService.getNextPaymentReferenceSequenceBySite(anyString()))
-            .thenReturn(paymentReferenceMock);
+           .thenReturn(paymentReferenceMock);
+        when(paymentReferenceMock.getDailySequenceId()).thenReturn(1);
         when(paymentInstructionRepository.saveAndFlush(any(AllPayPaymentInstruction.class)))
             .thenReturn(allpayPaymentInstructionMock);
         when(paymentInstructionRepository.saveAndRefresh(any(AllPayPaymentInstruction.class)))
             .thenReturn(paymentInstructionMock);
         when(paymentInstructionMock.getStatus()).thenReturn("status");
-        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
+
         PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
             .createPaymentInstruction(allpayPaymentInstructionMock);
+        verify(barUserServiceMock,times(1)).getBarUser();
         verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(allpayPaymentInstructionMock);
         verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
@@ -249,7 +255,7 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
-
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = PaymentInstructionSearchCriteriaDto
             .paymentInstructionSearchCriteriaDto().build();
 
@@ -265,7 +271,7 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
-
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
             .status("D").action("Suspense").startDate(LocalDate.now().atStartOfDay()).endDate(LocalDate.now().atTime(LocalTime.now()))
             .build();
@@ -282,7 +288,7 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
-
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
             .status("D").build();
 
@@ -298,7 +304,7 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
-
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
             .startDate(LocalDate.now().atStartOfDay()).build();
 
@@ -314,7 +320,7 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
-
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
             .endDate(LocalDate.now().atTime(LocalTime.now())).build();
 
@@ -330,7 +336,7 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
-
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
             .payerName("Mr Payer Payer").build();
 
@@ -346,7 +352,7 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
-
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
             .chequeNumber("000000").build();
 
@@ -363,7 +369,7 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
-
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
             .startDate(LocalDate.now().atStartOfDay()).endDate(LocalDate.now().atTime(LocalTime.now())).build();
 
@@ -379,7 +385,7 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
-
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
             .endDate(LocalDate.now().atTime(LocalTime.now())).build();
 
@@ -395,7 +401,7 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
-
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
             .startDate(LocalDate.now().atStartOfDay()).build();
 
@@ -411,7 +417,7 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
-
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
             .dailySequenceId(1).build();
 
@@ -512,7 +518,7 @@ public class PaymentInstructionServiceTest {
     }
 
     @Test
-    public void shouldReturn200andBgcUpdated_whenUpdatePostalInstructionWithBGCForGivenPaymentInstructionIsCalled() {
+    public void shouldReturn200andBgcUpdated_whenUpdatePostalInstructionWithBGCForGivenPaymentInstructionIsCalled() throws Exception {
         PaymentInstruction pi = new PostalOrderPaymentInstruction();
         PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
             .amount(200)
@@ -534,7 +540,7 @@ public class PaymentInstructionServiceTest {
     }
 
     @Test
-    public void shouldReturn200andBgcNotUpdated_whenUpdateCardPaymentInstructionWithBGCForGivenPaymentInstructionIsCalled(){
+    public void shouldReturn200andBgcNotUpdated_whenUpdateCardPaymentInstructionWithBGCForGivenPaymentInstructionIsCalled() throws Exception{
         PaymentInstruction pi = new CardPaymentInstruction();
         PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
             .amount(200)
@@ -612,7 +618,8 @@ public class PaymentInstructionServiceTest {
     }
 
     @Test
-    public void testGetAllPaymentInstructionsForPayhub() {
+    public void testGetAllPaymentInstructionsForPayhub() throws Exception {
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         when(payhubPaymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
             .thenReturn(payhubPiPageMock);
         when(payhubPiPageMock.iterator()).thenReturn(payhubPiIteratorMock);

@@ -17,9 +17,8 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import uk.gov.hmcts.bar.api.audit.AuditRepository;
-
+import uk.gov.hmcts.bar.api.auth.BarUserNotFoundException;
 import uk.gov.hmcts.bar.api.controllers.payment.PaymentInstructionController;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
@@ -37,7 +36,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
-
 @Service
 @Transactional
 public class PaymentInstructionService {
@@ -49,7 +47,6 @@ public class PaymentInstructionService {
 
     private static final List<String> GROUPED_TYPES = Arrays.asList("CHEQUE", "POSTAL_ORDER");
 
-    public static final String SITE_ID = "Y431";
     private static final int PAGE_NUMBER = 0;
     private static final int MAX_RECORDS_PER_PAGE = 200;
     private PaymentInstructionRepository paymentInstructionRepository;
@@ -85,12 +82,11 @@ public class PaymentInstructionService {
         this.auditRepository = auditRepository;
     }
 
-    public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction) {
+    public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction) throws BarUserNotFoundException{
         String userId = barUserService.getCurrentUserId();
-        Optional<BarUser> optBarUser = barUserService.getBarUser();
-        BarUser barUser = (optBarUser.isPresent())? optBarUser.get(): null;
-        PaymentReference nextPaymentReference = paymentReferenceService.getNextPaymentReferenceSequenceBySite(SITE_ID);
-        paymentInstruction.setSiteId(SITE_ID);
+        BarUser barUser = getBarUser();
+        PaymentReference nextPaymentReference = paymentReferenceService.getNextPaymentReferenceSequenceBySite(barUser.getSiteId());
+        paymentInstruction.setSiteId(barUser.getSiteId());
         paymentInstruction.setDailySequenceId(nextPaymentReference.getDailySequenceId());
         paymentInstruction.setStatus(PaymentStatusEnum.DRAFT.dbKey());
         paymentInstruction.setUserId(userId);
@@ -100,9 +96,9 @@ public class PaymentInstructionService {
         return savedPaymentInstruction;
     }
 
-    public List<PaymentInstruction> getAllPaymentInstructions(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto) {
-
-        paymentInstructionSearchCriteriaDto.setSiteId(SITE_ID);
+    public List<PaymentInstruction> getAllPaymentInstructions(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto) throws BarUserNotFoundException{
+        BarUser barUser = getBarUser();
+        paymentInstructionSearchCriteriaDto.setSiteId(barUser.getSiteId());
         PaymentInstructionsSpecifications<PaymentInstruction> paymentInstructionsSpecification = new PaymentInstructionsSpecifications<>(paymentInstructionSearchCriteriaDto,paymentTypeService);
         Sort sort = new Sort(Sort.Direction.DESC, "paymentDate");
         Pageable pageDetails = PageRequest.of(PAGE_NUMBER, MAX_RECORDS_PER_PAGE, sort);
@@ -117,11 +113,11 @@ public class PaymentInstructionService {
         return Lists.newArrayList(paymentInstructionRepository.findAll(piSpecification, pageDetails).iterator());
     }
 
-    public List<PayhubPaymentInstruction> getAllPaymentInstructionsForPayhub(
+    public List<PayhubPaymentInstruction> getAllPaymentInstructionsForPayhub (
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto
-    ) {
-
-        paymentInstructionSearchCriteriaDto.setSiteId(SITE_ID);
+    ) throws BarUserNotFoundException{
+        BarUser barUser = getBarUser();
+        paymentInstructionSearchCriteriaDto.setSiteId(barUser.getSiteId());
         PaymentInstructionsSpecifications<PayhubPaymentInstruction> paymentInstructionsSpecification =
             new PaymentInstructionsSpecifications<>(paymentInstructionSearchCriteriaDto, paymentTypeService);
 
@@ -164,8 +160,9 @@ public class PaymentInstructionService {
         return paymentInstruction;
     }
 
-    public PaymentInstruction updatePaymentInstruction(Integer id, PaymentInstructionRequest paymentInstructionRequest) {
+    public PaymentInstruction updatePaymentInstruction(Integer id, PaymentInstructionRequest paymentInstructionRequest) throws BarUserNotFoundException {
         String userId = barUserService.getCurrentUserId();
+        BarUser barUser = getBarUser();
         Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
         PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
             .orElseThrow(() -> new PaymentInstructionNotFoundException(id));
@@ -173,7 +170,7 @@ public class PaymentInstructionService {
         // handle bgc number
         if (paymentInstructionRequest.getBgcNumber() != null) {
             BankGiroCredit bgc = bankGiroCreditRepository.findByBgcNumber(paymentInstructionRequest.getBgcNumber())
-                .orElseGet(() -> bankGiroCreditRepository.save(new BankGiroCredit(paymentInstructionRequest.getBgcNumber(), SITE_ID)));
+                .orElseGet(() -> bankGiroCreditRepository.save(new BankGiroCredit(paymentInstructionRequest.getBgcNumber(),barUser.getSiteId())));
             existingPaymentInstruction.setBgcNumber(bgc.getBgcNumber());
         }
 
@@ -182,8 +179,6 @@ public class PaymentInstructionService {
         existingPaymentInstruction.setUserId(userId);
         savePaymentInstructionStatus(existingPaymentInstruction, userId);
         PaymentInstruction paymentInstruction = paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
-        Optional<BarUser> optBarUser = barUserService.getBarUser();
-        BarUser barUser = (optBarUser.isPresent())? optBarUser.get(): null;
         auditRepository.trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUser);
         return paymentInstruction;
     }
@@ -208,33 +203,45 @@ public class PaymentInstructionService {
         return Util.createMultimapFromPisByUserList(paymentInstructionStaticsByUserObjects);
     }
 
-    public MultiMap getPaymentStatsByUserGroupByType(String userId, String status, boolean sentToPayhub) {
+    public MultiMap getPaymentStatsByUserGroupByType(String userId, String status, boolean sentToPayhub)   {
         List<PaymentInstructionStats> results = paymentInstructionStatusRepository.getStatsByUserGroupByType(userId, status, sentToPayhub);
 
         MultiMap paymentInstructionStatsGroupedByBgc = new MultiValueMap();
-        results.stream().forEach(stat -> {
-            Link detailslink = linkTo(methodOn(PaymentInstructionController.class)
-                .getPaymentInstructionsByIdamId(userId, status,
-                    null, null, null, null, null,
-                    null, null, null, stat.getPaymentType(), null, null, stat.getBgc())
-            ).withRel(STAT_DETAILS);
+            results.stream().forEach(stat -> {
+                Link detailslink = null;
 
-            Resource<PaymentInstructionStats> resource = new Resource<>(stat, detailslink.expand());
+                try {
+                    detailslink = linkTo(methodOn(PaymentInstructionController.class)
+                        .getPaymentInstructionsByIdamId(userId, status,
+                            null, null, null, null, null,
+                            null, null, null, stat.getPaymentType(), null, null, stat.getBgc())
+                    ).withRel(STAT_DETAILS);
+                } catch (BarUserNotFoundException e) {
 
-            // TODO: this is just a temp solution we have to clarify with PO if we really need to group cheques and postal-orders
-            if (GROUPED_TYPES.contains(stat.getPaymentType())){
-                Link groupedLink = linkTo(methodOn(PaymentInstructionController.class)
-                    .getPaymentInstructionsByIdamId(userId, status,
-                        null, null, null, null, null,
-                        null, null, null,
-                        GROUPED_TYPES.stream().collect(Collectors.joining( "," )), null, null, stat.getBgc())
-                ).withRel(STAT_GROUP_DETAILS);
-                resource.add(groupedLink.expand());
-            }
+                }
 
-            paymentInstructionStatsGroupedByBgc.put(
-                stat.getBgc() == null ? "0" : stat.getBgc(), resource);
-        });
+
+                Resource<PaymentInstructionStats> resource = new Resource<>(stat, detailslink.expand());
+
+                // TODO: this is just a temp solution we have to clarify with PO if we really need to group cheques and postal-orders
+                if (GROUPED_TYPES.contains(stat.getPaymentType())) {
+                    Link groupedLink = null;
+                    try {
+                        groupedLink = linkTo(methodOn(PaymentInstructionController.class)
+                            .getPaymentInstructionsByIdamId(userId, status,
+                                null, null, null, null, null,
+                                null, null, null,
+                                GROUPED_TYPES.stream().collect(Collectors.joining(",")), null, null, stat.getBgc())
+                        ).withRel(STAT_GROUP_DETAILS);
+                    } catch (BarUserNotFoundException e) {
+
+                    }
+                    resource.add(groupedLink.expand());
+                }
+
+                paymentInstructionStatsGroupedByBgc.put(
+                    stat.getBgc() == null ? "0" : stat.getBgc(), resource);
+            });
         return paymentInstructionStatsGroupedByBgc;
     }
 
@@ -297,5 +304,11 @@ public class PaymentInstructionService {
             ret[0] = ff4j.check(paymentActionEnum.featureKey());
         });
         return ret[0];
+    }
+
+    private BarUser getBarUser() throws BarUserNotFoundException {
+        Optional<BarUser> optBarUser = barUserService.getBarUser();
+        BarUser barUser = optBarUser.orElseThrow(()-> new BarUserNotFoundException("Bar user not found"));
+        return barUser;
     }
 }

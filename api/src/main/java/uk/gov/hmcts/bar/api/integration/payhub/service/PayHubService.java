@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.bar.api.data.exceptions.BadRequestException;
+import uk.gov.hmcts.bar.api.auth.BarUserNotFoundException;
 import uk.gov.hmcts.bar.api.data.model.PayHubResponseReport;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionPayhubReference;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -75,7 +77,7 @@ public class PayHubService {
     }
 
     @PreAuthorize("hasAuthority(T(uk.gov.hmcts.bar.api.data.enums.BarUserRoleEnum).BAR_DELIVERY_MANAGER.getIdamRole())")
-    public PayHubResponseReport sendPaymentInstructionToPayHub(String userToken, LocalDateTime reportDate) {
+    public PayHubResponseReport sendPaymentInstructionToPayHub(String userToken, LocalDateTime reportDate) throws BarUserNotFoundException {
         validateReportDate(reportDate);
 
         PayHubResponseReport resp = new PayHubResponseReport();
@@ -126,7 +128,7 @@ public class PayHubService {
     }
 
 
-    private List<PayhubPaymentInstruction> collectPaymentInstructions() {
+    private List<PayhubPaymentInstruction> collectPaymentInstructions() throws BarUserNotFoundException {
         PaymentInstructionSearchCriteriaDto criteriaDto = new PaymentInstructionSearchCriteriaDto();
         criteriaDto.setStatus("TTB");
         criteriaDto.setTransferredToPayhub(false);
