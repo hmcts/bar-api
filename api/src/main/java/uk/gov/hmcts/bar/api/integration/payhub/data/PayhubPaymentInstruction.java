@@ -35,7 +35,7 @@ public class PayhubPaymentInstruction extends BasePaymentInstruction {
 
     @JsonProperty("amount")
     public BigDecimal getAmountAsDecimal() {
-        BigDecimal bd = new BigDecimal(getAmount()/100d);
+        BigDecimal bd = BigDecimal.valueOf(getAmount()).divide(BigDecimal.valueOf(100));
         bd = bd.setScale(2, RoundingMode.HALF_UP);
         return bd;
     }
