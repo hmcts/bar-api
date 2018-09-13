@@ -5,7 +5,7 @@
 
 This project provides REST based web services for exposing BAR related information for hearing fee and award fees.
 
-### Getting Started
+## Getting Started
 
 This is SpringBoot+maven based java application. Please see the Jenkinsfile in root folder to see the build and deployment pipeline.
 
