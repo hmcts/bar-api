@@ -723,3 +723,11 @@ databaseChangeLog:
           onUpdate: CASCADE
           referencedColumnNames: site_id
           referencedTableName: sites
+
+  - changeSet:
+      id: 29
+      author: akiss
+      changes:
+        - sql: >
+            insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('send-to-payhub', 0, 'Send payment instructions to PayHub');
+

@@ -27,6 +27,7 @@ public class PayhubIntegrationTest extends ComponentTestBase {
     @Before
     public void setUp() throws SQLException {
         super.setUp();
+        DbTestUtil.toggleSendToPayhub(getWebApplicationContext(), true);
         wireMockRule.stubFor(post(urlPathMatching("/lease"))
             .willReturn(aResponse()
                 .withStatus(200)
@@ -84,5 +85,18 @@ public class PayhubIntegrationTest extends ComponentTestBase {
         restActions
             .get("/payment-instructions/send-to-payhub/")
             .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testSendPaymentInstrucitonWhenFeatureIsOff() throws Exception {
+        DbTestUtil.toggleSendToPayhub(getWebApplicationContext(), false);
+        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
+        restActionsForDM
+            .get("/payment-instructions/send-to-payhub/")
+            .andExpect(status().isBadRequest())
+            .andExpect(body().as(Map.class, resp -> {
+                Assert.assertEquals("This function is temporarily unavailable.\n" +
+                    "Please contact support.", resp.get("message"));
+            }));
     }
 }

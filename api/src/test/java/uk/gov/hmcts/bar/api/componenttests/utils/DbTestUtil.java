@@ -164,5 +164,12 @@ public final class DbTestUtil {
             stmt.executeQuery("truncate table " + tableName);
         }
     }
+
+    public static void toggleSendToPayhub(ApplicationContext applicationContext, boolean enabled) throws SQLException {
+        DataSource dataSource = applicationContext.getBean(DataSource.class);
+        try (Connection dbConnection = dataSource.getConnection();Statement stmt = dbConnection.createStatement()) {
+            stmt.executeQuery("update ff4j_features set enable = " + (enabled ? 1 : 0) + " where feat_uid = 'send-to-payhub';");
+        }
+    }
 }
 
