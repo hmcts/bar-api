@@ -211,15 +211,13 @@ public class PaymentInstructionService {
         results.stream().forEach(stat -> {
             Link detailslink = null;
 
-            try {
+
                 detailslink = linkTo(methodOn(PaymentInstructionController.class)
                     .getPaymentInstructionsByIdamId(userId, status,
                         null, null, null, null, null,
                         null, null, null, stat.getPaymentType(), null, null, stat.getBgc())
                 ).withRel(STAT_DETAILS);
-            } catch (BarUserNotFoundException e) {
 
-            }
 
 
             Resource<PaymentInstructionStats> resource = new Resource<>(stat, detailslink.expand());
@@ -227,16 +225,14 @@ public class PaymentInstructionService {
             // TODO: this is just a temp solution we have to clarify with PO if we really need to group cheques and postal-orders
             if (GROUPED_TYPES.contains(stat.getPaymentType())) {
                 Link groupedLink = null;
-                try {
+
                     groupedLink = linkTo(methodOn(PaymentInstructionController.class)
                         .getPaymentInstructionsByIdamId(userId, status,
                             null, null, null, null, null,
                             null, null, null,
                             GROUPED_TYPES.stream().collect(Collectors.joining(",")), null, null, stat.getBgc())
                     ).withRel(STAT_GROUP_DETAILS);
-                } catch (BarUserNotFoundException e) {
 
-                }
                 resource.add(groupedLink.expand());
             }
 

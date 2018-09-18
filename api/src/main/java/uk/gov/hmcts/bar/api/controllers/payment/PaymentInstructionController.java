@@ -17,7 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
-import uk.gov.hmcts.bar.api.data.exceptions.BarUserNotFoundException;
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.service.BarUserService;
 import uk.gov.hmcts.bar.api.data.service.CaseFeeDetailService;
@@ -86,7 +85,7 @@ public class PaymentInstructionController {
         @RequestParam(name = "allPayInstructionId", required = false) String allPayInstructionId,
         @RequestParam(name = "caseReference", required = false) String caseReference,
         @RequestParam(name = "paymentType", required = false) String paymentType,
-        @RequestParam(name = "action", required = false) String action) throws BarUserNotFoundException{
+        @RequestParam(name = "action", required = false) String action) {
         List<PaymentInstruction> paymentInstructionList = null;
 
         if (checkAcceptHeaderForCsv(headers)){
@@ -123,7 +122,7 @@ public class PaymentInstructionController {
         @RequestParam(name = "paymentType", required = false) String paymentType,
         @RequestParam(name = "action", required = false) String action,
         @RequestParam(name = "piIds", required = false) String piIds,
-        @RequestParam(name = "bgcNumber", required = false) String bgcNumber) throws BarUserNotFoundException {
+        @RequestParam(name = "bgcNumber", required = false) String bgcNumber)  {
 
         List<PaymentInstruction> paymentInstructionList = null;
 
@@ -169,7 +168,7 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/cards")
     public PaymentInstruction saveCardInstruction(
-        @Valid @RequestBody Card card) throws BarUserNotFoundException {
+        @Valid @RequestBody Card card)  {
         CardPaymentInstruction cardPaymentInstruction = CardPaymentInstruction.cardPaymentInstructionWith()
             .payerName(card.getPayerName())
             .amount(card.getAmount())
@@ -186,7 +185,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/cards/{id}")
-    public ResponseEntity<Void> updateCardInstruction(@PathVariable("id") Integer id , @ApiParam(value="Card request",required=true) @Valid @RequestBody Card card) throws BarUserNotFoundException {
+    public ResponseEntity<Void> updateCardInstruction(@PathVariable("id") Integer id , @ApiParam(value="Card request",required=true) @Valid @RequestBody Card card)  {
         paymentInstructionService.updatePaymentInstruction(id,card);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -200,7 +199,7 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/cheques")
     public PaymentInstruction saveChequeInstruction(
-        @Valid @RequestBody Cheque cheque) throws BarUserNotFoundException {
+        @Valid @RequestBody Cheque cheque)  {
         ChequePaymentInstruction chequePaymentInstruction = ChequePaymentInstruction.chequePaymentInstructionWith()
             .payerName(cheque.getPayerName())
             .amount(cheque.getAmount())
@@ -216,7 +215,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/cheques/{id}")
-    public ResponseEntity<Void> updateChequeInstruction(@PathVariable("id") Integer id , @ApiParam(value="Cheque request",required=true) @Valid @RequestBody Cheque cheque) throws BarUserNotFoundException {
+    public ResponseEntity<Void> updateChequeInstruction(@PathVariable("id") Integer id , @ApiParam(value="Cheque request",required=true) @Valid @RequestBody Cheque cheque)  {
         paymentInstructionService.updatePaymentInstruction(id,cheque);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -227,7 +226,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/payment-instructions/{id}/reject")
-	public ResponseEntity<Void> rejectPaymentInstruction(@PathVariable("id") Integer id) throws BarUserNotFoundException {
+	public ResponseEntity<Void> rejectPaymentInstruction(@PathVariable("id") Integer id)  {
 		Optional<BarUser> userOptional = barUserService.getBarUser();
 		BarUser user = null;
 		if (userOptional.isPresent()) {
@@ -254,7 +253,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/cash")
-    public PaymentInstruction saveCashInstruction(@ApiParam(value="Cash request",required=true) @Valid @RequestBody Cash cash) throws BarUserNotFoundException {
+    public PaymentInstruction saveCashInstruction(@ApiParam(value="Cash request",required=true) @Valid @RequestBody Cash cash) {
         CashPaymentInstruction cashPaymentInstruction = CashPaymentInstruction.cashPaymentInstructionWith()
             .payerName(cash.getPayerName())
             .amount(cash.getAmount())
@@ -270,7 +269,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/cash/{id}")
-    public ResponseEntity<Void> updateCashInstruction(@PathVariable("id") Integer id , @ApiParam(value="Cash request",required=true) @Valid @RequestBody Cash cash) throws BarUserNotFoundException {
+    public ResponseEntity<Void> updateCashInstruction(@PathVariable("id") Integer id , @ApiParam(value="Cash request",required=true) @Valid @RequestBody Cash cash)  {
         paymentInstructionService.updatePaymentInstruction(id,cash);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -285,7 +284,7 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/postal-orders")
     public PaymentInstruction savePostalOrderInstruction(
-        @ApiParam(value="Postal Order request",required=true) @Valid @RequestBody PostalOrder postalOrder) throws BarUserNotFoundException {
+        @ApiParam(value="Postal Order request",required=true) @Valid @RequestBody PostalOrder postalOrder) {
         PostalOrderPaymentInstruction postalOrderPaymentInstruction = PostalOrderPaymentInstruction.postalOrderPaymentInstructionWith()
             .payerName(postalOrder.getPayerName())
             .amount(postalOrder.getAmount())
@@ -301,7 +300,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/postal-orders/{id}")
-    public ResponseEntity<Void> updatePostalOrderInstruction(@PathVariable("id") Integer id , @ApiParam(value="Postal order request",required=true) @Valid @RequestBody PostalOrder postalOrder) throws BarUserNotFoundException {
+    public ResponseEntity<Void> updatePostalOrderInstruction(@PathVariable("id") Integer id , @ApiParam(value="Postal order request",required=true) @Valid @RequestBody PostalOrder postalOrder)  {
         paymentInstructionService.updatePaymentInstruction(id,postalOrder);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -315,7 +314,7 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/allpay")
     public PaymentInstruction saveAllPayInstruction(
-        @ApiParam(value="All Pay request", required=true) @Valid @RequestBody AllPay allPay) throws BarUserNotFoundException {
+        @ApiParam(value="All Pay request", required=true) @Valid @RequestBody AllPay allPay)  {
         AllPayPaymentInstruction allPayPaymentInstruction = AllPayPaymentInstruction.allPayPaymentInstructionWith()
             .payerName(allPay.getPayerName())
             .amount(allPay.getAmount())
@@ -331,7 +330,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/allpay/{id}")
-    public ResponseEntity<Void> updateAllPayInstruction(@PathVariable("id") Integer id , @ApiParam(value="Allpay request",required=true) @Valid @RequestBody AllPay allpay) throws BarUserNotFoundException {
+    public ResponseEntity<Void> updateAllPayInstruction(@PathVariable("id") Integer id , @ApiParam(value="Allpay request",required=true) @Valid @RequestBody AllPay allpay)  {
         paymentInstructionService.updatePaymentInstruction(id,allpay);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -440,7 +439,7 @@ public class PaymentInstructionController {
     @GetMapping({"/payment-instructions/send-to-payhub", "/payment-instructions/send-to-payhub/{timestamp}"})
 	public ResponseEntity<PayHubResponseReport> sendToPayHub(@RequestHeader HttpHeaders headers,
                                                              @PathVariable(name = "timestamp", required = false)
-                                                             Optional<Long> reportTimestamp) throws BarUserNotFoundException {
+                                                             Optional<Long> reportTimestamp)  {
         String bearerToken = headers.getFirst(UserRequestAuthorizer.AUTHORISATION);
         LocalDateTime reportDate;
         if (!reportTimestamp.isPresent()) {
