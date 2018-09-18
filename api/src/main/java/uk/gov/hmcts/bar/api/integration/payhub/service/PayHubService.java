@@ -91,6 +91,7 @@ public class PayHubService {
         ObjectMapper objectMapper = new ObjectMapper();
         resp.setTotal(payloads.size());
         payloads.forEach(payHubPayload -> {
+            payHubPayload.setReportDate(reportDate);
             HttpPost httpPost = new HttpPost(payHubUrl + "/payment-records");
             httpPost.setHeader("Content-type", "application/json");
             httpPost.setHeader("Authorization", userToken);
