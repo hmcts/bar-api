@@ -108,7 +108,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/users/{id}/payment-instructions")
-    public List<PaymentInstruction> getPaymentInstructionsByIdamId(
+    public List<PaymentInstruction> getPaymentInstructionsByIdamId (
         @PathVariable("id") String id,
         @RequestParam(name = "status", required = false) String status,
         @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
@@ -122,7 +122,7 @@ public class PaymentInstructionController {
         @RequestParam(name = "paymentType", required = false) String paymentType,
         @RequestParam(name = "action", required = false) String action,
         @RequestParam(name = "piIds", required = false) String piIds,
-        @RequestParam(name = "bgcNumber", required = false) String bgcNumber) {
+        @RequestParam(name = "bgcNumber", required = false) String bgcNumber)  {
 
         List<PaymentInstruction> paymentInstructionList = null;
 
@@ -168,7 +168,7 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/cards")
     public PaymentInstruction saveCardInstruction(
-        @Valid @RequestBody Card card) {
+        @Valid @RequestBody Card card)  {
         CardPaymentInstruction cardPaymentInstruction = CardPaymentInstruction.cardPaymentInstructionWith()
             .payerName(card.getPayerName())
             .amount(card.getAmount())
@@ -185,7 +185,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/cards/{id}")
-    public ResponseEntity<Void> updateCardInstruction(@PathVariable("id") Integer id , @ApiParam(value="Card request",required=true) @Valid @RequestBody Card card) {
+    public ResponseEntity<Void> updateCardInstruction(@PathVariable("id") Integer id , @ApiParam(value="Card request",required=true) @Valid @RequestBody Card card)  {
         paymentInstructionService.updatePaymentInstruction(id,card);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -199,7 +199,7 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/cheques")
     public PaymentInstruction saveChequeInstruction(
-        @Valid @RequestBody Cheque cheque) {
+        @Valid @RequestBody Cheque cheque)  {
         ChequePaymentInstruction chequePaymentInstruction = ChequePaymentInstruction.chequePaymentInstructionWith()
             .payerName(cheque.getPayerName())
             .amount(cheque.getAmount())
@@ -215,7 +215,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/cheques/{id}")
-    public ResponseEntity<Void> updateChequeInstruction(@PathVariable("id") Integer id , @ApiParam(value="Cheque request",required=true) @Valid @RequestBody Cheque cheque) {
+    public ResponseEntity<Void> updateChequeInstruction(@PathVariable("id") Integer id , @ApiParam(value="Cheque request",required=true) @Valid @RequestBody Cheque cheque)  {
         paymentInstructionService.updatePaymentInstruction(id,cheque);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -226,7 +226,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/payment-instructions/{id}/reject")
-	public ResponseEntity<Void> rejectPaymentInstruction(@PathVariable("id") Integer id) {
+	public ResponseEntity<Void> rejectPaymentInstruction(@PathVariable("id") Integer id)  {
 		Optional<BarUser> userOptional = barUserService.getBarUser();
 		BarUser user = null;
 		if (userOptional.isPresent()) {
@@ -269,7 +269,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/cash/{id}")
-    public ResponseEntity<Void> updateCashInstruction(@PathVariable("id") Integer id , @ApiParam(value="Cash request",required=true) @Valid @RequestBody Cash cash) {
+    public ResponseEntity<Void> updateCashInstruction(@PathVariable("id") Integer id , @ApiParam(value="Cash request",required=true) @Valid @RequestBody Cash cash)  {
         paymentInstructionService.updatePaymentInstruction(id,cash);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -300,7 +300,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/postal-orders/{id}")
-    public ResponseEntity<Void> updatePostalOrderInstruction(@PathVariable("id") Integer id , @ApiParam(value="Postal order request",required=true) @Valid @RequestBody PostalOrder postalOrder) {
+    public ResponseEntity<Void> updatePostalOrderInstruction(@PathVariable("id") Integer id , @ApiParam(value="Postal order request",required=true) @Valid @RequestBody PostalOrder postalOrder)  {
         paymentInstructionService.updatePaymentInstruction(id,postalOrder);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -314,7 +314,7 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/allpay")
     public PaymentInstruction saveAllPayInstruction(
-        @ApiParam(value="All Pay request", required=true) @Valid @RequestBody AllPay allPay) {
+        @ApiParam(value="All Pay request", required=true) @Valid @RequestBody AllPay allPay)  {
         AllPayPaymentInstruction allPayPaymentInstruction = AllPayPaymentInstruction.allPayPaymentInstructionWith()
             .payerName(allPay.getPayerName())
             .amount(allPay.getAmount())
@@ -330,7 +330,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/allpay/{id}")
-    public ResponseEntity<Void> updateAllPayInstruction(@PathVariable("id") Integer id , @ApiParam(value="Allpay request",required=true) @Valid @RequestBody AllPay allpay) {
+    public ResponseEntity<Void> updateAllPayInstruction(@PathVariable("id") Integer id , @ApiParam(value="Allpay request",required=true) @Valid @RequestBody AllPay allpay)  {
         paymentInstructionService.updatePaymentInstruction(id,allpay);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -439,7 +439,7 @@ public class PaymentInstructionController {
     @GetMapping({"/payment-instructions/send-to-payhub", "/payment-instructions/send-to-payhub/{timestamp}"})
 	public ResponseEntity<PayHubResponseReport> sendToPayHub(@RequestHeader HttpHeaders headers,
                                                              @PathVariable(name = "timestamp", required = false)
-                                                             Optional<Long> reportTimestamp) {
+                                                             Optional<Long> reportTimestamp)  {
         String bearerToken = headers.getFirst(UserRequestAuthorizer.AUTHORISATION);
         LocalDateTime reportDate;
         if (!reportTimestamp.isPresent()) {

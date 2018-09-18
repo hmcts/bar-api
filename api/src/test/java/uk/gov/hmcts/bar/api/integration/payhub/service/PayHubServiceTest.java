@@ -92,7 +92,7 @@ public class PayHubServiceTest {
     }
 
     @Test
-    public void testSendValidRequestToPayHub() throws IOException {
+    public void testSendValidRequestToPayHub() throws Exception {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> {
@@ -118,7 +118,7 @@ public class PayHubServiceTest {
     }
 
     @Test
-    public void testUpdatePaymentInstructionWhenFailedResponseReceived() throws IOException {
+    public void testUpdatePaymentInstructionWhenFailedResponseReceived() throws Exception {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(403, "{\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}"));
@@ -134,7 +134,7 @@ public class PayHubServiceTest {
     }
 
     @Test
-    public void testUpdatePaymentInstructionWhenSendingMessageThrowsException() throws IOException {
+    public void testUpdatePaymentInstructionWhenSendingMessageThrowsException() throws Exception {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenThrow(new RuntimeException("something went wrong"));
@@ -148,7 +148,7 @@ public class PayHubServiceTest {
     }
 
     @Test
-    public void testWhenReceivedInvalidResponseFromPayhub() throws IOException {
+    public void testWhenReceivedInvalidResponseFromPayhub() throws Exception {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(200, "{ \"somekey\" : \"somevalue\" }"));
@@ -162,7 +162,7 @@ public class PayHubServiceTest {
     }
 
     @Test
-    public void testWhenReceivedUnParsableResponseFromPayhub() throws IOException {
+    public void testWhenReceivedUnParsableResponseFromPayhub() throws Exception {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(200, "some unparsable message"));
@@ -177,7 +177,7 @@ public class PayHubServiceTest {
     }
 
     @Test
-    public void testTooLongErrorMessage() throws IOException {
+    public void testTooLongErrorMessage() throws Exception {
         String tooLongErrorMessage = "yIggqcYno1d1QgDtY8oCfaaFCX808SOwkvO3SBOiwpsfaG5FdysyrTX0RgI1XYlB35BANX6iqFFxavccLhMHQ1" +
             "RvNT3covgG3yhKTF1rOh0DYthzawjAYmswJb2Ty2MYX4861G2fLRuMNR6uHcHgjPCPZdLXW0Q5iiweiIoCaVmn0ac6mnlnKfqC9HF5Vs" +
             "8Ww82tE6kJ0Sh5CARelpj6exYbPHdSKcOlkOLaZZYW91ZjRHoxA5Vxn0tMPkIKbgak8frLeTnXVILRBiilmPO5W0aZXfiyC1F3w2KcMc" +
@@ -214,7 +214,7 @@ public class PayHubServiceTest {
     }
 
     @Test(expected = BadRequestException.class)
-    public void testInvalidTimeStamp() throws IOException {
+    public void testInvalidTimeStamp() throws Exception {
         LocalDateTime reportDate = LocalDate.now().plusDays(3).atTime(20, 20);
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
