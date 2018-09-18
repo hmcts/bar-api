@@ -59,7 +59,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
             .andExpect(status().isOk());
 
         LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter actualFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
+        DateTimeFormatter actualFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH");
         String recordedDateTime = currentDateTime.format(actualFormatter);
         LocalDate currentDate = LocalDate.now();
         String paymentDate = currentDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
@@ -135,7 +135,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
             .andExpect(status().isOk()).andReturn().getResponse();
 
         LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter actualFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        DateTimeFormatter actualFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH");
         String recordedDateTime = currentDateTime.format(actualFormatter);
         LocalDate currentDate = LocalDate.now();
         String paymentDate = currentDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
@@ -203,7 +203,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
             .andExpect(status().isOk()).andReturn().getResponse();
 
         LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter actualFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
+        DateTimeFormatter actualFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH");
         String recordedDateTime = currentDateTime.format(actualFormatter);
         LocalDate currentDate = LocalDate.now();
         String paymentDate = currentDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
@@ -273,7 +273,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
             .andExpect(status().isOk()).andReturn().getResponse();
 
         LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter actualFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
+        DateTimeFormatter actualFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH");
         String recordedDateTime = currentDateTime.format(actualFormatter);
         LocalDate currentDate = LocalDate.now();
         String paymentDate = currentDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
