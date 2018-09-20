@@ -624,6 +624,41 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
     }
 
+    @Test
+    public void givenPostalOrderPIsSubmitted_getTheirCount() throws Exception {
+        PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(533)
+            .currency("GBP").status("D")
+            .postalOrderNumber("000000").build();
+
+        PostalOrder validatedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(533)
+            .currency("GBP").status("V")
+            .postalOrderNumber("000000").build();
+
+        PostalOrder submittedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(533)
+            .currency("GBP").status("PA")
+            .postalOrderNumber("000000").build();
+
+
+        restActions
+            .post("/postal-orders", proposedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+        restActions
+            .put("/postal-orders/1", validatedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isOk());
+        restActions
+            .put("/postal-orders/1", submittedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+        restActionsForFeeClerk.get("/users/1234/payment-instructions/status-count?status=PA").andExpect(status().isOk())
+            .andExpect(body().isEqualTo(1));
+    }
+
 
 }
 

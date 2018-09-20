@@ -58,4 +58,9 @@ public interface PaymentInstructionStatusRepository
         + "pis.bar_user_id = bu.id and pis.bar_user_id = :userId GROUP BY pi.bgc_number, pi.payment_type_id, pi.status, pi.user_id order by pi.bgc_number", nativeQuery = true)
     List<PaymentInstructionStats> getRejectedStatsByUserGroupByType(@Param("userId") String userId, @Param("currentStatus") String currentStatus, @Param("oldStatus") String oldStatus);
 
+
+    @Query(name = "PIStatusCountByUser",value = "SELECT count(payment_instruction_id) as count from payment_instruction_status  where status = :status AND bar_user_id = :userId  "
+        + " AND update_time > :startDate", nativeQuery = true)
+    int getStatusCountByUser(@Param("userId") String userId, @Param("status") String status, @Param("startDate") LocalDateTime startDate);
+
 }
