@@ -70,7 +70,7 @@ public class PayhubPaymentInstruction extends BasePaymentInstruction {
         if (this.getPaymentType().getId().equals("CARD")){
             return EXTERNAL_PROVIDER;
         } else {
-            return "";
+            return null;
         }
     }
 
