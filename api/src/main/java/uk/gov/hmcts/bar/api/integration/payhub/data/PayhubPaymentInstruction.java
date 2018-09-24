@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.bar.api.data.model.BasePaymentInstruction;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -16,7 +18,7 @@ import java.util.List;
 @Table(name = "payment_instruction")
 @JsonIgnoreProperties({"bgc_number", "id", "payer_name", "status", "action", "payment_date", "daily_sequence_id",
     "authorization_code", "transferred_to_payhub", "payment_type", "authorization_code", "cheque_number",
-    "postal_order_number", "all_pay_transaction_id", "transfer_date", "payhub_error"})
+    "postal_order_number", "all_pay_transaction_id", "transfer_date", "payhub_error", "report_date"})
 public class PayhubPaymentInstruction extends BasePaymentInstruction {
 
     public static final String SERVICE = "DIGITAL_BAR";
@@ -29,6 +31,13 @@ public class PayhubPaymentInstruction extends BasePaymentInstruction {
 
     public PayhubPaymentInstruction(String payerName, Integer amount, String currency, String status) {
         super(payerName, amount, currency, status);
+    }
+
+    @JsonProperty("amount")
+    public BigDecimal getAmountAsDecimal() {
+        BigDecimal bd = BigDecimal.valueOf(getAmount()).divide(BigDecimal.valueOf(100));
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
+        return bd;
     }
 
     @JsonProperty("payment_method")
@@ -58,13 +67,22 @@ public class PayhubPaymentInstruction extends BasePaymentInstruction {
 
     @JsonProperty("external_provider")
     public String getExternalProvider() {
-        return EXTERNAL_PROVIDER;
+        if (this.getPaymentType().getId().equals("CARD")){
+            return EXTERNAL_PROVIDER;
+        } else {
+            return null;
+        }
     }
 
     @Override
     @JsonProperty("giro_slip_no")
     public String getBgcNumber() {
         return convertNullToEmpty(super.getBgcNumber());
+    }
+
+    @JsonProperty("reported_date_offline")
+    public String getReportDateAsStr() {
+        return getReportDate().format(DateTimeFormatter.ISO_DATE_TIME);
     }
 
     private String convertNullToEmpty(String value) {
