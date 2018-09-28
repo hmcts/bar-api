@@ -24,6 +24,7 @@ import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -693,4 +694,13 @@ public class PaymentInstructionServiceTest {
         assertTrue(pishMap.isEmpty());
     }
 
+
+    @Test
+    public void shouldReturnStatusCount_whenGetStatusCountByUserIsCalled() {
+        LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT);
+        when(paymentInstructionStatusRepositoryMock.getStatusCountByUser("1234","PA", startOfDay)).thenReturn(1);
+        int statusCount = paymentInstructionServiceMock
+            .getStatusCountByUser("1234","PA");
+        assertEquals(1,statusCount);
+    }
 }

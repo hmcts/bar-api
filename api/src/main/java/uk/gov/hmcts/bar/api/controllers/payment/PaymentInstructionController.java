@@ -431,6 +431,19 @@ public class PaymentInstructionController {
         return result;
     }
 
+    @ApiOperation(value = "collect status counts for a user", notes = "Collect all payment instruction status counts for a user ")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return status counts for a given user"),
+        @ApiResponse(code = 400, message = "Bad request"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/users/{id}/payment-instructions/status-count")
+    public int getPaymentInstructionStatusCountsByUser(
+        @PathVariable("id") String id,
+        @RequestParam(name = "status") String status) {
+        int statusCount = paymentInstructionService.getStatusCountByUser(id,status);
+        return statusCount;
+    }
+
     @ApiOperation(value = "Send to payhub", notes = "Send all payment-instructions with TTB status to payhub")
     @ApiResponses(value = {@ApiResponse(code = 200, message = ""),
         @ApiResponse(code = 400, message = "Bad request"),

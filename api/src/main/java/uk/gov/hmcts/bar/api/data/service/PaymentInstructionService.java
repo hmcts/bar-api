@@ -29,6 +29,8 @@ import uk.gov.hmcts.bar.api.data.utils.Util;
 import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -194,6 +196,12 @@ public class PaymentInstructionService {
             .getPaymentInstructionsByStatusGroupedByUser(status,sentToPayhub);
 
         return Util.createMultimapFromList(paymentInstructionInStatusList);
+    }
+
+    public int getStatusCountByUser(String userId,String status){
+        LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT);
+        int statusCount = paymentInstructionStatusRepository.getStatusCountByUser(userId,status, startOfDay);
+        return statusCount;
     }
 
     public MultiMap getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(String currentStatus,
