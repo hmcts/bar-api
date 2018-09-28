@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.mockito.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.hateoas.Resource;
 import uk.gov.hmcts.bar.api.audit.AuditRepository;
@@ -109,6 +110,8 @@ public class PaymentInstructionServiceTest {
 
     private PaymentInstructionSearchCriteriaDtoBuilder paymentInstructionSearchCriteriaDtoBuilder;
 
+    private PaymentInstructionStatusCriteriaDto.PaymentInstructionStatusCriteriaDtoBuilder paymentInstructionStatusCriteriaDtoBuilder;
+
     private PaymentTypeService paymentTypeService;
 
     @Before
@@ -126,6 +129,7 @@ public class PaymentInstructionServiceTest {
             auditRepository);
         paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto()
             .siteId("Y431");
+        paymentInstructionStatusCriteriaDtoBuilder = PaymentInstructionStatusCriteriaDto.paymentInstructionStatusCriteriaDto();
         paymentInstructionStatusReferenceKey = new PaymentInstructionStatusReferenceKey(0, "status");
         paymentInstructionStatus = new PaymentInstructionStatus(paymentInstructionStatusReferenceKey, null);
     }
@@ -692,5 +696,19 @@ public class PaymentInstructionServiceTest {
             .getStatusHistoryMapForTTB(LocalDate.now(), LocalDate.now().minusDays(1));
         assertTrue(pishMap.isEmpty());
     }
+
+    @Test
+    public void shouldReturnPICount_whenGetPICountIsCalled() {
+
+        when(paymentInstructionStatusRepositoryMock.count(Mockito.any(Specification.class)))
+            .thenReturn(1L);
+        PaymentInstructionStatusCriteriaDto paymentInstructionStatusCriteriaDto = paymentInstructionStatusCriteriaDtoBuilder
+            .status("PA").build();
+
+        long count = paymentInstructionService
+            .getPaymentInstructionsCount(paymentInstructionStatusCriteriaDto);
+        assertEquals(1, count);
+    }
+
 
 }

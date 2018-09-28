@@ -1,5 +1,19 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONParser;
+import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
+import uk.gov.hmcts.bar.api.data.model.Cash;
+import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -8,19 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.bar.api.data.model.Cash.cashPaymentInstructionRequestWith;
 import static uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction.cashPaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith;
-
-import java.util.List;
-import java.util.Map;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.skyscreamer.jsonassert.JSONParser;
-
-import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
-import uk.gov.hmcts.bar.api.data.model.Cash;
-import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 
 public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
@@ -544,5 +545,40 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 					assertThat(cashPayList.get(1).equals(retrievedCashPaymentInstruction2));
 				}));
 	}
+
+    @Test
+    public void givenCashPIsSubmitted_getTheirCount() throws Exception {
+        Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP").status("D").build();
+
+        Cash  validatedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP").status("V").build();
+
+        Cash  submittedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP").status("PA").build();
+
+        restActions
+            .post("/cash",  proposedCashPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+        restActions
+            .put("/cash/1", validatedCashPaymentInstructionRequest)
+            .andExpect(status().isOk());
+        restActions
+            .put("/cash/1", submittedCashPaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("ddMMyyyy");
+        String startDate = LocalDate.now().format(dtf);
+        String endDate = LocalDate.now().format(dtf);
+        restActionsForFeeClerk.get("/payment-instructions/count?status=PA&userId=1234&startDate="+startDate+"&endDate="+endDate).andExpect(status().isOk())
+            .andExpect(body().isEqualTo(1));
+    }
+
 
 }
