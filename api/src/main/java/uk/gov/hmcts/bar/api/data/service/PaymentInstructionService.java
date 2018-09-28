@@ -114,6 +114,13 @@ public class PaymentInstructionService {
         return Lists.newArrayList(paymentInstructionRepository.findAll(piSpecification, pageDetails).iterator());
     }
 
+    public long getPaymentInstructionsCount(PaymentInstructionStatusCriteriaDto paymentInstructionStatusCriteriaDto) {
+        PaymentInstructionStatusSpecifications<PaymentInstructionStatus> paymentInstructionStatusSpecification = new PaymentInstructionStatusSpecifications(paymentInstructionStatusCriteriaDto);
+        Specification<PaymentInstructionStatus>  pisSpecification = paymentInstructionStatusSpecification.getPaymentInstructionStatusSpecification();
+        return paymentInstructionStatusRepository.count(pisSpecification);
+
+    }
+
     public List<PayhubPaymentInstruction> getAllPaymentInstructionsForPayhub(
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto
     ) throws BarUserNotFoundException {

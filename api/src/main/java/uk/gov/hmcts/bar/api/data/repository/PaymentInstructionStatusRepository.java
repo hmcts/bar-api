@@ -1,5 +1,6 @@
 package uk.gov.hmcts.bar.api.data.repository;
 
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,7 +14,7 @@ import java.util.Optional;
 
 @Repository
 public interface PaymentInstructionStatusRepository
-    extends BaseRepository<PaymentInstructionStatus, PaymentInstructionStatusReferenceKey> {
+    extends BaseRepository<PaymentInstructionStatus, PaymentInstructionStatusReferenceKey>, JpaSpecificationExecutor<PaymentInstructionStatus> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<PaymentInstructionStatus> findByPaymentInstructionStatusReferenceKey(

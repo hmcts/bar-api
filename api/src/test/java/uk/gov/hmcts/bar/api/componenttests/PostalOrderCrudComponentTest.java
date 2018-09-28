@@ -10,6 +10,8 @@ import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 import uk.gov.hmcts.bar.api.data.model.PostalOrder;
 import uk.gov.hmcts.bar.api.data.model.PostalOrderPaymentInstruction;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -622,6 +624,45 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
         assertEquals(deliveryManager.get("count_of_payment_instruction_in_specified_status"), 1);
 
+    }
+
+
+    @Test
+    public void givenPostalOrderPIsSubmitted_getTheirCount() throws Exception {
+        PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(533)
+            .currency("GBP").status("D")
+            .postalOrderNumber("000000").build();
+
+        PostalOrder validatedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(533)
+            .currency("GBP").status("V")
+            .postalOrderNumber("000000").build();
+
+        PostalOrder submittedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(533)
+            .currency("GBP").status("PA")
+            .postalOrderNumber("000000").build();
+
+
+        restActions
+            .post("/postal-orders", proposedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+        restActions
+            .put("/postal-orders/1", validatedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isOk());
+        restActions
+            .put("/postal-orders/1", submittedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("ddMMyyyy");
+        String startDate = LocalDate.now().format(dtf);
+        String endDate = LocalDate.now().format(dtf);
+        restActionsForFeeClerk.get("/payment-instructions/count?status=PA&userId=1234&startDate="+startDate+"&endDate="+endDate).andExpect(status().isOk())
+            .andExpect(body().isEqualTo(1));
     }
 
 

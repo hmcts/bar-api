@@ -1,29 +1,24 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONParser;
+import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
+import uk.gov.hmcts.bar.api.data.model.*;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.bar.api.data.model.AllPay.allPayPaymentInstructionRequestWith;
 import static uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction.allPayPaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith;
-
-import java.util.List;
-import java.util.Map;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.skyscreamer.jsonassert.JSONParser;
-
-import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
-import uk.gov.hmcts.bar.api.data.model.AllPay;
-import uk.gov.hmcts.bar.api.data.model.AllPayPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
-import uk.gov.hmcts.bar.api.data.model.Cash;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 
 public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
@@ -650,5 +645,49 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 					assertThat(allPayList.get(1).equals(retrievedAllPayPaymentInstruction2));
 				}));
 	}
+    @Test
+    public void givenAllPayPIsSubmitted_getTheirCount() throws Exception {
+        AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .status("D")
+            .allPayTransactionId("12345").build();
+
+        AllPayPaymentInstruction validatedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .status("V")
+            .allPayTransactionId("12345").build();
+
+
+        AllPayPaymentInstruction submittedAllPayPaymentInstruction = allPayPaymentInstructionWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .status("PA")
+            .allPayTransactionId("12345").build();
+
+
+        restActions
+            .post("/allpay", proposedAllPayPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        restActions
+            .put("/allpay/1", validatedAllPayPaymentInstruction)
+            .andExpect(status().isOk());
+        restActions
+            .put("/allpay/1", submittedAllPayPaymentInstruction)
+            .andExpect(status().isOk());
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("ddMMyyyy");
+        String startDate = LocalDate.now().format(dtf);
+        String endDate = LocalDate.now().format(dtf);
+        restActionsForFeeClerk.get("/payment-instructions/count?status=PA&userId=1234&startDate="+startDate+"&endDate="+endDate).andExpect(status().isOk())
+            .andExpect(body().isEqualTo(1));
+    }
+
+
 
 }
