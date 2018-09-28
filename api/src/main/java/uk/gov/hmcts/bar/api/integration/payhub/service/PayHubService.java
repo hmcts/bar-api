@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.bar.api.aop.features.Featured;
 import uk.gov.hmcts.bar.api.data.exceptions.BadRequestException;
 import uk.gov.hmcts.bar.api.data.exceptions.BarUserNotFoundException;
 import uk.gov.hmcts.bar.api.data.model.PayHubResponseReport;
@@ -48,6 +49,7 @@ public class PayHubService {
     private static final TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
     private final static String REFERENCE_KEY = "reference";
     private final static String GROUP_REFERENCE_KEY = "payment_group_reference";
+    private final static String PAYHUB_FEATURE_KEY = "send-to-payhub";
 
     @Autowired
     private final PaymentInstructionService paymentInstructionService;
@@ -76,6 +78,7 @@ public class PayHubService {
     }
 
     @PreAuthorize("hasAuthority(T(uk.gov.hmcts.bar.api.data.enums.BarUserRoleEnum).BAR_DELIVERY_MANAGER.getIdamRole())")
+    @Featured(featureKey = PAYHUB_FEATURE_KEY)
     public PayHubResponseReport sendPaymentInstructionToPayHub(String userToken, LocalDateTime reportDate) throws BarUserNotFoundException {
         validateReportDate(reportDate);
 
