@@ -27,7 +27,10 @@ module "bar-api" {
   subscription = "${var.subscription}"
   is_frontend  = false
   common_tags     = "${var.common_tags}"
-
+  
+  asp_rg = "${var.asp_rg}"
+  asp_name = "${var.asp_name}"
+  
   app_settings = {
     # db
     SPRING_DATASOURCE_USERNAME = "${module.bar-database.user_name}"

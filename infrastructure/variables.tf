@@ -60,3 +60,12 @@ variable "common_tags" {
 variable "liquibase_enabled" {
   default = "true"
 }
+variable "asp_name" {
+  type = "string"
+  default = "bar-noprod-asp"
+}
+
+variable "asp_rg" {
+  type = "string"
+  default = "bar-noprod-rg"
+}
