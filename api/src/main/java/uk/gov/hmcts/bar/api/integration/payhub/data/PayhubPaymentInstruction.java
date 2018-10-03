@@ -8,7 +8,6 @@ import uk.gov.hmcts.bar.api.data.model.BasePaymentInstruction;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -35,9 +34,7 @@ public class PayhubPaymentInstruction extends BasePaymentInstruction {
 
     @JsonProperty("amount")
     public BigDecimal getAmountAsDecimal() {
-        BigDecimal bd = BigDecimal.valueOf(getAmount()).divide(BigDecimal.valueOf(100));
-        bd = bd.setScale(2, RoundingMode.HALF_UP);
-        return bd;
+        return new BigDecimal(getAmount()).movePointLeft(2);
     }
 
     @JsonProperty("payment_method")
