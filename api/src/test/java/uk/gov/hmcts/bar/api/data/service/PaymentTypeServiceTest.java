@@ -5,7 +5,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionAction;
 import uk.gov.hmcts.bar.api.data.model.PaymentType;
+import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionActionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentTypeRepository;
 
 import java.util.List;
@@ -19,20 +22,26 @@ public class PaymentTypeServiceTest {
 
     @Mock
     private PaymentTypeRepository paymentTypeRepository;
+    
+    @Mock
+    private PaymentInstructionActionRepository paymentInstructionActionRepository;
 
     @Mock
     private List<PaymentType> paymentTypes;
+    
+    @Mock
+    private List<PaymentInstructionAction> paymentInstructionActions;
 
     @Mock
     private PaymentType paymentType;
 
 
-    @Before
-    public void setupMock() {
-        MockitoAnnotations.initMocks(this);
-        paymentTypeService = new PaymentTypeService(paymentTypeRepository);
+	@Before
+	public void setupMock() {
+		MockitoAnnotations.initMocks(this);
+		paymentTypeService = new PaymentTypeService(paymentTypeRepository, paymentInstructionActionRepository);
 
-    }
+	}
 
     @Test
     public void shouldReturnPaymentTypes_whenGetAllPaymentTypesIsCalled() throws Exception {
@@ -42,6 +51,17 @@ public class PaymentTypeServiceTest {
         List<PaymentType> retrievedPaymentTypes = paymentTypeService.getAllPaymentTypes();
 
         Assertions.assertThat(retrievedPaymentTypes).isEqualTo (paymentTypes);
+
+    }
+    
+    @Test
+    public void shouldReturnPaymentInstructionActions_whenGetAllPaymentInstructionActionIsCalled() throws Exception {
+
+        when(paymentInstructionActionRepository.findAll()).thenReturn(paymentInstructionActions);
+
+        List<PaymentInstructionAction> retrievedPaymentInstructionActions = paymentTypeService.getAllPaymentInstructionAction();
+
+        Assertions.assertThat(retrievedPaymentInstructionActions).isEqualTo (paymentInstructionActions);
 
     }
 

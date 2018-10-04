@@ -730,4 +730,26 @@ databaseChangeLog:
       changes:
         - sql: >
             insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('send-to-payhub', 0, 'Send payment instructions to PayHub');
-
+  
+  - changeSet:
+      id: 30
+      author: rarasan
+      changes:
+        - createTable:
+            tableName: payment_instruction_action
+            columns:
+              - column:
+                  name: action
+                  type: varchar(20)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+        - sql: >
+            INSERT into payment_instruction_action (action) values ('Process'), ('Suspense'), ('Suspense Deficiency'), ('Return'), ('Refund');
+        - addForeignKeyConstraint:
+            baseColumnNames: action
+            baseTableName: payment_instruction
+            constraintName: fk_payment_action
+            onUpdate: CASCADE
+            referencedColumnNames: action
+            referencedTableName: payment_instruction_action
