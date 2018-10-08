@@ -50,4 +50,4 @@ Some of the end points are as below. These might be out of date. Please look at 
 
 ## Service Versioning
 
-We use [SemVer](http://semver.org/) for versioning
+We use [SemVer](http://semver.org/) for versioning.
