@@ -7,6 +7,8 @@ locals {
   nonPreviewVaultName = "bar-${var.env}-vault"
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
   rg_name = "${(var.env == "preview" || var.env == "spreview") ? "bar-aat-rg" : "bar-${var.env}-rg"}"
+  asp_name = "${var.product}-${var.env}-asp"
+
 }
 
 data "azurerm_key_vault" "bar_key_vault" {
@@ -28,6 +30,8 @@ module "bar-api" {
   subscription = "${var.subscription}"
   is_frontend  = false
   common_tags     = "${var.common_tags}"
+  asp_name = "${local.asp_name}"
+  asp_rg = "${local.rg_name}"
 
   app_settings = {
     # db
