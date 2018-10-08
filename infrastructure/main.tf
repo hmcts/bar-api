@@ -15,7 +15,7 @@ locals {
 
 data "azurerm_key_vault" "bar_key_vault" {
   name = "${local.vaultName}"
-  resource_group_name = "${local.rg_name}"
+  resource_group_name = "${local.vault_rg_name}"
 }
 
 data "azurerm_key_vault_secret" "s2s_secret" {
