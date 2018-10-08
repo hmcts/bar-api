@@ -10,7 +10,7 @@ locals {
 
 data "azurerm_key_vault" "bar_key_vault" {
   name = "${local.vaultName}"
-  resource_group_name = "${local.vaultName}"
+  resource_group_name = "bar-${var.env}-rg"
 }
 
 data "azurerm_key_vault_secret" "s2s_secret" {
@@ -54,45 +54,4 @@ module "bar-database" {
   sku_name = "GP_Gen5_2"
   sku_tier = "GeneralPurpose"
   common_tags     = "${var.common_tags}"
-}
-
-module "key-vault" {
-  source              = "git@github.com:hmcts/moj-module-key-vault?ref=master"
-  product             = "${var.product}"
-  env                 = "${var.env}"
-  tenant_id           = "${var.tenant_id}"
-  object_id           = "${var.jenkins_AAD_objectId}"
-  resource_group_name = "${module.bar-api.resource_group_name}"
-  # group id of dcd_reform_dev_azure
-  product_group_object_id = "56679aaa-b343-472a-bb46-58bbbfde9c3d"
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-USER" {
-  name      = "bar-POSTGRES-USER"
-  value     = "${module.bar-database.user_name}"
-  vault_uri = "${module.key-vault.key_vault_uri}"
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
-  name      = "bar-POSTGRES-PASS"
-  value     = "${module.bar-database.postgresql_password}"
-  vault_uri = "${module.key-vault.key_vault_uri}"
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
-  name      = "bar-POSTGRES-HOST"
-  value     = "${module.bar-database.host_name}"
-  vault_uri = "${module.key-vault.key_vault_uri}"
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
-  name      = "bar-POSTGRES-PORT"
-  value     = "${module.bar-database.postgresql_listen_port}"
-  vault_uri = "${module.key-vault.key_vault_uri}"
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
-  name      = "bar-POSTGRES-DATABASE"
-  value     = "${module.bar-database.postgresql_database}"
-  vault_uri = "${module.key-vault.key_vault_uri}"
 }
