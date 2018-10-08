@@ -7,7 +7,7 @@ locals {
   nonPreviewVaultName = "bar-${var.env}-vault"
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
   rg_name = "${(var.env == "preview" || var.env == "spreview") ? "bar-aat-rg" : "bar-${var.env}-rg"}"
-  asp_name = "${(var.env == "preview" || var.env == "spreview") ? "bar-asp-aat" : "bar-asp-${var.env}"}"
+  asp_name = "${var.product}-asp-${var.env}"
 
 }
 
