@@ -427,8 +427,8 @@ public class PaymentInstructionController {
         @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate) {
         PaymentInstructionStatusCriteriaDto paymentInstructionStatusCriteriaDto =
             PaymentInstructionStatusCriteriaDto.paymentInstructionStatusCriteriaDto().status(status).userId(userId)
-                .startDate(startDate == null ? LocalDate.now().atStartOfDay() : startDate.atStartOfDay())
-                .endDate(endDate == null ? LocalDateTime.now(): endDate.atTime(LocalTime.MAX))
+                .startDate(startDate == null ? null : startDate.atStartOfDay())
+                .endDate(endDate == null ? null: endDate.atTime(LocalTime.MAX))
                 .build();
         return paymentInstructionService.getPaymentInstructionsCount(paymentInstructionStatusCriteriaDto);
     }
