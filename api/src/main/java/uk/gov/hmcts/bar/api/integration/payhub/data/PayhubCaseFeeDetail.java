@@ -10,12 +10,13 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.math.BigDecimal;
 
 @Entity
 @NoArgsConstructor
 @Table(name = "case_fee_detail")
 @JsonIgnoreProperties({"case_fee_id", "fee_description", "case_reference", "remission_amount", "remission_benefiter",
-    "remission_authorisation", "refund_amount", "payment_instruction_id"})
+    "remission_authorisation", "refund_amount", "payment_instruction_id", "amount"})
 public class PayhubCaseFeeDetail extends BaseCaseFeeDetail {
 
     @JsonProperty("reference")
@@ -30,10 +31,14 @@ public class PayhubCaseFeeDetail extends BaseCaseFeeDetail {
         return super.getFeeCode();
     }
 
-    @JsonProperty("calculated_amount")
     @Override
     public Integer getAmount() {
         return super.getAmount();
+    }
+
+    @JsonProperty("calculated_amount")
+    public BigDecimal getAmountAsDecimal() {
+        return new BigDecimal(getAmount()).movePointLeft(2);
     }
 
     @JsonProperty("version")
