@@ -5,6 +5,5 @@
         <BuiltIn enabled="true">
             <HTTP enabled="true"/>
         </BuiltIn>
-        <!-- Add class/method level insights here -->
     </Instrumentation>
 </ApplicationInsightsAgent>

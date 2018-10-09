@@ -3,14 +3,19 @@ locals {
   local_env = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
   local_ase = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "core-compute-aat" : "core-compute-saat" : local.aseName}"
 
-  previewVaultName = "bar-web-aat"
-  nonPreviewVaultName = "bar-web-${var.env}"
+  previewVaultName = "bar-aat"
+  nonPreviewVaultName = "bar-${var.env}"
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
+  rg_name = "bar-${var.env}-rg"
+  asp_name = "bar-asp-${var.env}"
+  vault_rg_name = "${(var.env == "preview" || var.env == "spreview") ? "bar-aat-rg" : local.rg_name}"
+
+
 }
 
 data "azurerm_key_vault" "bar_key_vault" {
   name = "${local.vaultName}"
-  resource_group_name = "${local.vaultName}"
+  resource_group_name = "${local.vault_rg_name}"
 }
 
 data "azurerm_key_vault_secret" "s2s_secret" {
@@ -27,6 +32,8 @@ module "bar-api" {
   subscription = "${var.subscription}"
   is_frontend  = false
   common_tags     = "${var.common_tags}"
+  asp_name = "${local.asp_name}"
+  asp_rg = "${local.rg_name}"
 
   app_settings = {
     # db
@@ -54,45 +61,4 @@ module "bar-database" {
   sku_name = "GP_Gen5_2"
   sku_tier = "GeneralPurpose"
   common_tags     = "${var.common_tags}"
-}
-
-module "key-vault" {
-  source              = "git@github.com:hmcts/moj-module-key-vault?ref=master"
-  product             = "${var.product}"
-  env                 = "${var.env}"
-  tenant_id           = "${var.tenant_id}"
-  object_id           = "${var.jenkins_AAD_objectId}"
-  resource_group_name = "${module.bar-api.resource_group_name}"
-  # group id of dcd_reform_dev_azure
-  product_group_object_id = "56679aaa-b343-472a-bb46-58bbbfde9c3d"
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-USER" {
-  name      = "bar-POSTGRES-USER"
-  value     = "${module.bar-database.user_name}"
-  vault_uri = "${module.key-vault.key_vault_uri}"
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
-  name      = "bar-POSTGRES-PASS"
-  value     = "${module.bar-database.postgresql_password}"
-  vault_uri = "${module.key-vault.key_vault_uri}"
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
-  name      = "bar-POSTGRES-HOST"
-  value     = "${module.bar-database.host_name}"
-  vault_uri = "${module.key-vault.key_vault_uri}"
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
-  name      = "bar-POSTGRES-PORT"
-  value     = "${module.bar-database.postgresql_listen_port}"
-  vault_uri = "${module.key-vault.key_vault_uri}"
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
-  name      = "bar-POSTGRES-DATABASE"
-  value     = "${module.bar-database.postgresql_database}"
-  vault_uri = "${module.key-vault.key_vault_uri}"
 }
