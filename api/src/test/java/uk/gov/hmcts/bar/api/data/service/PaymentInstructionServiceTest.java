@@ -16,6 +16,7 @@ import org.springframework.hateoas.Resource;
 import uk.gov.hmcts.bar.api.audit.AuditRepository;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
+import uk.gov.hmcts.bar.api.data.exceptions.PaymentProcessException;
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto.PaymentInstructionSearchCriteriaDtoBuilder;
 import uk.gov.hmcts.bar.api.data.repository.BankGiroCreditRepository;
@@ -113,6 +114,8 @@ public class PaymentInstructionServiceTest {
     private PaymentInstructionStatusCriteriaDto.PaymentInstructionStatusCriteriaDtoBuilder paymentInstructionStatusCriteriaDtoBuilder;
 
     private PaymentTypeService paymentTypeService;
+    
+    private UnallocatedAmountService unallocatedAmountService;
 
     @Before
     public void setupMock() {
@@ -125,6 +128,7 @@ public class PaymentInstructionServiceTest {
             ff4jMock,
             bankGiroCreditRepositoryMock,
             paymentTypeService,
+            unallocatedAmountService,
             payhubPaymentInstructionRepository,
             auditRepository);
         paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto()
@@ -487,7 +491,7 @@ public class PaymentInstructionServiceTest {
     }
 
     @Test
-    public void shouldRefuseSubmittedPaymentInstructionWithAction_whenSubmitPaymentInstructionForGivenPaymentInstructionIsCalledWithAction() {
+    public void shouldRefuseSubmittedPaymentInstructionWithAction_whenSubmitPaymentInstructionForGivenPaymentInstructionIsCalledWithAction() throws PaymentProcessException {
         when(ff4jMock.check(anyString())).thenReturn(false);
         when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(paymentInstructionMock));
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.bar.api.data.service;
 
 import org.assertj.core.api.Assertions;
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -22,9 +23,6 @@ public class PaymentTypeServiceTest {
 
     @Mock
     private PaymentTypeRepository paymentTypeRepository;
-    
-    @Mock
-    private PaymentInstructionActionRepository paymentInstructionActionRepository;
 
     @Mock
     private List<PaymentType> paymentTypes;
@@ -39,7 +37,7 @@ public class PaymentTypeServiceTest {
 	@Before
 	public void setupMock() {
 		MockitoAnnotations.initMocks(this);
-		paymentTypeService = new PaymentTypeService(paymentTypeRepository, paymentInstructionActionRepository);
+		paymentTypeService = new PaymentTypeService(paymentTypeRepository);
 
 	}
 
@@ -51,17 +49,6 @@ public class PaymentTypeServiceTest {
         List<PaymentType> retrievedPaymentTypes = paymentTypeService.getAllPaymentTypes();
 
         Assertions.assertThat(retrievedPaymentTypes).isEqualTo (paymentTypes);
-
-    }
-    
-    @Test
-    public void shouldReturnPaymentInstructionActions_whenGetAllPaymentInstructionActionIsCalled() throws Exception {
-
-        when(paymentInstructionActionRepository.findAll()).thenReturn(paymentInstructionActions);
-
-        List<PaymentInstructionAction> retrievedPaymentInstructionActions = paymentTypeService.getAllPaymentInstructionAction();
-
-        Assertions.assertThat(retrievedPaymentInstructionActions).isEqualTo (paymentInstructionActions);
 
     }
 

@@ -217,6 +217,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
             .currency("GBP").status("D").build();
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+        	.paymentInstructionId(1)	
             .caseReference("case102")
             .feeCode("X001")
             .amount(200)
@@ -242,6 +243,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
             .currency("GBP").status("D").build();
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+        	.paymentInstructionId(1)
             .caseReference("?????????")
             .build();
 
@@ -387,7 +389,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
 		restActions.post("/allpay", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
 		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
 
 		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
@@ -418,7 +420,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
 		restActions.post("/allpay", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
 		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
 
 		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
@@ -458,8 +460,13 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
 		restActions.post("/allpay", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
 		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(500).feeVersion("1").build();
 
+		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+		
+		caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+				.paymentInstructionId(1).caseReference("case103").feeCode("X003").amount(50).feeVersion("1").build();
+		
 		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
 		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
@@ -501,7 +508,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
 		restActions.post("/allpay", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
 		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
 
 		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 

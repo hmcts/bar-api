@@ -17,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
+import uk.gov.hmcts.bar.api.data.exceptions.PaymentProcessException;
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.service.BarUserService;
 import uk.gov.hmcts.bar.api.data.service.CaseFeeDetailService;
@@ -344,13 +345,20 @@ public class PaymentInstructionController {
     })
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/payment-instructions/{id}")
-    public ResponseEntity<PaymentInstruction> submitPaymentInstructionsByPostClerk(@PathVariable("id") Integer id,
+    public ResponseEntity<Object> submitPaymentInstructionsByPostClerk(@PathVariable("id") Integer id,
                                                                                    @RequestBody PaymentInstructionUpdateRequest paymentInstructionUpdateRequest) {
+    	ResponseEntity<Object> response = null;
         if (null == paymentInstructionUpdateRequest) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        PaymentInstruction submittedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(id, paymentInstructionUpdateRequest);
-        return new ResponseEntity<>(submittedPaymentInstruction, HttpStatus.OK);
+        PaymentInstruction submittedPaymentInstruction = null;
+        try {
+			submittedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(id, paymentInstructionUpdateRequest);
+			response = new ResponseEntity<>(submittedPaymentInstruction, HttpStatus.OK);
+		} catch (PaymentProcessException e) {
+			response = new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
+		}
+        return response;
     }
 
     @ApiOperation(value = "Create case fee detail for a payment instruction", notes = "Create case fee detail for a payment instruction.")
