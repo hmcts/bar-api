@@ -3,8 +3,8 @@ locals {
   local_env = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
   local_ase = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "core-compute-aat" : "core-compute-saat" : local.aseName}"
 
-  previewVaultName = "bar-aat-vault"
-  nonPreviewVaultName = "bar-${var.env}-vault"
+  previewVaultName = "bar-aat"
+  nonPreviewVaultName = "bar-${var.env}"
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
   rg_name = "bar-${var.env}-rg"
   asp_name = "bar-asp-${var.env}"
