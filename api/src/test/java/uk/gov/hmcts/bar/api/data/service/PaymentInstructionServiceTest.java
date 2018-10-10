@@ -14,6 +14,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.hateoas.Resource;
 import uk.gov.hmcts.bar.api.audit.AuditRepository;
+import uk.gov.hmcts.bar.api.data.TestUtils;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentProcessException;
@@ -33,7 +34,6 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.bar.api.data.service.PaymentInstructionService.STAT_DETAILS;
 import static uk.gov.hmcts.bar.api.data.service.PaymentInstructionService.STAT_GROUP_DETAILS;
@@ -102,6 +102,9 @@ public class PaymentInstructionServiceTest {
 
     @Mock
     private AuditRepository auditRepository;
+    
+    @Mock
+    private List<CaseFeeDetail> cfdList;
 
     private PaymentInstructionStatus paymentInstructionStatus;
 
@@ -120,6 +123,7 @@ public class PaymentInstructionServiceTest {
     @Before
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
+        unallocatedAmountService = new UnallocatedAmountService(paymentInstructionRepository);
         paymentInstructionService = new PaymentInstructionService(
             paymentReferenceService,
             paymentInstructionRepository,
@@ -502,9 +506,28 @@ public class PaymentInstructionServiceTest {
             PaymentInstruction updatedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(1, pir);
             fail("should fail here");
         } catch (FeatureAccessException fae){
-            assertEquals("Suspense is not allowed", fae.getMessage());
+
+        	assertEquals("Suspense is not allowed", fae.getMessage());
         }
     }
+    
+    @Test
+	public void shouldThrowPaymentProcessException_whenUnAllocatedAmountIsNotZero() {
+    	PaymentInstruction pi = TestUtils.createPaymentInstructions("",10000);
+        List<CaseFeeDetail> cfdList = new ArrayList<>();
+        pi.setCaseFeeDetails(cfdList);
+        when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
+        when(ff4jMock.check(anyString())).thenReturn(true);
+		try {
+			PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
+					.status("V").action("Process").build();
+			PaymentInstruction updatedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(1, pir);
+			fail("should fail here");
+		} catch (PaymentProcessException ppe) {
+			assertEquals("Please allocate all amount before processing.", ppe.getMessage());
+		}
+	}
+    
     @Test
     public void shouldReturn200_whenUpdatePaymentInstructionForGivenPaymentInstructionIsCalled()
         throws Exception {
