@@ -370,7 +370,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 		restActions.post("/allpay", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
 
 		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
 
 		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
@@ -401,7 +401,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 		restActions.post("/allpay", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
 
 		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
 
 		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
@@ -441,7 +441,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 		restActions.post("/allpay", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
 
 		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
 
 		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
@@ -484,7 +484,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 		restActions.post("/allpay", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
 
 		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-				.caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
 
 		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 

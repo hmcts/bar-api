@@ -22,7 +22,9 @@ import uk.gov.hmcts.bar.api.controllers.payment.PaymentInstructionController;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.BarUserNotFoundException;
+import uk.gov.hmcts.bar.api.data.exceptions.InvalidActionException;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
+import uk.gov.hmcts.bar.api.data.exceptions.PaymentProcessException;
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.repository.*;
 import uk.gov.hmcts.bar.api.data.utils.Util;
@@ -53,6 +55,7 @@ public class PaymentInstructionService {
     private PaymentInstructionRepository paymentInstructionRepository;
     private PaymentInstructionStatusRepository paymentInstructionStatusRepository;
     private PaymentReferenceService paymentReferenceService;
+    private UnallocatedAmountService unallocatedAmountService;
     private final BarUserService barUserService;
     private final BankGiroCreditRepository bankGiroCreditRepository;
     private final FF4j ff4j;
@@ -67,7 +70,7 @@ public class PaymentInstructionService {
                                      FF4j ff4j,
                                      BankGiroCreditRepository bankGiroCreditRepository,
                                      PaymentTypeService paymentTypeService,
-
+                                     UnallocatedAmountService unallocatedAmountService,
                                      PayhubPaymentInstructionRepository payhubPaymentInstructionRepository,
                                      AuditRepository auditRepository
 
@@ -79,6 +82,7 @@ public class PaymentInstructionService {
         this.ff4j = ff4j;
         this.bankGiroCreditRepository = bankGiroCreditRepository;
         this.paymentTypeService = paymentTypeService;
+        this.unallocatedAmountService = unallocatedAmountService;
         this.payhubPaymentInstructionRepository = payhubPaymentInstructionRepository;
         this.auditRepository = auditRepository;
     }
@@ -148,10 +152,14 @@ public class PaymentInstructionService {
 
     }
 
-    public PaymentInstruction submitPaymentInstruction(Integer id, PaymentInstructionUpdateRequest paymentInstructionUpdateRequest) {
+    public PaymentInstruction submitPaymentInstruction(Integer id, PaymentInstructionUpdateRequest paymentInstructionUpdateRequest) throws PaymentProcessException {
         if (!checkIfActionEnabled(paymentInstructionUpdateRequest)) {
             throw new FeatureAccessException(paymentInstructionUpdateRequest.getAction() + " is not allowed");
         }
+		if (PaymentActionEnum.PROCESS.displayValue().equals(paymentInstructionUpdateRequest.getAction())
+				&& unallocatedAmountService.calculateUnallocatedAmount(id) != 0) {
+			throw new PaymentProcessException("Please allocate all amount before processing.");
+		}
         String userId = barUserService.getCurrentUserId();
         Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
         PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction

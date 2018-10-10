@@ -17,16 +17,16 @@ public final class DbTestUtil {
     private static final String PROPERTY_KEY_INSERT_USER_SQL_TAMPLATE = "test.user.sql.template";
 
     private static final String INSERT_PI_QUERY_PI_STATS =
-        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id,bgc_number,transferred_to_payhub) VALUES (1,'John Doe',null,'POSTAL_ORDER',{ts '2018-03-25 23:32:23.871'},600,'GBP',null,'TTB',null,'Y431',1,'P','1234','123456',true);\n" +
-        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id,bgc_number,transferred_to_payhub,payhub_error) VALUES (2,'John Doe',null,'POSTAL_ORDER',{ts '2018-03-25 23:32:23.871'},600,'GBP',null,'TTB',null,'Y431',1,'P','1234','123456',false,'some error');";
+        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id,bgc_number,transferred_to_payhub) VALUES (1,'John Doe',null,'POSTAL_ORDER',{ts '2018-03-25 23:32:23.871'},600,'GBP',null,'TTB',null,'Y431',1,'Process','1234','123456',true);\n" +
+        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id,bgc_number,transferred_to_payhub,payhub_error) VALUES (2,'John Doe',null,'POSTAL_ORDER',{ts '2018-03-25 23:32:23.871'},600,'GBP',null,'TTB',null,'Y431',1,'Process','1234','123456',false,'some error');";
     private static final String INSERT_PIS_QUERY_PI_STATS =
         "INSERT INTO payment_instruction_status values (1,'TTB','1234',CURRENT_TIMESTAMP);\n" +
         "INSERT INTO payment_instruction_status values (2,'TTB','1234',CURRENT_TIMESTAMP);";
 
     private static final String INSERT_PI_QUERY_TRANSFERRED_TO_PAYHUB_YES =
-        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id,bgc_number,transferred_to_payhub) VALUES (1,'John Doe',null,'CARD',{ts '2018-03-25 23:32:23.871'},600,'GBP',null,'TTB',null,'Y431',1,'P','1234','123456',true);";
+        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id,bgc_number,transferred_to_payhub) VALUES (1,'John Doe',null,'CARD',{ts '2018-03-25 23:32:23.871'},600,'GBP',null,'TTB',null,'Y431',1,'Process','1234','123456',true);";
     private static final String INSERT_PI_QUERY_TRANSFERRED_TO_PAYHUB_FAIL =
-        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id,bgc_number,transferred_to_payhub,payhub_error) VALUES (1,'John Doe',null,'CARD',{ts '2018-03-25 23:32:23.871'},600,'GBP',null,'TTB',null,'Y431',1,'P','1234','123456',false,'some error');";
+        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id,bgc_number,transferred_to_payhub,payhub_error) VALUES (1,'John Doe',null,'CARD',{ts '2018-03-25 23:32:23.871'},600,'GBP',null,'TTB',null,'Y431',1,'Process','1234','123456',false,'some error');";
     private static final String INSERT_BGC_QUERY =
         "INSERT INTO bank_giro_credit values (123456,'BR01',CURRENT_TIMESTAMP);";
     private static final String INSERT_BAR_USER =
@@ -34,9 +34,9 @@ public final class DbTestUtil {
     private static final String INSERT_PIS_QUERY =
         "INSERT INTO payment_instruction_status values (1,'D','1234',CURRENT_TIMESTAMP);";
     private static final String INSERT_PI_QUERY =
-        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id) VALUES (1,'John Doe',null,'CARD',{ts '2018-03-25 23:32:23.871'},50000,'GBP',null,'TTB',null,'Y431',1,'P','1234');\n" +
+        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id) VALUES (1,'John Doe',null,'CARD',{ts '2018-03-25 23:32:23.871'},50000,'GBP',null,'TTB',null,'Y431',1,'Process','1234');\n" +
             "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id) VALUES (2,'John Doe',null,'CARD',{ts '2018-03-25 23:36:11.207'},50000,'GBP','123','P',null,'Y431',2,null,'4321');\n" +
-            "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id) VALUES (3,'John Doe',null,'CASH',{ts '2018-03-25 23:36:11.207'},50000,'GBP',null,'TTB',null,'Y431',3,'P','4321');\n" +
+            "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id) VALUES (3,'John Doe',null,'CASH',{ts '2018-03-25 23:36:11.207'},50000,'GBP',null,'TTB',null,'Y431',3,'Process','4321');\n" +
             "INSERT INTO case_fee_detail (case_fee_id,payment_instruction_id,fee_code,amount,fee_description,fee_version,case_reference,remission_amount,remission_benefiter,remission_authorisation,refund_amount) VALUES (1,1,'X0165',55000,'Filing an application for a divorce, nullity or civil partnership dissolution – fees order 1.2.','1','12345',5000,'sdfsf','dsfsf',null);";
     /**
      * This method reads the invoked SQL statement template from a properties file, creates
