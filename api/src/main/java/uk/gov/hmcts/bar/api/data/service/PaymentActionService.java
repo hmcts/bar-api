@@ -29,7 +29,7 @@ public class PaymentActionService {
 				.filter(action -> checkIfActionEnabled(action.getAction())).collect(Collectors.toList());
 	}
 
-	protected boolean checkIfActionEnabled(String action) {
+	private boolean checkIfActionEnabled(String action) {
 		boolean[] ret = { true };
 		PaymentActionEnum.findByDisplayValue(action)
 				.ifPresent(paymentActionEnum -> ret[0] = ff4j.check(paymentActionEnum.featureKey()));

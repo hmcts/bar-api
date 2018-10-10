@@ -1,7 +1,11 @@
 package uk.gov.hmcts.bar.api.data.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+
 import org.assertj.core.api.Assertions;
-import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -9,13 +13,7 @@ import org.mockito.MockitoAnnotations;
 
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionAction;
 import uk.gov.hmcts.bar.api.data.model.PaymentType;
-import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionActionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentTypeRepository;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 public class PaymentTypeServiceTest {
 
