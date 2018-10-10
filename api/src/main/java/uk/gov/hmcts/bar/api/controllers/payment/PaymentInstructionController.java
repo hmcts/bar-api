@@ -28,13 +28,9 @@ import uk.gov.hmcts.bar.api.integration.payhub.service.PayHubService;
 import uk.gov.hmcts.reform.auth.checker.core.user.UserRequestAuthorizer;
 
 import javax.validation.Valid;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.List;
 import java.util.Optional;
-import java.util.TimeZone;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -465,8 +461,7 @@ public class PaymentInstructionController {
         if (!reportTimestamp.isPresent()) {
             reportDate = LocalDateTime.now();
         } else {
-            reportDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(reportTimestamp.get()), TimeZone
-                .getDefault().toZoneId());
+            reportDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(reportTimestamp.get()), ZoneId.of("Europe/London"));
         }
         PayHubResponseReport report = payHubService.sendPaymentInstructionToPayHub(bearerToken, reportDate);
         return ResponseEntity.ok(report);
