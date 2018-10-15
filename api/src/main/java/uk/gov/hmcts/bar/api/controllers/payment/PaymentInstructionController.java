@@ -430,7 +430,7 @@ public class PaymentInstructionController {
         if (null == userId && null == startDate && null == endDate){
             count = paymentInstructionService.getNonResetPaymentInstructionsCount(status);
         }
-        else {
+        else if(null != startDate && null != endDate) {
             PaymentInstructionStatusCriteriaDto paymentInstructionStatusCriteriaDto =
                 PaymentInstructionStatusCriteriaDto.paymentInstructionStatusCriteriaDto().status(status).userId(userId)
                     .startDate(startDate.atStartOfDay())
