@@ -22,7 +22,6 @@ import uk.gov.hmcts.bar.api.controllers.payment.PaymentInstructionController;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.BarUserNotFoundException;
-import uk.gov.hmcts.bar.api.data.exceptions.InvalidActionException;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentProcessException;
 import uk.gov.hmcts.bar.api.data.model.*;
@@ -123,6 +122,10 @@ public class PaymentInstructionService {
         Specification<PaymentInstructionStatus>  pisSpecification = paymentInstructionStatusSpecification.getPaymentInstructionStatusSpecification();
         return paymentInstructionStatusRepository.count(pisSpecification);
 
+    }
+
+    public long getNonResetPaymentInstructionsCount(String status) {
+        return paymentInstructionStatusRepository.getNonResetCountByStatus(status);
     }
 
     public List<PayhubPaymentInstruction> getAllPaymentInstructionsForPayhub(

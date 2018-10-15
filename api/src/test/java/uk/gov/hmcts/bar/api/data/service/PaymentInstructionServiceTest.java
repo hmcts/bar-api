@@ -34,6 +34,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.bar.api.data.service.PaymentInstructionService.STAT_DETAILS;
 import static uk.gov.hmcts.bar.api.data.service.PaymentInstructionService.STAT_GROUP_DETAILS;
@@ -737,5 +738,15 @@ public class PaymentInstructionServiceTest {
         assertEquals(1, count);
     }
 
+    @Test
+    public void shouldReturnNonResetPICount_whenGetNonResetPaymentInstructionsCountIsCalled() {
+
+        when(paymentInstructionStatusRepositoryMock.getNonResetCountByStatus(anyString()))
+            .thenReturn(1L);
+
+        long count = paymentInstructionService
+            .getNonResetPaymentInstructionsCount("D");
+        assertEquals(1, count);
+    }
 
 }
