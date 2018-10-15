@@ -685,7 +685,9 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
         String startDate = LocalDate.now().format(dtf);
         String endDate = LocalDate.now().format(dtf);
         restActionsForFeeClerk.get("/payment-instructions/count?status=PA&userId=1234&startDate="+startDate+"&endDate="+endDate).andExpect(status().isOk())
-            .andExpect(body().isEqualTo(1));
+            .andExpect(body().as(Long.class, (count) -> {
+                assertThat(count.equals(1));
+            }));
     }
 
 
@@ -725,11 +727,10 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .put("/allpay/1", submittedAllPayPaymentInstruction)
             .andExpect(status().isOk());
 
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("ddMMyyyy");
-        String startDate = LocalDate.now().format(dtf);
-        String endDate = LocalDate.now().format(dtf);
         restActionsForFeeClerk.get("/payment-instructions/count?status=PA").andExpect(status().isOk())
-            .andExpect(body().isEqualTo(1));
+            .andExpect(body().as(Long.class, (count) -> {
+                assertThat(count.equals(1));
+            }));
     }
 
 
