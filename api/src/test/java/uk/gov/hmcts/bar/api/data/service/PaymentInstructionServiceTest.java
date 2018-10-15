@@ -738,4 +738,17 @@ public class PaymentInstructionServiceTest {
     }
 
 
+
+    @Test
+    public void shouldReturnNonResetPICount_whenGetNonResetPaymentInstructionsCountIsCalled() {
+
+        when(paymentInstructionStatusRepositoryMock.getNonResetCountByStatus(anyString()))
+            .thenReturn(1L);
+
+        long count = paymentInstructionService
+            .getNonResetPaymentInstructionsCount("D");
+        assertEquals(1, count);
+    }
+
+
 }

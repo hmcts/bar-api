@@ -125,6 +125,12 @@ public class PaymentInstructionService {
 
     }
 
+
+    public long getNonResetPaymentInstructionsCount(String status) {
+        return paymentInstructionStatusRepository.getNonResetCountByStatus(status);
+    }
+
+
     public List<PayhubPaymentInstruction> getAllPaymentInstructionsForPayhub(
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto
     ) throws BarUserNotFoundException {
