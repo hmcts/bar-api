@@ -604,5 +604,45 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
             .andExpect(body().isEqualTo(1));
     }
 
+    @Test
+    public void givenCardPIsSubmitted_getNonResetCount() throws Exception {
+        Card proposedCardPaymentInstructionRequest = cardWith()
+            .payerName("Mr Payer Payer")
+            .amount(600)
+            .currency("GBP").status("D")
+            .authorizationCode("000000").build();
+
+        Card validatedCardPaymentInstructionRequest = cardWith()
+            .payerName("Mr Payer Payer")
+            .amount(600)
+            .currency("GBP").status("V")
+            .authorizationCode("000000").build();
+
+        Card submittedCardPaymentInstructionRequest = cardWith()
+            .payerName("Mr Payer Payer")
+            .amount(600)
+            .currency("GBP").status("PA")
+            .authorizationCode("000000").build();
+
+
+        restActions
+            .post("/cards", proposedCardPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        restActions
+            .put("/cards/1", validatedCardPaymentInstructionRequest)
+            .andExpect(status().isOk());
+        restActions
+            .put("/cards/1", submittedCardPaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("ddMMyyyy");
+        String startDate = LocalDate.now().format(dtf);
+        String endDate = LocalDate.now().format(dtf);
+        restActionsForFeeClerk.get("/payment-instructions/count?status=PA").andExpect(status().isOk())
+            .andExpect(body().isEqualTo(1));
+    }
+
+
 
 }
