@@ -162,8 +162,8 @@
         <cpe>cpe:/a:netty_project:netty</cpe>
     </suppress>
     <suppress>
-       <notes>This security vulnerability is for interactive installer in PostgreSQL only</notes>
-       <cve>CVE-2016-7048</cve>
+        <notes>This security vulnerability is for interactive installer in PostgreSQL only</notes>
+        <cve>CVE-2016-7048</cve>
     </suppress>
 </suppressions>
 
