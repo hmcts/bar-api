@@ -426,17 +426,25 @@ public class PaymentInstructionController {
     @GetMapping("/payment-instructions/count")
     public long getPaymentInstructionCount(
         @RequestParam(name = "userId", required =  false) String userId,
-        @RequestParam(name = "status", required = false) String status,
+        @RequestParam(name = "status") String status,
         @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
         @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate) {
-        PaymentInstructionStatusCriteriaDto paymentInstructionStatusCriteriaDto =
-            PaymentInstructionStatusCriteriaDto.paymentInstructionStatusCriteriaDto().status(status).userId(userId)
-                .startDate(startDate == null ? LocalDate.now().atStartOfDay() : startDate.atStartOfDay())
-                .endDate(endDate == null ? LocalDateTime.now(): endDate.atTime(LocalTime.MAX))
-                .build();
-        return paymentInstructionService.getPaymentInstructionsCount(paymentInstructionStatusCriteriaDto);
-    }
 
+        long count = 0;
+        if (null == userId && null == startDate && null == endDate){
+            count = paymentInstructionService.getNonResetPaymentInstructionsCount(status);
+        }
+        else if(null != startDate && null != endDate) {
+            PaymentInstructionStatusCriteriaDto paymentInstructionStatusCriteriaDto =
+                PaymentInstructionStatusCriteriaDto.paymentInstructionStatusCriteriaDto().status(status).userId(userId)
+                    .startDate(startDate.atStartOfDay())
+                    .endDate(endDate.atTime(LocalTime.MAX))
+                    .build();
+            count = paymentInstructionService.getPaymentInstructionsCount(paymentInstructionStatusCriteriaDto);
+        }
+
+        return count;
+    }
 
     @ApiOperation(value = "collect stats for a user", notes = "Collect all payment instruction stats for a user grouped by type for a given status")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return stats for a given user"),

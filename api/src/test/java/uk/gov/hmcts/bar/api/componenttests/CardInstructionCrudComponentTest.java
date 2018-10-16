@@ -608,8 +608,47 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
         String startDate = LocalDate.now().format(dtf);
         String endDate = LocalDate.now().format(dtf);
         restActionsForFeeClerk.get("/payment-instructions/count?status=PA&userId=1234&startDate="+startDate+"&endDate="+endDate).andExpect(status().isOk())
-            .andExpect(body().isEqualTo(1));
+            .andExpect(body().as(Long.class, (count) -> {
+                assertThat(count.equals(1));
+            }));
     }
 
+    @Test
+    public void givenCardPIsSubmitted_getNonResetCount() throws Exception {
+        Card proposedCardPaymentInstructionRequest = cardWith()
+            .payerName("Mr Payer Payer")
+            .amount(600)
+            .currency("GBP").status("D")
+            .authorizationCode("000000").build();
+
+        Card validatedCardPaymentInstructionRequest = cardWith()
+            .payerName("Mr Payer Payer")
+            .amount(600)
+            .currency("GBP").status("V")
+            .authorizationCode("000000").build();
+
+        Card submittedCardPaymentInstructionRequest = cardWith()
+            .payerName("Mr Payer Payer")
+            .amount(600)
+            .currency("GBP").status("PA")
+            .authorizationCode("000000").build();
+
+
+        restActions
+            .post("/cards", proposedCardPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        restActions
+            .put("/cards/1", validatedCardPaymentInstructionRequest)
+            .andExpect(status().isOk());
+        restActions
+            .put("/cards/1", submittedCardPaymentInstructionRequest)
+            .andExpect(status().isOk());
+
+        restActionsForFeeClerk.get("/payment-instructions/count?status=PA").andExpect(status().isOk())
+            .andExpect(body().as(Long.class, (count) -> {
+                assertThat(count.equals(1));
+            }));
+    }
 
 }
