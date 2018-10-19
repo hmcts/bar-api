@@ -42,6 +42,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @Transactional
 public class PaymentInstructionService {
 
+    public static final String[] ALWAYS_UPDATE_PROPS = {"actionComment", "actionReason"};
     public static final String STAT_GROUP_DETAILS = "stat-group-details";
     public static final String STAT_DETAILS = "stat-details";
 
@@ -167,8 +168,7 @@ public class PaymentInstructionService {
         Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
         PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
             .orElseThrow(() -> new PaymentInstructionNotFoundException(id));
-        String[] nullPropertiesNamesToIgnore = Util.getNullPropertyNames(paymentInstructionUpdateRequest);
-        BeanUtils.copyProperties(paymentInstructionUpdateRequest, existingPaymentInstruction, nullPropertiesNamesToIgnore);
+        updatePaymentInstructionsProps(existingPaymentInstruction, paymentInstructionUpdateRequest);
         existingPaymentInstruction.setUserId(userId);
         savePaymentInstructionStatus(existingPaymentInstruction, userId);
         PaymentInstruction paymentInstruction = paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
@@ -193,8 +193,7 @@ public class PaymentInstructionService {
             existingPaymentInstruction.setBgcNumber(bgc.getBgcNumber());
         }
 
-        String[] nullPropertiesNamesToIgnore = Util.getNullPropertyNames(paymentInstructionRequest);
-        BeanUtils.copyProperties(paymentInstructionRequest, existingPaymentInstruction, nullPropertiesNamesToIgnore);
+        updatePaymentInstructionsProps(existingPaymentInstruction, paymentInstructionRequest);
         existingPaymentInstruction.setUserId(userId);
         savePaymentInstructionStatus(existingPaymentInstruction, userId);
         PaymentInstruction paymentInstruction = paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
@@ -325,5 +324,11 @@ public class PaymentInstructionService {
         Optional<BarUser> optBarUser = barUserService.getBarUser();
         BarUser barUser = optBarUser.orElseThrow(()-> new BarUserNotFoundException("Bar user not found"));
         return barUser;
+    }
+
+    private void updatePaymentInstructionsProps(PaymentInstruction existingPi, Object updateRequest) {
+        String[] nullPropertiesNamesToIgnore = Util.getNullPropertyNames(updateRequest);
+        String[] propNamesToIgnore = Arrays.stream(nullPropertiesNamesToIgnore).filter(s -> Arrays.binarySearch(ALWAYS_UPDATE_PROPS, s) < 0).toArray(String[]::new);
+        BeanUtils.copyProperties(updateRequest, existingPi, propNamesToIgnore);
     }
 }

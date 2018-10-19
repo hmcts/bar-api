@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -27,6 +28,10 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "paymentInstructionId", referencedColumnName = "id")
     private List<CaseFeeDetail> caseFeeDetails;
+
+    private Integer actionReason;
+    @Length(max = 2048)
+    private String actionComment;
 
     public PaymentInstruction(String payerName, Integer amount, String currency, String status) {
         super(payerName, amount, currency, status);

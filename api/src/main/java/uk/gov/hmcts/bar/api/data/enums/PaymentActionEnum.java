@@ -6,7 +6,8 @@ import java.util.Optional;
 public enum PaymentActionEnum {
     PROCESS("payment-actions-process", "Process"), SUSPENSE("payment-actions-suspense", "Suspense"),
     SUSPENSE_DEFICIENCY("payment-actions-suspence-deficiency", "Suspense Deficiency"),
-    RETURN("payment-actions-return", "Return"), REFUND("payment-actions-refund", "Refund");
+    RETURN("payment-actions-return", "Return"), REFUND("payment-actions-refund", "Refund"),
+    WITHDRAW("payment-actions-withdraw", "Withdraw");
 
     private String featureKey = null;
 
