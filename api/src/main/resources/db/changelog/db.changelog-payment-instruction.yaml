@@ -730,7 +730,7 @@ databaseChangeLog:
       changes:
         - sql: >
             insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('send-to-payhub', 0, 'Send payment instructions to PayHub');
-  
+
   - changeSet:
       id: 30
       author: rarasan
@@ -753,3 +753,20 @@ databaseChangeLog:
             onUpdate: CASCADE
             referencedColumnNames: action
             referencedTableName: payment_instruction_action
+  - changeSet:
+      id: 31
+      author: akiss
+      changes:
+        - addColumn:
+            columns:
+            - column:
+                name: action_reason
+                type: int
+            - column:
+                name: action_comment
+                type: varchar(2048)
+            tableName: payment_instruction
+        - sql: >
+            INSERT into payment_instruction_action (action) values ('Withdraw');
+            INSERT into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('payment-actions-withdraw', 0, 'Available actions for payment');
+

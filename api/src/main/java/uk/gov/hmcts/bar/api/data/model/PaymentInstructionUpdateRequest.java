@@ -18,6 +18,8 @@ public class PaymentInstructionUpdateRequest {
 
     private String status;
     private String action;
+    private Integer actionReason;
+    private String actionComment;
 
     @JsonCreator
     @Builder(builderMethodName = "paymentInstructionUpdateRequestWith")
