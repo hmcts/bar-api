@@ -8,25 +8,29 @@ services:
         - http_proxy
         - https_proxy
         - no_proxy
-    image: docker.artifactory.reform.hmcts.net/bar/bar-api
+    image: hmcts.azurecr.io/hmcts/bar-api
+    container_name: bar-api
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://bar-database:5432/bar
       - SPRING_DATASOURCE_USERNAME=bar
       - SPRING_DATASOURCE_PASSWORD=bar
       - AUTH_IDAM_CLIENT_BASEURL=https://idam-test.dev.ccidam.reform.hmcts.net
+      - PAYMENT_API_URL=http://payment-api-aat.service.core-compute-aat.internal
+      - S2S_AUTH_URL=http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      - S2S_SECRET=xxx
     ports:
      - 8182:8080
     depends_on:
-      bar-database:
-        condition: service_healthy
+      - bar-database
 
   bar-database:
     build:
       context: docker/database
-    image: docker.artifactory.reform.hmcts.net/bar/bar-database/latest
+    image: postgres:11-alpine
     environment:
-      - BAR_DB_USERNAME=bar
-      - BAR_DB_PASSWORD=bar
+      - POSTGRES_USER=bar
+      - POSTGRES_PASSWORD=bar
+      - POSTGRES_DB=bar
     ports:
       - 5182:5432
     volumes:
