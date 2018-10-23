@@ -7,5 +7,9 @@ output "payment_api_url" {
 }
 
 output "vaultUri" {
-    value = "${module.key-vault.key_vault_uri}"
+    value = "${data.azurerm_key_vault.bar_key_vault.vault_uri}"
+}
+
+output "vaultName" {
+    value = "${local.vaultName}"
 }
