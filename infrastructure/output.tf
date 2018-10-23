@@ -5,3 +5,7 @@ output "idam_s2s_url" {
 output "payment_api_url" {
     value = "http://${var.payment_api_url_prefix}-${local.local_env}.service.core-compute-${local.local_env}.internal"
 }
+
+output "vaultUri" {
+    value = "${module.key-vault.key_vault_uri}"
+}
