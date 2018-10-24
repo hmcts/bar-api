@@ -103,7 +103,7 @@ public class PaymentInstructionServiceTest {
 
     @Mock
     private AuditRepository auditRepository;
-    
+
     @Mock
     private List<CaseFeeDetail> cfdList;
 
@@ -118,7 +118,7 @@ public class PaymentInstructionServiceTest {
     private PaymentInstructionStatusCriteriaDto.PaymentInstructionStatusCriteriaDtoBuilder paymentInstructionStatusCriteriaDtoBuilder;
 
     private PaymentTypeService paymentTypeService;
-    
+
     private UnallocatedAmountService unallocatedAmountService;
 
     @Before
@@ -458,16 +458,25 @@ public class PaymentInstructionServiceTest {
     @Test
     public void shouldReturnSubmittedPaymentInstruction_whenSubmitPaymentInstructionForGivenPaymentInstructionIsCalled()
         throws Exception {
+        ArgumentCaptor<PaymentInstruction> argument = ArgumentCaptor.forClass(PaymentInstruction.class);
         PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
             .status("D").build();
-        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(paymentInstructionMock));
+        PaymentInstruction existingPaymentInstruction = new ChequePaymentInstruction();
+        existingPaymentInstruction.setActionReason(2);
+        existingPaymentInstruction.setActionComment("Valami tortent");
+        existingPaymentInstruction.setAction("Process");
+        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(existingPaymentInstruction));
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
-            .thenReturn(paymentInstructionMock);
+            .thenReturn(existingPaymentInstruction);
         when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         PaymentInstruction updatedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(1, pir);
         verify(paymentInstructionRepository, times(1)).findById(anyInt());
-        verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",paymentInstructionMock,barUserMock);
+        verify(paymentInstructionRepository, times(1)).saveAndRefresh(argument.capture());
+        assertEquals("D", argument.getValue().getStatus());
+        assertEquals("Process", argument.getValue().getAction());
+        assertEquals(null, argument.getValue().getActionComment());
+        assertEquals(null, argument.getValue().getActionReason());
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUserMock);
     }
     @Test
     public void shouldReturnSubmittedPaymentInstructionWithAction_whenSubmitPaymentInstructionForGivenPaymentInstructionIsCalledWithAction()
@@ -511,7 +520,7 @@ public class PaymentInstructionServiceTest {
         	assertEquals("Suspense is not allowed", fae.getMessage());
         }
     }
-    
+
     @Test
 	public void shouldThrowPaymentProcessException_whenUnAllocatedAmountIsNotZero() {
     	PaymentInstruction pi = TestUtils.createPaymentInstructions("",10000);
@@ -528,7 +537,7 @@ public class PaymentInstructionServiceTest {
 			assertEquals("Please allocate all amount before processing.", ppe.getMessage());
 		}
 	}
-    
+
     @Test
     public void shouldReturn200_whenUpdatePaymentInstructionForGivenPaymentInstructionIsCalled()
         throws Exception {

@@ -22,7 +22,7 @@ public class UtilTest {
 		PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
 				.status("D").action("S").build();
 		List<String> nullPropertyNames = Arrays.asList(Util.getNullPropertyNames(pir));
-		assertTrue(nullPropertyNames.isEmpty());
+		assertTrue(nullPropertyNames.size() == 2);
 	}
 
 	@Test
@@ -66,25 +66,25 @@ public class UtilTest {
         assertEquals(expectedDateTime,Util.getFormattedDateTime(testDateTime,formatter));
 
     }
-    
+
     @Test
     public void givenDeliveryManagerRole_shouldReturnTrue() {
     	String userRole = "bar-delivery-manager";
     	assertTrue(Util.isUserDeliveryManager(userRole));
     }
-    
+
     @Test
     public void givenSrFeeClerkRole_shouldReturnTrue() {
     	String userRole = "bar-senior-clerk";
     	assertTrue(Util.isUserSrFeeClerk(userRole));
     }
-    
+
     @Test
     public void givenWrongDeliveryManagerRole_shouldReturnFalse() {
     	String userRole = "bar-senior-clerk";
     	assertFalse(Util.isUserDeliveryManager(userRole));
     }
-    
+
     @Test
     public void givenWrongSrFeeClerkRole_shouldReturnFalse() {
     	String userRole = "bar-delivery-manager";
