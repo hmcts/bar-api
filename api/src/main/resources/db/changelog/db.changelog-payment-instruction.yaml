@@ -770,3 +770,9 @@ databaseChangeLog:
             INSERT into payment_instruction_action (action) values ('Withdraw');
             INSERT into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('payment-actions-withdraw', 0, 'Available actions for payment');
 
+  - changeSet:
+      id: 32
+      author: sachi
+      changes:
+      - sql: >
+          INSERT into status (status_id,status_description) values ('C', 'Completed');
