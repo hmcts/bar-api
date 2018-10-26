@@ -753,3 +753,9 @@ databaseChangeLog:
             onUpdate: CASCADE
             referencedColumnNames: action
             referencedTableName: payment_instruction_action
+  - changeSet:
+      id: 31
+      author: sachi
+      changes:
+        - sql: >
+            INSERT into status (status_id,status_description) values ('C', 'Completed');
