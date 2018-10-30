@@ -167,6 +167,7 @@ public class PaymentInstructionService {
 				&& unallocatedAmountService.calculateUnallocatedAmount(id) != 0) {
 			throw new PaymentProcessException("Please allocate all amount before processing.");
 		}
+		validateAction(id, paymentInstructionUpdateRequest);
         String userId = barUserService.getCurrentUserId();
         Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
         PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
@@ -335,5 +336,18 @@ public class PaymentInstructionService {
             .filter(s -> Arrays.stream(AlwaysUpdateProps.values()).map(Enum::name).noneMatch(s::equals))
             .toArray(String[]::new);
         BeanUtils.copyProperties(updateRequest, existingPi, propNamesToIgnore);
+    }
+
+    private void validateAction(Integer id,
+                                PaymentInstructionUpdateRequest paymentInstructionUpdateRequest) throws PaymentProcessException {
+        if (!PaymentActionEnum.RETURN.displayValue().equals(paymentInstructionUpdateRequest.getAction()) &&
+            !PaymentActionEnum.WITHDRAW.displayValue().equals(paymentInstructionUpdateRequest.getAction())) {
+            return;
+        }
+        Optional<Boolean> hasCaseFee = paymentInstructionRepository.findById(id)
+            .map(paymentInstruction -> paymentInstruction.getCaseFeeDetails().size() > 0);
+        if (hasCaseFee.isPresent() && hasCaseFee.get()) {
+            throw new PaymentProcessException("Please remove all case and fee details before attempting this action.");
+        }
     }
 }

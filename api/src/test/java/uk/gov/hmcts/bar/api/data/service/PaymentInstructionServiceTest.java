@@ -758,4 +758,36 @@ public class PaymentInstructionServiceTest {
         assertEquals(1, count);
     }
 
+    @Test
+    public void returnShouldThrowExceptionWhenCaseFeeAttached() {
+        when(ff4jMock.check(PaymentActionEnum.RETURN.featureKey())).thenReturn(true);
+        PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
+            .status("A").action("Return").build();
+        PaymentInstruction existingPaymentInstruction = new ChequePaymentInstruction();
+        existingPaymentInstruction.setCaseFeeDetails(Arrays.asList(new CaseFeeDetail()));
+        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(existingPaymentInstruction));
+        try {
+            paymentInstructionService.submitPaymentInstruction(1, pir);
+            fail("should fail here");
+        } catch (PaymentProcessException e) {
+            assertEquals("Please remove all case and fee details before attempting this action.", e.getMessage());
+        }
+    }
+
+    @Test
+    public void withdrawShouldThrowExceptionWhenCaseFeeAttached() {
+        when(ff4jMock.check(PaymentActionEnum.WITHDRAW.featureKey())).thenReturn(true);
+        PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
+            .status("A").action("Withdraw").build();
+        PaymentInstruction existingPaymentInstruction = new ChequePaymentInstruction();
+        existingPaymentInstruction.setCaseFeeDetails(Arrays.asList(new CaseFeeDetail()));
+        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(existingPaymentInstruction));
+        try {
+            paymentInstructionService.submitPaymentInstruction(1, pir);
+            fail("should fail here");
+        } catch (PaymentProcessException e) {
+            assertEquals("Please remove all case and fee details before attempting this action.", e.getMessage());
+        }
+    }
+
 }
