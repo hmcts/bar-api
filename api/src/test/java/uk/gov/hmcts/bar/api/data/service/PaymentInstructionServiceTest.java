@@ -478,6 +478,27 @@ public class PaymentInstructionServiceTest {
         assertEquals(null, argument.getValue().getActionReason());
         verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUserMock);
     }
+    
+    @Test
+    public void shouldEnterNullForActionInformation_whenSubmitPaymentInstructionWithPendingStatusIsCalled()
+        throws Exception {
+        ArgumentCaptor<PaymentInstruction> argument = ArgumentCaptor.forClass(PaymentInstruction.class);
+        PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
+            .status("P").build();
+        PaymentInstruction existingPaymentInstruction = new ChequePaymentInstruction();
+        existingPaymentInstruction.setActionReason(2);
+        existingPaymentInstruction.setActionComment("Valami tortent");
+        existingPaymentInstruction.setAction("Process");
+        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(existingPaymentInstruction));
+        when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
+            .thenReturn(existingPaymentInstruction);
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
+        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(1, pir);
+        assertEquals(null, updatedPaymentInstruction.getAction());
+        assertEquals(null, updatedPaymentInstruction.getActionReason());
+        assertEquals(null, updatedPaymentInstruction.getActionComment());
+    }
+    
     @Test
     public void shouldReturnSubmittedPaymentInstructionWithAction_whenSubmitPaymentInstructionForGivenPaymentInstructionIsCalledWithAction()
         throws Exception {
