@@ -173,6 +173,11 @@ public class PaymentInstructionService {
         PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
             .orElseThrow(() -> new PaymentInstructionNotFoundException(id));
         updatePaymentInstructionsProps(existingPaymentInstruction, paymentInstructionUpdateRequest);
+		if (PaymentStatusEnum.PENDING.dbKey().equals(paymentInstructionUpdateRequest.getStatus())) {
+			existingPaymentInstruction.setAction(null);
+			existingPaymentInstruction.setActionReason(null);
+			existingPaymentInstruction.setActionComment(null);
+		}
         existingPaymentInstruction.setUserId(userId);
         savePaymentInstructionStatus(existingPaymentInstruction, userId);
         PaymentInstruction paymentInstruction = paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
