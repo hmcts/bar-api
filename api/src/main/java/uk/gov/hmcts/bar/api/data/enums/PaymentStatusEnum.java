@@ -7,7 +7,7 @@ public enum PaymentStatusEnum {
 
 	DRAFT("D", "Draft"), PENDING("P", "Pending"), VALIDATED("V", "Validated"), PENDING_APPROVAL("PA",
 			"Pending Approval"), APPROVED("A", "Approved"), TRANSFERREDTOBAR("TTB",
-					"Transferred to bar"), REJECTED("REJ", "Rejected"), REJECTEDBYDM("RDM", "Rejected by DM");
+					"Transferred to bar"), REJECTED("REJ", "Rejected"), REJECTEDBYDM("RDM", "Rejected by DM"), COMPLETED("C","Completed");
 
 	private static final Map<String, PaymentStatusEnum> paymentStatusEnumMap = new HashMap<>();
 
