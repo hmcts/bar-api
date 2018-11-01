@@ -1,7 +1,5 @@
 package uk.gov.hmcts.bar.api.liquibase;
 
-import liquibase.configuration.GlobalConfiguration;
-import liquibase.configuration.LiquibaseConfiguration;
 import liquibase.exception.LockException;
 import liquibase.lockservice.DatabaseChangeLogLock;
 import liquibase.lockservice.StandardLockService;
@@ -15,7 +13,7 @@ import java.util.Optional;
 
 public class BarLockService extends StandardLockService {
 
-    public static final long lockExpirationTimeMinute = 11L;
+    public static final long LOCK_EXPIRATION_TIME_MINUTE = 11L;
 
     @Override
     public void waitForLock() throws LockException {
@@ -69,6 +67,6 @@ public class BarLockService extends StandardLockService {
         if (latestLocktime == null){
             return true;
         }
-        return new Date().getTime() < latestLocktime.getTime() + lockExpirationTimeMinute * 1000 * 60;
+        return new Date().getTime() < latestLocktime.getTime() + LOCK_EXPIRATION_TIME_MINUTE * 1000 * 60;
     }
 }
