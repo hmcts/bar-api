@@ -104,7 +104,7 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
 
     private boolean isActionReturnOrWithdraw(PaymentInstructionReportLine line){
         return ( (line.getAction().equals(PaymentActionEnum.RETURN.displayValue())) ||
-                 (line.getAction().equals(PaymentActionEnum.WITHDRAW.displayValue()))) ? true : false;
+                 (line.getAction().equals(PaymentActionEnum.WITHDRAW.displayValue())));
     }
 
     private String formatNumber(Integer amount){

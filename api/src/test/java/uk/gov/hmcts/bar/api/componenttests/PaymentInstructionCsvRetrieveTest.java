@@ -407,6 +407,10 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
             .put("/cards/1", ttbCardPaymentInstructionRequest)
             .andExpect(status().isOk()).andReturn().getResponse();
 
+        restActions
+            .put("/cards/1", completedCardPaymentInstructionRequest)
+            .andExpect(status().isOk()).andReturn().getResponse();
+        
         LocalDateTime currentDateTime = LocalDateTime.now();
         DateTimeFormatter actualFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH");
         String recordedDateTime = currentDateTime.format(actualFormatter);
