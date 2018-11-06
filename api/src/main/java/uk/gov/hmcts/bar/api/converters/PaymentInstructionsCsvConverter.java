@@ -84,11 +84,11 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
         csvRow[6] = formatNumber(line.getCardAmount());
         csvRow[7] = formatNumber(line.getAllPayAmount());
         csvRow[8] = line.getAction();
-        csvRow[9] = (line.getCaseRef() != null) ? line.getCaseRef() : null;
+        csvRow[9] = line.getCaseRef();
         csvRow[10] = line.getBgcNumber();
-        csvRow[11] = (line.getFeeAmount() != null) ? formatNumber(line.getFeeAmount()) : null;
-        csvRow[12] = (line.getFeeCode() != null) ?  line.getFeeCode() : null;
-        csvRow[13] = (line.getFeeDescription() != null) ? line.getFeeDescription() : null;
+        csvRow[11] = (formatNumber(line.getFeeAmount()));
+        csvRow[12] = line.getFeeCode();
+        csvRow[13] = line.getFeeDescription();
         csvRow[14] = line.getRecordedUser();
         csvRow[15] = Util.getFormattedDateTime(line.getRecordedTime(),dateTimeFormatter);
         csvRow[16] = line.getValidatedUser();
