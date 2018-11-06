@@ -53,11 +53,11 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
 
     public Specification<T> getPaymentInstructionsSpecification() {
 
-        Specification<T> andSpecs = Specification.where(statusSpec).and(startDateSpec)
+        Specification<T> andSpecs = Specification.where(statusSpec).and(startDateSpec).and(actionSpec).and(bgcNumberSpec)
             .and(endDateSpec).and(siteIdSpec).and(userIdSpec).and(paymentTypeSpec).and(transferredToPayhubSpec);
 		Specification<T> orSpecs = Specification.where(payerNameSpec).or(allPayTransactionIdSpec)
-				.or(chequeNumberSpec).or(postalOrderNumerSpec).or(dailySequenceIdSpec).or(actionSpec)
-				.or(caseReferenceSpec).or(bgcNumberSpec);
+				.or(chequeNumberSpec).or(postalOrderNumerSpec).or(dailySequenceIdSpec)
+				.or(caseReferenceSpec);
         return Specification.where(andSpecs).and(orSpecs);
     }
 

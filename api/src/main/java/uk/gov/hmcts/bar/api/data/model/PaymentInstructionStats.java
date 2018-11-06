@@ -12,4 +12,5 @@ public interface PaymentInstructionStats {
     Long getTotalAmount();
     String getPaymentType();
     String getBgc();
+    String getAction();
 }

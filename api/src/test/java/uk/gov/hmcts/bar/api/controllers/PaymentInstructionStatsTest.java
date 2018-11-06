@@ -29,4 +29,20 @@ public class PaymentInstructionStatsTest extends ComponentTestBase {
                 assertEquals("CARD", stats.get("payment_type"));
             }));
     }
+
+    @Test
+    public void testGettingPaymentInstructionActionStats() throws Exception {
+        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
+
+        restActions
+            .get("/users/1234/payment-instructions/action-stats")
+            .andExpect(status().isOk())
+            .andExpect(body().as(Map.class, item -> {
+                assertTrue(item.size() == 2);
+                Map stats = ((ArrayList<Map>)((Map)item.get("content")).get("0")).get(0);
+                assertNull(stats.get("bgc"));
+                assertEquals(1, stats.get("count"));
+                assertEquals("CARD", stats.get("payment_type"));
+            }));
+    }
 }
