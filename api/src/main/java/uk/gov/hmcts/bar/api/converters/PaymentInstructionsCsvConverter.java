@@ -6,7 +6,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractGenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
-import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionReportLine;
 import uk.gov.hmcts.bar.api.data.utils.Util;
@@ -85,11 +84,11 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
         csvRow[6] = formatNumber(line.getCardAmount());
         csvRow[7] = formatNumber(line.getAllPayAmount());
         csvRow[8] = line.getAction();
-        csvRow[9] = (isActionReturnOrWithdraw(line)) ? null :line.getCaseRef();
+        csvRow[9] = (line.getCaseRef() != null) ? line.getCaseRef() : null;
         csvRow[10] = line.getBgcNumber();
-        csvRow[11] = (isActionReturnOrWithdraw(line)) ? null : formatNumber(line.getFeeAmount());
-        csvRow[12] = (isActionReturnOrWithdraw(line)) ? null : line.getFeeCode();
-        csvRow[13] = (isActionReturnOrWithdraw(line)) ? null : line.getFeeDescription();
+        csvRow[11] = (line.getFeeAmount() != null) ? formatNumber(line.getFeeAmount()) : null;
+        csvRow[12] = (line.getFeeCode() != null) ?  line.getFeeCode() : null;
+        csvRow[13] = (line.getFeeDescription() != null) ? line.getFeeDescription() : null;
         csvRow[14] = line.getRecordedUser();
         csvRow[15] = Util.getFormattedDateTime(line.getRecordedTime(),dateTimeFormatter);
         csvRow[16] = line.getValidatedUser();
@@ -98,13 +97,8 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
         csvRow[19] = Util.getFormattedDateTime(line.getApprovedTime(),dateTimeFormatter);
         csvRow[20] = line.getTransferredToBarUser();
         csvRow[21] = Util.getFormattedDateTime(line.getTransferredToBarTime(),dateTimeFormatter);
-        csvRow[22] = (isActionReturnOrWithdraw(line)) ? "" : line.getSentToPayhub();
+        csvRow[22] = (line.getSentToPayhub());
         return csvRow;
-    }
-
-    private boolean isActionReturnOrWithdraw(PaymentInstructionReportLine line){
-        return ( (line.getAction().equals(PaymentActionEnum.RETURN.displayValue())) ||
-                 (line.getAction().equals(PaymentActionEnum.WITHDRAW.displayValue())));
     }
 
     private String formatNumber(Integer amount){
