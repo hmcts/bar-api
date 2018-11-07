@@ -478,7 +478,7 @@ public class PaymentInstructionServiceTest {
         assertEquals(null, argument.getValue().getActionReason());
         verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUserMock);
     }
-    
+
     @Test
     public void shouldEnterNullForActionInformation_whenSubmitPaymentInstructionWithPendingStatusIsCalled()
         throws Exception {
@@ -498,7 +498,7 @@ public class PaymentInstructionServiceTest {
         assertEquals(null, updatedPaymentInstruction.getActionReason());
         assertEquals(null, updatedPaymentInstruction.getActionComment());
     }
-    
+
     @Test
     public void shouldReturnSubmittedPaymentInstructionWithAction_whenSubmitPaymentInstructionForGivenPaymentInstructionIsCalledWithAction()
         throws Exception {
@@ -674,8 +674,18 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString(),anyBoolean())).thenReturn(rawStats);
         MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType("1234", "PA",false);
         Resource<PaymentInstructionStats> resource = (Resource<PaymentInstructionStats>)((List)stats.get("bgc123")).get(0);
-        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE&bgcNumber=bgc123", resource.getLink(STAT_DETAILS).getHref());
-        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE,POSTAL_ORDER&bgcNumber=bgc123", resource.getLink(STAT_GROUP_DETAILS).getHref());
+        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE&action=Process&bgcNumber=bgc123", resource.getLink(STAT_DETAILS).getHref());
+        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE,POSTAL_ORDER&action=Process&bgcNumber=bgc123", resource.getLink(STAT_GROUP_DETAILS).getHref());
+    }
+
+    @Test
+    public void testGetPaymentInstructionsByUserGroupByActionAndType() {
+        List<PaymentInstructionStats> rawStats = createStats();
+        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByActionAndType(anyString(), anyBoolean())).thenReturn(rawStats);
+        MultiMap stats = paymentInstructionService.getPaymentInstructionsByUserGroupByActionAndType("1234", false);
+        Resource<PaymentInstructionStats> resource = (Resource<PaymentInstructionStats>)((List)stats.get("bgc123")).get(0);
+        assertEquals("/users/1234/payment-instructions?paymentType=CHEQUE&action=Process&bgcNumber=bgc123", resource.getLink(STAT_DETAILS).getHref());
+        assertEquals("/users/1234/payment-instructions?paymentType=CHEQUE,POSTAL_ORDER&action=Process&bgcNumber=bgc123", resource.getLink(STAT_GROUP_DETAILS).getHref());
     }
 
     @Test
@@ -695,14 +705,14 @@ public class PaymentInstructionServiceTest {
 
     private List<PaymentInstructionStats> createStats() {
         List<PaymentInstructionStats> stats = new ArrayList<>();
-        stats.add(createPaymentStat("James Black","1234", 1, "PA", 10000L, "CARD", null));
-        stats.add(createPaymentStat("James Black","1234", 4, "PA", 15000L, "CHEQUE", "bgc123"));
-        stats.add(createPaymentStat("James Black","1234", 1, "PA", 33000L, "POSTAL_ORDER", "bgc123"));
-        stats.add(createPaymentStat("James Black","1234", 1, "PA", 10000L, "CASH", "bgc456"));
+        stats.add(createPaymentStat("James Black","1234", 1, "PA", 10000L, "CARD", null, "Process"));
+        stats.add(createPaymentStat("James Black","1234", 4, "PA", 15000L, "CHEQUE", "bgc123", "Process"));
+        stats.add(createPaymentStat("James Black","1234", 1, "PA", 33000L, "POSTAL_ORDER", "bgc123", "Process"));
+        stats.add(createPaymentStat("James Black","1234", 1, "PA", 10000L, "CASH", "bgc456", "Process"));
         return stats;
     }
 
-    private PaymentInstructionStats createPaymentStat(String name, String userId, Integer count, String status, Long totalAmount, String paymentType, String bgc) {
+    private PaymentInstructionStats createPaymentStat(String name, String userId, Integer count, String status, Long totalAmount, String paymentType, String bgc, String action) {
         return new PaymentInstructionStats() {
             @Override
             public String getName() { return name; }
@@ -734,6 +744,11 @@ public class PaymentInstructionServiceTest {
             @Override
             public String getBgc() {
                 return bgc;
+            }
+
+            @Override
+            public String getAction() {
+                return action;
             }
         };
     }

@@ -233,16 +233,26 @@ public class PaymentInstructionService {
     public MultiMap getPaymentStatsByUserGroupByType(String userId, String status, boolean sentToPayhub) {
         List<PaymentInstructionStats> results = paymentInstructionStatusRepository.getStatsByUserGroupByType(userId, status, sentToPayhub);
 
+        return createHateoasResponse(results, userId, status);
+    }
+
+    public MultiMap getPaymentInstructionsByUserGroupByActionAndType(String userId, boolean sentToPayhub) {
+        List<PaymentInstructionStats> results =  paymentInstructionStatusRepository.getStatsByUserGroupByActionAndType(userId, sentToPayhub);
+
+        return createHateoasResponse(results, userId, null);
+    }
+
+    private MultiMap createHateoasResponse(List<PaymentInstructionStats> stats, String userId, String status) {
         MultiMap paymentInstructionStatsGroupedByBgc = new MultiValueMap();
-        results.stream().forEach(stat -> {
+        stats.stream().forEach(stat -> {
             Link detailslink = null;
 
 
-                detailslink = linkTo(methodOn(PaymentInstructionController.class)
-                    .getPaymentInstructionsByIdamId(userId, status,
-                        null, null, null, null, null,
-                        null, null, null, stat.getPaymentType(), null, null, stat.getBgc())
-                ).withRel(STAT_DETAILS);
+            detailslink = linkTo(methodOn(PaymentInstructionController.class)
+                .getPaymentInstructionsByIdamId(userId, status,
+                    null, null, null, null, null,
+                    null, null, null, stat.getPaymentType(), stat.getAction(), null, stat.getBgc())
+            ).withRel(STAT_DETAILS);
 
 
 
@@ -252,12 +262,12 @@ public class PaymentInstructionService {
             if (GROUPED_TYPES.contains(stat.getPaymentType())) {
                 Link groupedLink = null;
 
-                    groupedLink = linkTo(methodOn(PaymentInstructionController.class)
-                        .getPaymentInstructionsByIdamId(userId, status,
-                            null, null, null, null, null,
-                            null, null, null,
-                            GROUPED_TYPES.stream().collect(Collectors.joining(",")), null, null, stat.getBgc())
-                    ).withRel(STAT_GROUP_DETAILS);
+                groupedLink = linkTo(methodOn(PaymentInstructionController.class)
+                    .getPaymentInstructionsByIdamId(userId, status,
+                        null, null, null, null, null,
+                        null, null, null,
+                        GROUPED_TYPES.stream().collect(Collectors.joining(",")), stat.getAction(), null, stat.getBgc())
+                ).withRel(STAT_GROUP_DETAILS);
 
                 resource.add(groupedLink.expand());
             }

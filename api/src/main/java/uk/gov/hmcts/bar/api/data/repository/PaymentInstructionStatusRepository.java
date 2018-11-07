@@ -63,4 +63,11 @@ public interface PaymentInstructionStatusRepository
         + " as x inner join payment_instruction_status as f on f.payment_instruction_id = x.payment_instruction_id and f.update_time = x.max_update_time and f.status = :status", nativeQuery = true)
     long getNonResetCountByStatus(@Param("status") String status);
 
+    @Query(value = "SELECT pi.user_id as userId, CONCAT(bu.forename,' ',bu.surname) as name, count(pi.id) as count, sum(pi.amount) as totalAmount, " +
+        "pi.payment_type_id as PaymentType, pi.bgc_number as bgc, pi.action as action from payment_instruction pi, bar_user bu where pi.user_id = :userId " +
+        "and pi.user_id = bu.id and pi.transferred_to_payhub = :sentToPayhub and pi.action is not null " +
+        "group by bgc_number, payment_type_id, action, user_id, name order by bgc_number",
+        nativeQuery = true)
+    List<PaymentInstructionStats> getStatsByUserGroupByActionAndType(@Param("userId") String userId, @Param("sentToPayhub") boolean sentToPayhub);
+
 }

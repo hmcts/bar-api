@@ -459,9 +459,24 @@ public class PaymentInstructionController {
 
         MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType(id, status,sentToPayhub);
         Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUser(id, status,sentToPayhub)).withSelfRel();
-        Resource<MultiMap> result = new Resource<>(stats, link);
-        return result;
+        return new Resource<>(stats, link);
     }
+
+    @ApiOperation(value = "collect stats for a user", notes = "Collect all payment instruction stats for a user grouped by action and type")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return stats for a given user"),
+        @ApiResponse(code = 400, message = "Bad request"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/users/{id}/payment-instructions/action-stats")
+    public Resource<MultiMap> getPaymentInstructionStatsByUserGroupByAction(
+        @PathVariable("id") String id,
+        @RequestParam(name = "sentToPayhub", required = false, defaultValue = "false") boolean sentToPayhub) {
+
+        MultiMap stats = paymentInstructionService.getPaymentInstructionsByUserGroupByActionAndType(id, sentToPayhub);
+        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUserGroupByAction(id, sentToPayhub)).withSelfRel();
+        return new Resource<>(stats, link);
+    }
+
 
     @ApiOperation(value = "Send to payhub", notes = "Send all payment-instructions with TTB status to payhub")
     @ApiResponses(value = {@ApiResponse(code = 200, message = ""),
