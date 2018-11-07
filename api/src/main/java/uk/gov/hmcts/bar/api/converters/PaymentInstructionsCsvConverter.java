@@ -86,7 +86,7 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
         csvRow[8] = line.getAction();
         csvRow[9] = line.getCaseRef();
         csvRow[10] = line.getBgcNumber();
-        csvRow[11] = formatNumber(line.getFeeAmount());
+        csvRow[11] = (formatNumber(line.getFeeAmount()));
         csvRow[12] = line.getFeeCode();
         csvRow[13] = line.getFeeDescription();
         csvRow[14] = line.getRecordedUser();
@@ -97,7 +97,7 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
         csvRow[19] = Util.getFormattedDateTime(line.getApprovedTime(),dateTimeFormatter);
         csvRow[20] = line.getTransferredToBarUser();
         csvRow[21] = Util.getFormattedDateTime(line.getTransferredToBarTime(),dateTimeFormatter);
-        csvRow[22] = line.getSentToPayhub();
+        csvRow[22] = (line.getSentToPayhub());
         return csvRow;
     }
 
