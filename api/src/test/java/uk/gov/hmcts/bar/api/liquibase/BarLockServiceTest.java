@@ -16,13 +16,12 @@ import static org.mockito.Mockito.*;
 public class BarLockServiceTest {
 
     private BarLockService spyBarLockService;
-    Date lockDate1;
-    Date lockDate2;
+    private Date lockDate1;
 
     @Before
     public void setUp() throws LockException {
         lockDate1 = Date.from(LocalDateTime.now().minusMinutes(12).atZone(ZoneId.systemDefault()).toInstant());
-        lockDate2 = Date.from(LocalDateTime.now().minusMinutes(13).atZone(ZoneId.systemDefault()).toInstant());
+        Date lockDate2 = Date.from(LocalDateTime.now().minusMinutes(13).atZone(ZoneId.systemDefault()).toInstant());
         DatabaseChangeLogLock[] toReturn =
             new DatabaseChangeLogLock[]
                 {
