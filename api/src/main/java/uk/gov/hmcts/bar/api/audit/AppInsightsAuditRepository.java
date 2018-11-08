@@ -41,10 +41,7 @@ public class AppInsightsAuditRepository implements AuditRepository{
             properties.put("Action",paymentInstruction.getAction());
         }
 
-
-        if (null != paymentInstruction.getStatus()){
-            properties.put("Status",paymentInstruction.getStatus());
-        }
+        properties.put("Status",paymentInstruction.getStatus());
 
         if (null != paymentInstruction.getBgcNumber()){
             properties.put("BGC Number",paymentInstruction.getBgcNumber());

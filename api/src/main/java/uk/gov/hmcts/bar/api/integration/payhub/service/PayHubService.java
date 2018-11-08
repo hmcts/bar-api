@@ -18,7 +18,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.bar.api.aop.features.Featured;
 import uk.gov.hmcts.bar.api.data.exceptions.BadRequestException;
-import uk.gov.hmcts.bar.api.data.exceptions.BarUserNotFoundException;
 import uk.gov.hmcts.bar.api.data.model.PayHubResponseReport;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionPayhubReference;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
@@ -47,9 +46,9 @@ public class PayHubService {
 
     private static final Logger LOG = getLogger(PayHubService.class);
     private static final TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
-    private final static String REFERENCE_KEY = "reference";
-    private final static String GROUP_REFERENCE_KEY = "payment_group_reference";
-    private final static String PAYHUB_FEATURE_KEY = "send-to-payhub";
+    private static final String REFERENCE_KEY = "reference";
+    private static final String GROUP_REFERENCE_KEY = "payment_group_reference";
+    private static final String PAYHUB_FEATURE_KEY = "send-to-payhub";
 
     @Autowired
     private final PaymentInstructionService paymentInstructionService;
@@ -79,7 +78,7 @@ public class PayHubService {
 
     @PreAuthorize("hasAuthority(T(uk.gov.hmcts.bar.api.data.enums.BarUserRoleEnum).BAR_DELIVERY_MANAGER.getIdamRole())")
     @Featured(featureKey = PAYHUB_FEATURE_KEY)
-    public PayHubResponseReport sendPaymentInstructionToPayHub(String userToken, LocalDateTime reportDate) throws BarUserNotFoundException {
+    public PayHubResponseReport sendPaymentInstructionToPayHub(String userToken, LocalDateTime reportDate) {
         validateReportDate(reportDate);
 
         PayHubResponseReport resp = new PayHubResponseReport();
@@ -131,7 +130,7 @@ public class PayHubService {
     }
 
 
-    private List<PayhubPaymentInstruction> collectPaymentInstructions() throws BarUserNotFoundException {
+    private List<PayhubPaymentInstruction> collectPaymentInstructions() {
         PaymentInstructionSearchCriteriaDto criteriaDto = new PaymentInstructionSearchCriteriaDto();
         criteriaDto.setStatus("TTB");
         criteriaDto.setTransferredToPayhub(false);

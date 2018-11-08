@@ -31,11 +31,6 @@ public class PayhubCaseFeeDetail extends BaseCaseFeeDetail {
         return super.getFeeCode();
     }
 
-    @Override
-    public Integer getAmount() {
-        return super.getAmount();
-    }
-
     @JsonProperty("calculated_amount")
     public BigDecimal getAmountAsDecimal() {
         return new BigDecimal(getAmount()).movePointLeft(2);

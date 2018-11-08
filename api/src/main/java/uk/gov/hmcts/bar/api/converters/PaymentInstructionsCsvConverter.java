@@ -4,8 +4,6 @@ import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractGenericHttpMessageConverter;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.HttpMessageNotWritableException;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionReportLine;
 import uk.gov.hmcts.bar.api.data.utils.Util;
@@ -16,10 +14,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageConverter<List<PaymentInstruction>> {
 
@@ -33,13 +28,13 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
     }
 
     @Override
-    public List<PaymentInstruction> read(Type type, Class<?> contextClass, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-        return null;
+    public List<PaymentInstruction> read(Type type, Class<?> contextClass, HttpInputMessage inputMessage)  {
+        return Collections.EMPTY_LIST;
     }
 
     @Override
-    protected List<PaymentInstruction> readInternal(Class<? extends List<PaymentInstruction>> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-        return null;
+    protected List<PaymentInstruction> readInternal(Class<? extends List<PaymentInstruction>> clazz, HttpInputMessage inputMessage)  {
+        return Collections.EMPTY_LIST;
     }
 
     @Override
@@ -49,7 +44,7 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
     }
 
     @Override
-    protected void writeInternal(List<PaymentInstruction> paymentInstructions, Type type, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+    protected void writeInternal(List<PaymentInstruction> paymentInstructions, Type type, HttpOutputMessage outputMessage) throws IOException {
         OutputStream outputStream = outputMessage.getBody();
         outputStream.write(convertToCsv(flattenEntity(paymentInstructions)).getBytes());
         outputStream.close();

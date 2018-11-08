@@ -1,34 +1,26 @@
 package uk.gov.hmcts.bar.api.data.utils;
 
-import java.beans.FeatureDescriptor;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.persistence.criteria.CriteriaBuilder.In;
-
+import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
-
-import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
+import uk.gov.hmcts.bar.api.data.enums.BarUserRoleEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStaticsByUser;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats;
 
+import javax.persistence.criteria.CriteriaBuilder.In;
+import java.beans.FeatureDescriptor;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 
 public interface Util {
-
-    String SR_FEE_CLERK_ROLE = "bar-senior-clerk";
-    String DELIVERY_MANAGER_ROLE = "bar-delivery-manager";
 
     static String[] getNullPropertyNames(Object source) {
         final BeanWrapper wrappedSource = new BeanWrapperImpl(source);
@@ -102,11 +94,11 @@ public interface Util {
     }
 
     static boolean isUserDeliveryManager(String userRoles) {
-        return StringUtils.containsIgnoreCase(userRoles, DELIVERY_MANAGER_ROLE);
+        return StringUtils.containsIgnoreCase(userRoles, BarUserRoleEnum.BAR_DELIVERY_MANAGER.getIdamRole());
     }
 
     static boolean isUserSrFeeClerk(String userRoles) {
-        return StringUtils.containsIgnoreCase(userRoles, SR_FEE_CLERK_ROLE);
+        return StringUtils.containsIgnoreCase(userRoles, BarUserRoleEnum.BAR_SENIOR_CLERK.getIdamRole());
     }
 
     static MultiMap createMultimapFromList(List<PaymentInstructionUserStats> piStatsList) {

@@ -10,7 +10,6 @@ import uk.gov.hmcts.bar.api.data.model.BarUser;
 import uk.gov.hmcts.bar.api.data.model.CaseFeeDetail;
 import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
 import uk.gov.hmcts.bar.api.data.repository.CaseFeeDetailRepository;
-import uk.gov.hmcts.bar.api.data.utils.Util;
 
 import java.util.Optional;
 
@@ -56,9 +55,6 @@ public class CaseFeeDetailService {
         if (existingCaseFeeDetail == null) {
             throw new CaseFeeDetailNotFoundException(feeId);
         }
-
-        //Disabling this right now to be able to remove remission if needed (null out all values)
-        String[] nullPropertiesNamesToIgnore = Util.getNullPropertyNames(caseFeeDetailRequest);
         BeanUtils.copyProperties(caseFeeDetailRequest, existingCaseFeeDetail);
 
         return caseFeeDetailRepository.saveAndRefresh(existingCaseFeeDetail);

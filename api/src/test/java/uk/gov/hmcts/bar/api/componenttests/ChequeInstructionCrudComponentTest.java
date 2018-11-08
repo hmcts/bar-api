@@ -1,5 +1,17 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONParser;
+import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
+import uk.gov.hmcts.bar.api.data.model.Cheque;
+import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
+
+import java.util.List;
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -8,19 +20,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.bar.api.data.model.Cheque.chequePaymentInstructionRequestWith;
 import static uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction.chequePaymentInstructionWith;
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith;
-
-import java.util.List;
-import java.util.Map;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.skyscreamer.jsonassert.JSONParser;
-
-import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
-import uk.gov.hmcts.bar.api.data.model.Cheque;
-import uk.gov.hmcts.bar.api.data.model.ChequePaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
 public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
 
@@ -472,8 +471,8 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 				.getContentAsString();
 		JSONObject feeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
 				.get("fee-clerk")).get(0);
-		assertEquals(feeClerk.get("bar_user_full_name"), "fee-clerk-fn fee-clerk-ln");
-		assertEquals(feeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
+		assertEquals( "fee-clerk-fn fee-clerk-ln",feeClerk.get("bar_user_full_name"));
+		assertEquals( 1,feeClerk.get("count_of_payment_instruction_in_specified_status"));
 	}
 
 	@Test
@@ -511,8 +510,8 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 				.getContentAsString();
 		JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
 				.get("sr-fee-clerk")).get(0);
-		assertEquals(srFeeClerk.get("bar_user_full_name"), "sr-fee-clerk-fn sr-fee-clerk-ln");
-		assertEquals(srFeeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
+		assertEquals( "sr-fee-clerk-fn sr-fee-clerk-ln",srFeeClerk.get("bar_user_full_name"));
+		assertEquals( 1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
 	}
 
 	@Test
@@ -601,8 +600,8 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 		System.out.println(jsonResponse);
 		JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
 				.get("sr-fee-clerk")).get(0);
-		assertEquals(srFeeClerk.get("bar_user_full_name"), "sr-fee-clerk-fn sr-fee-clerk-ln");
-		assertEquals(srFeeClerk.get("count_of_payment_instruction_in_specified_status"), 1);
+		assertEquals( "sr-fee-clerk-fn sr-fee-clerk-ln",srFeeClerk.get("bar_user_full_name"));
+		assertEquals( 1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
 	}
 	
 	@Test
