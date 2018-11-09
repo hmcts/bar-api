@@ -7,15 +7,14 @@ import uk.gov.hmcts.bar.api.componenttests.utils.DbTestUtil;
 import java.util.ArrayList;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class PaymentInstructionStatsTest extends ComponentTestBase {
 
     @Test
     public void testGettingPaymentInstructionStats() throws Exception {
+        DbTestUtil.insertBGCNumber(getWebApplicationContext());
         DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
 
         restActions
@@ -32,6 +31,7 @@ public class PaymentInstructionStatsTest extends ComponentTestBase {
 
     @Test
     public void testGettingPaymentInstructionActionStats() throws Exception {
+        DbTestUtil.insertBGCNumber(getWebApplicationContext());
         DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
 
         restActions

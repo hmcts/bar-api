@@ -10,6 +10,7 @@ import javax.persistence.criteria.CriteriaBuilder.In;
 import java.time.LocalDateTime;
 
 public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction> {
+    public static final String IS_NULL = "isNull";
     private PaymentTypeService paymentTypeService;
     private PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto;
     protected Specification<T> statusSpec = null;
@@ -272,7 +273,13 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
 
             Predicate predicate = null;
 
-            if (paymentInstructionSearchCriteriaDto.getBgcNumber() != null) {
+            if(paymentInstructionSearchCriteriaDto.getBgcNumber() == null) {
+                return null;
+            }
+
+            if (IS_NULL.equals(paymentInstructionSearchCriteriaDto.getBgcNumber())) {
+                predicate = builder.isNull(root.<String>get("bgcNumber"));
+            } else {
                 predicate = builder.equal(root.<String>get("bgcNumber"),
                     paymentInstructionSearchCriteriaDto.getBgcNumber());
             }

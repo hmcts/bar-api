@@ -246,12 +246,12 @@ public class PaymentInstructionService {
         MultiMap paymentInstructionStatsGroupedByBgc = new MultiValueMap();
         stats.stream().forEach(stat -> {
             Link detailslink = null;
-
+            String bgcNumber = stat.getBgc() == null ? PaymentInstructionsSpecifications.IS_NULL : stat.getBgc();
 
             detailslink = linkTo(methodOn(PaymentInstructionController.class)
                 .getPaymentInstructionsByIdamId(userId, status,
                     null, null, null, null, null,
-                    null, null, null, stat.getPaymentType(), stat.getAction(), null, stat.getBgc())
+                    null, null, null, stat.getPaymentType(), stat.getAction(), null, bgcNumber)
             ).withRel(STAT_DETAILS);
 
 
@@ -266,7 +266,7 @@ public class PaymentInstructionService {
                     .getPaymentInstructionsByIdamId(userId, status,
                         null, null, null, null, null,
                         null, null, null,
-                        GROUPED_TYPES.stream().collect(Collectors.joining(",")), stat.getAction(), null, stat.getBgc())
+                        GROUPED_TYPES.stream().collect(Collectors.joining(",")), stat.getAction(), null, bgcNumber)
                 ).withRel(STAT_GROUP_DETAILS);
 
                 resource.add(groupedLink.expand());
