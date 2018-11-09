@@ -42,7 +42,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @Transactional
 public class PaymentInstructionService {
 
-    public static final String[] ALWAYS_UPDATE = new String[]{ "actionComment", "actionReason" };
+    private static final String[] ALWAYS_UPDATE = new String[]{ "actionComment", "actionReason" };
 
     public static final String STAT_GROUP_DETAILS = "stat-group-details";
     public static final String STAT_DETAILS = "stat-details";
