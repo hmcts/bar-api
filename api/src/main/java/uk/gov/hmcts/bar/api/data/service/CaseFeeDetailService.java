@@ -51,10 +51,8 @@ public class CaseFeeDetailService {
 
     public CaseFeeDetail updateCaseFeeDetail(Integer feeId, CaseFeeDetailRequest caseFeeDetailRequest) {
 
-        CaseFeeDetail existingCaseFeeDetail = caseFeeDetailRepository.getOne(feeId);
-        if (existingCaseFeeDetail == null) {
-            throw new CaseFeeDetailNotFoundException(feeId);
-        }
+        Optional<CaseFeeDetail> optExistingCaseFeeDetail = caseFeeDetailRepository.findById(feeId);
+        CaseFeeDetail existingCaseFeeDetail = optExistingCaseFeeDetail.orElseThrow(() ->  new CaseFeeDetailNotFoundException(feeId));
         BeanUtils.copyProperties(caseFeeDetailRequest, existingCaseFeeDetail);
 
         return caseFeeDetailRepository.saveAndRefresh(existingCaseFeeDetail);

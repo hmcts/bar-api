@@ -29,12 +29,12 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
 
     @Override
     public List<PaymentInstruction> read(Type type, Class<?> contextClass, HttpInputMessage inputMessage)  {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override
     protected List<PaymentInstruction> readInternal(Class<? extends List<PaymentInstruction>> clazz, HttpInputMessage inputMessage)  {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override
