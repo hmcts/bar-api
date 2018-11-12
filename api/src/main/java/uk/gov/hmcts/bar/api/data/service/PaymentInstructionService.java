@@ -42,9 +42,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @Transactional
 public class PaymentInstructionService {
 
-    public enum AlwaysUpdateProps {
-        actionComment, actionReason
-    }
+    private static final String[] ALWAYS_UPDATE = new String[]{ "actionComment", "actionReason" };
 
     public static final String STAT_GROUP_DETAILS = "stat-group-details";
     public static final String STAT_DETAILS = "stat-details";
@@ -90,7 +88,7 @@ public class PaymentInstructionService {
         this.auditRepository = auditRepository;
     }
 
-    public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction) throws BarUserNotFoundException {
+    public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction)  {
         String userId = barUserService.getCurrentUserId();
         BarUser barUser = getBarUser();
         PaymentReference nextPaymentReference = paymentReferenceService.getNextPaymentReferenceSequenceBySite(barUser.getSiteId());
@@ -104,7 +102,7 @@ public class PaymentInstructionService {
         return savedPaymentInstruction;
     }
 
-    public List<PaymentInstruction> getAllPaymentInstructions(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto) throws BarUserNotFoundException {
+    public List<PaymentInstruction> getAllPaymentInstructions(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto)  {
         BarUser barUser = getBarUser();
         paymentInstructionSearchCriteriaDto.setSiteId(barUser.getSiteId());
         PaymentInstructionsSpecifications<PaymentInstruction> paymentInstructionsSpecification = new PaymentInstructionsSpecifications<>(paymentInstructionSearchCriteriaDto,paymentTypeService);
@@ -134,7 +132,7 @@ public class PaymentInstructionService {
 
     public List<PayhubPaymentInstruction> getAllPaymentInstructionsForPayhub(
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto
-    ) throws BarUserNotFoundException {
+    )  {
         BarUser barUser = getBarUser();
         paymentInstructionSearchCriteriaDto.setSiteId(barUser.getSiteId());
         PaymentInstructionsSpecifications<PayhubPaymentInstruction> paymentInstructionsSpecification =
@@ -188,7 +186,7 @@ public class PaymentInstructionService {
         return paymentInstruction;
     }
 
-    public PaymentInstruction updatePaymentInstruction(Integer id, PaymentInstructionRequest paymentInstructionRequest) throws BarUserNotFoundException {
+    public PaymentInstruction updatePaymentInstruction(Integer id, PaymentInstructionRequest paymentInstructionRequest)  {
         String userId = barUserService.getCurrentUserId();
         BarUser barUser = getBarUser();
         Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
@@ -333,13 +331,12 @@ public class PaymentInstructionService {
     private boolean checkIfActionEnabled(PaymentInstructionUpdateRequest paymentInstructionUpdateRequest){
         boolean[] ret = { true };
         String action = paymentInstructionUpdateRequest.getAction();
-        PaymentActionEnum.findByDisplayValue(action).ifPresent(paymentActionEnum -> {
-            ret[0] = ff4j.check(paymentActionEnum.featureKey());
-        });
+        PaymentActionEnum.findByDisplayValue(action).ifPresent(paymentActionEnum ->
+            ret[0] = ff4j.check(paymentActionEnum.featureKey()));
         return ret[0];
     }
 
-    private BarUser getBarUser() throws BarUserNotFoundException {
+    private BarUser getBarUser()  {
         Optional<BarUser> optBarUser = barUserService.getBarUser();
         BarUser barUser = optBarUser.orElseThrow(()-> new BarUserNotFoundException("Bar user not found"));
         return barUser;
@@ -348,7 +345,7 @@ public class PaymentInstructionService {
     private void updatePaymentInstructionsProps(PaymentInstruction existingPi, Object updateRequest) {
         String[] nullPropertiesNamesToIgnore = Util.getNullPropertyNames(updateRequest);
         String[] propNamesToIgnore = Arrays.stream(nullPropertiesNamesToIgnore)
-            .filter(s -> Arrays.stream(AlwaysUpdateProps.values()).map(Enum::name).noneMatch(s::equals))
+            .filter(s -> Arrays.stream(ALWAYS_UPDATE).noneMatch(s::equals))
             .toArray(String[]::new);
         BeanUtils.copyProperties(updateRequest, existingPi, propNamesToIgnore);
     }
@@ -360,7 +357,7 @@ public class PaymentInstructionService {
             return;
         }
         Optional<Boolean> hasCaseFee = paymentInstructionRepository.findById(id)
-            .map(paymentInstruction -> paymentInstruction.getCaseFeeDetails().size() > 0);
+            .map(paymentInstruction -> !(paymentInstruction.getCaseFeeDetails().isEmpty()));
         if (hasCaseFee.isPresent() && hasCaseFee.get()) {
             throw new PaymentProcessException("Please remove all case and fee details before attempting this action.");
         }

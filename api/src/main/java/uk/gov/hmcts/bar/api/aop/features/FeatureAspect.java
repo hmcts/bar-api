@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
 @Component
 public class FeatureAspect {
 
-    public static final String errorMessage = "This function is temporarily unavailable.\nPlease contact support.";
+    public static final String ERROR_MESSAGE = "This function is temporarily unavailable.\nPlease contact support.";
 
     @Autowired
     private final FF4j ff4j;
@@ -31,7 +31,7 @@ public class FeatureAspect {
 
         Featured featured = method.getAnnotation(Featured.class);
         if (!ff4j.check(featured.featureKey())) {
-            throw new FeatureAccessException(errorMessage);
+            throw new FeatureAccessException(ERROR_MESSAGE);
         }
         return joinPoint.proceed();
     }
