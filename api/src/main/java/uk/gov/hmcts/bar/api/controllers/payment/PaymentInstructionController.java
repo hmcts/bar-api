@@ -259,6 +259,20 @@ public class PaymentInstructionController {
         return paymentInstructionService.createPaymentInstruction(cashPaymentInstruction);
     }
 
+    @ApiOperation(value = "Create remission", notes = "Create a full remission with the given values.")
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "Full remission created"),
+        @ApiResponse(code = 400, message = "Bad request"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/remissions")
+    public PaymentInstruction saveRemission(@ApiParam(value="Full remission request",required=true) @Valid @RequestBody FullRemission fullRemission) {
+        FullRemissionPaymentInstruction remissionPaymentInstruction = FullRemissionPaymentInstruction.fullRemissionPaymentInstructionWith()
+            .payerName(fullRemission.getPayerName())
+            .status(fullRemission.getStatus())
+            .remissionReference(fullRemission.getRemissionReference()).build();
+        return paymentInstructionService.createPaymentInstruction(remissionPaymentInstruction);
+    }
+
 
     @ApiOperation(value = "Update cash payment instruction", notes = "Update cash payment instruction with the given values.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Cash payment instruction updated"),

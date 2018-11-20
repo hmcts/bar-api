@@ -65,6 +65,8 @@ public class BasePaymentInstruction {
     protected String postalOrderNumber;
     @Pattern(regexp = "^[a-zA-Z0-9]{6,6}$", message = "invalid authorization code")
     protected String authorizationCode;
+    @Pattern(regexp = "^[a-zA-Z0-9-]{11,11}$", message = "invalid remission reference")
+    protected String remissionReference;
 
     private boolean transferredToPayhub = false;
     @Length(max = 1024)
