@@ -273,6 +273,17 @@ public class PaymentInstructionController {
         return paymentInstructionService.createPaymentInstruction(remissionPaymentInstruction);
     }
 
+    @ApiOperation(value = "Update cash payment instruction", notes = "Update remission instruction with the given values.")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Remission instruction updated"),
+        @ApiResponse(code = 400, message = "Bad request"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/remissions/{id}")
+    public ResponseEntity<Void> updateRemissionInstruction(@PathVariable("id") Integer id , @ApiParam(value="Full remission request",required=true) @Valid @RequestBody FullRemission fullRemission)  {
+        paymentInstructionService.updatePaymentInstruction(id, fullRemission);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     @ApiOperation(value = "Update cash payment instruction", notes = "Update cash payment instruction with the given values.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Cash payment instruction updated"),
