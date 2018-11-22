@@ -234,8 +234,8 @@ public class PaymentInstructionService {
         return createHateoasResponse(results, userId, status);
     }
 
-    public MultiMap getPaymentInstructionsByUserGroupByActionAndType(String userId, boolean sentToPayhub) {
-        List<PaymentInstructionStats> results =  paymentInstructionStatusRepository.getStatsByUserGroupByActionAndType(userId, sentToPayhub);
+    public MultiMap getPaymentInstructionsByUserGroupByActionAndType(String userId, String status, boolean sentToPayhub) {
+        List<PaymentInstructionStats> results =  paymentInstructionStatusRepository.getStatsByUserGroupByActionAndType(userId, status, sentToPayhub);
 
         return createHateoasResponse(results, userId, null);
     }

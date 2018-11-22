@@ -681,8 +681,8 @@ public class PaymentInstructionServiceTest {
     @Test
     public void testGetPaymentInstructionsByUserGroupByActionAndType() {
         List<PaymentInstructionStats> rawStats = createStats();
-        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByActionAndType(anyString(), anyBoolean())).thenReturn(rawStats);
-        MultiMap stats = paymentInstructionService.getPaymentInstructionsByUserGroupByActionAndType("1234", false);
+        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByActionAndType(anyString(), anyString(), anyBoolean())).thenReturn(rawStats);
+        MultiMap stats = paymentInstructionService.getPaymentInstructionsByUserGroupByActionAndType("1234", "PA",false);
         Resource<PaymentInstructionStats> resource = (Resource<PaymentInstructionStats>)((List)stats.get("bgc123")).get(0);
         assertEquals("/users/1234/payment-instructions?paymentType=CHEQUE&action=Process&bgcNumber=bgc123", resource.getLink(STAT_DETAILS).getHref());
         assertEquals("/users/1234/payment-instructions?paymentType=CHEQUE,POSTAL_ORDER&action=Process&bgcNumber=bgc123", resource.getLink(STAT_GROUP_DETAILS).getHref());
