@@ -165,5 +165,15 @@
        <notes>This security vulnerability is for interactive installer in PostgreSQL only</notes>
        <cve>CVE-2016-7048</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        Shadowed dependency from AppInsights-Core. Unfortunately, not propagating and applying an override for transitive dependencies.
+        Anyway, this is specific to deserialisation of AtomicDoubleArray and CompoundOrdering classes: https://github.com/google/guava/wiki/CVE-2018-10237
+       ]]></notes>
+        <gav regex="true">^com\.google\.guava:guava:.*$</gav>
+        <cve>CVE-2018-10237</cve>
+    </suppress>
+
+
 </suppressions>
 
