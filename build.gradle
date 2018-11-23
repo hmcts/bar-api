@@ -39,7 +39,7 @@ allprojects {
         dependencies {
 
             dependency 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.8'
-            dependency 'com.google.guava:guava:22.0'
+            dependency 'com.google.guava:guava:27.0-jre'
 
             dependency 'org.liquibase:liquibase-core:3.6.2'
             dependency 'org.postgresql:postgresql:42.2.2'
