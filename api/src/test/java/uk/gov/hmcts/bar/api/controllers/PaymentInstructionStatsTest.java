@@ -35,7 +35,7 @@ public class PaymentInstructionStatsTest extends ComponentTestBase {
         DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
 
         restActions
-            .get("/users/1234/payment-instructions/action-stats")
+            .get("/users/1234/payment-instructions/action-stats?status=TTB")
             .andExpect(status().isOk())
             .andExpect(body().as(Map.class, item -> {
                 assertTrue(item.size() == 2);

@@ -41,7 +41,7 @@ sonarqube {
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     }
 }
-def javaLoggingVersion = '3.0.1'
+def javaLoggingVersion = '3.0.4'
 
 dependencies {
 
@@ -58,6 +58,7 @@ dependencies {
     compile group: 'org.ff4j', name: 'ff4j-spring-boot-web-api', version: '1.7.1'
     compile group: 'org.ff4j', name: 'ff4j-store-springjdbc', version: '1.7.1'
     compile group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.24.0.RELEASE'
+    compile group: 'com.google.guava', name: 'guava', version:'27.0-jre'
 
 
     compile 'org.liquibase:liquibase-core'
