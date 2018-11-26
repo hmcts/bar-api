@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: clean-data-1
+      author: sachi
+      changes:
+         - sql: >
+            TRUNCATE TABLE payment_instruction RESTART IDENTITY CASCADE;
+            TRUNCATE TABLE bank_giro_credit CASCADE ;
+            TRUNCATE TABLE payment_reference;
