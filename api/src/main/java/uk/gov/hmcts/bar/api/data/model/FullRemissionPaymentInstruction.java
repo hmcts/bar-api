@@ -18,8 +18,6 @@ public class FullRemissionPaymentInstruction extends PaymentInstruction {
     @JsonCreator
     @Builder(builderMethodName = "fullRemissionPaymentInstructionWith")
     public FullRemissionPaymentInstruction(@JsonProperty("payer_name") String payerName,
-                                  @JsonProperty("amount") Integer amount,
-                                  @JsonProperty("currency") String currency,
                                   @JsonProperty("status") String status,
                                   @JsonProperty("remission_reference") String remissionReference)
     {
