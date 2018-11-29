@@ -3,7 +3,6 @@ package uk.gov.hmcts.bar.api.data.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.bar.api.data.model.CaseFeeDetail;
-import uk.gov.hmcts.bar.api.data.model.FullRemissionPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 
@@ -22,7 +21,7 @@ public class UnallocatedAmountService {
 	public int calculateUnallocatedAmount(int paymentId) {
 		PaymentInstruction paymentInstruction = this.paymentInstructionRepository.getOne(paymentId);
 		int unallocatedAmount = 0 ;
-		if (!(paymentInstruction instanceof FullRemissionPaymentInstruction)){
+		if (!(paymentInstruction.getPaymentType().getId().equals("FULL_REMISSION"))){
 
 		List<CaseFeeDetail> cfdList = paymentInstruction.getCaseFeeDetails();
 		if (cfdList.isEmpty()) {
