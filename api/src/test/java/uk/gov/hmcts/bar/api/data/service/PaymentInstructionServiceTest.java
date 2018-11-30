@@ -544,7 +544,8 @@ public class PaymentInstructionServiceTest {
 
     @Test
 	public void shouldThrowPaymentProcessException_whenUnAllocatedAmountIsNotZero() {
-    	PaymentInstruction pi = TestUtils.createPaymentInstructions("",10000);
+    	PaymentInstruction pi = TestUtils.createPaymentInstructions("CASH",10000);
+    	pi.setPaymentType(PaymentType.paymentTypeWith().id("CASH").name("Cash").build());
         List<CaseFeeDetail> cfdList = new ArrayList<>();
         pi.setCaseFeeDetails(cfdList);
         when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
