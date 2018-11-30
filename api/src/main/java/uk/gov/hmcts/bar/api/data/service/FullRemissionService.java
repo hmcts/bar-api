@@ -53,8 +53,7 @@ public class FullRemissionService {
 
     private BarUser getBarUser()  {
         Optional<BarUser> optBarUser = barUserService.getBarUser();
-        BarUser barUser = optBarUser.orElseThrow(()-> new BarUserNotFoundException("Bar user not found"));
-        return barUser;
+        return optBarUser.orElseThrow(()-> new BarUserNotFoundException("Bar user not found"));
     }
 
     private void updatePaymentInstructionsProps(PaymentInstruction existingPi, Object updateRequest) {
