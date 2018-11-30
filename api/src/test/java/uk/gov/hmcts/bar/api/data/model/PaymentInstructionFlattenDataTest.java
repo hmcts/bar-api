@@ -11,7 +11,7 @@ public class PaymentInstructionFlattenDataTest {
 
     @Test
     public void testFlatteningCardPayment(){
-        PaymentInstruction paymentInstruction = TestUtils.createSamplePaymentInstruction("card",10050, new int [][] {{5000, 0, 0}, {5000, 0, 0}});
+        PaymentInstruction paymentInstruction = TestUtils.createSamplePaymentInstruction("CARD",10050, new int [][] {{5000, 0, 0}, {5000, 0, 0}});
         List<PaymentInstructionReportLine> flattenData = paymentInstruction.flattenPaymentInstruction();
         assertEquals(0, flattenData.get(0).getDailyId().intValue());
         assertEquals(10050, flattenData.get(0).getCardAmount().intValue());
@@ -24,7 +24,7 @@ public class PaymentInstructionFlattenDataTest {
 
     @Test
     public void testFlatteningCashPayment(){
-        PaymentInstruction paymentInstruction = TestUtils.createSamplePaymentInstruction("cash",10063, new int [][] {{5000, 0, 0}, {5000, 0, 0}});
+        PaymentInstruction paymentInstruction = TestUtils.createSamplePaymentInstruction("CASH",10063, new int [][] {{5000, 0, 0}, {5000, 0, 0}});
         List<PaymentInstructionReportLine> flattenData = paymentInstruction.flattenPaymentInstruction();
 
         assertEquals(10063, flattenData.get(0).getCashAmount().intValue());
