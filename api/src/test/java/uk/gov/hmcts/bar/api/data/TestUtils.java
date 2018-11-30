@@ -57,16 +57,18 @@ public class TestUtils {
 
     public static PaymentInstruction createPaymentInstructions(String type, int amount) {
         switch (type){
-            case "cash":
+            case "CASH":
                 return new CashPaymentInstruction("John Doe", amount, "GBP","D");
-            case "card":
+            case "CARD":
                 return new CardPaymentInstruction("John Doe", amount, "GBP","D","123456");
-            case "cheque":
+            case "CHEQUE":
                 return new ChequePaymentInstruction("John Doe", amount, "GBP", "1234","D");
-            case "postal":
+            case "POSTAL_ORDER":
                 return new PostalOrderPaymentInstruction("John Doe", amount, "GBP", "1234","D");
-            case "all":
+            case "ALLPAY":
                 return new AllPayPaymentInstruction("John Doe", amount, "GBP", "1234","D");
+            case "FULL_REMISSION":
+                return new FullRemissionPaymentInstruction("John Doe",  "D","12345678911");
             default:
                 return new CashPaymentInstruction("John Doe", amount, "GBP","D");
         }

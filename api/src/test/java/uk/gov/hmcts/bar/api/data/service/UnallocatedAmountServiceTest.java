@@ -1,28 +1,27 @@
 package uk.gov.hmcts.bar.api.data.service;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.tngtech.java.junit.dataprovider.DataProvider;
+import com.tngtech.java.junit.dataprovider.DataProviderRunner;
+import com.tngtech.java.junit.dataprovider.UseDataProvider;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import com.tngtech.java.junit.dataprovider.DataProvider;
-import com.tngtech.java.junit.dataprovider.DataProviderRunner;
-import com.tngtech.java.junit.dataprovider.UseDataProvider;
-
 import uk.gov.hmcts.bar.api.data.TestUtils;
 import uk.gov.hmcts.bar.api.data.model.CaseFeeDetail;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentType;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(DataProviderRunner.class)
 public class UnallocatedAmountServiceTest {
@@ -31,6 +30,10 @@ public class UnallocatedAmountServiceTest {
 
     @Mock
     private PaymentInstructionRepository paymentInstructionRepository;
+
+
+    private PaymentType pt = PaymentType.paymentTypeWith().id("CASH").name("Cash").build();
+
 
     /**
      * The data structure is the following:
@@ -55,7 +58,8 @@ public class UnallocatedAmountServiceTest {
 
     @Test
     public void testCalculateUnallocatedAmount_whenOneEmptyCase(){
-        PaymentInstruction pi = TestUtils.createPaymentInstructions("",10000);
+        PaymentInstruction pi = TestUtils.createPaymentInstructions("CASH",10000);
+        pi.setPaymentType(pt);
         List<CaseFeeDetail> cfdList = new ArrayList<>();
         pi.setCaseFeeDetails(cfdList);
         when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
@@ -66,7 +70,8 @@ public class UnallocatedAmountServiceTest {
 
     @Test
     public void testCalculateUnallocatedAmount_whenNoCase(){
-        PaymentInstruction pi = TestUtils.createPaymentInstructions("", 10000);
+        PaymentInstruction pi = TestUtils.createPaymentInstructions("CASH", 10000);
+        pi.setPaymentType(pt);
         when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
         
         pi.setCaseFeeDetails(new ArrayList<>());
@@ -78,7 +83,8 @@ public class UnallocatedAmountServiceTest {
     @Test
     @UseDataProvider("dataProvider")
     public void testCalculateUnallocatedAmount_whenOneCase(int paymentAmount, int[][] caseDetails, int expected){
-        PaymentInstruction pi = TestUtils.createPaymentInstructions("", paymentAmount);
+        PaymentInstruction pi = TestUtils.createPaymentInstructions("CASH", paymentAmount);
+        pi.setPaymentType(pt);
         when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
 
         pi.setCaseFeeDetails(Arrays.stream(caseDetails).map(amounts -> TestUtils.createCaseFeeDetail(amounts)).collect(Collectors.toList()));
@@ -90,7 +96,8 @@ public class UnallocatedAmountServiceTest {
     @Test
     @UseDataProvider("dataProviderMultipleCase")
     public void testCalculateUnallocatedAmount_whenMultipleCase(int paymentAmount, int[][] caseDetails, int expected){
-        PaymentInstruction pi = TestUtils.createPaymentInstructions("", paymentAmount);
+        PaymentInstruction pi = TestUtils.createPaymentInstructions("CASH", paymentAmount);
+        pi.setPaymentType(pt);
         when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
 
         pi.setCaseFeeDetails(new ArrayList<>());
