@@ -776,3 +776,10 @@ databaseChangeLog:
       changes:
       - sql: >
           INSERT into status (status_id,status_description) values ('C', 'Completed');
+
+  - changeSet:
+      id: 33
+      author: akiss
+      changes:
+        - sql: >
+            update ff4j_features set enable = 1 where feat_uid = 'send-to-payhub'

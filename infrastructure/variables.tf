@@ -58,5 +58,5 @@ variable "common_tags" {
   type = "map"
 }
 variable "liquibase_enabled" {
-  default = "false"
+  default = "true"
 }
