@@ -778,13 +778,20 @@ databaseChangeLog:
           INSERT into status (status_id,status_description) values ('C', 'Completed');
 
   - changeSet:
-      id: 33
+      id: 33      
+      author: akiss
+      changes:
+      - sql: >
+          update ff4j_features set enable = 1 where feat_uid = 'send-to-payhub'
+      
+  - changeSet:
+      id: 34     
       author: sachi
       changes:
       - sql: >
           INSERT into payment_type (id,name) values ('FULL_REMISSION', 'Full Remission');
       - sql: >
-          INSERT into ff4j_features (feat_uid, enable, description) values ('full-remission', 1, 'Full remission functionality');
+          INSERT into ff4j_features (feat_uid, enable, description) values ('full-remission', 0, 'Full remission functionality');
       - addColumn:
           columns:
           - column:
