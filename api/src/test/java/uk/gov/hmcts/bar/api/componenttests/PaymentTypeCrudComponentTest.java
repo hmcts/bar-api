@@ -23,7 +23,6 @@ public class PaymentTypeCrudComponentTest extends ComponentTestBase{
                         add(new PaymentType("POSTAL_ORDER","Postal Order"));
                         add(new PaymentType("CASH","Cash"));
                         add(new PaymentType("ALLPAY","AllPay"));
-                        add(new PaymentType("FULL_REMISSION","Full Remission"));
                     }});
             }));
     }
