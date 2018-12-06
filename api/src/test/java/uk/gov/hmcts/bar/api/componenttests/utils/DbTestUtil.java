@@ -105,6 +105,7 @@ public final class DbTestUtil {
     }
 
     public static void insertPaymentInstructions(ApplicationContext applicationContext) throws SQLException {
+        insertBGCNumber(applicationContext);
         DataSource dataSource = applicationContext.getBean(DataSource.class);
         try (Connection dbConnection = dataSource.getConnection(); Statement stmt = dbConnection.createStatement()) {
 

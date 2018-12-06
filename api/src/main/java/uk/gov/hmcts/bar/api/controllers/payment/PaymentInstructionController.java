@@ -19,10 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentProcessException;
 import uk.gov.hmcts.bar.api.data.model.*;
-import uk.gov.hmcts.bar.api.data.service.BarUserService;
-import uk.gov.hmcts.bar.api.data.service.CaseFeeDetailService;
-import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
-import uk.gov.hmcts.bar.api.data.service.UnallocatedAmountService;
+import uk.gov.hmcts.bar.api.data.service.*;
 import uk.gov.hmcts.bar.api.data.utils.PaymentStatusEnumConverter;
 import uk.gov.hmcts.bar.api.data.utils.Util;
 import uk.gov.hmcts.bar.api.integration.payhub.service.PayHubService;
@@ -51,17 +48,21 @@ public class PaymentInstructionController {
 
     private final PayHubService payHubService;
 
+    private final FullRemissionService fullRemissionService;
+
     @Autowired
     public PaymentInstructionController(PaymentInstructionService paymentInstructionService,
                                         CaseFeeDetailService caseFeeDetailService,
                                         UnallocatedAmountService unallocatedAmountService,
                                         BarUserService barUserService,
-                                        PayHubService payHubService) {
+                                        PayHubService payHubService,
+                                        FullRemissionService fullRemissionService) {
         this.paymentInstructionService = paymentInstructionService;
         this.caseFeeDetailService = caseFeeDetailService;
         this.unallocatedAmountService = unallocatedAmountService;
         this.barUserService = barUserService;
         this.payHubService = payHubService;
+        this.fullRemissionService = fullRemissionService;
     }
 
     @ApiOperation(value = "Get all current payment instructions", notes = "Get all current payment instructions for a given site.",
@@ -257,6 +258,30 @@ public class PaymentInstructionController {
             .status(cash.getStatus())
             .currency(cash.getCurrency()).build();
         return paymentInstructionService.createPaymentInstruction(cashPaymentInstruction);
+    }
+
+    @ApiOperation(value = "Create remission", notes = "Create a full remission with the given values.")
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "Full remission created"),
+        @ApiResponse(code = 400, message = "Bad request"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/remissions")
+    public PaymentInstruction saveRemission(@ApiParam(value="Full remission request",required=true) @Valid @RequestBody FullRemission fullRemission) {
+        FullRemissionPaymentInstruction remissionPaymentInstruction = FullRemissionPaymentInstruction.fullRemissionPaymentInstructionWith()
+            .payerName(fullRemission.getPayerName())
+            .remissionReference(fullRemission.getRemissionReference()).build();
+        return paymentInstructionService.createPaymentInstruction(remissionPaymentInstruction);
+    }
+
+    @ApiOperation(value = "Update full remission", notes = "Update remission instruction with the given values.")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Remission instruction updated"),
+        @ApiResponse(code = 400, message = "Bad request"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/remissions/{id}")
+    public ResponseEntity<Void> updateRemissionInstruction(@PathVariable("id") Integer id , @ApiParam(value="Full remission request",required=true) @Valid @RequestBody FullRemission fullRemission)  {
+        fullRemissionService.updateFullRemission(id, fullRemission);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
