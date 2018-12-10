@@ -22,7 +22,7 @@ public class FullRemission  {
     @Builder(builderMethodName = "fullRemissionWith")
     public FullRemission(@JsonProperty("payer_name") String payerName,
                          @JsonProperty("status") String status,
-                         @JsonProperty("remissionReference") String remissionReference) {
+                         @JsonProperty("remission_reference") String remissionReference) {
         this.payerName = payerName;
         this.remissionReference = remissionReference;
         this.status =status;
