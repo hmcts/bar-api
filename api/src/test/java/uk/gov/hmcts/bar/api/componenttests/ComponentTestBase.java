@@ -25,7 +25,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @ActiveProfiles({"embedded", "idam-backdoor"})
-@Transactional
 public class ComponentTestBase {
 
     @Autowired
@@ -60,6 +59,7 @@ public class ComponentTestBase {
         DbTestUtil.emptyTable(webApplicationContext, "case_fee_detail");
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction_status");
         DbTestUtil.emptyTable(webApplicationContext, "bar_user");
+        DbTestUtil.emptyTable(webApplicationContext, "payment_instruction_payhub_reference");
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction");
         DbTestUtil.resetAutoIncrementColumns(webApplicationContext, "payment_instruction");
         DbTestUtil.addTestUser(webApplicationContext, userDetails);
