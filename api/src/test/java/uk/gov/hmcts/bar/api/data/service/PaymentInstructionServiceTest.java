@@ -24,6 +24,9 @@ import uk.gov.hmcts.bar.api.data.repository.BankGiroCreditRepository;
 import uk.gov.hmcts.bar.api.data.repository.PayhubPaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
+import uk.gov.hmcts.bar.api.data.validators.ActionValidator;
+import uk.gov.hmcts.bar.api.data.validators.FullRemissionValidator;
+import uk.gov.hmcts.bar.api.data.validators.UnallocatedAmountValidator;
 import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
 
 import java.time.LocalDate;
@@ -107,6 +110,8 @@ public class PaymentInstructionServiceTest {
     @Mock
     private List<CaseFeeDetail> cfdList;
 
+    private PaymentInstructionUpdateValidatorService validatorService;
+
     private PaymentInstructionStatus paymentInstructionStatus;
 
     private PaymentInstructionStatusReferenceKey paymentInstructionStatusReferenceKey;
@@ -119,12 +124,14 @@ public class PaymentInstructionServiceTest {
 
     private PaymentTypeService paymentTypeService;
 
+    @Mock
     private UnallocatedAmountService unallocatedAmountService;
 
     @Before
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
         unallocatedAmountService = new UnallocatedAmountService(paymentInstructionRepository);
+        setUpValidator();
         paymentInstructionService = new PaymentInstructionService(
             paymentReferenceService,
             paymentInstructionRepository,
@@ -133,7 +140,7 @@ public class PaymentInstructionServiceTest {
             ff4jMock,
             bankGiroCreditRepositoryMock,
             paymentTypeService,
-            unallocatedAmountService,
+            validatorService,
             payhubPaymentInstructionRepository,
             auditRepository);
         paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto()
@@ -141,14 +148,23 @@ public class PaymentInstructionServiceTest {
         paymentInstructionStatusCriteriaDtoBuilder = PaymentInstructionStatusCriteriaDto.paymentInstructionStatusCriteriaDto();
         paymentInstructionStatusReferenceKey = new PaymentInstructionStatusReferenceKey(0, "status");
         paymentInstructionStatus = new PaymentInstructionStatus(paymentInstructionStatusReferenceKey, null);
+
+        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
+        when(barUserMock.getSiteId()).thenReturn("Y431");
+    }
+
+    private void setUpValidator() {
+        validatorService = new PaymentInstructionUpdateValidatorService(
+            new ActionValidator(),
+            new FullRemissionValidator(),
+            new UnallocatedAmountValidator(unallocatedAmountService)
+        );
     }
 
     @Test
     public void shouldReturnPaymentInstruction_whenSavePaymentInstructionForGivenChequeInstructionIsCalled()
         throws Exception {
 
-        when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
-        when(barUserMock.getSiteId()).thenReturn("Y431");
         when(paymentReferenceService.getNextPaymentReferenceSequenceBySite(anyString()))
             .thenReturn(paymentReferenceMock);
         when(paymentReferenceMock.getDailySequenceId()).thenReturn(1);
@@ -461,7 +477,7 @@ public class PaymentInstructionServiceTest {
         ArgumentCaptor<PaymentInstruction> argument = ArgumentCaptor.forClass(PaymentInstruction.class);
         PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
             .status("D").build();
-        PaymentInstruction existingPaymentInstruction = new ChequePaymentInstruction();
+        PaymentInstruction existingPaymentInstruction = TestUtils.createPaymentInstructions("CHEQUE", 100);
         existingPaymentInstruction.setActionReason(2);
         existingPaymentInstruction.setActionComment("Valami tortent");
         existingPaymentInstruction.setAction("Process");
@@ -485,7 +501,7 @@ public class PaymentInstructionServiceTest {
         ArgumentCaptor<PaymentInstruction> argument = ArgumentCaptor.forClass(PaymentInstruction.class);
         PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
             .status("P").build();
-        PaymentInstruction existingPaymentInstruction = new ChequePaymentInstruction();
+        PaymentInstruction existingPaymentInstruction = TestUtils.createPaymentInstructions("CHEQUE", 10000);
         existingPaymentInstruction.setActionReason(2);
         existingPaymentInstruction.setActionComment("Valami tortent");
         existingPaymentInstruction.setAction("Process");
@@ -502,6 +518,7 @@ public class PaymentInstructionServiceTest {
     @Test
     public void shouldReturnSubmittedPaymentInstructionWithAction_whenSubmitPaymentInstructionForGivenPaymentInstructionIsCalledWithAction()
         throws Exception {
+        when(paymentInstructionMock.getPaymentType()).thenReturn(PaymentType.paymentTypeWith().name("Cheque").id("CHEQUE").build());
         when(ff4jMock.check(PaymentActionEnum.SUSPENSE.featureKey())).thenReturn(true);
         PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
             .status("D").action("Suspense").build();
@@ -545,10 +562,9 @@ public class PaymentInstructionServiceTest {
     @Test
 	public void shouldThrowPaymentProcessException_whenUnAllocatedAmountIsNotZero() {
     	PaymentInstruction pi = TestUtils.createPaymentInstructions("CASH",10000);
-    	pi.setPaymentType(PaymentType.paymentTypeWith().id("CASH").name("Cash").build());
         List<CaseFeeDetail> cfdList = new ArrayList<>();
         pi.setCaseFeeDetails(cfdList);
-        when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
+        when(paymentInstructionRepository.findById(any(Integer.class))).thenReturn(Optional.of(pi));
         when(ff4jMock.check(anyString())).thenReturn(true);
 		try {
 			PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
@@ -800,7 +816,7 @@ public class PaymentInstructionServiceTest {
         when(ff4jMock.check(PaymentActionEnum.RETURN.featureKey())).thenReturn(true);
         PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
             .status("A").action("Return").build();
-        PaymentInstruction existingPaymentInstruction = new ChequePaymentInstruction();
+        PaymentInstruction existingPaymentInstruction = TestUtils.createPaymentInstructions("CHEQUE", 10000);
         existingPaymentInstruction.setCaseFeeDetails(Arrays.asList(new CaseFeeDetail()));
         when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(existingPaymentInstruction));
         try {
@@ -817,6 +833,7 @@ public class PaymentInstructionServiceTest {
         PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
             .status("A").action("Withdraw").build();
         PaymentInstruction existingPaymentInstruction = new ChequePaymentInstruction();
+        existingPaymentInstruction.setPaymentType(PaymentType.paymentTypeWith().id("CHEQUE").name("Cheque").build());
         existingPaymentInstruction.setCaseFeeDetails(Arrays.asList(new CaseFeeDetail()));
         when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(existingPaymentInstruction));
         try {

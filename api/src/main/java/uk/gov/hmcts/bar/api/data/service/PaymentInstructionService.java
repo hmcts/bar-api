@@ -56,13 +56,13 @@ public class PaymentInstructionService {
     private PaymentInstructionRepository paymentInstructionRepository;
     private PaymentInstructionStatusRepository paymentInstructionStatusRepository;
     private PaymentReferenceService paymentReferenceService;
-    private UnallocatedAmountService unallocatedAmountService;
     private final BarUserService barUserService;
     private final BankGiroCreditRepository bankGiroCreditRepository;
     private final FF4j ff4j;
     private PaymentTypeService paymentTypeService;
     private final PayhubPaymentInstructionRepository payhubPaymentInstructionRepository;
     private final AuditRepository auditRepository;
+    private final PaymentInstructionUpdateValidatorService updateValidatorService;
 
 
     public PaymentInstructionService(PaymentReferenceService paymentReferenceService, PaymentInstructionRepository paymentInstructionRepository,
@@ -71,7 +71,7 @@ public class PaymentInstructionService {
                                      FF4j ff4j,
                                      BankGiroCreditRepository bankGiroCreditRepository,
                                      PaymentTypeService paymentTypeService,
-                                     UnallocatedAmountService unallocatedAmountService,
+                                     PaymentInstructionUpdateValidatorService updateValidatorService,
                                      PayhubPaymentInstructionRepository payhubPaymentInstructionRepository,
                                      AuditRepository auditRepository
 
@@ -83,9 +83,9 @@ public class PaymentInstructionService {
         this.ff4j = ff4j;
         this.bankGiroCreditRepository = bankGiroCreditRepository;
         this.paymentTypeService = paymentTypeService;
-        this.unallocatedAmountService = unallocatedAmountService;
         this.payhubPaymentInstructionRepository = payhubPaymentInstructionRepository;
         this.auditRepository = auditRepository;
+        this.updateValidatorService = updateValidatorService;
     }
 
     public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction)  {
@@ -161,33 +161,30 @@ public class PaymentInstructionService {
         if (!checkIfActionEnabled(paymentInstructionUpdateRequest)) {
             throw new FeatureAccessException(paymentInstructionUpdateRequest.getAction() + " is not allowed");
         }
-		if (PaymentActionEnum.PROCESS.displayValue().equals(paymentInstructionUpdateRequest.getAction())
-				&& unallocatedAmountService.calculateUnallocatedAmount(id) != 0) {
-			throw new PaymentProcessException("Please allocate all amount before processing.");
-		}
-		validateAction(id, paymentInstructionUpdateRequest);
-        String userId = barUserService.getCurrentUserId();
         Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
         PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
             .orElseThrow(() -> new PaymentInstructionNotFoundException(id));
+
+        updateValidatorService.validateAll(existingPaymentInstruction, paymentInstructionUpdateRequest);
+
+        BarUser barUser = getBarUser();
+
         updatePaymentInstructionsProps(existingPaymentInstruction, paymentInstructionUpdateRequest);
 		if (PaymentStatusEnum.PENDING.dbKey().equals(paymentInstructionUpdateRequest.getStatus())) {
 			existingPaymentInstruction.setAction(null);
 			existingPaymentInstruction.setActionReason(null);
 			existingPaymentInstruction.setActionComment(null);
 		}
-        existingPaymentInstruction.setUserId(userId);
-        savePaymentInstructionStatus(existingPaymentInstruction, userId);
+        existingPaymentInstruction.setUserId(barUser.getId());
+        savePaymentInstructionStatus(existingPaymentInstruction, barUser.getId());
         PaymentInstruction paymentInstruction = paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
-        Optional<BarUser> optBarUser = barUserService.getBarUser();
-        BarUser barUser = (optBarUser.isPresent())? optBarUser.get(): null;
+
         auditRepository.trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUser);
 
         return paymentInstruction;
     }
 
     public PaymentInstruction updatePaymentInstruction(Integer id, PaymentInstructionRequest paymentInstructionRequest)  {
-        String userId = barUserService.getCurrentUserId();
         BarUser barUser = getBarUser();
         Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
         PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
@@ -201,8 +198,8 @@ public class PaymentInstructionService {
         }
 
         updatePaymentInstructionsProps(existingPaymentInstruction, paymentInstructionRequest);
-        existingPaymentInstruction.setUserId(userId);
-        savePaymentInstructionStatus(existingPaymentInstruction, userId);
+        existingPaymentInstruction.setUserId(barUser.getId());
+        savePaymentInstructionStatus(existingPaymentInstruction, barUser.getId());
         PaymentInstruction paymentInstruction = paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
         auditRepository.trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUser);
         return paymentInstruction;
@@ -350,16 +347,4 @@ public class PaymentInstructionService {
         BeanUtils.copyProperties(updateRequest, existingPi, propNamesToIgnore);
     }
 
-    private void validateAction(Integer id,
-                                PaymentInstructionUpdateRequest paymentInstructionUpdateRequest) throws PaymentProcessException {
-        if (!PaymentActionEnum.RETURN.displayValue().equals(paymentInstructionUpdateRequest.getAction()) &&
-            !PaymentActionEnum.WITHDRAW.displayValue().equals(paymentInstructionUpdateRequest.getAction())) {
-            return;
-        }
-        Optional<Boolean> hasCaseFee = paymentInstructionRepository.findById(id)
-            .map(paymentInstruction -> !(paymentInstruction.getCaseFeeDetails().isEmpty()));
-        if (hasCaseFee.isPresent() && hasCaseFee.get()) {
-            throw new PaymentProcessException("Please remove all case and fee details before attempting this action.");
-        }
-    }
 }

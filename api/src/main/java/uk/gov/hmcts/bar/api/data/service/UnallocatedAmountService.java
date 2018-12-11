@@ -18,14 +18,19 @@ public class UnallocatedAmountService {
         this.paymentInstructionRepository = paymentInstructionRepository;
     }
 
-	public int calculateUnallocatedAmount(int paymentId) {
-		PaymentInstruction paymentInstruction = this.paymentInstructionRepository.getOne(paymentId);
+    public int calculateUnallocatedAmount(int paymentId) {
+        PaymentInstruction paymentInstruction = this.paymentInstructionRepository.getOne(paymentId);
+        return calculateUnallocatedAmount(paymentInstruction);
+    }
+
+	public int calculateUnallocatedAmount(PaymentInstruction paymentInstruction) {
+
 		int unallocatedAmount = 0 ;
 		if (!(paymentInstruction.getPaymentType().getId().equals("FULL_REMISSION"))){
 
 		List<CaseFeeDetail> cfdList = paymentInstruction.getCaseFeeDetails();
 		if (cfdList.isEmpty()) {
-			cfdList = this.paymentInstructionRepository.getCaseFeeDetails(paymentId);
+			cfdList = this.paymentInstructionRepository.getCaseFeeDetails(paymentInstruction.getId());
 		}
           unallocatedAmount =  paymentInstruction.getAmount() - (cfdList.stream()
 				.mapToInt(caseFeeDetail -> validateAmount(caseFeeDetail.getAmount())

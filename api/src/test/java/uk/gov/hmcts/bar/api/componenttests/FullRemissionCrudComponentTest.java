@@ -1,6 +1,7 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
 import org.junit.Test;
+import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
 import uk.gov.hmcts.bar.api.data.model.FullRemission;
 import uk.gov.hmcts.bar.api.data.model.FullRemissionPaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
@@ -121,10 +122,22 @@ public class FullRemissionCrudComponentTest extends ComponentTestBase {
         PaymentInstructionUpdateRequest request= paymentInstructionUpdateRequestWith()
             .status("P").build();
 
+        CaseFeeDetailRequest feeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .paymentInstructionId(1)
+            .caseReference("123456")
+            .feeCode("code1")
+            .feeVersion("v1")
+            .feeDescription("this is a fee")
+            .amount(50000)
+            .build();
+
         restActions
             .post("/remissions",  proposedFullRemissionPaymentInstructionRequest)
             .andExpect(status().isCreated());
 
+        restActions
+            .post("/fees",  feeDetailRequest)
+            .andExpect(status().isCreated());
 
         restActions
             .put("/payment-instructions/1",request)
