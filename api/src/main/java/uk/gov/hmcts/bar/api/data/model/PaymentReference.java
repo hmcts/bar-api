@@ -1,26 +1,38 @@
 package uk.gov.hmcts.bar.api.data.model;
 
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
-import javax.persistence.EmbeddedId;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class PaymentReference {
 
-    @EmbeddedId
-    private PaymentReferenceKey paymentReferenceKey;
+    @Id
+    private String siteId;
+    @NonNull
+    private int sequenceId;
+    @NonNull
+    private char sequenceCharacter;
+    @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
+    @JsonIgnore
+    private LocalDateTime paymentDate = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
 
-    private int dailySequenceId;
+    public PaymentReference(String siteId, int sequenceId, char sequenceCharacter){
+        this.siteId =siteId;
+        this.sequenceId = sequenceId;
+        this.sequenceCharacter = sequenceCharacter;
 
-    public int incrementDailySequenceIdByOne()
-    {
-        return dailySequenceId++;
     }
+
 }

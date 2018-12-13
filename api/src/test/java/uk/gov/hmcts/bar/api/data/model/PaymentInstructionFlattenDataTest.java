@@ -13,7 +13,7 @@ public class PaymentInstructionFlattenDataTest {
     public void testFlatteningCardPayment(){
         PaymentInstruction paymentInstruction = TestUtils.createSamplePaymentInstruction("CARD",10050, new int [][] {{5000, 0, 0}, {5000, 0, 0}});
         List<PaymentInstructionReportLine> flattenData = paymentInstruction.flattenPaymentInstruction();
-        assertEquals(0, flattenData.get(0).getDailyId().intValue());
+        assertEquals(null, flattenData.get(0).getDailyId());
         assertEquals(10050, flattenData.get(0).getCardAmount().intValue());
         flattenData.forEach(line -> {
             assertEquals(null, line.getCheckAmount());
@@ -40,7 +40,7 @@ public class PaymentInstructionFlattenDataTest {
         CashPaymentInstruction paymentInstruction = new CashPaymentInstruction();
         List<PaymentInstructionReportLine> flattenData = paymentInstruction.flattenPaymentInstruction();
         assertEquals(null, flattenData.get(0).getCashAmount());
-        assertEquals(0, flattenData.get(0).getDailyId().intValue());
+        assertEquals(null, flattenData.get(0).getDailyId());
     }
 
     @Test
@@ -51,7 +51,7 @@ public class PaymentInstructionFlattenDataTest {
             .build();
         List<PaymentInstructionReportLine> flattenData = paymentInstruction.flattenPaymentInstruction();
         assertEquals(10000, flattenData.get(0).getCashAmount().intValue());
-        assertEquals(0, flattenData.get(0).getDailyId().intValue());
+        assertEquals(null, flattenData.get(0).getDailyId());
         assertEquals("John Doe", flattenData.get(0).getName());
     }
 

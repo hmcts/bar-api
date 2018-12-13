@@ -1,40 +1,36 @@
 package uk.gov.hmcts.bar.api.data.service;
 
+import com.google.common.primitives.Chars;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.bar.api.data.model.PaymentReference;
-import uk.gov.hmcts.bar.api.data.model.PaymentReferenceKey;
 import uk.gov.hmcts.bar.api.data.repository.PaymentReferenceRepository;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 
 @Service
 @Transactional
 public class PaymentReferenceService {
+    private static final char[] SEQUENCE_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
 
     private PaymentReferenceRepository paymentReferenceRepository;
 
     public PaymentReferenceService(PaymentReferenceRepository paymentReferenceRepository) {
-        this.paymentReferenceRepository= paymentReferenceRepository;
+        this.paymentReferenceRepository = paymentReferenceRepository;
 
     }
 
-    public PaymentReference getNextPaymentReferenceSequenceBySite(String siteId){
+    public PaymentReference getNextPaymentReference(String siteId) {
 
         PaymentReference nextPaymentReference = null;
-        PaymentReferenceKey paymentReferenceKey= new PaymentReferenceKey(siteId, LocalDate.now());
 
-        Optional<PaymentReference> optionalCurrentPaymentReference = paymentReferenceRepository.findByPaymentReferenceKey(paymentReferenceKey);
-        if (optionalCurrentPaymentReference.isPresent())
-        {
+        Optional<PaymentReference> optionalCurrentPaymentReference = paymentReferenceRepository.findById(siteId);
+        if (optionalCurrentPaymentReference.isPresent()) {
             PaymentReference currentPaymentReference = optionalCurrentPaymentReference.get();
-            currentPaymentReference.incrementDailySequenceIdByOne();
-            nextPaymentReference = currentPaymentReference;
-        }
-        else {
-            nextPaymentReference = new PaymentReference(paymentReferenceKey,1);
+            nextPaymentReference = constructNextPaymentReference(currentPaymentReference);
+        } else {
+            nextPaymentReference = new PaymentReference(siteId,1,SEQUENCE_CHARACTERS[0]);
 
         }
 
@@ -42,6 +38,25 @@ public class PaymentReferenceService {
         return nextPaymentReference;
     }
 
+    private PaymentReference constructNextPaymentReference(PaymentReference paymentReference) {
+
+        int currentSequenceId = paymentReference.getSequenceId();
+        int nextSequenceId = (currentSequenceId == 9999) ?  1 : currentSequenceId + 1;
+        char currentSequenceCharacter = paymentReference.getSequenceCharacter();
+
+        char nextSequenceCharacter = currentSequenceCharacter;
+        if(currentSequenceCharacter == SEQUENCE_CHARACTERS[25] && currentSequenceId == 9999)
+        {
+            nextSequenceCharacter = SEQUENCE_CHARACTERS[0];
+
+        }
+        else if (currentSequenceId == 9999 && currentSequenceCharacter !=SEQUENCE_CHARACTERS[25]) {
+            int index = Chars.indexOf(SEQUENCE_CHARACTERS,currentSequenceCharacter);
+            nextSequenceCharacter = SEQUENCE_CHARACTERS[index+1];
+        }
+
+        return new PaymentReference(paymentReference.getSiteId(),nextSequenceId,nextSequenceCharacter);
+    }
 
 
 }

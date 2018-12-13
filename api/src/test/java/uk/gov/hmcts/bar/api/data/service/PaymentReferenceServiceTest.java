@@ -6,14 +6,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.bar.api.data.model.PaymentReference;
-import uk.gov.hmcts.bar.api.data.model.PaymentReferenceKey;
 import uk.gov.hmcts.bar.api.data.repository.PaymentReferenceRepository;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 public class PaymentReferenceServiceTest {
@@ -25,40 +23,73 @@ public class PaymentReferenceServiceTest {
     private PaymentReferenceRepository paymentReferenceRepository;
 
     @Mock
-    private PaymentReferenceKey paymentReferenceKey;
+    private PaymentReference paymentReference1;
 
     @Mock
-    private PaymentReference paymentReference;
+    private PaymentReference paymentReference2;
+
+    @Mock
+    private PaymentReference paymentReference3;
+
+    @Mock
+    private PaymentReference paymentReference4;
 
 
-
+    @Mock
+    private PaymentReference paymentReference5;
     @Before
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
         paymentReferenceService = new PaymentReferenceService(paymentReferenceRepository);
-        paymentReference = new PaymentReference(new PaymentReferenceKey("Y431", LocalDate.now()),1);
+        paymentReference1 = new PaymentReference("Y431",1, 'A' );
+        paymentReference2 = new PaymentReference("Y431",2, 'A' );
+        paymentReference3 = new PaymentReference("Y431",9999, 'A' );
+        paymentReference4 = new PaymentReference("Y431",1, 'B' );
+        paymentReference5 = new PaymentReference("Y431",9999, 'Z' );
+    }
+
+    @Test
+    public void shouldReturnPaymentReference_whenGetNextPaymentReferenceIsCalled()  {
+
+        when(paymentReferenceRepository.findById(anyString())).thenReturn(Optional.empty());
+
+        PaymentReference retrievedPaymentReference = paymentReferenceService.getNextPaymentReference("Y431");
+
+        assertThat(retrievedPaymentReference).isEqualTo (paymentReference1);
 
     }
 
     @Test
-    public void shouldReturnPaymentReference_whenGetNextPaymentReferenceSequenceBySiteIsCalled() throws Exception {
+    public void shouldReturnPaymentReference_whenSequenceIdIs_1()  {
 
-        when(paymentReferenceRepository.findByPaymentReferenceKey(any(PaymentReferenceKey.class))).thenReturn(Optional.empty());
+        when(paymentReferenceRepository.findById(anyString())).thenReturn(Optional.of(paymentReference1));
 
-       PaymentReference retrievedPaymentReference = paymentReferenceService.getNextPaymentReferenceSequenceBySite("Y431");
+        PaymentReference retrievedPaymentReference = paymentReferenceService.getNextPaymentReference("Y431");
 
-        assertThat(retrievedPaymentReference).isEqualTo (paymentReference);
+        assertThat(retrievedPaymentReference).isEqualTo (paymentReference2);
+
+    }
+
+
+    @Test
+    public void shouldReturnPaymentReference_whenSequenceIdIs_9999()  {
+
+        when(paymentReferenceRepository.findById(anyString())).thenReturn(Optional.of(paymentReference3));
+
+        PaymentReference retrievedPaymentReference = paymentReferenceService.getNextPaymentReference("Y431");
+
+        assertThat(retrievedPaymentReference).isEqualTo (paymentReference4);
 
     }
 
     @Test
-    public void shouldReturnPaymentReference_whenGetNextPaymentReferenceSequenceBySiteIsCalled1() throws Exception {
+    public void shouldReturnPaymentReference_whenSequenceIdIs9999_And_Z()  {
 
-        when(paymentReferenceRepository.findByPaymentReferenceKey(any(PaymentReferenceKey.class))).thenReturn(Optional.of(paymentReference));
+        when(paymentReferenceRepository.findById(anyString())).thenReturn(Optional.of(paymentReference5));
 
-        PaymentReference retrievedPaymentReference = paymentReferenceService.getNextPaymentReferenceSequenceBySite("Y431");
+        PaymentReference retrievedPaymentReference = paymentReferenceService.getNextPaymentReference("Y431");
 
-        assertThat(retrievedPaymentReference).isEqualTo (paymentReference);
+        assertThat(retrievedPaymentReference).isEqualTo (paymentReference1);
 
     }
 

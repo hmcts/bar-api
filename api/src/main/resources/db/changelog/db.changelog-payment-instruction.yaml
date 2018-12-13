@@ -800,3 +800,26 @@ databaseChangeLog:
               constraints:
                 nullable: true
           tableName: payment_instruction
+  - changeSet:
+      id: 35
+      author: sachi
+      changes:
+      - renameColumn:
+          newColumnName: sequence_id
+          oldColumnName: daily_sequence_id
+          tableName: payment_reference
+      - addColumn:
+          columns:
+          - column:
+              name: sequence_character
+              type: char(1)
+              constraints:
+                nullable: false
+          tableName: payment_reference
+      - addUniqueConstraint:
+          columnNames: site_id
+          tableName: payment_reference
+      - modifyDataType:
+          tableName: payment_instruction
+          columnName: daily_sequence_id
+          newDataType: varchar(100)
