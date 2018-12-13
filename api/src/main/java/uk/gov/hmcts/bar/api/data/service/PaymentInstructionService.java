@@ -365,7 +365,7 @@ public class PaymentInstructionService {
 
     private String getDailySequentialPaymentId(PaymentReference paymentReference){
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(String.format("%02d", LocalDate.now().getDayOfMonth()))
             .append(paymentReference.getSequenceCharacter())
             .append(String.format("%04d",paymentReference.getSequenceId()));
