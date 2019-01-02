@@ -105,9 +105,6 @@ public class PaymentInstructionServiceTest {
     private PaymentInstructionStatusRepository paymentInstructionStatusRepositoryMock;
 
     @Mock
-    private AuditRepository auditRepository;
-
-    @Mock
     private List<CaseFeeDetail> cfdList;
 
     private PaymentInstructionUpdateValidatorService validatorService;
@@ -141,8 +138,7 @@ public class PaymentInstructionServiceTest {
             bankGiroCreditRepositoryMock,
             paymentTypeService,
             validatorService,
-            payhubPaymentInstructionRepository,
-            auditRepository);
+            payhubPaymentInstructionRepository);
         paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto()
             .siteId("Y431");
         paymentInstructionStatusCriteriaDtoBuilder = PaymentInstructionStatusCriteriaDto.paymentInstructionStatusCriteriaDto();
@@ -179,7 +175,6 @@ public class PaymentInstructionServiceTest {
         verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(chequePaymentInstructionMock);
         verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",chequePaymentInstructionMock,barUserMock);
     }
 
     @Test
@@ -200,9 +195,6 @@ public class PaymentInstructionServiceTest {
         verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(cashPaymentInstructionMock);
         verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",cashPaymentInstructionMock,barUserMock);
-
-
     }
 
     @Test
@@ -221,7 +213,6 @@ public class PaymentInstructionServiceTest {
             .createPaymentInstruction(postalOrderPaymentInstructionMock);
         verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(postalOrderPaymentInstructionMock);
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",postalOrderPaymentInstructionMock,barUserMock);
     }
 
     @Test
@@ -245,8 +236,6 @@ public class PaymentInstructionServiceTest {
         verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(allpayPaymentInstructionMock);
         verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
-
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",allpayPaymentInstructionMock,barUserMock);
     }
 
     @Test
@@ -492,7 +481,6 @@ public class PaymentInstructionServiceTest {
         assertEquals("Process", argument.getValue().getAction());
         assertEquals(null, argument.getValue().getActionComment());
         assertEquals(null, argument.getValue().getActionReason());
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUserMock);
     }
 
     @Test
@@ -530,8 +518,6 @@ public class PaymentInstructionServiceTest {
         PaymentInstruction updatedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(1, pir);
         verify(paymentInstructionRepository, times(1)).findById(anyInt());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",paymentInstructionMock,barUserMock);
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",paymentInstructionMock,barUserMock);
         PaymentInstructionUpdateRequest anotherPir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
             .status("D").action("Process").build();
         try {
@@ -591,8 +577,6 @@ public class PaymentInstructionServiceTest {
         PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(1, pir);
         verify(paymentInstructionRepository, times(1)).findById(anyInt());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",paymentInstructionMock,barUserMock);
-
     }
 
     @Test
@@ -613,8 +597,6 @@ public class PaymentInstructionServiceTest {
         assertEquals(pir.getBgcNumber(), updatedPaymentInstruction.getBgcNumber());
         verify(paymentInstructionRepository, times(1)).findById(anyInt());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(pi);
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",pi,barUserMock);
-
     }
 
     @Test
@@ -635,7 +617,6 @@ public class PaymentInstructionServiceTest {
         assertNull(updatedPaymentInstruction.getBgcNumber());
         verify(paymentInstructionRepository, times(1)).findById(anyInt());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(pi);
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",pi,barUserMock);
     }
 
     @Test

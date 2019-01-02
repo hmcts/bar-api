@@ -17,7 +17,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.bar.api.audit.AuditRepository;
+import uk.gov.hmcts.bar.api.aop.audit.Audit;
 import uk.gov.hmcts.bar.api.controllers.payment.PaymentInstructionController;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
@@ -61,7 +61,6 @@ public class PaymentInstructionService {
     private final FF4j ff4j;
     private PaymentTypeService paymentTypeService;
     private final PayhubPaymentInstructionRepository payhubPaymentInstructionRepository;
-    private final AuditRepository auditRepository;
     private final PaymentInstructionUpdateValidatorService updateValidatorService;
 
 
@@ -72,8 +71,7 @@ public class PaymentInstructionService {
                                      BankGiroCreditRepository bankGiroCreditRepository,
                                      PaymentTypeService paymentTypeService,
                                      PaymentInstructionUpdateValidatorService updateValidatorService,
-                                     PayhubPaymentInstructionRepository payhubPaymentInstructionRepository,
-                                     AuditRepository auditRepository
+                                     PayhubPaymentInstructionRepository payhubPaymentInstructionRepository
 
     ) {
         this.paymentReferenceService = paymentReferenceService;
@@ -84,10 +82,10 @@ public class PaymentInstructionService {
         this.bankGiroCreditRepository = bankGiroCreditRepository;
         this.paymentTypeService = paymentTypeService;
         this.payhubPaymentInstructionRepository = payhubPaymentInstructionRepository;
-        this.auditRepository = auditRepository;
         this.updateValidatorService = updateValidatorService;
     }
 
+    @Audit(eventName = "CREATE_PAYMENT_INSTRUCTION_EVENT")
     public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction)  {
         String userId = barUserService.getCurrentUserId();
         BarUser barUser = getBarUser();
@@ -98,7 +96,6 @@ public class PaymentInstructionService {
         paymentInstruction.setUserId(userId);
         PaymentInstruction savedPaymentInstruction = paymentInstructionRepository.saveAndRefresh(paymentInstruction);
         savePaymentInstructionStatus(savedPaymentInstruction, userId);
-        auditRepository.trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT", paymentInstruction, barUser);
         return savedPaymentInstruction;
     }
 
@@ -157,6 +154,7 @@ public class PaymentInstructionService {
 
     }
 
+    @Audit(eventName = "PAYMENT_INSTRUCTION_UPDATE_EVENT")
     public PaymentInstruction submitPaymentInstruction(Integer id, PaymentInstructionUpdateRequest paymentInstructionUpdateRequest) throws PaymentProcessException {
         if (!checkIfActionEnabled(paymentInstructionUpdateRequest)) {
             throw new FeatureAccessException(paymentInstructionUpdateRequest.getAction() + " is not allowed");
@@ -177,13 +175,10 @@ public class PaymentInstructionService {
 		}
         existingPaymentInstruction.setUserId(barUser.getId());
         savePaymentInstructionStatus(existingPaymentInstruction, barUser.getId());
-        PaymentInstruction paymentInstruction = paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
-
-        auditRepository.trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUser);
-
-        return paymentInstruction;
+        return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
     }
 
+    @Audit(eventName = "PAYMENT_INSTRUCTION_UPDATE_EVENT")
     public PaymentInstruction updatePaymentInstruction(Integer id, PaymentInstructionRequest paymentInstructionRequest)  {
         BarUser barUser = getBarUser();
         Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
@@ -200,9 +195,7 @@ public class PaymentInstructionService {
         updatePaymentInstructionsProps(existingPaymentInstruction, paymentInstructionRequest);
         existingPaymentInstruction.setUserId(barUser.getId());
         savePaymentInstructionStatus(existingPaymentInstruction, barUser.getId());
-        PaymentInstruction paymentInstruction = paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
-        auditRepository.trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUser);
-        return paymentInstruction;
+        return paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
     }
 
     public List<PaymentInstruction> getAllPaymentInstructionsByCaseReference(String caseReference) {
