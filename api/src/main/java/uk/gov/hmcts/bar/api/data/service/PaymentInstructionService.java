@@ -149,6 +149,7 @@ public class PaymentInstructionService {
 
     public void deletePaymentInstruction(Integer id) {
         try {
+            paymentInstructionStatusRepository.deleteByPaymentInstructionId(id);
             paymentInstructionRepository.deleteById(id);
         } catch (EmptyResultDataAccessException erdae) {
             LOG.error("Resource not found: " + erdae.getMessage(), erdae);
@@ -225,52 +226,48 @@ public class PaymentInstructionService {
         return Util.createMultimapFromPisByUserList(paymentInstructionStaticsByUserObjects);
     }
 
-    public MultiMap getPaymentStatsByUserGroupByType(String userId, String status, boolean sentToPayhub) {
-        List<PaymentInstructionStats> results = paymentInstructionStatusRepository.getStatsByUserGroupByType(userId, status, sentToPayhub);
+    public MultiMap getPaymentStatsByUserGroupByType(String userId, String status, Optional<String> oldStatus, boolean sentToPayhub) {
+        String oldPaymentStatus = oldStatus.orElse(status);
+        List<PaymentInstructionStats> results = paymentInstructionStatusRepository.getStatsByUserGroupByType(userId, status, oldPaymentStatus, sentToPayhub);
 
-        return createHateoasResponse(results, userId, status);
+        return createHateoasResponse(results, userId, status, oldStatus.orElse(null));
     }
 
-    public MultiMap getPaymentInstructionsByUserGroupByActionAndType(String userId, String status, boolean sentToPayhub) {
-        List<PaymentInstructionStats> results =  paymentInstructionStatusRepository.getStatsByUserGroupByActionAndType(userId, status, sentToPayhub);
+    public MultiMap getPaymentInstructionsByUserGroupByActionAndType(String userId, String status, Optional<String> oldStatus, boolean sentToPayhub) {
+        String oldPaymentStatus = oldStatus.orElse(status);
+        List<PaymentInstructionStats> results =  paymentInstructionStatusRepository.getStatsByUserGroupByActionAndType(userId, status, oldPaymentStatus, sentToPayhub);
 
-        return createHateoasResponse(results, userId, status);
+        return createHateoasResponse(results, userId, status, oldStatus.orElse(null));
     }
 
-    private MultiMap createHateoasResponse(List<PaymentInstructionStats> stats, String userId, String status) {
+    private MultiMap createHateoasResponse(List<PaymentInstructionStats> stats, String userId, String status, String oldStatus) {
         MultiMap paymentInstructionStatsGroupedByBgc = new MultiValueMap();
         stats.stream().forEach(stat -> {
-            Link detailslink = null;
             String bgcNumber = stat.getBgc() == null ? PaymentInstructionsSpecifications.IS_NULL : stat.getBgc();
-
-            detailslink = linkTo(methodOn(PaymentInstructionController.class)
-                .getPaymentInstructionsByIdamId(userId, status,
-                    null, null, null, null, null,
-                    null, null, null, stat.getPaymentType(), stat.getAction(), null, bgcNumber)
-            ).withRel(STAT_DETAILS);
-
-
+            Link detailslink = createHateoasLink(userId, status, stat.getPaymentType(), stat.getAction(), bgcNumber, STAT_DETAILS, oldStatus);
 
             Resource<PaymentInstructionStats> resource = new Resource<>(stat, detailslink.expand());
 
             // TODO: this is just a temp solution we have to clarify with PO if we really need to group cheques and postal-orders
             if (GROUPED_TYPES.contains(stat.getPaymentType())) {
-                Link groupedLink = null;
-
-                groupedLink = linkTo(methodOn(PaymentInstructionController.class)
-                    .getPaymentInstructionsByIdamId(userId, status,
-                        null, null, null, null, null,
-                        null, null, null,
-                        GROUPED_TYPES.stream().collect(Collectors.joining(",")), stat.getAction(), null, bgcNumber)
-                ).withRel(STAT_GROUP_DETAILS);
-
+                String paymentTypes = GROUPED_TYPES.stream().collect(Collectors.joining(","));
+                Link groupedLink = createHateoasLink(userId, status, paymentTypes, stat.getAction(), bgcNumber, STAT_GROUP_DETAILS, oldStatus);
                 resource.add(groupedLink.expand());
             }
 
-            paymentInstructionStatsGroupedByBgc.put(
-                stat.getBgc() == null ? "0" : stat.getBgc(), resource);
+            paymentInstructionStatsGroupedByBgc.put(stat.getBgc() == null ? "0" : stat.getBgc(), resource);
         });
         return paymentInstructionStatsGroupedByBgc;
+    }
+
+    private Link createHateoasLink(String userId, String status, String paymentType, String action, String bgcNumber,
+                                   String rel, String oldStatus) {
+
+        return linkTo(methodOn(PaymentInstructionController.class)
+            .getPaymentInstructionsByIdamId(userId, status,
+                null, null, null, null, null,
+                null, null, null, paymentType, action, null, bgcNumber, oldStatus)
+        ).withRel(rel);
     }
 
     private void savePaymentInstructionStatus(PaymentInstruction pi, String userId) {

@@ -60,6 +60,7 @@ public class ComponentTestBase {
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction_status");
         DbTestUtil.emptyTable(webApplicationContext, "bar_user");
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction_payhub_reference");
+        DbTestUtil.emptyTable(webApplicationContext, "payment_instruction_status");
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction");
         DbTestUtil.resetAutoIncrementColumns(webApplicationContext, "payment_instruction");
         DbTestUtil.addTestUser(webApplicationContext, userDetails);

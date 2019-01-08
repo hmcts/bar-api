@@ -84,7 +84,8 @@ public class PaymentInstructionController {
         @RequestParam(name = "caseReference", required = false) String caseReference,
         @RequestParam(name = "paymentType", required = false) String paymentType,
         @RequestParam(name = "action", required = false) String action,
-        @RequestParam(name = "authorizationCode", required = false) String authorizationCode) {
+        @RequestParam(name = "authorizationCode", required = false) String authorizationCode,
+    @RequestParam(name = "oldStatus", required = false) String oldStatus) {
         List<PaymentInstruction> paymentInstructionList = null;
 
         if (checkAcceptHeaderForCsv(headers)){
@@ -93,7 +94,7 @@ public class PaymentInstructionController {
             PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto =
                 createPaymentInstructionCriteria(status, startDate, endDate, payerName, chequeNumber, postalOrderNumber,
                     dailySequenceId, allPayInstructionId, paymentType, action, caseReference, null, null,
-                    authorizationCode);
+                    authorizationCode, oldStatus);
 
             paymentInstructionList = paymentInstructionService
                 .getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
@@ -122,13 +123,14 @@ public class PaymentInstructionController {
         @RequestParam(name = "paymentType", required = false) String paymentType,
         @RequestParam(name = "action", required = false) String action,
         @RequestParam(name = "piIds", required = false) String piIds,
-        @RequestParam(name = "bgcNumber", required = false) String bgcNumber)  {
+        @RequestParam(name = "bgcNumber", required = false) String bgcNumber,
+        @RequestParam(name = "oldStatus", required = false) String oldStatus)  {
 
         List<PaymentInstruction> paymentInstructionList = null;
 
 		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = createPaymentInstructionCriteria(id,
 				status, startDate, endDate, payerName, chequeNumber, postalOrderNumber, dailySequenceId,
-				allPayInstructionId, paymentType, action, caseReference, piIds, bgcNumber, null);
+				allPayInstructionId, paymentType, action, caseReference, piIds, bgcNumber, null, oldStatus);
 
 		paymentInstructionList = paymentInstructionService
 				.getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
@@ -482,10 +484,11 @@ public class PaymentInstructionController {
     public Resource<MultiMap> getPaymentInstructionStatsByUser(
         @PathVariable("id") String id,
         @RequestParam(name = "status", required = false) String status,
+        @RequestParam(name = "old_status", required = false) Optional<String> oldStatus,
         @RequestParam(name = "sentToPayhub", required = false, defaultValue = "false") boolean sentToPayhub) {
 
-        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType(id, status,sentToPayhub);
-        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUser(id, status,sentToPayhub)).withSelfRel();
+        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType(id, status, oldStatus, sentToPayhub);
+        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUser(id, status, oldStatus, sentToPayhub)).withSelfRel();
         return new Resource<>(stats, link);
     }
 
@@ -498,10 +501,11 @@ public class PaymentInstructionController {
     public Resource<MultiMap> getPaymentInstructionStatsByUserGroupByAction(
         @PathVariable("id") String id,
         @RequestParam(name = "status", required = false) String status,
+        @RequestParam(name = "old_status", required = false) Optional<String> oldStatus,
         @RequestParam(name = "sentToPayhub", required = false, defaultValue = "false") boolean sentToPayhub) {
 
-        MultiMap stats = paymentInstructionService.getPaymentInstructionsByUserGroupByActionAndType(id, status, sentToPayhub);
-        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUserGroupByAction(id, status, sentToPayhub)).withSelfRel();
+        MultiMap stats = paymentInstructionService.getPaymentInstructionsByUserGroupByActionAndType(id, status, oldStatus, sentToPayhub);
+        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUserGroupByAction(id, status, oldStatus, sentToPayhub)).withSelfRel();
         return new Resource<>(stats, link);
     }
 
@@ -540,11 +544,12 @@ public class PaymentInstructionController {
         String caseReference,
         String multiplePiIds,
         String bgcNumber,
-        String authorizationCode
+        String authorizationCode,
+        String oldStatus
     ){
         return createPaymentInstructionCriteria(null, status, startDate, endDate, payerName, chequeNumber,
             postalOrderNumber, dailySequenceId, allPayInstructionId, paymentType, action, caseReference, multiplePiIds, bgcNumber,
-            authorizationCode);
+            authorizationCode, oldStatus);
     }
 
     private PaymentInstructionSearchCriteriaDto createPaymentInstructionCriteria(
@@ -562,7 +567,8 @@ public class PaymentInstructionController {
         String caseReference,
         String multiplePiIds,
         String bgcNumber,
-        String authorizationCode
+        String authorizationCode,
+        String oldStatus
     ){
 		return PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto().status(status).userId(userId)
 				.startDate(startDate == null ? null : startDate.atStartOfDay())
@@ -570,7 +576,7 @@ public class PaymentInstructionController {
 				.chequeNumber(chequeNumber).postalOrderNumer(postalOrderNumber).dailySequenceId(dailySequenceId)
 				.allPayInstructionId(allPayInstructionId).paymentType(paymentType).action(action)
 				.caseReference(caseReference).multiplePiIds(multiplePiIds).bgcNumber(bgcNumber)
-                .authorizationCode(authorizationCode).build();
+                .authorizationCode(authorizationCode).oldStatus(oldStatus).build();
     }
 
     private boolean checkAcceptHeaderForCsv(HttpHeaders headers){
