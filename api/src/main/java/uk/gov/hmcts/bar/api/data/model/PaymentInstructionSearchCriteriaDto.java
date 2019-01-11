@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class PaymentInstructionSearchCriteriaDto {
 
 	private String siteId;
-    private Integer dailySequenceId;
+    private String dailySequenceId;
     private String payerName;
     @Pattern(regexp ="^\\d{6,6}$",message = "invalid cheque number")
     private String chequeNumber;

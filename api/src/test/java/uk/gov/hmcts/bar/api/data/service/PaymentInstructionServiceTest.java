@@ -431,7 +431,7 @@ public class PaymentInstructionServiceTest {
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
         when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
-            .dailySequenceId(1).build();
+            .dailySequenceId("1").build();
 
         List<PaymentInstruction> retrievedPaymentInstructionList = paymentInstructionService
             .getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
