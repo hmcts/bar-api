@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class PaymentInstructionReportLine {
 
-    private Integer         dailyId;
+    private String         dailyId;
     private LocalDateTime   date;
     private String          name;
     private Integer         checkAmount;

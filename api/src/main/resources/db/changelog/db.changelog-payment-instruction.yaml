@@ -778,14 +778,14 @@ databaseChangeLog:
           INSERT into status (status_id,status_description) values ('C', 'Completed');
 
   - changeSet:
-      id: 33      
+      id: 33
       author: akiss
       changes:
       - sql: >
           update ff4j_features set enable = 1 where feat_uid = 'send-to-payhub'
-      
+
   - changeSet:
-      id: 34     
+      id: 34
       author: sachi
       changes:
       - sql: >
@@ -800,3 +800,30 @@ databaseChangeLog:
               constraints:
                 nullable: true
           tableName: payment_instruction
+  - changeSet:
+      id: 35
+      author: sachi
+      changes:
+      - sql: >
+          DELETE FROM payment_reference where payment_date < (SELECT max(payment_date) from payment_reference)
+      - renameColumn:
+          newColumnName: sequence_id
+          oldColumnName: daily_sequence_id
+          tableName: payment_reference
+      - addColumn:
+          columns:
+          - column:
+              name: sequence_character
+              type: char(1)
+              defaultValue: A
+              constraints:
+                nullable: false
+          tableName: payment_reference
+      - addPrimaryKey:
+          columnNames: site_id
+          constraintName: pk_payment_reference
+          tableName: payment_reference
+      - modifyDataType:
+          tableName: payment_instruction
+          columnName: daily_sequence_id
+          newDataType: varchar(100)

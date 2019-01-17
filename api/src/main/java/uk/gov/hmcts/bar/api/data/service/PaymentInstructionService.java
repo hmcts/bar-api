@@ -91,9 +91,9 @@ public class PaymentInstructionService {
     public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction)  {
         String userId = barUserService.getCurrentUserId();
         BarUser barUser = getBarUser();
-        PaymentReference nextPaymentReference = paymentReferenceService.getNextPaymentReferenceSequenceBySite(barUser.getSiteId());
+        PaymentReference nextPaymentReference = paymentReferenceService.getNextPaymentReference(barUser.getSiteId());
         paymentInstruction.setSiteId(barUser.getSiteId());
-        paymentInstruction.setDailySequenceId(nextPaymentReference.getDailySequenceId());
+        paymentInstruction.setDailySequenceId(getDailySequentialPaymentId(nextPaymentReference));
         paymentInstruction.setStatus(PaymentStatusEnum.DRAFT.dbKey());
         paymentInstruction.setUserId(userId);
         PaymentInstruction savedPaymentInstruction = paymentInstructionRepository.saveAndRefresh(paymentInstruction);
@@ -362,4 +362,15 @@ public class PaymentInstructionService {
             throw new PaymentProcessException("Please remove all case and fee details before attempting this action.");
         }
     }
+
+    private String getDailySequentialPaymentId(PaymentReference paymentReference){
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("%02d", LocalDate.now().getDayOfMonth()))
+            .append(paymentReference.getSequenceCharacter())
+            .append(String.format("%04d",paymentReference.getSequenceId()));
+
+        return sb.toString();
+    }
+
 }

@@ -149,9 +149,9 @@ public class PaymentInstructionServiceTest {
 
         when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         when(barUserMock.getSiteId()).thenReturn("Y431");
-        when(paymentReferenceService.getNextPaymentReferenceSequenceBySite(anyString()))
+        when(paymentReferenceService.getNextPaymentReference(anyString()))
             .thenReturn(paymentReferenceMock);
-        when(paymentReferenceMock.getDailySequenceId()).thenReturn(1);
+        when(paymentReferenceMock.getSequenceId()).thenReturn(1);
         when(paymentInstructionRepository.saveAndFlush(any(ChequePaymentInstruction.class)))
             .thenReturn(chequePaymentInstructionMock);
         when(paymentInstructionRepository.saveAndRefresh(any(ChequePaymentInstruction.class)))
@@ -160,7 +160,7 @@ public class PaymentInstructionServiceTest {
 
         PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
             .createPaymentInstruction(chequePaymentInstructionMock);
-        verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
+        verify(paymentReferenceService, times(1)).getNextPaymentReference(anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(chequePaymentInstructionMock);
         verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
         verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",chequePaymentInstructionMock,barUserMock);
@@ -171,7 +171,7 @@ public class PaymentInstructionServiceTest {
         throws Exception {
 
         when(barUserMock.getSiteId()).thenReturn("Y431");
-        when(paymentReferenceService.getNextPaymentReferenceSequenceBySite(anyString()))
+        when(paymentReferenceService.getNextPaymentReference(anyString()))
             .thenReturn(paymentReferenceMock);
         when(paymentInstructionRepository.saveAndFlush(any(CashPaymentInstruction.class)))
             .thenReturn(cashPaymentInstructionMock);
@@ -181,7 +181,7 @@ public class PaymentInstructionServiceTest {
         when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
             .createPaymentInstruction(cashPaymentInstructionMock);
-        verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
+        verify(paymentReferenceService, times(1)).getNextPaymentReference(anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(cashPaymentInstructionMock);
         verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
         verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",cashPaymentInstructionMock,barUserMock);
@@ -194,7 +194,7 @@ public class PaymentInstructionServiceTest {
         throws Exception {
         when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         when(barUserMock.getSiteId()).thenReturn("Y431");
-        when(paymentReferenceService.getNextPaymentReferenceSequenceBySite(barUserMock.getSiteId()))
+        when(paymentReferenceService.getNextPaymentReference(barUserMock.getSiteId()))
             .thenReturn(paymentReferenceMock);
         when(paymentInstructionRepository.saveAndFlush(any(PostalOrderPaymentInstruction.class)))
             .thenReturn(postalOrderPaymentInstructionMock);
@@ -203,7 +203,7 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionMock.getStatus()).thenReturn("status");
         PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
             .createPaymentInstruction(postalOrderPaymentInstructionMock);
-        verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
+        verify(paymentReferenceService, times(1)).getNextPaymentReference(anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(postalOrderPaymentInstructionMock);
         verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",postalOrderPaymentInstructionMock,barUserMock);
     }
@@ -214,9 +214,9 @@ public class PaymentInstructionServiceTest {
 
         when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         when(barUserMock.getSiteId()).thenReturn("Y431");
-        when(paymentReferenceService.getNextPaymentReferenceSequenceBySite(anyString()))
+        when(paymentReferenceService.getNextPaymentReference(anyString()))
             .thenReturn(paymentReferenceMock);
-        when(paymentReferenceMock.getDailySequenceId()).thenReturn(1);
+        when(paymentReferenceMock.getSequenceId()).thenReturn(1);
         when(paymentInstructionRepository.saveAndFlush(any(AllPayPaymentInstruction.class)))
             .thenReturn(allpayPaymentInstructionMock);
         when(paymentInstructionRepository.saveAndRefresh(any(AllPayPaymentInstruction.class)))
@@ -226,7 +226,7 @@ public class PaymentInstructionServiceTest {
         PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
             .createPaymentInstruction(allpayPaymentInstructionMock);
         verify(barUserServiceMock,times(1)).getBarUser();
-        verify(paymentReferenceService, times(1)).getNextPaymentReferenceSequenceBySite(anyString());
+        verify(paymentReferenceService, times(1)).getNextPaymentReference(anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(allpayPaymentInstructionMock);
         verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
 
@@ -431,7 +431,7 @@ public class PaymentInstructionServiceTest {
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
         when(barUserServiceMock.getBarUser()).thenReturn(Optional.of(barUserMock));
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
-            .dailySequenceId(1).build();
+            .dailySequenceId("1").build();
 
         List<PaymentInstruction> retrievedPaymentInstructionList = paymentInstructionService
             .getAllPaymentInstructions(paymentInstructionSearchCriteriaDto);
@@ -538,27 +538,27 @@ public class PaymentInstructionServiceTest {
             fail("should fail here");
         } catch (FeatureAccessException fae){
 
-        	assertEquals("Suspense is not allowed", fae.getMessage());
+            assertEquals("Suspense is not allowed", fae.getMessage());
         }
     }
 
     @Test
-	public void shouldThrowPaymentProcessException_whenUnAllocatedAmountIsNotZero() {
-    	PaymentInstruction pi = TestUtils.createPaymentInstructions("CASH",10000);
-    	pi.setPaymentType(PaymentType.paymentTypeWith().id("CASH").name("Cash").build());
+    public void shouldThrowPaymentProcessException_whenUnAllocatedAmountIsNotZero() {
+        PaymentInstruction pi = TestUtils.createPaymentInstructions("CASH",10000);
+        pi.setPaymentType(PaymentType.paymentTypeWith().id("CASH").name("Cash").build());
         List<CaseFeeDetail> cfdList = new ArrayList<>();
         pi.setCaseFeeDetails(cfdList);
         when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
         when(ff4jMock.check(anyString())).thenReturn(true);
-		try {
-			PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
-					.status("V").action("Process").build();
-			PaymentInstruction updatedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(1, pir);
-			fail("should fail here");
-		} catch (PaymentProcessException ppe) {
-			assertEquals("Please allocate all amount before processing.", ppe.getMessage());
-		}
-	}
+        try {
+            PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
+                .status("V").action("Process").build();
+            PaymentInstruction updatedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(1, pir);
+            fail("should fail here");
+        } catch (PaymentProcessException ppe) {
+            assertEquals("Please allocate all amount before processing.", ppe.getMessage());
+        }
+    }
 
     @Test
     public void shouldReturn200_whenUpdatePaymentInstructionForGivenPaymentInstructionIsCalled()

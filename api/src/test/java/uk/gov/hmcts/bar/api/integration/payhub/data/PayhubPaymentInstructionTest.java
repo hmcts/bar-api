@@ -26,7 +26,7 @@ public class PayhubPaymentInstructionTest {
         PayhubPaymentInstruction paymentInstruction = TestUtils.createSamplePayhuPaymentInstruction(10050, new int [][] {{5000, 0, 0}, {5000, 0, 0}});
         paymentInstruction.setChequeNumber("D");
         paymentInstruction.setSiteId("Y431");
-        Assert.assertEquals("Y431-201808130", paymentInstruction.getReference());
+        Assert.assertEquals("Y431-20180813null", paymentInstruction.getReference());
     }
 
     @Test
