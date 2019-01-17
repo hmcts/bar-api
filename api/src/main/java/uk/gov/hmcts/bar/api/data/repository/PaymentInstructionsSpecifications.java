@@ -29,6 +29,7 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
     protected Specification<T> multiplsIdSpec = null;
     protected Specification<T> bgcNumberSpec = null;
     protected Specification<T> transferredToPayhubSpec = null;
+    protected Specification<T> authorizationCodeSpec = null;
 
     public PaymentInstructionsSpecifications(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto, PaymentTypeService paymentTypeService) {
         this.paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDto;
@@ -50,6 +51,7 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
         multiplsIdSpec = new MultiIdSpec();
         bgcNumberSpec = new BgcNumberSpec();
         transferredToPayhubSpec = new TransferredToPayhubSpec();
+        authorizationCodeSpec = new ReferenceIdSpec("authorizationCode", paymentInstructionSearchCriteriaDto.getAuthorizationCode());
     }
 
     public Specification<T> getPaymentInstructionsSpecification() {
@@ -58,7 +60,7 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
             .and(endDateSpec).and(siteIdSpec).and(userIdSpec).and(paymentTypeSpec).and(transferredToPayhubSpec);
 		Specification<T> orSpecs = Specification.where(payerNameSpec).or(allPayTransactionIdSpec)
 				.or(chequeNumberSpec).or(postalOrderNumerSpec).or(dailySequenceIdSpec)
-				.or(caseReferenceSpec);
+				.or(caseReferenceSpec).or(authorizationCodeSpec);
         return Specification.where(andSpecs).and(orSpecs);
     }
 
@@ -299,5 +301,27 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
             return predicate;
         }
 
+    }
+
+    private class ReferenceIdSpec implements Specification<T> {
+
+        private final String propName;
+        private final String value;
+
+        public ReferenceIdSpec(String propName, String value) {
+            this.propName = propName;
+            this.value = value;
+        }
+
+        @Override
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+
+            Predicate predicate = null;
+
+            if (value != null) {
+                predicate = builder.equal(root.<String>get(propName), value);
+            }
+            return predicate;
+        }
     }
 }

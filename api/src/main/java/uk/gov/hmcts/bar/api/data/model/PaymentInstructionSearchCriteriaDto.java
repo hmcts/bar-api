@@ -34,5 +34,6 @@ public class PaymentInstructionSearchCriteriaDto {
     private String multiplePiIds;
     private String bgcNumber;
     private Boolean transferredToPayhub;
+    private String authorizationCode;
 
 }

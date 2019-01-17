@@ -827,3 +827,13 @@ databaseChangeLog:
           tableName: payment_instruction
           columnName: daily_sequence_id
           newDataType: varchar(100)
+
+  - changeSet:
+      id: 36
+      author: akiss
+      changes:
+      - sql: >
+          update status set status_description = 'Rejected By Approver' where status_id = 'RDM';
+          update status set status_description = 'Pending Review' where status_id = 'PA';
+          update status set status_description = 'Pending Approval' where status_id = 'A';
+          update status set status_description = 'Approved' where status_id = 'TTB';
