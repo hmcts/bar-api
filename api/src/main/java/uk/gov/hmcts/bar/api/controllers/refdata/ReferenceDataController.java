@@ -19,7 +19,7 @@ import java.util.List;
 public class ReferenceDataController {
 
     private final PaymentTypeService paymentTypeService;
-    
+
     private final PaymentActionService paymentActionService;
 
 
@@ -33,7 +33,7 @@ public class ReferenceDataController {
     public List<PaymentType> getPaymentTypes(){
         return paymentTypeService.getAllPaymentTypes();
     }
-    
+
     @GetMapping("/payment-action")
     public List<PaymentInstructionAction> getPaymentAction(){
         return paymentActionService.getAllPaymentInstructionAction();
