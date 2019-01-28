@@ -827,3 +827,29 @@ databaseChangeLog:
           tableName: payment_instruction
           columnName: daily_sequence_id
           newDataType: varchar(100)
+  - changeSet:
+      id: 36
+      author: akiss
+      changes:
+        - addColumn:
+            columns:
+            - column:
+                name: site_name
+                type: varchar(100)
+            tableName: sites
+        - addColumn:
+            columns:
+            - column:
+                name: site_id
+                type: varchar(20)
+                defaultValue: "Y431"
+                constraints:
+                  nullable: false
+            tableName: bar_user
+        - addForeignKeyConstraint:
+            baseColumnNames: site_id
+            baseTableName: bar_user
+            constraintName: fk_bar_user_site_id
+            onUpdate: CASCADE
+            referencedColumnNames: site_id
+            referencedTableName: sites

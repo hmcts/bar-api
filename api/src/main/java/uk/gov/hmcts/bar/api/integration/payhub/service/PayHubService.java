@@ -191,7 +191,7 @@ public class PayHubService {
         LocalDateTime now = LocalDate.now().atTime(23, 59, 59);
         if (reportDate.isAfter(now)) {
             LOG.error("transfer date validation failed. It can not be in a future date.");
-            throw new BadRequestException(reportDate.toString(), "The transfer date can not be a future date");
+            throw new BadRequestException("The transfer date can not be a future date: " + reportDate.toString());
         }
     }
 

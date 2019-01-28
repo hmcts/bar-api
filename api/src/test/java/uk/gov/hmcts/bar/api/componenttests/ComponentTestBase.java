@@ -42,12 +42,15 @@ public class ComponentTestBase {
             new UserDetails("sr-fee-clerk", "abc123", Collections.singletonList("bar-senior-clerk"));
     public final UserDetails dmUserDetails =
             new UserDetails("dm-manager", "abc123", Collections.singletonList("bar-delivery-manager"));
+    public final UserDetails adminUserDetails =
+        new UserDetails("admin", "abc123", Collections.singletonList("super"));
 
 
     public RestActions restActions;
     public RestActions restActionsForFeeClerk;
     public RestActions restActionsForSrFeeClerk;
     public RestActions restActionsForDM;
+    public RestActions restActionsForAdmin;
 
     @Before
     public void setUp() throws SQLException{
@@ -56,6 +59,7 @@ public class ComponentTestBase {
         this.restActionsForFeeClerk = new RestActions(mvc, objectMapper, feeClerkUserDetails);
         this.restActionsForSrFeeClerk = new RestActions(mvc, objectMapper, srFeeClerkUserDetails);
         this.restActionsForDM = new RestActions(mvc, objectMapper, dmUserDetails);
+        this.restActionsForAdmin = new RestActions(mvc, objectMapper, adminUserDetails);
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction_status");
         DbTestUtil.emptyTable(webApplicationContext, "case_fee_detail");
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction_status");
@@ -66,6 +70,7 @@ public class ComponentTestBase {
         DbTestUtil.addTestUser(webApplicationContext, feeClerkUserDetails);
         DbTestUtil.addTestUser(webApplicationContext, srFeeClerkUserDetails);
         DbTestUtil.addTestUser(webApplicationContext, dmUserDetails);
+        DbTestUtil.addTestUser(webApplicationContext, adminUserDetails);
     }
 
 
