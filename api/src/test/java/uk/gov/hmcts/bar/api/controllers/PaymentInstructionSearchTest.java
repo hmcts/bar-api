@@ -95,4 +95,16 @@ public class PaymentInstructionSearchTest extends ComponentTestBase {
             }));
     }
 
+    @Test
+    public void searchPaymentByAuthorizationCode() throws Exception {
+        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
+
+        restActions
+            .get("/payment-instructions?caseReference=1234&authorizationCode=a1234B")
+            .andExpect(status().isOk())
+            .andExpect(body().asListOf(CardPaymentInstruction.class, paymentInstructions -> {
+                Assert.assertTrue(paymentInstructions.size() == 1);
+            }));
+    }
+
 }
