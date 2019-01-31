@@ -57,20 +57,36 @@ public class TestUtils {
 
     public static PaymentInstruction createPaymentInstructions(String type, int amount) {
         switch (type){
-            case "CASH":
-                return new CashPaymentInstruction("John Doe", amount, "GBP","D");
             case "CARD":
-                return new CardPaymentInstruction("John Doe", amount, "GBP","D","123456");
+                CardPaymentInstruction card = new CardPaymentInstruction("John Doe", amount, "GBP","D","123456");
+                card.setId(1);
+                card.setPaymentType(PaymentType.paymentTypeWith().id("CARD").name("Card").build());
+                return card;
             case "CHEQUE":
-                return new ChequePaymentInstruction("John Doe", amount, "GBP", "1234","D");
+                ChequePaymentInstruction cheque = new ChequePaymentInstruction("John Doe", amount, "GBP", "1234","D");
+                cheque.setId(1);
+                cheque.setPaymentType(PaymentType.paymentTypeWith().id("CHEQUE").name("Cheque").build());
+                return cheque;
             case "POSTAL_ORDER":
-                return new PostalOrderPaymentInstruction("John Doe", amount, "GBP", "1234","D");
+                PostalOrderPaymentInstruction postal = new PostalOrderPaymentInstruction("John Doe", amount, "GBP", "1234","D");
+                postal.setId(1);
+                postal.setPaymentType(PaymentType.paymentTypeWith().id("POSTAL_ORDER").name("Postal Order").build());
+                return postal;
             case "ALLPAY":
-                return new AllPayPaymentInstruction("John Doe", amount, "GBP", "1234","D");
+                AllPayPaymentInstruction allpay = new AllPayPaymentInstruction("John Doe", amount, "GBP", "1234","D");
+                allpay.setId(1);
+                allpay.setPaymentType(PaymentType.paymentTypeWith().id("ALLPAY").name("Allpay").build());
+                return allpay;
             case "FULL_REMISSION":
-                return new FullRemissionPaymentInstruction("John Doe",  "D","12345678911");
+                FullRemissionPaymentInstruction full = new FullRemissionPaymentInstruction("John Doe",  "D","12345678911");
+                full.setId(1);
+                full.setPaymentType(PaymentType.paymentTypeWith().id("FULL_REMISSION").name("Full Remission").build());
+                return full;
             default:
-                return new CashPaymentInstruction("John Doe", amount, "GBP","D");
+                CashPaymentInstruction cash = new CashPaymentInstruction("John Doe", amount, "GBP","D");
+                cash.setId(1);
+                cash.setPaymentType(PaymentType.paymentTypeWith().id("CASH").name("Cash").build());
+                return cash;
         }
     }
 
