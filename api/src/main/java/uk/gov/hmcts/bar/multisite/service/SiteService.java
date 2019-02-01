@@ -59,4 +59,13 @@ public class SiteService {
     public List<Site> getUsersSite(String email) {
         return siteRepository.findSitesByUser(email);
     }
+
+    public Site getUserSelectedSite(String email) {
+        List<Site> sites = getUsersSite(email);
+        if (!sites.isEmpty()) {
+            return sites.get(0);
+        } else {
+            throw new BadRequestException("Can't find " + email + " user's selected site");
+        }
+    }
 }

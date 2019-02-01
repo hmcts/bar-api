@@ -77,6 +77,12 @@ public class SiteController {
         return siteService.getUsersSite(email);
     }
 
+    @GetMapping("/users/{email}/sites/selected")
+    public Site getUserSelecedSites(@PathVariable("email") String email) {
+        return siteService.getUserSelectedSite(email);
+    }
+
+
     @GetMapping("/sites/{id}/users/{email}")
     public boolean validateUserAgainstSite(@PathVariable("id") String id, @PathVariable("email") String email) {
         return siteService.validateUserAgainstSite(id, email);

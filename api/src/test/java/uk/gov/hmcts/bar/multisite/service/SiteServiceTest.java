@@ -8,7 +8,9 @@ import uk.gov.hmcts.bar.api.data.exceptions.BadRequestException;
 import uk.gov.hmcts.bar.multisite.model.Site;
 import uk.gov.hmcts.bar.multisite.repository.SiteRepository;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -83,11 +85,29 @@ public class SiteServiceTest {
     }
 
     @Test
-    public void validateUserAgainstSite() {
+    public void testValidateUserAgainstSite() {
         when(siteRepository.findUserInSite(anyString(), eq("user1@mail.com"))).thenReturn(Optional.of("user1@mail.com"));
         assertEquals(true, service.validateUserAgainstSite("site", "user1@mail.com"));
 
         when(siteRepository.findUserInSite(anyString(), eq("user2@mail.com"))).thenReturn(Optional.empty());
         assertEquals(false, service.validateUserAgainstSite("site", "user2@mail.com"));
+    }
+
+    @Test
+    public void testGetSelectedSite() {
+        String email = "a@a.com";
+        String siteId = "1";
+        Site site = Site.siteWith().id(siteId).description("one").build();
+        when(siteRepository.findSitesByUser(email)).thenReturn(Collections.singletonList(site));
+        assertEquals("one", service.getUserSelectedSite(email).getDescription());
+
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void testGetSelectedSiteWhenThereIsNotOne() {
+        String email = "a@a.com";
+        when(siteRepository.findSitesByUser(email)).thenReturn(new ArrayList<>());
+        service.getUserSelectedSite(email).getDescription();
+
     }
 }

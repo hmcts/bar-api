@@ -178,4 +178,25 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
             }));
 
     }
+
+    @Test
+    public void testGetUserSelectedSiteWhenUserDoesntHaveOne() throws Exception {
+
+        restActions
+            .get("/users/user@hmcts.net/sites/selected")
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testGetUserSelectedSiteWhenUser() throws Exception {
+        addUserToSite();
+
+        restActions
+            .get("/users/user@hmcts.net/sites/selected")
+            .andExpect(status().isOk())
+            .andExpect(body().as(Site.class, site -> {
+                assertThat(site.getDescription()).isEqualTo("test 01");
+                assertThat(site.getId()).isEqualTo("test01");
+            }));
+    }
 }
