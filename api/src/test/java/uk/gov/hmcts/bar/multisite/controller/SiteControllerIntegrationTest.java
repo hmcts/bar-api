@@ -70,18 +70,8 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
 
     @Test
     public void addUserToSite() throws Exception {
-        // Create a site
-        restActionsForDM
-            .post("/sites", Site.siteWith().id("test01").description("test 01").build())
-            .andExpect(status().isCreated())
-            .andExpect(body().as(Site.class, site -> {
-                assertThat(site.getId()).isEqualTo("test01");
-            }));
 
-        // Assign a user to the created site
-        restActionsForDM
-            .post("/sites/test01/users/user@hmcts.net", null)
-            .andExpect(status().isCreated());
+        createSite(Site.siteWith().id("test01").description("test 01").build(), "user@hmcts.net");
 
         // Check if the user is assigned
         restActionsForDM
@@ -185,18 +175,52 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
         restActions
             .get("/users/user@hmcts.net/sites/selected")
             .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void testGetUserSelectedSiteWhenUser() throws Exception {
-        addUserToSite();
 
         restActions
             .get("/users/user@hmcts.net/sites/selected")
-            .andExpect(status().isOk())
-            .andExpect(body().as(Site.class, site -> {
-                assertThat(site.getDescription()).isEqualTo("test 01");
-                assertThat(site.getId()).isEqualTo("test01");
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testGetUserSelectedSiteWhenUserHasOne() throws Exception {
+        addUserToSite();
+        Site site1 = Site.siteWith().id("test02").description("test 02").build();
+        Site site2 = Site.siteWith().id("test03").description("test 03").build();
+
+        createSite(site1, "user@hmcts.net");
+        createSite(site2, "user@hmcts.net");
+
+        for (int i=0;i<10;i++) {
+            restActions
+                .get("/users/user@hmcts.net/sites/selected")
+                .andExpect(status().isOk())
+                .andExpect(body().as(Site.class, site -> {
+                    assertThat(site.getDescription()).isEqualTo("test 01");
+                    assertThat(site.getId()).isEqualTo("test01");
+                }));
+        }
+
+        for (int i=0;i<10;i++) {
+            restActions
+                .get("/users/user@hmcts.net/sites/selected/id")
+                .andExpect(status().isOk())
+                .andExpect(body().as(Map.class, site -> {
+                    assertThat(site.get("siteId")).isEqualTo("test01");
+                }));
+        }
+    }
+
+    private void createSite(Site site, String email) throws Exception {
+        restActionsForDM
+            .post("/sites", site)
+            .andExpect(status().isCreated())
+            .andExpect(body().as(Site.class, s -> {
+                assertThat(s.getId()).isEqualTo(site.getId());
             }));
+
+        // Assign a user to the created site
+        restActionsForDM
+            .post("/sites/" + site.getId() + "/users/" + email, null)
+            .andExpect(status().isCreated());
     }
 }

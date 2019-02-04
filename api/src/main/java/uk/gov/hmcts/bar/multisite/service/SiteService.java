@@ -60,12 +60,11 @@ public class SiteService {
         return siteRepository.findSitesByUser(email);
     }
 
-    public Site getUserSelectedSite(String email) {
-        List<Site> sites = getUsersSite(email);
-        if (!sites.isEmpty()) {
-            return sites.get(0);
-        } else {
-            throw new BadRequestException("Can't find " + email + " user's selected site");
-        }
+    public Optional<Site> getUserSelectedSite(String email) {
+        return getUsersSite(email).stream().findFirst();
+    }
+
+    public Optional<String> getUserSelectedSiteId(String email) {
+        return siteRepository.findSiteIdsByUser(email).stream().findFirst();
     }
 }

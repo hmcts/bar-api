@@ -143,7 +143,7 @@ public class SiteControllerTest {
     }
 
     @Test
-    public void removeUserWhenSiteWhenSiteDoesNotExsists() throws Exception {
+    public void testRemoveUserWhenSiteWhenSiteDoesNotExsists() throws Exception {
         Site site = Site.siteWith().id("1").description("one").build();
         String email = "a%40ab%2ecom";
         when(siteService.findById("1")).thenReturn(Optional.empty());
@@ -152,6 +152,42 @@ public class SiteControllerTest {
 
         verify(siteService, times(1)).findById("1");
         verify(siteService, times(0)).deleteUserFromSite(site, email);
+    }
+
+    @Test
+    public void testGetSelectedSiteForUser() throws Exception {
+        Site site = Site.siteWith().id("1").description("one").build();
+        String email = "a%40ab%2ecom";
+        when(siteService.getUserSelectedSite(email)).thenReturn(Optional.of(site));
+        this.mockMvc.perform(get("/users/{email}/sites/selected", email))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id", is("1")))
+            .andExpect(jsonPath("$.description", is("one")));
+    }
+
+    @Test
+    public void testGetSelectedSiteIdForUser() throws Exception {
+        String email = "a%40ab%2ecom";
+        when(siteService.getUserSelectedSiteId(email)).thenReturn(Optional.of("1"));
+        this.mockMvc.perform(get("/users/{email}/sites/selected/id", email))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.siteId", is("1")));
+    }
+
+    @Test
+    public void testGetSelectedSiteForUserWhenNoSelectedSite() throws Exception {
+        String email = "a%40ab%2ecom";
+        when(siteService.getUserSelectedSite(email)).thenReturn(Optional.empty());
+        this.mockMvc.perform(get("/users/{email}/sites/selected", email))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testGetSelectedSiteIdForUserWhenNoelectedSite() throws Exception {
+        String email = "a%40ab%2ecom";
+        when(siteService.getUserSelectedSiteId(email)).thenReturn(Optional.empty());
+        this.mockMvc.perform(get("/users/{email}/sites/selected/id", email))
+            .andExpect(status().isBadRequest());
     }
 
     private List<Site> getAllSites() {

@@ -99,15 +99,30 @@ public class SiteServiceTest {
         String siteId = "1";
         Site site = Site.siteWith().id(siteId).description("one").build();
         when(siteRepository.findSitesByUser(email)).thenReturn(Collections.singletonList(site));
-        assertEquals("one", service.getUserSelectedSite(email).getDescription());
-
+        assertEquals("one", service.getUserSelectedSite(email).get().getDescription());
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
+    public void testGetSelectedSiteId() {
+        String email = "a@a.com";
+        String siteId = "1";
+        when(siteRepository.findSiteIdsByUser(email)).thenReturn(Collections.singletonList(siteId));
+        assertEquals("1", service.getUserSelectedSiteId(email).get());
+    }
+
+    @Test
     public void testGetSelectedSiteWhenThereIsNotOne() {
         String email = "a@a.com";
         when(siteRepository.findSitesByUser(email)).thenReturn(new ArrayList<>());
-        service.getUserSelectedSite(email).getDescription();
-
+        assertEquals(Optional.empty(), service.getUserSelectedSite(email));
     }
+
+    @Test
+    public void testGetSelectedSiteIDWhenThereIsNotOne() {
+        String email = "a@a.com";
+        when(siteRepository.findSiteIdsByUser(email)).thenReturn(new ArrayList<>());
+        assertEquals(Optional.empty(), service.getUserSelectedSiteId(email));
+    }
+
+
 }

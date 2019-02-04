@@ -834,6 +834,23 @@ databaseChangeLog:
         - renameTable:
             newTableName: sites_bgc
             oldTableName: sites
+        - dropUniqueConstraint:
+            constraintName: fk_site_id
+            tableName: payment_instruction
+        - createTable:
+            tableName: site
+            columns:
+              - column:
+                  name: id
+                  type: varchar(50)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
         - createTable:
             tableName: user_site
             columns:
@@ -849,17 +866,5 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
-        - createTable:
-            tableName: site
-            columns:
-              - column:
-                  name: description
-                  type: varchar(255)
-                  constraints:
-                    nullable: true
-              - column:
-                  name: id
-                  type: varchar(50)
-                  constraints:
-                    primaryKey: true
-                    nullable: false
+                    foreignKeyName: fk_site_id
+                    references: site(id)
