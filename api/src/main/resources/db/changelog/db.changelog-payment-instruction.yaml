@@ -827,3 +827,44 @@ databaseChangeLog:
           tableName: payment_instruction
           columnName: daily_sequence_id
           newDataType: varchar(100)
+  - changeSet:
+      id: 36
+      author: akiss
+      changes:
+        - renameTable:
+            newTableName: sites_bgc
+            oldTableName: sites
+        - dropUniqueConstraint:
+            constraintName: fk_site_id
+            tableName: payment_instruction
+        - createTable:
+            tableName: site
+            columns:
+              - column:
+                  name: id
+                  type: varchar(50)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+        - createTable:
+            tableName: user_site
+            columns:
+              - column:
+                  name: user_email
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: site_id
+                  type: varchar(50)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    foreignKeyName: fk_site_id
+                    references: site(id)

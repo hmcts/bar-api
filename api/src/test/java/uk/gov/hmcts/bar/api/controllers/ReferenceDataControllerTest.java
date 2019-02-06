@@ -29,7 +29,7 @@ public class ReferenceDataControllerTest {
 
     @Mock
     private PaymentTypeService paymentTypeService;
-    
+
     @Mock
     private PaymentActionService paymentActionService;
 
@@ -60,7 +60,7 @@ public class ReferenceDataControllerTest {
         verify(paymentTypeService, times(1)).getAllPaymentTypes();
         verifyNoMoreInteractions(paymentTypeService);
     }
-    
+
     @Test
     public void testGetPaymentInstructionActions() throws Exception {
     	when(paymentActionService.getAllPaymentInstructionAction()).thenReturn(getPaymentInstructionActions());
@@ -70,12 +70,10 @@ public class ReferenceDataControllerTest {
         .andExpect(jsonPath("$[0].action", is("Process")))
         .andExpect(jsonPath("$[1].action", is("Return")))
         .andExpect(jsonPath("$[2].action", is("Suspense")));
-    	
+
     	verify(paymentActionService, times(1)).getAllPaymentInstructionAction();
         verifyNoMoreInteractions(paymentActionService);
     }
-
-
 
     public List<PaymentType> getPaymentTyes() {
         return new ArrayList<PaymentType>() {{
@@ -87,7 +85,7 @@ public class ReferenceDataControllerTest {
             add(new PaymentType("FULL_REMISSION","Full Remission"));
         }};
     }
-    
+
     public List<PaymentInstructionAction> getPaymentInstructionActions() {
         return new ArrayList<PaymentInstructionAction>() {{
             add(new PaymentInstructionAction("Process"));
