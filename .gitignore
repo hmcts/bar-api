@@ -4,6 +4,7 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 
 model/out/
+api/out/
 
 .idea
 .idea/*
