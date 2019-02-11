@@ -30,6 +30,7 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
     protected Specification<T> bgcNumberSpec = null;
     protected Specification<T> transferredToPayhubSpec = null;
     protected Specification<T> authorizationCodeSpec = null;
+    protected Specification<T> statusJoinSpec = null;
 
     public PaymentInstructionsSpecifications(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto, PaymentTypeService paymentTypeService) {
         this.paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDto;
@@ -52,6 +53,7 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
         bgcNumberSpec = new BgcNumberSpec();
         transferredToPayhubSpec = new TransferredToPayhubSpec();
         authorizationCodeSpec = new ReferenceIdSpec("authorizationCode", paymentInstructionSearchCriteriaDto.getAuthorizationCode());
+        statusJoinSpec = new StatusJoinSpec();
     }
 
     public Specification<T> getPaymentInstructionsSpecification() {
@@ -61,7 +63,7 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
 		Specification<T> orSpecs = Specification.where(payerNameSpec).or(allPayTransactionIdSpec)
 				.or(chequeNumberSpec).or(postalOrderNumerSpec).or(dailySequenceIdSpec)
 				.or(caseReferenceSpec).or(authorizationCodeSpec);
-        return Specification.where(andSpecs).and(orSpecs);
+        return Specification.where(statusJoinSpec).and(andSpecs).and(orSpecs);
     }
 
     public Specification<T> getPaymentInstructionsMultipleIdSpecification() {
@@ -79,6 +81,27 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
             	inCriteriaForId = builder.in(root.<Integer>get("id"));
             }
             return Util.getInCriteriaWithIntegerValues(inCriteriaForId, paymentInstructionSearchCriteriaDto.getMultiplePiIds());
+        }
+    }
+
+    private class StatusJoinSpec implements  Specification<T> {
+
+        @Override
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+
+            Predicate predicate = null;
+
+            if (paymentInstructionSearchCriteriaDto.getOldStatus() != null) {
+                ListJoin<T, PaymentInstructionStatus> statuses = root.joinList("statuses", JoinType.INNER);
+                predicate = criteriaBuilder.and(
+                    criteriaBuilder.equal(statuses.get("paymentInstructionStatusReferenceKey").get("status"),
+                        paymentInstructionSearchCriteriaDto.getOldStatus()),
+                    criteriaBuilder.equal(statuses.get("barUserId"), paymentInstructionSearchCriteriaDto.getUserId())
+                );
+            }
+
+            return predicate;
+
         }
     }
 
@@ -215,7 +238,8 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
         public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
             Predicate predicate = null;
 
-            if (paymentInstructionSearchCriteriaDto.getUserId() != null) {
+            if (paymentInstructionSearchCriteriaDto.getUserId() != null &&
+                paymentInstructionSearchCriteriaDto.getOldStatus() == null) {
                 predicate = cb.equal(root.<String>get("userId"), paymentInstructionSearchCriteriaDto.getUserId());
             }
             return predicate;

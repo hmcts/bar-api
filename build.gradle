@@ -44,8 +44,8 @@ allprojects {
             dependency 'org.liquibase:liquibase-core:3.6.2'
             dependency 'org.postgresql:postgresql:42.2.2'
 
-            dependency 'io.springfox:springfox-swagger2:2.9.0'
-            dependency 'io.springfox:springfox-swagger-ui:2.9.0'
+            dependency 'io.springfox:springfox-swagger2:2.9.2'
+            dependency 'io.springfox:springfox-swagger-ui:2.9.2'
             dependency 'commons-beanutils:commons-beanutils:1.9.3'
             dependency 'org.hibernate:hibernate-validator:6.0.9.Final'
         }

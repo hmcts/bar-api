@@ -1,6 +1,5 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
-import org.junit.Assert;
 import org.junit.Test;
 import uk.gov.hmcts.bar.api.componenttests.utils.DbTestUtil;
 import uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction;
@@ -21,7 +20,7 @@ public class PaymentInstructionUserFilterTest extends ComponentTestBase {
             .get("/payment-instructions")
             .andExpect(status().isOk())
             .andExpect(body().asListOf(CardPaymentInstruction.class, paymentInstructions -> {
-                assertTrue(paymentInstructions.size() == 4);
+                assertTrue(paymentInstructions.size() == 5);
             }));
 
     }

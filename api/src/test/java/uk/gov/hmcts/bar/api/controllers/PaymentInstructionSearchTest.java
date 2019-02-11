@@ -107,4 +107,16 @@ public class PaymentInstructionSearchTest extends ComponentTestBase {
             }));
     }
 
+    @Test
+    public void searchForRejectedItemsByUserId() throws Exception {
+        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
+
+        restActions
+            .get("/users/1234/payment-instructions?status=RDM&oldStatus=A")
+            .andExpect(status().isOk())
+            .andExpect(body().asListOf(CardPaymentInstruction.class, paymentInstructions -> {
+                Assert.assertTrue(paymentInstructions.size() == 1);
+            }));
+    }
+
 }

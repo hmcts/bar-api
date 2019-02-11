@@ -65,6 +65,7 @@ public class ComponentTestBase {
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction_status");
         DbTestUtil.emptyTable(webApplicationContext, "bar_user");
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction_payhub_reference");
+        DbTestUtil.emptyTable(webApplicationContext, "payment_instruction_status");
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction");
         DbTestUtil.emptyTable(webApplicationContext, "user_site");
         DbTestUtil.emptyTable(webApplicationContext, "site");

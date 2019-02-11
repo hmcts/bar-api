@@ -29,6 +29,10 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
     @JoinColumn(name = "paymentInstructionId", referencedColumnName = "id")
     private List<CaseFeeDetail> caseFeeDetails;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "paymentInstructionId", referencedColumnName = "id")
+    private List<PaymentInstructionStatus> statuses;
+
     private Integer actionReason;
     @Length(max = 2048)
     private String actionComment;
