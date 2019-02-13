@@ -18,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.bar.api.aop.features.Featured;
 import uk.gov.hmcts.bar.api.data.exceptions.BadRequestException;
+import uk.gov.hmcts.bar.api.data.model.BarUser;
 import uk.gov.hmcts.bar.api.data.model.PayHubResponseReport;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionPayhubReference;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
@@ -78,7 +79,7 @@ public class PayHubService {
 
     @PreAuthorize("hasAuthority(T(uk.gov.hmcts.bar.api.data.enums.BarUserRoleEnum).BAR_DELIVERY_MANAGER.getIdamRole())")
     @Featured(featureKey = PAYHUB_FEATURE_KEY)
-    public PayHubResponseReport sendPaymentInstructionToPayHub(String userToken, LocalDateTime reportDate) {
+    public PayHubResponseReport sendPaymentInstructionToPayHub(BarUser barUser, String userToken, LocalDateTime reportDate) {
         validateReportDate(reportDate);
 
         PayHubResponseReport resp = new PayHubResponseReport();
@@ -87,7 +88,7 @@ public class PayHubService {
         String oneTimePassword = this.serviceAuthTokenGenerator.generate();
 
         // collect payment instructions
-        List<PayhubPaymentInstruction> payloads = collectPaymentInstructions();
+        List<PayhubPaymentInstruction> payloads = collectPaymentInstructions(barUser);
 
         // send to payhub
         ObjectMapper objectMapper = new ObjectMapper();
@@ -130,11 +131,11 @@ public class PayHubService {
     }
 
 
-    private List<PayhubPaymentInstruction> collectPaymentInstructions() {
+    private List<PayhubPaymentInstruction> collectPaymentInstructions(BarUser barUser) {
         PaymentInstructionSearchCriteriaDto criteriaDto = new PaymentInstructionSearchCriteriaDto();
         criteriaDto.setStatus("TTB");
         criteriaDto.setTransferredToPayhub(false);
-        return paymentInstructionService.getAllPaymentInstructionsForPayhub(criteriaDto);
+        return paymentInstructionService.getAllPaymentInstructionsForPayhub(barUser, criteriaDto);
     }
 
     private PaymentInstructionPayhubReference handlePayHubResponse(CloseableHttpResponse response,

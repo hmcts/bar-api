@@ -21,7 +21,6 @@ import uk.gov.hmcts.bar.api.audit.AuditRepository;
 import uk.gov.hmcts.bar.api.controllers.payment.PaymentInstructionController;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
-import uk.gov.hmcts.bar.api.data.exceptions.BarUserNotFoundException;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentProcessException;
 import uk.gov.hmcts.bar.api.data.model.*;
@@ -56,7 +55,6 @@ public class PaymentInstructionService {
     private PaymentInstructionRepository paymentInstructionRepository;
     private PaymentInstructionStatusRepository paymentInstructionStatusRepository;
     private PaymentReferenceService paymentReferenceService;
-    private final BarUserService barUserService;
     private final BankGiroCreditRepository bankGiroCreditRepository;
     private final FF4j ff4j;
     private PaymentTypeService paymentTypeService;
@@ -66,7 +64,6 @@ public class PaymentInstructionService {
 
 
     public PaymentInstructionService(PaymentReferenceService paymentReferenceService, PaymentInstructionRepository paymentInstructionRepository,
-                                     BarUserService barUserService,
                                      PaymentInstructionStatusRepository paymentInstructionStatusRepository,
                                      FF4j ff4j,
                                      BankGiroCreditRepository bankGiroCreditRepository,
@@ -78,7 +75,6 @@ public class PaymentInstructionService {
     ) {
         this.paymentReferenceService = paymentReferenceService;
         this.paymentInstructionRepository = paymentInstructionRepository;
-        this.barUserService = barUserService;
         this.paymentInstructionStatusRepository = paymentInstructionStatusRepository;
         this.ff4j = ff4j;
         this.bankGiroCreditRepository = bankGiroCreditRepository;
@@ -88,23 +84,20 @@ public class PaymentInstructionService {
         this.updateValidatorService = updateValidatorService;
     }
 
-    public PaymentInstruction createPaymentInstruction(PaymentInstruction paymentInstruction)  {
-        String userId = barUserService.getCurrentUserId();
-        BarUser barUser = getBarUser();
-        PaymentReference nextPaymentReference = paymentReferenceService.getNextPaymentReference(barUser.getSiteId());
-        paymentInstruction.setSiteId(barUser.getSiteId());
+    public PaymentInstruction createPaymentInstruction(BarUser barUser, PaymentInstruction paymentInstruction)  {
+        PaymentReference nextPaymentReference = paymentReferenceService.getNextPaymentReference(barUser.getSelectedSiteId());
+        paymentInstruction.setSiteId(barUser.getSelectedSiteId());
         paymentInstruction.setDailySequenceId(getDailySequentialPaymentId(nextPaymentReference));
         paymentInstruction.setStatus(PaymentStatusEnum.DRAFT.dbKey());
-        paymentInstruction.setUserId(userId);
+        paymentInstruction.setUserId(barUser.getId());
         PaymentInstruction savedPaymentInstruction = paymentInstructionRepository.saveAndRefresh(paymentInstruction);
-        savePaymentInstructionStatus(savedPaymentInstruction, userId);
+        savePaymentInstructionStatus(savedPaymentInstruction, barUser.getId());
         auditRepository.trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT", paymentInstruction, barUser);
         return savedPaymentInstruction;
     }
 
-    public List<PaymentInstruction> getAllPaymentInstructions(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto)  {
-        BarUser barUser = getBarUser();
-        paymentInstructionSearchCriteriaDto.setSiteId(barUser.getSiteId());
+    public List<PaymentInstruction> getAllPaymentInstructions(BarUser barUser,  PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto)  {
+        paymentInstructionSearchCriteriaDto.setSiteId(barUser.getSelectedSiteId());
         PaymentInstructionsSpecifications<PaymentInstruction> paymentInstructionsSpecification = new PaymentInstructionsSpecifications<>(paymentInstructionSearchCriteriaDto,paymentTypeService);
         Sort sort = new Sort(Sort.Direction.DESC, "paymentDate");
         Pageable pageDetails = PageRequest.of(PAGE_NUMBER, MAX_RECORDS_PER_PAGE, sort);
@@ -131,10 +124,10 @@ public class PaymentInstructionService {
     }
 
     public List<PayhubPaymentInstruction> getAllPaymentInstructionsForPayhub(
+        BarUser barUser,
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto
     )  {
-        BarUser barUser = getBarUser();
-        paymentInstructionSearchCriteriaDto.setSiteId(barUser.getSiteId());
+        paymentInstructionSearchCriteriaDto.setSiteId(barUser.getSelectedSiteId());
         PaymentInstructionsSpecifications<PayhubPaymentInstruction> paymentInstructionsSpecification =
             new PaymentInstructionsSpecifications<>(paymentInstructionSearchCriteriaDto, paymentTypeService);
 
@@ -158,7 +151,7 @@ public class PaymentInstructionService {
 
     }
 
-    public PaymentInstruction submitPaymentInstruction(Integer id, PaymentInstructionUpdateRequest paymentInstructionUpdateRequest) throws PaymentProcessException {
+    public PaymentInstruction submitPaymentInstruction(BarUser barUser, Integer id, PaymentInstructionUpdateRequest paymentInstructionUpdateRequest) throws PaymentProcessException {
         if (!checkIfActionEnabled(paymentInstructionUpdateRequest)) {
             throw new FeatureAccessException(paymentInstructionUpdateRequest.getAction() + " is not allowed");
         }
@@ -167,8 +160,6 @@ public class PaymentInstructionService {
             .orElseThrow(() -> new PaymentInstructionNotFoundException(id));
 
         updateValidatorService.validateAll(existingPaymentInstruction, paymentInstructionUpdateRequest);
-
-        BarUser barUser = getBarUser();
 
         updatePaymentInstructionsProps(existingPaymentInstruction, paymentInstructionUpdateRequest);
 		if (PaymentStatusEnum.PENDING.dbKey().equals(paymentInstructionUpdateRequest.getStatus())) {
@@ -185,8 +176,7 @@ public class PaymentInstructionService {
         return paymentInstruction;
     }
 
-    public PaymentInstruction updatePaymentInstruction(Integer id, PaymentInstructionRequest paymentInstructionRequest)  {
-        BarUser barUser = getBarUser();
+    public PaymentInstruction updatePaymentInstruction(BarUser barUser, Integer id, PaymentInstructionRequest paymentInstructionRequest)  {
         Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
         PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
             .orElseThrow(() -> new PaymentInstructionNotFoundException(id));
@@ -194,7 +184,7 @@ public class PaymentInstructionService {
         // handle bgc number
         if (paymentInstructionRequest.getBgcNumber() != null) {
             BankGiroCredit bgc = bankGiroCreditRepository.findByBgcNumber(paymentInstructionRequest.getBgcNumber())
-                .orElseGet(() -> bankGiroCreditRepository.save(new BankGiroCredit(paymentInstructionRequest.getBgcNumber(), barUser.getSiteId())));
+                .orElseGet(() -> bankGiroCreditRepository.save(new BankGiroCredit(paymentInstructionRequest.getBgcNumber(), barUser.getSelectedSiteId())));
             existingPaymentInstruction.setBgcNumber(bgc.getBgcNumber());
         }
 
@@ -264,7 +254,7 @@ public class PaymentInstructionService {
                                    String rel, String oldStatus) {
 
         return linkTo(methodOn(PaymentInstructionController.class)
-            .getPaymentInstructionsByIdamId(userId, status,
+            .getPaymentInstructionsByIdamId(null, userId, status,
                 null, null, null, null, null,
                 null, null, null, paymentType, action, null, bgcNumber, oldStatus)
         ).withRel(rel);
@@ -328,12 +318,6 @@ public class PaymentInstructionService {
         PaymentActionEnum.findByDisplayValue(action).ifPresent(paymentActionEnum ->
             ret[0] = ff4j.check(paymentActionEnum.featureKey()));
         return ret[0];
-    }
-
-    private BarUser getBarUser()  {
-        Optional<BarUser> optBarUser = barUserService.getBarUser();
-        BarUser barUser = optBarUser.orElseThrow(()-> new BarUserNotFoundException("Bar user not found"));
-        return barUser;
     }
 
     private void updatePaymentInstructionsProps(PaymentInstruction existingPi, Object updateRequest) {

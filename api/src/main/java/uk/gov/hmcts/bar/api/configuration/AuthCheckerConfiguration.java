@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
+import uk.gov.hmcts.bar.api.auth.AuthCheckerBarUserDetailsService;
 import uk.gov.hmcts.bar.api.auth.UserResolver;
 import uk.gov.hmcts.bar.api.auth.UserTokenDetails;
 import uk.gov.hmcts.bar.api.data.service.BarUserService;
@@ -61,5 +63,12 @@ public class AuthCheckerConfiguration {
         AuthCheckerUserOnlyFilter<User> filter = new AuthCheckerUserOnlyFilter<>(userRequestAuthorizer);
         filter.setAuthenticationManager(authenticationManager);
         return filter;
+    }
+
+    @Bean
+    public PreAuthenticatedAuthenticationProvider preAuthenticatedAuthenticationProvider() {
+        PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
+        authenticationProvider.setPreAuthenticatedUserDetailsService(new AuthCheckerBarUserDetailsService());
+        return authenticationProvider;
     }
 }

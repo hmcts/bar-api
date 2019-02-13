@@ -1,6 +1,7 @@
 package uk.gov.hmcts.bar.api.controllers;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.bar.api.componenttests.ComponentTestBase;
 import uk.gov.hmcts.bar.api.componenttests.utils.DbTestUtil;
@@ -10,9 +11,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class PaymentInstructionSearchTest extends ComponentTestBase {
 
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
+    }
+
     @Test
     public void searchForPaymentByPaymentType() throws Exception {
-        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
 
         restActions
             .get("/payment-instructions?paymentType=CACHE")
@@ -31,7 +38,6 @@ public class PaymentInstructionSearchTest extends ComponentTestBase {
 
     @Test
     public void searchForPaymentByPaymentTypeMultiple() throws Exception {
-        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
 
         restActions
             .get("/payment-instructions?paymentType=CARD,CASH")
@@ -43,7 +49,7 @@ public class PaymentInstructionSearchTest extends ComponentTestBase {
 
     @Test
     public void searchForPaymentByCaseReference() throws Exception {
-        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
+
         restActions
             .get("/payment-instructions?caseReference=123")
             .andExpect(status().isOk())
@@ -54,7 +60,6 @@ public class PaymentInstructionSearchTest extends ComponentTestBase {
 
     @Test
     public void searchForPaymentByPaymentReferenceAndPaymentType() throws Exception {
-        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
 
         restActions
             .get("/payment-instructions?caseReference=123&paymentType=cache")
@@ -73,7 +78,6 @@ public class PaymentInstructionSearchTest extends ComponentTestBase {
 
     @Test
     public void searchPaymentByCaseReferenceOrPaymentReference_WhenBothCanBeFound() throws Exception {
-        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
 
         restActions
             .get("/payment-instructions?caseReference=123&allPayInstructionId=123")
@@ -85,7 +89,6 @@ public class PaymentInstructionSearchTest extends ComponentTestBase {
 
     @Test
     public void searchPaymentByCaseReferenceOrPaymentReference_WhenOnlyOneCanBeFound() throws Exception {
-        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
 
         restActions
             .get("/payment-instructions?caseReference=1234&allPayInstructionId=1234")
@@ -97,7 +100,6 @@ public class PaymentInstructionSearchTest extends ComponentTestBase {
 
     @Test
     public void searchPaymentByAuthorizationCode() throws Exception {
-        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
 
         restActions
             .get("/payment-instructions?caseReference=1234&authorizationCode=a1234B")

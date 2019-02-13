@@ -27,6 +27,6 @@ public class UserResolver implements SubjectResolver<User> {
             details.getSurname()
         );
         barUserService.saveUser(barUser);
-        return new User(details.getId(), details.getRoles());
+        return new BarUserPrincipal(details.getId(), details.getRoles(), details.getForename(), details.getSurname(), details.getEmail());
     }
 }

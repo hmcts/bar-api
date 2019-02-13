@@ -12,7 +12,8 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import uk.gov.hmcts.bar.api.BarServiceApplication;
 
-import static java.util.Collections.singletonList;
+import java.util.Arrays;
+
 import static springfox.documentation.builders.RequestHandlerSelectors.basePackage;
 
 @Configuration
@@ -23,10 +24,17 @@ public class SwaggerConfiguration {
     public Docket barApi() {
         return new Docket(DocumentationType.SWAGGER_2)
             .groupName("bar")
-            .globalOperationParameters(singletonList(
+            .globalOperationParameters(Arrays.asList(
                 new ParameterBuilder()
                     .name("Authorization")
                     .description("User authorization header")
+                    .required(false)
+                    .parameterType("header")
+                    .modelRef(new ModelRef("string"))
+                    .build(),
+                new ParameterBuilder()
+                    .name("SiteId")
+                    .description("Site id header")
                     .required(false)
                     .parameterType("header")
                     .modelRef(new ModelRef("string"))

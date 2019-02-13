@@ -2,6 +2,7 @@ package uk.gov.hmcts.bar.api.componenttests.utils;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
+import uk.gov.hmcts.bar.api.auth.BarUserDetails;
 import uk.gov.hmcts.reform.auth.checker.spring.useronly.UserDetails;
 
 import javax.sql.DataSource;
@@ -99,27 +100,27 @@ public final class DbTestUtil {
         }
     }
 
-    public static void addTestUser(ApplicationContext applicationContext, UserDetails userDteails) throws SQLException {
+    public static void addTestUser(ApplicationContext applicationContext, BarUserDetails userDteails) throws SQLException {
         DataSource dataSource = applicationContext.getBean(DataSource.class);
         String insertUserSqlTemplate = getSqlTemplate(applicationContext, PROPERTY_KEY_INSERT_USER_SQL_TAMPLATE);
         try (Connection dbConnection = dataSource.getConnection(); Statement stmt = dbConnection.createStatement()) {
 
-            String[] columnValues = new String[] { "'" + userDteails.getUsername() + "-fn'",
-                "'" + userDteails.getUsername() + "-ln'", "'" + userDteails.getUsername() + "'",
+            String[] columnValues = new String[] { "'" + userDteails.getForename() + "'",
+                "'" + userDteails.getSurname() + "'", "'" + userDteails.getUsername() + "'",
                 "'" + userDteails.getAuthorities().stream().map(Object::toString).collect(Collectors.joining(", "))
-                    + "'" };
+                    + "'", "'" + userDteails.getEmail() + "'"};
             stmt.executeQuery(String.format(insertUserSqlTemplate, columnValues));
         }
     }
 
     public static void insertPaymentInstructions(ApplicationContext applicationContext) throws SQLException {
-        insertBGCNumber(applicationContext);
         DataSource dataSource = applicationContext.getBean(DataSource.class);
         try (Connection dbConnection = dataSource.getConnection(); Statement stmt = dbConnection.createStatement()) {
 
             emptyTable(applicationContext, "case_fee_detail");
             emptyTable(applicationContext, "payment_instruction_status");
             emptyTable(applicationContext, "payment_instruction");
+            insertBGCNumber(applicationContext);
             stmt.executeQuery(INSERT_PI_QUERY);
             stmt.executeQuery(INSERT_STATUS_HISTORY);
         }

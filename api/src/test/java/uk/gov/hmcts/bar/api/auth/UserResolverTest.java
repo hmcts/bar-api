@@ -39,8 +39,8 @@ public class UserResolverTest {
     @Before
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
-       barUserMock = new BarUser("id",new HashSet<>(),"testting@testing.com","post","clerk");
-       userTokenDetailsMock = new UserTokenDetails("defaultService","testting@testing.com","post","clerk","id", Collections.EMPTY_SET);
+        barUserMock = new BarUser("id",new HashSet<>(),"testting@testing.com","post","clerk");
+        userTokenDetailsMock = new UserTokenDetails("defaultService","testting@testing.com","post","clerk","id", Collections.EMPTY_SET);
     }
 
     @Test
