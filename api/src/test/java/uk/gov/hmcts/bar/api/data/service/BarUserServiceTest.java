@@ -155,6 +155,24 @@ public class BarUserServiceTest {
     }
 
     @Test
+    public void testValidateUserAgainstSiteWhenAnyParameterIsBlank() throws IOException {
+        String email = "user@gmail.com";
+        String token = "this_is_a_user_token";
+        String siteId = "siteId";
+        Assert.assertEquals(false, barUserService.validateUserAgainstSite("", token, siteId));
+        Assert.assertEquals(false, barUserService.validateUserAgainstSite(null, token, siteId));
+        Assert.assertEquals(false, barUserService.validateUserAgainstSite(" ", token, siteId));
+
+        Assert.assertEquals(false, barUserService.validateUserAgainstSite(email, " ", siteId));
+        Assert.assertEquals(false, barUserService.validateUserAgainstSite(email, "", siteId));
+        Assert.assertEquals(false, barUserService.validateUserAgainstSite(email, null, siteId));
+
+        Assert.assertEquals(false, barUserService.validateUserAgainstSite(email, token, ""));
+        Assert.assertEquals(false, barUserService.validateUserAgainstSite(email, token, " "));
+        Assert.assertEquals(false, barUserService.validateUserAgainstSite(email, token, null));
+    }
+
+    @Test
     public void checkSiteVaidationRequest() throws IOException {
         String email = "user@gmail.com";
         String token = "this_is_a_user_token";

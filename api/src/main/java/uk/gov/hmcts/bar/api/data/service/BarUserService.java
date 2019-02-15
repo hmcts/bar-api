@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.bar.api.auth.BarUserDetails;
 import uk.gov.hmcts.bar.api.data.model.BarUser;
 import uk.gov.hmcts.bar.api.data.repository.BarUserRepository;
+import uk.gov.hmcts.bar.api.data.utils.Util;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -61,6 +62,9 @@ public class BarUserService {
 	}
 
     public Boolean validateUserAgainstSite(String email, String userToken, String siteId) throws IOException {
+        if(Util.StringUtils.isAnyBlank(email, userToken, siteId)) {
+            return false;
+        }
         ObjectMapper objectMapper = new ObjectMapper();
         HttpGet httpGet = new HttpGet(siteApiUrl + "/sites/" + siteId + "/users/" + email);
         httpGet.setHeader("Content-type", "application/json");
@@ -68,5 +72,7 @@ public class BarUserService {
         CloseableHttpResponse response = httpClient.execute(httpGet);
         return objectMapper.readValue(response.getEntity().getContent(), Boolean.class);
     }
+
+
 
 }
