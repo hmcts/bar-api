@@ -8,7 +8,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.http.params.HttpParams;
 import org.hamcrest.core.Is;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -29,7 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class BarUserServiceTest {
@@ -110,7 +109,7 @@ public class BarUserServiceTest {
     public void whenSecurityContextIsInvalid_shouldReceiveNullAsId() {
         SecurityContextHolder.setContext(new SecurityContextImpl());
 
-        Assert.assertNull(barUserService.getCurrentUserId());
+        assertNull(barUserService.getCurrentUserId());
     }
 
     @Test
@@ -142,7 +141,7 @@ public class BarUserServiceTest {
         String token = "this_is_a_user_token";
         String siteId = "siteId";
         when(httpClient.execute(any(HttpGet.class))).thenAnswer(invocation -> new SiteHttpResponse(200, "true"));
-        Assert.assertEquals(true, barUserService.validateUserAgainstSite(email, token, siteId));
+        assertTrue(barUserService.validateUserAgainstSite(email, token, siteId));
     }
 
     @Test
@@ -151,7 +150,7 @@ public class BarUserServiceTest {
         String token = "this_is_a_user_token";
         String siteId = "siteId";
         when(httpClient.execute(any(HttpGet.class))).thenAnswer(invocation -> new SiteHttpResponse(200, "false"));
-        Assert.assertEquals(false, barUserService.validateUserAgainstSite(email, token, siteId));
+        assertFalse(barUserService.validateUserAgainstSite(email, token, siteId));
     }
 
     @Test
@@ -159,17 +158,17 @@ public class BarUserServiceTest {
         String email = "user@gmail.com";
         String token = "this_is_a_user_token";
         String siteId = "siteId";
-        Assert.assertEquals(false, barUserService.validateUserAgainstSite("", token, siteId));
-        Assert.assertEquals(false, barUserService.validateUserAgainstSite(null, token, siteId));
-        Assert.assertEquals(false, barUserService.validateUserAgainstSite(" ", token, siteId));
+        assertFalse(barUserService.validateUserAgainstSite("", token, siteId));
+        assertFalse(barUserService.validateUserAgainstSite(null, token, siteId));
+        assertFalse(barUserService.validateUserAgainstSite(" ", token, siteId));
 
-        Assert.assertEquals(false, barUserService.validateUserAgainstSite(email, " ", siteId));
-        Assert.assertEquals(false, barUserService.validateUserAgainstSite(email, "", siteId));
-        Assert.assertEquals(false, barUserService.validateUserAgainstSite(email, null, siteId));
+        assertFalse(barUserService.validateUserAgainstSite(email, " ", siteId));
+        assertFalse(barUserService.validateUserAgainstSite(email, "", siteId));
+        assertFalse(barUserService.validateUserAgainstSite(email, null, siteId));
 
-        Assert.assertEquals(false, barUserService.validateUserAgainstSite(email, token, ""));
-        Assert.assertEquals(false, barUserService.validateUserAgainstSite(email, token, " "));
-        Assert.assertEquals(false, barUserService.validateUserAgainstSite(email, token, null));
+        assertFalse(barUserService.validateUserAgainstSite(email, token, ""));
+        assertFalse(barUserService.validateUserAgainstSite(email, token, " "));
+        assertFalse(barUserService.validateUserAgainstSite(email, token, null));
     }
 
     @Test

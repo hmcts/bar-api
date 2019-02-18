@@ -503,7 +503,7 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
             .thenReturn(paymentInstructionMock);
 
-        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(barUserMock, 1, pir);
+        paymentInstructionService.submitPaymentInstruction(barUserMock, 1, pir);
         verify(paymentInstructionRepository, times(1)).findById(anyInt());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
         verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",paymentInstructionMock,barUserMock);
@@ -527,7 +527,7 @@ public class PaymentInstructionServiceTest {
         try {
             PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
                 .status("D").action("Suspense").build();
-            PaymentInstruction updatedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(barUserMock, 1, pir);
+            paymentInstructionService.submitPaymentInstruction(barUserMock, 1, pir);
             fail("should fail here");
         } catch (FeatureAccessException fae){
 
@@ -545,7 +545,7 @@ public class PaymentInstructionServiceTest {
         try {
             PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
                 .status("V").action("Process").build();
-            PaymentInstruction updatedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(barUserMock, 1, pir);
+            paymentInstructionService.submitPaymentInstruction(barUserMock, 1, pir);
             fail("should fail here");
         } catch (PaymentProcessException ppe) {
             assertEquals("Please allocate all amount before processing.", ppe.getMessage());
@@ -563,7 +563,7 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
             .thenReturn(paymentInstructionMock);
         when(paymentInstructionMock.getStatus()).thenReturn("status");
-        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(barUserMock, 1, pir);
+        paymentInstructionService.updatePaymentInstruction(barUserMock, 1, pir);
         verify(paymentInstructionRepository, times(1)).findById(anyInt());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
         verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",paymentInstructionMock,barUserMock);

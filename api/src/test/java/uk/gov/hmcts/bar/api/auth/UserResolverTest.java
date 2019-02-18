@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.bar.api.data.model.BarUser;
 import uk.gov.hmcts.bar.api.data.service.BarUserService;
-import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.auth.parser.idam.core.user.token.UserTokenParser;
 
 import java.util.Collections;
@@ -22,9 +21,6 @@ public class UserResolverTest {
 
     @Mock
     private BarUserService barUserServiceMock;
-
-    @Mock
-    private User userMock;
 
     @Mock
     private BarUser barUserMock;
@@ -47,7 +43,7 @@ public class UserResolverTest {
     public void shouldReturnUserTokenDetails_whenGetTokenDetailsIsCalled(){
         when(userTokenParserMock.parse("BearerToken")).thenReturn(userTokenDetailsMock);
         when(barUserServiceMock.saveUser(barUserMock)).thenReturn(barUserMock);
-        User user = userResolverMock.getTokenDetails("BearerToken");
+        userResolverMock.getTokenDetails("BearerToken");
         verify(userTokenParserMock, times(1)).parse("BearerToken");
         verify(barUserServiceMock, times(1)).saveUser(barUserMock);
 

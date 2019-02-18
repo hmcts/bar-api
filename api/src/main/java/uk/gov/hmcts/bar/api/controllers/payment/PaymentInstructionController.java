@@ -601,10 +601,7 @@ public class PaymentInstructionController {
     }
 
     private boolean checkAcceptHeaderForCsv(HttpHeaders headers){
-        if (headers.getAccept().contains(new MediaType("text","csv"))){
-            return true;
-        }
-        return false;
+        return headers.getAccept().contains(new MediaType("text","csv"));
     }
 
     @InitBinder

@@ -3,20 +3,15 @@ package uk.gov.hmcts.bar.api.componenttests.sugar;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.bar.api.auth.BarUserDetails;
-import uk.gov.hmcts.bar.api.auth.BarUserPrincipal;
 import uk.gov.hmcts.reform.auth.checker.core.user.UserRequestAuthorizer;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -32,51 +27,12 @@ public class RestActions {
     private final MockMvc mvc;
     private final ObjectMapper objectMapper;
     private final UserDetails userDetails;
-    private final Authentication authentication;
 
     public RestActions(MockMvc mvc, ObjectMapper objectMapper, BarUserDetails userDetails) {
         this.mvc = mvc;
         this.objectMapper = objectMapper;
         this.userDetails = userDetails;
         this.httpHeaders.add(UserRequestAuthorizer.AUTHORISATION, "DummyBearerToken");
-        this.authentication = new Authentication() {
-            @Override
-            public Collection<? extends GrantedAuthority> getAuthorities() {
-                return userDetails.getAuthorities();
-            }
-
-            @Override
-            public Object getCredentials() {
-                return userDetails.getPassword();
-            }
-
-            @Override
-            public Object getDetails() {
-                return null;
-            }
-
-            @Override
-            public Object getPrincipal() {
-                return new BarUserPrincipal(userDetails.getUsername(),
-                    userDetails.getAuthorities().stream().map(grantedAuthority -> grantedAuthority.getAuthority()).collect(Collectors.toSet()),
-                    "test", "user", "test.user@mail.com");
-            }
-
-            @Override
-            public boolean isAuthenticated() {
-                return true;
-            }
-
-            @Override
-            public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-
-            }
-
-            @Override
-            public String getName() {
-                return userDetails.getUsername();
-            }
-        };
     }
 
     public ResultActions get(String urlTemplate, String siteId) {

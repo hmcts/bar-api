@@ -425,7 +425,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .post("/allpay",  proposedAllPayPaymentInstructionRequest)
             .andExpect(status().isCreated());
 
-        PaymentInstructionUpdateRequest updatedActionToProcessRequest = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
+        PaymentInstructionUpdateRequest updatedActionToProcessRequest = paymentInstructionUpdateRequestWith()
             .status("P")
             .action(PaymentActionEnum.PROCESS.displayValue()).build();
 
@@ -433,7 +433,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .put("/payment-instructions/1", updatedActionToProcessRequest)
             .andExpect(status().isOk());
 
-        PaymentInstructionUpdateRequest updatedActionReturnRequest = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
+        PaymentInstructionUpdateRequest updatedActionReturnRequest = paymentInstructionUpdateRequestWith()
             .status("P")
             .action(PaymentActionEnum.RETURN.displayValue()).build();
 
@@ -441,7 +441,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .put("/payment-instructions/1", updatedActionReturnRequest)
             .andExpect(status().isBadRequest());
 
-        PaymentInstructionUpdateRequest updatedActionSuspenseDefRequest = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
+        PaymentInstructionUpdateRequest updatedActionSuspenseDefRequest = paymentInstructionUpdateRequestWith()
             .status("P")
             .action(PaymentActionEnum.SUSPENSE_DEFICIENCY.displayValue()).build();
 

@@ -413,7 +413,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, (allPayList) -> {
                 String bgcNumber = (String)((Map)allPayList.get(0)).get("bgc_number");
-                assertThat(bgcNumber.equals("12345"));
+                assertThat(bgcNumber).isEqualTo("12345");
             }));
     }
 

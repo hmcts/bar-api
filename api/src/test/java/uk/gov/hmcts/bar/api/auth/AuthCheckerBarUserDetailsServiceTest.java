@@ -1,6 +1,5 @@
 package uk.gov.hmcts.bar.api.auth;
 
-import java.lang.IllegalArgumentException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

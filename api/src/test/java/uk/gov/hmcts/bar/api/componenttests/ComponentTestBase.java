@@ -15,7 +15,6 @@ import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.bar.api.BarServiceApplication;
 import uk.gov.hmcts.bar.api.auth.BarUserDetails;
 import uk.gov.hmcts.bar.api.auth.MockSiteIdValidationFilter;
-import uk.gov.hmcts.bar.api.auth.SiteValidationFilter;
 import uk.gov.hmcts.bar.api.componenttests.sugar.CustomResultMatcher;
 import uk.gov.hmcts.bar.api.componenttests.sugar.RestActions;
 import uk.gov.hmcts.bar.api.componenttests.utils.DbTestUtil;
@@ -43,9 +42,6 @@ public class ComponentTestBase {
 
     @Autowired
     private WebApplicationContext webApplicationContext;
-
-    @Autowired
-    private SiteValidationFilter siteValidationFilter;
 
     public final BarUserDetails userDetails =
         new BarUserDetails("1234", "abc123", Collections.singletonList("bar-post-clerk"), "abc", "123", "abc.123@mail.com");
