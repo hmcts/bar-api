@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import uk.gov.hmcts.bar.api.auth.BarUserDetails;
 import uk.gov.hmcts.reform.auth.checker.core.user.UserRequestAuthorizer;
 
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ public class RestActions {
     private final ObjectMapper objectMapper;
     private final UserDetails userDetails;
 
-    public RestActions(MockMvc mvc, ObjectMapper objectMapper, BarUserDetails userDetails) {
+    public RestActions(MockMvc mvc, ObjectMapper objectMapper, UserDetails userDetails) {
         this.mvc = mvc;
         this.objectMapper = objectMapper;
         this.userDetails = userDetails;

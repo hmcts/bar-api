@@ -3,8 +3,6 @@ package uk.gov.hmcts.bar.api.data.model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import uk.gov.hmcts.bar.api.auth.BarUserDetails;
 import uk.gov.hmcts.bar.api.data.exceptions.MissingSiteIdException;
 
 import javax.persistence.Entity;
@@ -27,16 +25,6 @@ public class BarUser {
     private String roles;
     @Transient
     private String $selectedSiteId;
-
-    public static BarUser createBarUserFromUserDetails(BarUserDetails barUserDetails) {
-        if (barUserDetails == null) {
-            return null;
-        }
-        Set<String> roles = barUserDetails.getAuthorities().stream()
-            .map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
-        return new BarUser(barUserDetails.getUsername(), roles, barUserDetails.getEmail(), barUserDetails.getForename(),
-            barUserDetails.getSurname());
-    }
 
     public BarUser(String principalId, Set<String> roles, String email, String forename, String surname) {
         this.id = principalId;

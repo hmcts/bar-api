@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.auth.parser.idam.core.user.token.UserTokenParser;
 
 public class UserResolver implements SubjectResolver<User> {
 
-    private final UserTokenParser<BarUserDetails> userTokenParser;
+    private final UserTokenParser<UserTokenDetails> userTokenParser;
     private final BarUserService barUserService;
 
     public UserResolver(UserTokenParser userTokenParser, BarUserService barUserService) {
@@ -18,9 +18,15 @@ public class UserResolver implements SubjectResolver<User> {
 
     @Override
     public User getTokenDetails(String bearerToken) {
-        BarUserDetails details = userTokenParser.parse(bearerToken);
-
-        barUserService.saveUser(BarUser.createBarUserFromUserDetails(details));
-        return details;
+        UserTokenDetails details = userTokenParser.parse(bearerToken);
+        BarUser barUser = new BarUser(
+            details.getId(),
+            details.getRoles(),
+            details.getEmail(),
+            details.getForename(),
+            details.getSurname()
+        );
+        barUserService.saveUser(barUser);
+        return new User(details.getId(), details.getRoles());
     }
 }

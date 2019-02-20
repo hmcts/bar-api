@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import uk.gov.hmcts.bar.api.auth.BarUserDetails;
 import uk.gov.hmcts.bar.api.auth.UserResolver;
+import uk.gov.hmcts.bar.api.auth.UserTokenDetails;
 import uk.gov.hmcts.bar.api.data.service.BarUserService;
 import uk.gov.hmcts.reform.auth.checker.core.CachingSubjectResolver;
 import uk.gov.hmcts.reform.auth.checker.core.SubjectResolver;
@@ -29,22 +29,22 @@ public class AuthCheckerConfiguration {
 
     @Bean
     public Function<HttpServletRequest, Collection<String>> authorizedRolesExtractor() {
-        return any -> Collections.unmodifiableList(Arrays.asList("super", "bar-fee-clerk", "bar-senior-clerk", "bar-delivery-manager", "bar-post-clerk"));
+        return (any) -> Collections.unmodifiableList(Arrays.asList("super", "bar-fee-clerk", "bar-senior-clerk", "bar-delivery-manager", "bar-post-clerk"));
     }
 
     @Bean
     public Function<HttpServletRequest, Optional<String>> userIdExtractor() {
-        return request -> Optional.empty();
+        return (request) -> Optional.empty();
     }
 
     @Bean
-    public UserTokenParser<BarUserDetails> fullUserTokenParser(HttpClient userTokenParserHttpClient,
-                                                               @Value("${auth.idam.client.baseUrl}") String baseUrl) {
-        return new HttpComponentsBasedUserTokenParser<>(userTokenParserHttpClient, baseUrl, BarUserDetails.class);
+    public UserTokenParser<UserTokenDetails> fullUserTokenParser(HttpClient userTokenParserHttpClient,
+                                                                 @Value("${auth.idam.client.baseUrl}") String baseUrl) {
+        return new HttpComponentsBasedUserTokenParser<>(userTokenParserHttpClient, baseUrl, UserTokenDetails.class);
     }
 
     @Bean
-    public SubjectResolver<User> userResolver(UserTokenParser<BarUserDetails> fullUserTokenParser, AuthCheckerProperties properties, BarUserService userService) {
+    public SubjectResolver<User> userResolver(UserTokenParser<UserTokenDetails> fullUserTokenParser, AuthCheckerProperties properties, BarUserService userService) {
         return new CachingSubjectResolver<>(new UserResolver(fullUserTokenParser, userService), properties.getUser().getTtlInSeconds(), properties.getUser().getMaximumSize());
     }
 

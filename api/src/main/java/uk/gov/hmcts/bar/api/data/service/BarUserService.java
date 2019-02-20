@@ -6,15 +6,16 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.bar.api.auth.BarUserDetails;
 import uk.gov.hmcts.bar.api.data.model.BarUser;
 import uk.gov.hmcts.bar.api.data.repository.BarUserRepository;
 import uk.gov.hmcts.bar.api.data.utils.Util;
+import uk.gov.hmcts.reform.auth.checker.spring.useronly.UserDetails;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -43,23 +44,18 @@ public class BarUserService {
     }
 
     public String getCurrentUserId() {
-        Optional<BarUser> user = getBarUser();
-        if (user.isPresent()){
-            return user.get().getId();
-        } else {
-            return null;
-        }
-    }
-
-	public Optional<BarUser> getBarUser() {
-        Optional<BarUser> barUser = Optional.empty();
+        Optional<String> userId = Optional.empty();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
-            BarUserDetails userDetails = (BarUserDetails) authentication.getPrincipal();
-            barUser = Optional.ofNullable(BarUser.createBarUserFromUserDetails(userDetails));
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            userId = Optional.ofNullable(userDetails.getUsername());
         }
-		return barUser;
+        return userId.orElseThrow(() -> new AccessDeniedException("failed to identify user"));
 	}
+
+    public Optional<BarUser> getBarUser() {
+        return barUserRepository.findBarUserById(getCurrentUserId());
+    }
 
     public Boolean validateUserAgainstSite(String email, String userToken, String siteId) throws IOException {
         if(Util.StringUtils.isAnyBlank(email, userToken, siteId)) {

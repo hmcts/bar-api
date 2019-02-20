@@ -14,14 +14,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
-import uk.gov.hmcts.bar.api.auth.BarUserDetails;
 import uk.gov.hmcts.bar.api.data.model.BarUser;
 import uk.gov.hmcts.bar.api.data.repository.BarUserRepository;
+import uk.gov.hmcts.reform.auth.checker.spring.useronly.UserDetails;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -70,8 +71,7 @@ public class BarUserServiceTest {
 
             @Override
             public Object getPrincipal() {
-                return new BarUserDetails("username", "token", new HashSet<>(Arrays.asList("bar-super-user")),
-                    "super", "user", "super.user@mail.com");
+                return new UserDetails("username", "token", Arrays.asList("bar-super-user"));
             }
 
             @Override
@@ -105,11 +105,11 @@ public class BarUserServiceTest {
         barUser = new BarUser("user1", Collections.emptySet(), "user1@mail.com", "user", "one");
     }
 
-    @Test
-    public void whenSecurityContextIsInvalid_shouldReceiveNullAsId() {
+    @Test(expected = AccessDeniedException.class)
+    public void whenSecurityContextIsInvalid_shouldReceiveAccessDeniedException() {
         SecurityContextHolder.setContext(new SecurityContextImpl());
 
-        assertNull(barUserService.getCurrentUserId());
+        barUserService.getCurrentUserId();
     }
 
     @Test

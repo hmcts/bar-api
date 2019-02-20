@@ -132,8 +132,7 @@ def sonarExclusions = [
         '**/ResourceNotFoundException.java',
         '**/*Configuration.java',
         '**/BaseRepository.java',
-        '**/*Exception.java',
-        '**/BarUserDetails.java'
+        '**/*Exception.java'
 ]
 
 sonarqube {

@@ -13,16 +13,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.bar.api.BarServiceApplication;
-import uk.gov.hmcts.bar.api.auth.BarUserDetails;
 import uk.gov.hmcts.bar.api.auth.MockSiteIdValidationFilter;
 import uk.gov.hmcts.bar.api.componenttests.sugar.CustomResultMatcher;
 import uk.gov.hmcts.bar.api.componenttests.sugar.RestActions;
 import uk.gov.hmcts.bar.api.componenttests.utils.DbTestUtil;
 import uk.gov.hmcts.bar.multisite.MultisiteConfiguration;
+import uk.gov.hmcts.reform.auth.checker.spring.useronly.UserDetails;
 
 import javax.ws.rs.core.MediaType;
 import java.util.Collections;
-import java.util.HashSet;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
@@ -44,16 +43,16 @@ public class ComponentTestBase {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    public final BarUserDetails userDetails =
-        new BarUserDetails("1234", "abc123", new HashSet<>(Collections.singletonList("bar-post-clerk")), "abc", "123", "abc.123@mail.com");
-    public final BarUserDetails feeClerkUserDetails =
-            new BarUserDetails("fee-clerk", "abc123", new HashSet<>(Collections.singletonList("bar-fee-clerk")), "fee", "clerk", "fee.clerk@mail.com");
-    public final BarUserDetails srFeeClerkUserDetails =
-            new BarUserDetails("sr-fee-clerk", "abc123", new HashSet<>(Collections.singletonList("bar-senior-clerk")), "senior", "feeclerk", "senior@mail.com");
-    public final BarUserDetails dmUserDetails =
-            new BarUserDetails("dm-manager", "abc123", new HashSet<>(Collections.singletonList("bar-delivery-manager")), "delivery", "manager", "devmanager@mail.com");
-    public final BarUserDetails adminUserDetails =
-        new BarUserDetails("admin", "abc123", new HashSet<>(Collections.singletonList("super")), "super", "super", "super@mail.com");
+    public final UserDetails userDetails =
+        new UserDetails("1234", "abc123", Collections.singletonList("bar-post-clerk"));
+    public final UserDetails feeClerkUserDetails =
+            new UserDetails("fee-clerk", "abc123", Collections.singletonList("bar-fee-clerk"));
+    public final UserDetails srFeeClerkUserDetails =
+            new UserDetails("sr-fee-clerk", "abc123", Collections.singletonList("bar-senior-clerk"));
+    public final UserDetails dmUserDetails =
+            new UserDetails("dm-manager", "abc123", Collections.singletonList("bar-delivery-manager"));
+    public final UserDetails adminUserDetails =
+        new UserDetails("admin", "abc123", Collections.singletonList("super"));
 
 
     public RestActions restActions;
