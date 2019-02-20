@@ -3,6 +3,7 @@ package uk.gov.hmcts.bar.api.data.model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 import uk.gov.hmcts.bar.api.auth.BarUserDetails;
 import uk.gov.hmcts.bar.api.data.exceptions.MissingSiteIdException;
 
@@ -32,7 +33,7 @@ public class BarUser {
             return null;
         }
         Set<String> roles = barUserDetails.getAuthorities().stream()
-            .map(grantedAuthority -> grantedAuthority.getAuthority()).collect(Collectors.toSet());
+            .map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
         return new BarUser(barUserDetails.getUsername(), roles, barUserDetails.getEmail(), barUserDetails.getForename(),
             barUserDetails.getSurname());
     }

@@ -26,22 +26,22 @@ public class UserResolverTest {
     private BarUser barUserMock;
 
     @Mock
-    private UserTokenParser<UserTokenDetails> userTokenParserMock;
+    private UserTokenParser<BarUserDetails> userTokenParserMock;
 
     @Mock
-    private UserTokenDetails userTokenDetailsMock;
+    private BarUserDetails barUserDetails;
 
 
     @Before
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
-        barUserMock = new BarUser("id",new HashSet<>(),"testting@testing.com","post","clerk");
-        userTokenDetailsMock = new UserTokenDetails("defaultService","testting@testing.com","post","clerk","id", Collections.EMPTY_SET);
+        barUserMock = new BarUser("id", new HashSet<>(),"testting@testing.com","post","clerk");
+        barUserDetails = new BarUserDetails("id", "password", new HashSet<String>(), "post", "clerk", "testting@testing.com");
     }
 
     @Test
     public void shouldReturnUserTokenDetails_whenGetTokenDetailsIsCalled(){
-        when(userTokenParserMock.parse("BearerToken")).thenReturn(userTokenDetailsMock);
+        when(userTokenParserMock.parse("BearerToken")).thenReturn(barUserDetails);
         when(barUserServiceMock.saveUser(barUserMock)).thenReturn(barUserMock);
         userResolverMock.getTokenDetails("BearerToken");
         verify(userTokenParserMock, times(1)).parse("BearerToken");
