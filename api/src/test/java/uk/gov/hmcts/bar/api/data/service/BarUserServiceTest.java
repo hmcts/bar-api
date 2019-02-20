@@ -70,7 +70,7 @@ public class BarUserServiceTest {
 
             @Override
             public Object getPrincipal() {
-                return new BarUserDetails("username", "token", Arrays.asList("bar-super-user"),
+                return new BarUserDetails("username", "token", new HashSet<>(Arrays.asList("bar-super-user")),
                     "super", "user", "super.user@mail.com");
             }
 

@@ -12,9 +12,8 @@ public class AuthCheckerBarUserDetailsService implements AuthenticationUserDetai
         Object principal = token.getPrincipal();
 
         if (principal instanceof User) {
-            BarUserPrincipal user = (BarUserPrincipal) principal;
-            return new BarUserDetails(user.getPrincipal(), (String) token.getCredentials(), user.getRoles(),
-                user.getSurname(), user.getForename(), user.getEmail());
+            BarUserDetails user = (BarUserDetails) principal;
+            return user;
         }
 
         throw new UserAuthenticationException("Failed to retrieve bar user principal");

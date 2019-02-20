@@ -22,6 +22,7 @@ import uk.gov.hmcts.bar.multisite.MultisiteConfiguration;
 
 import javax.ws.rs.core.MediaType;
 import java.util.Collections;
+import java.util.HashSet;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
@@ -44,15 +45,15 @@ public class ComponentTestBase {
     private WebApplicationContext webApplicationContext;
 
     public final BarUserDetails userDetails =
-        new BarUserDetails("1234", "abc123", Collections.singletonList("bar-post-clerk"), "abc", "123", "abc.123@mail.com");
+        new BarUserDetails("1234", "abc123", new HashSet<>(Collections.singletonList("bar-post-clerk")), "abc", "123", "abc.123@mail.com");
     public final BarUserDetails feeClerkUserDetails =
-            new BarUserDetails("fee-clerk", "abc123", Collections.singletonList("bar-fee-clerk"), "fee", "clerk", "fee.clerk@mail.com");
+            new BarUserDetails("fee-clerk", "abc123", new HashSet<>(Collections.singletonList("bar-fee-clerk")), "fee", "clerk", "fee.clerk@mail.com");
     public final BarUserDetails srFeeClerkUserDetails =
-            new BarUserDetails("sr-fee-clerk", "abc123", Collections.singletonList("bar-senior-clerk"), "senior", "feeclerk", "senior@mail.com");
+            new BarUserDetails("sr-fee-clerk", "abc123", new HashSet<>(Collections.singletonList("bar-senior-clerk")), "senior", "feeclerk", "senior@mail.com");
     public final BarUserDetails dmUserDetails =
-            new BarUserDetails("dm-manager", "abc123", Collections.singletonList("bar-delivery-manager"), "delivery", "manager", "devmanager@mail.com");
+            new BarUserDetails("dm-manager", "abc123", new HashSet<>(Collections.singletonList("bar-delivery-manager")), "delivery", "manager", "devmanager@mail.com");
     public final BarUserDetails adminUserDetails =
-        new BarUserDetails("admin", "abc123", Collections.singletonList("super"), "super", "super", "super@mail.com");
+        new BarUserDetails("admin", "abc123", new HashSet<>(Collections.singletonList("super")), "super", "super", "super@mail.com");
 
 
     public RestActions restActions;

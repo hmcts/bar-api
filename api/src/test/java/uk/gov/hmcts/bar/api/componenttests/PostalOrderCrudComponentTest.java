@@ -429,7 +429,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .getContentAsString();
         JSONObject feeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
             .get("fee-clerk")).get(0);
-        assertEquals("clerk fee",feeClerk.get("bar_user_full_name"));
+        assertEquals("fee clerk",feeClerk.get("bar_user_full_name"));
         assertEquals( 1,feeClerk.get("count_of_payment_instruction_in_specified_status"));
     }
 
@@ -473,7 +473,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .getContentAsString();
         JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
             .get("sr-fee-clerk")).get(0);
-        assertEquals( "feeclerk senior",srFeeClerk.get("bar_user_full_name"));
+        assertEquals( "senior feeclerk",srFeeClerk.get("bar_user_full_name"));
         assertEquals( 1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
     }
 
@@ -573,7 +573,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
         System.out.println(jsonResponse);
         JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
             .get("sr-fee-clerk")).get(0);
-        assertEquals( "feeclerk senior",srFeeClerk.get("bar_user_full_name"));
+        assertEquals( "senior feeclerk",srFeeClerk.get("bar_user_full_name"));
         assertEquals( 1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
     }
 

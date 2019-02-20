@@ -19,14 +19,14 @@ public class AuthCheckerBarUserDetailsServiceTest {
     @Mock
     private PreAuthenticatedAuthenticationToken token;
 
-    private BarUserPrincipal principal;
+    private BarUserDetails principal;
 
     private AuthCheckerBarUserDetailsService service;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        principal = new BarUserPrincipal("123456", new HashSet<>(Arrays.asList("role1, role2")), "forename", "surename", "fs@mail.com");
+        principal = new BarUserDetails("123456", "the_token", new HashSet<>(Arrays.asList("role1, role2")), "forename", "surename", "fs@mail.com");
         service = new AuthCheckerBarUserDetailsService();
     }
 
@@ -38,12 +38,6 @@ public class AuthCheckerBarUserDetailsServiceTest {
         assertTrue(userDetails instanceof BarUserDetails);
         BarUserDetails barUserDetails = (BarUserDetails) userDetails;
         assertEquals("fs@mail.com", barUserDetails.getEmail());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetUserDetailServiceWhenPasswordIsNull() {
-        when(token.getPrincipal()).thenReturn(principal);
-        service.loadUserDetails(token);
     }
 
     @Test(expected = UserAuthenticationException.class)
