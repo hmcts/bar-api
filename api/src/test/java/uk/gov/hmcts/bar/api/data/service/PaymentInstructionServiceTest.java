@@ -613,17 +613,17 @@ public class PaymentInstructionServiceTest {
 
     @Test
     public void verifyRepositoryMethodCalls_whenGetPaymentInstructionStats() throws Exception {
-        paymentInstructionService.getPaymentInstructionStats("",false);
+        paymentInstructionService.getPaymentInstructionStats("",false, "Y431");
         verify(paymentInstructionStatusRepositoryMock, times(1))
-            .getPaymentInstructionsByStatusGroupedByUser(anyString(),anyBoolean());
+            .getPaymentInstructionsByStatusGroupedByUser("", false, "Y431");
     }
 
     @Test
     public void verifyRepositoryMethodCalls_whenGetPaymentInstructionStatsByCurrentStatusGroupedByOldStatus()
         throws Exception {
-        paymentInstructionService.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus("", "");
+        paymentInstructionService.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus("", "", "Y431");
         verify(paymentInstructionStatusRepositoryMock, times(1))
-            .getPaymentInstructionStatsByCurrentStatusAndByOldStatus(anyString(), anyString());
+            .getPaymentInstructionStatsByCurrentStatusAndByOldStatus("", "", "Y431");
     }
 
 

@@ -453,15 +453,17 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error") })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/users/pi-stats")
-    public MultiMap getPIStats(@RequestParam(name = "status", required = true) PaymentStatusEnum status,
+    public MultiMap getPIStats(BarWrappedHttpRequest request,
+                               @RequestParam(name = "status", required = true) PaymentStatusEnum status,
                                @RequestParam(name = "oldStatus", required = false) PaymentStatusEnum oldStatus,
                                @RequestParam(name = "sentToPayhub", required = false, defaultValue = "false") boolean sentToPayhub) {
         MultiMap resultMap = null;
+        String siteId = request.getBarUser().getSelectedSiteId();
         if (oldStatus != null) {
             resultMap = paymentInstructionService.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(status.dbKey(),
-                oldStatus.dbKey());
+                oldStatus.dbKey(), siteId);
         } else {
-            resultMap = paymentInstructionService.getPaymentInstructionStats(status.dbKey(),sentToPayhub);
+            resultMap = paymentInstructionService.getPaymentInstructionStats(status.dbKey(),sentToPayhub, siteId);
         }
 
         return resultMap;

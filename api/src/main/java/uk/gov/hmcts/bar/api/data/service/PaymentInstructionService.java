@@ -201,17 +201,18 @@ public class PaymentInstructionService {
     }
 
 
-    public MultiMap getPaymentInstructionStats(String status,boolean sentToPayhub) {
+    public MultiMap getPaymentInstructionStats(String status,boolean sentToPayhub, String siteId) {
         List<PaymentInstructionUserStats> paymentInstructionInStatusList = paymentInstructionStatusRepository
-            .getPaymentInstructionsByStatusGroupedByUser(status,sentToPayhub);
+            .getPaymentInstructionsByStatusGroupedByUser(status,sentToPayhub, siteId);
 
         return Util.createMultimapFromList(paymentInstructionInStatusList);
     }
 
     public MultiMap getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(String currentStatus,
-                                                                                String oldStatus) {
+                                                                                String oldStatus,
+                                                                                String siteId) {
         List<PaymentInstructionStaticsByUser> paymentInstructionStaticsByUserObjects = paymentInstructionStatusRepository
-            .getPaymentInstructionStatsByCurrentStatusAndByOldStatus(currentStatus, oldStatus);
+            .getPaymentInstructionStatsByCurrentStatusAndByOldStatus(currentStatus, oldStatus, siteId);
         paymentInstructionStaticsByUserObjects = Util.getFilteredPisList(paymentInstructionStaticsByUserObjects);
         return Util.createMultimapFromPisByUserList(paymentInstructionStaticsByUserObjects);
     }
