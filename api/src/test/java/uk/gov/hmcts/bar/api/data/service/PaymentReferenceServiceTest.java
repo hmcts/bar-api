@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+
 public class PaymentReferenceServiceTest {
 
     @InjectMocks
@@ -51,7 +52,7 @@ public class PaymentReferenceServiceTest {
     @Test
     public void shouldReturnPaymentReference_whenGetNextPaymentReferenceIsCalled()  {
 
-        when(paymentReferenceRepository.findById(anyString())).thenReturn(Optional.empty());
+        when(paymentReferenceRepository.findOneForUpdate(anyString())).thenReturn(Optional.empty());
 
         PaymentReference retrievedPaymentReference = paymentReferenceService.getNextPaymentReference("Y431");
 
@@ -62,7 +63,7 @@ public class PaymentReferenceServiceTest {
     @Test
     public void shouldReturnPaymentReference_whenSequenceIdIs_1()  {
 
-        when(paymentReferenceRepository.findById(anyString())).thenReturn(Optional.of(paymentReference1));
+        when(paymentReferenceRepository.findOneForUpdate(anyString())).thenReturn(Optional.of(paymentReference1));
 
         PaymentReference retrievedPaymentReference = paymentReferenceService.getNextPaymentReference("Y431");
 
@@ -74,7 +75,7 @@ public class PaymentReferenceServiceTest {
     @Test
     public void shouldReturnPaymentReference_whenSequenceIdIs_9999()  {
 
-        when(paymentReferenceRepository.findById(anyString())).thenReturn(Optional.of(paymentReference3));
+        when(paymentReferenceRepository.findOneForUpdate(anyString())).thenReturn(Optional.of(paymentReference3));
 
         PaymentReference retrievedPaymentReference = paymentReferenceService.getNextPaymentReference("Y431");
 
@@ -85,7 +86,7 @@ public class PaymentReferenceServiceTest {
     @Test
     public void shouldReturnPaymentReference_whenSequenceIdIs9999_And_Z()  {
 
-        when(paymentReferenceRepository.findById(anyString())).thenReturn(Optional.of(paymentReference5));
+        when(paymentReferenceRepository.findOneForUpdate(anyString())).thenReturn(Optional.of(paymentReference5));
 
         PaymentReference retrievedPaymentReference = paymentReferenceService.getNextPaymentReference("Y431");
 
