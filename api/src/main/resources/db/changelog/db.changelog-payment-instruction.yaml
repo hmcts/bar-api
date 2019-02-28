@@ -868,3 +868,9 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: fk_site_id
                     references: site(id)
+  - changeSet:
+      id: 37
+      author: akiss
+      changes:
+      - sql: >
+          INSERT into site (id, description) values ('Y608', 'MEDWAY COUNTY COURT'), ('Y610', 'MILTON KEYNES COUNTY COURT'), ('Y431', 'BROMLEY COUNTY COURT');

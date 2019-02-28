@@ -25,7 +25,7 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
             .post("/sites", Site.siteWith().id("test01").description("test 01").build())
             .andExpect(status().isCreated())
             .andExpect(body().as(Site.class, site -> {
-                assertThat(site.getId()).isEqualTo("test01");
+                assertThat(site.getId()).isEqualTo("TEST01");
             }));
 
         // check id really saved
@@ -44,7 +44,7 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
             .post("/sites", Site.siteWith().id("test01").description("test 01").build())
             .andExpect(status().isCreated())
             .andExpect(body().as(Site.class, site -> {
-                assertThat(site.getId()).isEqualTo("test01");
+                assertThat(site.getId()).isEqualTo("TEST01");
             }));
 
         // Modify as not admin
@@ -56,7 +56,7 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
             .put("/sites/test01", SiteRequest.builder().description("Bromley").build())
             .andExpect(status().isOk())
             .andExpect(body().as(Site.class, site -> {
-                assertThat(site.getId()).isEqualTo("test01");
+                assertThat(site.getId()).isEqualTo("TEST01");
             }));
 
         // Check the changes
@@ -71,15 +71,15 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
     @Test
     public void addUserToSite() throws Exception {
 
-        createSite(Site.siteWith().id("test01").description("test 01").build(), "user@hmcts.net");
+        createSite(SiteRequest.builder().id("test01").description("test 01").build(), "user@hmcts.net");
 
         // Check if the user is assigned
         restActionsForDM
             .get("/sites/test01/users")
             .andExpect(status().isOk())
             .andExpect(body().as(Site.class, site -> {
-                assertThat(site.getId()).isEqualTo("test01");
-                assertThat(site.getEmails()).isEqualTo(Collections.singletonList("user@hmcts.net"));
+                assertThat(site.getId()).isEqualTo("TEST01");
+                assertThat(site.getEmails()).isEqualTo(Collections.singletonList("USER@HMCTS.NET"));
             }));
     }
 
@@ -90,7 +90,7 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
             .post("/sites", Site.siteWith().id("test01").description("test 01").build())
             .andExpect(status().isCreated())
             .andExpect(body().as(Site.class, site -> {
-                assertThat(site.getId()).isEqualTo("test01");
+                assertThat(site.getId()).isEqualTo("TEST01");
             }));
 
         // Assign a user to the created site
@@ -103,9 +103,9 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
             .get("/sites/test01/users")
             .andExpect(status().isOk())
             .andExpect(body().as(Site.class, site -> {
-                assertThat(site.getId()).isEqualTo("test01");
+                assertThat(site.getId()).isEqualTo("TEST01");
                 assertThat(site.getEmails().size()).isEqualTo(1);
-                assertThat(site.getEmails()).isEqualTo(Collections.singletonList("user@hmcts.net"));
+                assertThat(site.getEmails()).isEqualTo(Collections.singletonList("USER@HMCTS.NET"));
             }));
 
         // Remove user from site
@@ -118,7 +118,7 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
             .get("/sites/test01/users")
             .andExpect(status().isOk())
             .andExpect(body().as(Site.class, site -> {
-                assertThat(site.getId()).isEqualTo("test01");
+                assertThat(site.getId()).isEqualTo("TEST01");
                 assertThat(site.getEmails().size()).isEqualTo(0);
             }));
     }
@@ -151,7 +151,7 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, sites -> {
                 assertThat(sites.size()).isEqualTo(1);
-                assertThat(((Map)sites.get(0)).get("id")).isEqualTo("test01");
+                assertThat(((Map)sites.get(0)).get("id")).isEqualTo("TEST01");
                 assertThat(((Map)sites.get(0)).get("description")).isEqualTo("test 01");
             }));
 
@@ -184,8 +184,8 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
     @Test
     public void testGetUserSelectedSiteWhenUserHasOne() throws Exception {
         addUserToSite();
-        Site site1 = Site.siteWith().id("test02").description("test 02").build();
-        Site site2 = Site.siteWith().id("test03").description("test 03").build();
+        SiteRequest site1 = SiteRequest.builder().id("test02").description("test 02").build();
+        SiteRequest site2 = SiteRequest.builder().id("test03").description("test 03").build();
 
         createSite(site1, "user@hmcts.net");
         createSite(site2, "user@hmcts.net");
@@ -196,7 +196,7 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
                 .andExpect(status().isOk())
                 .andExpect(body().as(Site.class, site -> {
                     assertThat(site.getDescription()).isEqualTo("test 01");
-                    assertThat(site.getId()).isEqualTo("test01");
+                    assertThat(site.getId()).isEqualTo("TEST01");
                 }));
         }
 
@@ -205,17 +205,17 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
                 .get("/users/user@hmcts.net/sites/selected/id")
                 .andExpect(status().isOk())
                 .andExpect(body().as(Map.class, site -> {
-                    assertThat(site.get("siteId")).isEqualTo("test01");
+                    assertThat(site.get("siteId")).isEqualTo("TEST01");
                 }));
         }
     }
 
-    private void createSite(Site site, String email) throws Exception {
+    private void createSite(SiteRequest site, String email) throws Exception {
         restActionsForDM
             .post("/sites", site)
             .andExpect(status().isCreated())
             .andExpect(body().as(Site.class, s -> {
-                assertThat(s.getId()).isEqualTo(site.getId());
+                assertThat(s.getId()).isEqualTo(site.getId().toUpperCase());
             }));
 
         // Assign a user to the created site
