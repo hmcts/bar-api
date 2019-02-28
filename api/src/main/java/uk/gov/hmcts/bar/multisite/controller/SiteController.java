@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.bar.api.data.exceptions.BadRequestException;
+import uk.gov.hmcts.bar.multisite.aop.ToUpperCase;
 import uk.gov.hmcts.bar.multisite.model.Site;
 import uk.gov.hmcts.bar.multisite.model.SiteRequest;
 import uk.gov.hmcts.bar.multisite.service.SiteService;
@@ -22,6 +23,7 @@ import java.util.function.Supplier;
 
 @RestController
 @Validated
+@ToUpperCase
 public class SiteController {
 
     private final SiteService siteService;

@@ -21,11 +21,12 @@ public class PaymentReferenceService {
 
     }
 
+    @Transactional
     public PaymentReference getNextPaymentReference(String siteId) {
 
-        PaymentReference nextPaymentReference = null;
+        PaymentReference nextPaymentReference;
 
-        Optional<PaymentReference> optionalCurrentPaymentReference = paymentReferenceRepository.findById(siteId);
+        Optional<PaymentReference> optionalCurrentPaymentReference = paymentReferenceRepository.findOneForUpdate(siteId);
         if (optionalCurrentPaymentReference.isPresent()) {
             PaymentReference currentPaymentReference = optionalCurrentPaymentReference.get();
             nextPaymentReference = constructNextPaymentReference(currentPaymentReference);
