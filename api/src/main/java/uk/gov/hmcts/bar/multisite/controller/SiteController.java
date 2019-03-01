@@ -134,7 +134,7 @@ public class SiteController {
         @ApiResponse(code = 200, message = "List of sites"),
         @ApiResponse(code = 404, message = "Endpoint not found"),
         @ApiResponse(code = 500, message = "Internal server error")})
-    @GetMapping("/users/{email}/sites")
+    @GetMapping("/sites/users/{email}")
     @PreAuthorize("hasAuthority(T(uk.gov.hmcts.bar.api.data.enums.BarUserRoleEnum).BAR_DELIVERY_MANAGER.getIdamRole())")
     public List<Site> collectUserSites(@PathVariable("email") String email) {
         return siteService.getUsersSite(email);
@@ -148,7 +148,7 @@ public class SiteController {
         @ApiResponse(code = 403, message = "No selected site for the user"),
         @ApiResponse(code = 404, message = "Endpoint not found"),
         @ApiResponse(code = 500, message = "Internal server error")})
-    @GetMapping("/users/{email}/sites/selected")
+    @GetMapping("/sites/users/{email}/selected")
     public Site getUserSelecedSite(@PathVariable("email") String email) {
         return siteService.getUserSelectedSite(email).orElseThrow(createNoSelectedSiteError);
     }
@@ -161,7 +161,7 @@ public class SiteController {
         @ApiResponse(code = 403, message = "No selected site for the user"),
         @ApiResponse(code = 404, message = "Endpoint not found"),
         @ApiResponse(code = 500, message = "Internal server error")})
-    @GetMapping("/users/{email}/sites/selected/id")
+    @GetMapping("/sites/users/{email}/selected/id")
     public Map<String, String> getUserSelecedSiteId(@PathVariable("email") String email) {
         String siteId = siteService.getUserSelectedSiteId(email).orElseThrow(createNoSelectedSiteError);
         Map<String, String> resp = new HashMap<>();

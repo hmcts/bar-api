@@ -147,7 +147,7 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
         addUserToSite();
 
         restActionsForDM
-            .get("/users/user@hmcts.net/sites")
+            .get("/sites/users/user@hmcts.net")
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, sites -> {
                 assertThat(sites.size()).isEqualTo(1);
@@ -161,7 +161,7 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
     public void testCollectUserSitesWhenUserNotAssigned() throws Exception {
 
         restActionsForDM
-            .get("/users/user@hmcts.net/sites")
+            .get("/sites/users/user@hmcts.net")
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, sites -> {
                 assertThat(sites.size()).isEqualTo(0);
@@ -173,11 +173,11 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
     public void testGetUserSelectedSiteWhenUserDoesntHaveOne() throws Exception {
 
         restActions
-            .get("/users/user@hmcts.net/sites/selected")
+            .get("/sites/users/user@hmcts.net/selected")
             .andExpect(status().isBadRequest());
 
         restActions
-            .get("/users/user@hmcts.net/sites/selected")
+            .get("/sites/users/user@hmcts.net/selected")
             .andExpect(status().isBadRequest());
     }
 
@@ -192,7 +192,7 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
 
         for (int i=0;i<10;i++) {
             restActions
-                .get("/users/user@hmcts.net/sites/selected")
+                .get("/sites/users/user@hmcts.net/selected")
                 .andExpect(status().isOk())
                 .andExpect(body().as(Site.class, site -> {
                     assertThat(site.getDescription()).isEqualTo("test 01");
@@ -202,7 +202,7 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
 
         for (int i=0;i<10;i++) {
             restActions
-                .get("/users/user@hmcts.net/sites/selected/id")
+                .get("/sites/users/user@hmcts.net/selected/id")
                 .andExpect(status().isOk())
                 .andExpect(body().as(Map.class, site -> {
                     assertThat(site.get("siteId")).isEqualTo("TEST01");
