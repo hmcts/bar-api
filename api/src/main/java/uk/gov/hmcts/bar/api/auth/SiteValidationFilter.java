@@ -2,8 +2,11 @@ package uk.gov.hmcts.bar.api.auth;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.web.filter.GenericFilterBean;
 import uk.gov.hmcts.bar.api.data.model.BarUser;
 import uk.gov.hmcts.bar.api.data.service.BarUserService;
 
@@ -15,7 +18,8 @@ import java.util.Arrays;
 
 @Slf4j
 @Component
-public class SiteValidationFilter implements Filter {
+@Order(Ordered.LOWEST_PRECEDENCE)
+public class SiteValidationFilter extends GenericFilterBean {
 
     private final BarUserService barUserService;
 
