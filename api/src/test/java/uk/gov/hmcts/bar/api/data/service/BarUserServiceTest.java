@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,7 +28,10 @@ import uk.gov.hmcts.reform.auth.checker.spring.useronly.UserDetails;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Locale;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
@@ -43,6 +48,9 @@ public class BarUserServiceTest {
     @Mock
     private CloseableHttpClient httpClient;
 
+    @Mock
+    private CacheManager cacheManager;
+
     private SecurityContext securityContext;
     private BarUser barUser;
 
@@ -51,7 +59,9 @@ public class BarUserServiceTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        barUserService = new BarUserService(barUserRepository, httpClient, siteApi);
+        when(cacheManager.getCache(Mockito.anyString())).thenReturn(new ConcurrentMapCache("barusers"));
+        barUserService = new BarUserService(barUserRepository, httpClient, siteApi, cacheManager);
+
 
         Authentication authentication = new Authentication() {
             @Override
@@ -121,16 +131,27 @@ public class BarUserServiceTest {
 
     @Test
     public void whenUserAlreadyInTheDb_shouldNotCallSave() {
-        when(barUserRepository.findBarUserById(Mockito.anyString())).thenReturn(Optional.of(barUser));
+        when(barUserRepository.findBarUserById(Mockito.anyString())).thenReturn(barUser);
         barUserService.saveUser(barUser);
         verify(barUserRepository, times(1)).findBarUserById(anyString());
         verify(barUserRepository, times(0)).save(any(BarUser.class));
     }
 
     @Test
-    public void whenUserIsNotInTheDb_shouldNotCallSave() {
-        when(barUserRepository.findBarUserById(Mockito.anyString())).thenReturn(Optional.empty());
+    public void whenUserIsNotInTheDb_shoulCallSave() {
+        when(barUserRepository.findBarUserById(Mockito.anyString())).thenReturn(null);
+        when(barUserRepository.save(barUser)).thenReturn(barUser);
         barUserService.saveUser(barUser);
+        verify(barUserRepository, times(1)).findBarUserById(anyString());
+        verify(barUserRepository, times(1)).save(any(BarUser.class));
+    }
+
+    @Test
+    public void whenUserIsInTheDb_butModified_thenSaveIsCalledToUpdate() {
+        BarUser modifiedUser = new BarUser("user1", Collections.emptySet(), "user1@mail.com", "user", "one plus one");
+        when(barUserRepository.findBarUserById(Mockito.anyString())).thenReturn(barUser);
+        when(barUserRepository.save(modifiedUser)).thenReturn(modifiedUser);
+        barUserService.saveUser(modifiedUser);
         verify(barUserRepository, times(1)).findBarUserById(anyString());
         verify(barUserRepository, times(1)).save(any(BarUser.class));
     }
