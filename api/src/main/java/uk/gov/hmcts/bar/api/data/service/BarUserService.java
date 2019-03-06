@@ -1,6 +1,13 @@
 package uk.gov.hmcts.bar.api.data.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -9,8 +16,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.bar.api.data.model.BarUser;
 import uk.gov.hmcts.bar.api.data.repository.BarUserRepository;
+import uk.gov.hmcts.bar.api.data.utils.Util;
 import uk.gov.hmcts.reform.auth.checker.spring.useronly.UserDetails;
 
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -18,16 +28,30 @@ import java.util.Optional;
 public class BarUserService {
 
     private final BarUserRepository barUserRepository;
+    private final CloseableHttpClient httpClient;
+    private final String siteApiUrl;
+    private final Cache cache;
 
     @Autowired
-    public BarUserService(BarUserRepository barUserRepository){
+    public BarUserService(BarUserRepository barUserRepository,
+                          CloseableHttpClient httpClient,
+                          @Value("${site.api.url}") String siteApiUrl,
+                          CacheManager cacheManager){
         this.barUserRepository = barUserRepository;
+        this.httpClient = httpClient;
+        this.siteApiUrl = siteApiUrl;
+        this.cache = cacheManager.getCache("barusers");
     }
 
-    public BarUser saveUser(BarUser barUser){
-        Optional<BarUser> existingUser = barUserRepository.findBarUserById(barUser.getId());
-        return existingUser.filter(barUser1 -> barUser1.equals(barUser))
-            .orElseGet(() -> barUserRepository.save(barUser));
+    public BarUser saveUser(@NotNull BarUser barUser) {
+        BarUser existingUser = getBarUser(barUser.getId());
+        if (existingUser == null || !existingUser.equals(barUser)){
+            BarUser savedUser = barUserRepository.save(barUser);
+            cache.put(savedUser.getId(), savedUser);
+            return savedUser;
+        } else {
+            return existingUser;
+        }
     }
 
     public String getCurrentUserId() {
@@ -38,9 +62,32 @@ public class BarUserService {
             userId = Optional.ofNullable(userDetails.getUsername());
         }
         return userId.orElseThrow(() -> new AccessDeniedException("failed to identify user"));
-    }
-    
-	public Optional<BarUser> getBarUser() {
-		return barUserRepository.findBarUserById(getCurrentUserId());
 	}
+
+    public Optional<BarUser> getBarUser() {
+        String id = getCurrentUserId();
+        return Optional.ofNullable(getBarUser(id));
+    }
+
+    public BarUser getBarUser(String id) {
+        BarUser user = cache.get(id, BarUser.class);
+        if (user == null) {
+            user = barUserRepository.findBarUserById(id);
+            cache.put(id, user);
+        }
+        return user;
+    }
+
+    public Boolean validateUserAgainstSite(String email, String userToken, String siteId) throws IOException {
+        if(Util.StringUtils.isAnyBlank(email, userToken, siteId)) {
+            return false;
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        HttpGet httpGet = new HttpGet(siteApiUrl + "/sites/" + siteId + "/users/" + email);
+        httpGet.setHeader("Content-type", "application/json");
+        httpGet.setHeader("Authorization", userToken);
+        CloseableHttpResponse response = httpClient.execute(httpGet);
+        return objectMapper.readValue(response.getEntity().getContent(), Boolean.class);
+    }
+
 }

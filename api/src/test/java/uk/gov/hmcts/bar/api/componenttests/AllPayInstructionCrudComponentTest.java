@@ -425,7 +425,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .post("/allpay",  proposedAllPayPaymentInstructionRequest)
             .andExpect(status().isCreated());
 
-        PaymentInstructionUpdateRequest updatedActionToProcessRequest = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
+        PaymentInstructionUpdateRequest updatedActionToProcessRequest = paymentInstructionUpdateRequestWith()
             .status("P")
             .action(PaymentActionEnum.PROCESS.displayValue()).build();
 
@@ -433,7 +433,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .put("/payment-instructions/1", updatedActionToProcessRequest)
             .andExpect(status().isOk());
 
-        PaymentInstructionUpdateRequest updatedActionReturnRequest = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
+        PaymentInstructionUpdateRequest updatedActionReturnRequest = paymentInstructionUpdateRequestWith()
             .status("P")
             .action(PaymentActionEnum.RETURN.displayValue()).build();
 
@@ -441,7 +441,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .put("/payment-instructions/1", updatedActionReturnRequest)
             .andExpect(status().isBadRequest());
 
-        PaymentInstructionUpdateRequest updatedActionSuspenseDefRequest = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
+        PaymentInstructionUpdateRequest updatedActionSuspenseDefRequest = paymentInstructionUpdateRequestWith()
             .status("P")
             .action(PaymentActionEnum.SUSPENSE_DEFICIENCY.displayValue()).build();
 
@@ -449,7 +449,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .put("/payment-instructions/1", updatedActionSuspenseDefRequest)
             .andExpect(status().isBadRequest());
     }
-    
+
     @Test
     public void whenAllPayPaymentInstructionSubmittedToSrFeeClerkByFeeClerk_expectThePIToAppearInSrFeeClerkOverview() throws Exception {
 		AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
@@ -482,7 +482,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 		assertEquals( "fee-clerk-fn fee-clerk-ln",feeClerk.get("bar_user_full_name"));
 		assertEquals( 1,feeClerk.get("count_of_payment_instruction_in_specified_status"));
     }
-    
+
     @Test
     public void whenAllPayPaymentInstructionSubmittedToDMBySrFeeClerk_expectThePIToAppearDMOverview() throws Exception {
 		AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
@@ -524,7 +524,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 		assertEquals( "sr-fee-clerk-fn sr-fee-clerk-ln",srFeeClerk.get("bar_user_full_name"));
 		assertEquals( 1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
     }
-    
+
     @Test
     public void whenAllPayPaymentInstructionSubmittedBySrFeeClerkIsRejectedByDM_expectThePIStatusAsRDM() throws Exception {
 		AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
@@ -570,7 +570,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 					assertThat(pi.getStatus().equals("RDM"));
 				}));
     }
-    
+
     @Test
     public void whenAllPayPaymentInstructionSubmittedBySrFeeClerkIsRejectedByDM_expectThePIInSrFeeClerkOverviewStats() throws Exception {
 		AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
@@ -620,7 +620,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 		assertEquals( "sr-fee-clerk-fn sr-fee-clerk-ln",srFeeClerk.get("bar_user_full_name"));
 		assertEquals( 1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
     }
-    
+
     @Test
 	public void whenQueriedWithAListOfPaymentInstructionIds_receiveAllThePaymentInstructionsInTheQueryList()
 			throws Exception {
@@ -637,7 +637,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 				.amount(550).currency("GBP").status("D").allPayTransactionId("52390").build();
 		AllPayPaymentInstruction retrievedAllPayPaymentInstruction2 = allPayPaymentInstructionWith()
 				.payerName("Mr Payer2 Payer2").amount(550).currency("GBP").status("D").allPayTransactionId("52390")
-				.build(); 
+				.build();
 
 		restActions.post("/allpay", proposedAllPayPaymentInstructionRequest).andExpect(status().isCreated());
 

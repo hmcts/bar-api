@@ -335,7 +335,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, (allPayList) -> {
                 String bgcNumber = (String)((Map)allPayList.get(0)).get("bgc_number");
-                assertThat(bgcNumber.equals("12345"));
+                assertThat(bgcNumber).isEqualTo("12345");
             }));
     }
     @Test
@@ -360,7 +360,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isNotFound());
 
     }
-    
+
 	@Test
 	public void whenCashPaymentInstructionSubmittedToSrFeeClerkByFeeClerk_expectThePIToAppearInSrFeeClerkOverview()
 			throws Exception {
@@ -521,7 +521,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 		assertEquals( "sr-fee-clerk-fn sr-fee-clerk-ln",srFeeClerk.get("bar_user_full_name"));
 		assertEquals( 1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
 	}
-	
+
 	@Test
 	public void whenQueriedWithAListOfPaymentInstructionIds_receiveAllThePaymentInstructionsInTheQueryList()
 			throws Exception {

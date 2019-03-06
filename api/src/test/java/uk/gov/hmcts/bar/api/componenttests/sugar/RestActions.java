@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import uk.gov.hmcts.reform.auth.checker.core.user.UserRequestAuthorizer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,10 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 public class RestActions {
     public static final MediaType TEXT_CSV = new MediaType("text", "csv");
 
+    public static final String DEFAULT_SITE_ID = "Y431";
+
+    public static String SITEID_HEADER = "SiteId";
+
     private final HttpHeaders httpHeaders = new HttpHeaders();
     private final MockMvc mvc;
     private final ObjectMapper objectMapper;
@@ -26,9 +31,16 @@ public class RestActions {
         this.mvc = mvc;
         this.objectMapper = objectMapper;
         this.userDetails = userDetails;
+        this.httpHeaders.add(UserRequestAuthorizer.AUTHORISATION, "DummyBearerToken");
+    }
+
+    public ResultActions get(String urlTemplate, String siteId) {
+        httpHeaders.set(SITEID_HEADER, siteId);
+        return get(urlTemplate);
     }
 
     public ResultActions get(String urlTemplate) {
+        addSiteIdHeader(DEFAULT_SITE_ID);
         try {
             return mvc.perform(MockMvcRequestBuilders
                 .get(urlTemplate)
@@ -57,8 +69,13 @@ public class RestActions {
         }
     }
 
+    public ResultActions put(String urlTemplate, Object dto, String siteId) {
+        httpHeaders.set("SiteId", siteId);
+        return put(urlTemplate, dto);
+    }
 
     public ResultActions put(String urlTemplate, Object dto) {
+        addSiteIdHeader(DEFAULT_SITE_ID);
         try {
             return mvc.perform(MockMvcRequestBuilders
                 .put(urlTemplate)
@@ -73,7 +90,13 @@ public class RestActions {
         }
     }
 
+    public ResultActions post(String urlTemplate, Object dto, String siteId) {
+        httpHeaders.set("SiteId", siteId);
+        return post(urlTemplate, dto);
+    }
+
     public ResultActions post(String urlTemplate, Object dto) {
+        addSiteIdHeader(DEFAULT_SITE_ID);
         try {
             return mvc.perform(MockMvcRequestBuilders
                 .post(urlTemplate)
@@ -89,6 +112,7 @@ public class RestActions {
     }
 
     public ResultActions delete(String urlTemplate, Object... uriVars) {
+        addSiteIdHeader(DEFAULT_SITE_ID);
         try {
             return mvc.perform(MockMvcRequestBuilders
                 .delete(urlTemplate, uriVars)
@@ -102,7 +126,13 @@ public class RestActions {
         }
     }
 
+    public ResultActions patch(String urlTemplate, Object dto, String siteId) {
+        httpHeaders.set("SiteId", siteId);
+        return post(urlTemplate, dto);
+    }
+
     public ResultActions patch(String urlTemplate, Object request) {
+        addSiteIdHeader(DEFAULT_SITE_ID);
         try {
             return mvc.perform(MockMvcRequestBuilders
                 .patch(urlTemplate, request)
@@ -113,6 +143,12 @@ public class RestActions {
                 .content(objectMapper.writeValueAsString(request)));
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void addSiteIdHeader(String siteId) {
+        if (!httpHeaders.containsKey(SITEID_HEADER)){
+            httpHeaders.set(SITEID_HEADER, siteId);
         }
     }
 

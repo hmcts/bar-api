@@ -1,31 +1,23 @@
 package uk.gov.hmcts.bar.api.componenttests;
 
-import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 import uk.gov.hmcts.bar.api.componenttests.utils.DbTestUtil;
 
 import javax.ws.rs.core.MediaType;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class PayhubIntegrationTest extends ComponentTestBase {
 
-    @ClassRule
-    public static WireMockRule wireMockRule = new WireMockRule( options().port(23443).notifier(new ConsoleNotifier(true)));
-
     @Override
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() throws Exception {
         super.setUp();
         DbTestUtil.toggleSendToPayhub(getWebApplicationContext(), true);
         wireMockRule.stubFor(post(urlPathMatching("/lease"))

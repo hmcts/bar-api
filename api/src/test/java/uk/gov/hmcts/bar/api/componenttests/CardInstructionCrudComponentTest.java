@@ -217,7 +217,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
             .currency("GBP").status("D").build();
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-        	.paymentInstructionId(1)	
+        	.paymentInstructionId(1)
             .caseReference("case102")
             .feeCode("X001")
             .amount(200)
@@ -379,7 +379,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
             .andExpect(status().isNotFound());
 
     }
-    
+
 	@Test
 	public void whenCardPaymentInstructionSubmittedToSrFeeClerkByFeeClerk_expectThePIToAppearInSrFeeClerkOverview()
 			throws Exception {
@@ -463,10 +463,10 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
 				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(500).feeVersion("1").build();
 
 		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
-		
+
 		caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
 				.paymentInstructionId(1).caseReference("case103").feeCode("X003").amount(50).feeVersion("1").build();
-		
+
 		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
 		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
@@ -545,7 +545,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
 		assertEquals( "sr-fee-clerk-fn sr-fee-clerk-ln",srFeeClerk.get("bar_user_full_name"));
 		assertEquals( 1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
 	}
-	
+
 	@Test
 	public void whenQueriedWithAListOfPaymentInstructionIds_receiveAllThePaymentInstructionsInTheQueryList()
 			throws Exception {

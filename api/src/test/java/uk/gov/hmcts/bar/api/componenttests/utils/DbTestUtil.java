@@ -99,27 +99,27 @@ public final class DbTestUtil {
         }
     }
 
-    public static void addTestUser(ApplicationContext applicationContext, UserDetails userDteails) throws SQLException {
+    public static void addTestUser(ApplicationContext applicationContext, UserDetails userDetails) throws SQLException {
         DataSource dataSource = applicationContext.getBean(DataSource.class);
         String insertUserSqlTemplate = getSqlTemplate(applicationContext, PROPERTY_KEY_INSERT_USER_SQL_TAMPLATE);
         try (Connection dbConnection = dataSource.getConnection(); Statement stmt = dbConnection.createStatement()) {
 
-            String[] columnValues = new String[] { "'" + userDteails.getUsername() + "-fn'",
-                "'" + userDteails.getUsername() + "-ln'", "'" + userDteails.getUsername() + "'",
-                "'" + userDteails.getAuthorities().stream().map(Object::toString).collect(Collectors.joining(", "))
-                    + "'" };
+            String[] columnValues = new String[] { "'" + userDetails.getUsername() + "-fn'",
+                "'" + userDetails.getUsername() + "-ln'", "'" + userDetails.getUsername() + "'",
+                "'" + userDetails.getAuthorities().stream().map(Object::toString).collect(Collectors.joining(", "))
+                    + "'" , "'" + userDetails.getUsername() + "@hmcts.net'" };
             stmt.executeQuery(String.format(insertUserSqlTemplate, columnValues));
         }
     }
 
     public static void insertPaymentInstructions(ApplicationContext applicationContext) throws SQLException {
-        insertBGCNumber(applicationContext);
         DataSource dataSource = applicationContext.getBean(DataSource.class);
         try (Connection dbConnection = dataSource.getConnection(); Statement stmt = dbConnection.createStatement()) {
 
             emptyTable(applicationContext, "case_fee_detail");
             emptyTable(applicationContext, "payment_instruction_status");
             emptyTable(applicationContext, "payment_instruction");
+            insertBGCNumber(applicationContext);
             stmt.executeQuery(INSERT_PI_QUERY);
             stmt.executeQuery(INSERT_STATUS_HISTORY);
         }

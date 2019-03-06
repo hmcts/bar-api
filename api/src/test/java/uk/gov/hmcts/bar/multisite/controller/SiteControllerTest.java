@@ -159,7 +159,7 @@ public class SiteControllerTest {
         Site site = Site.siteWith().id("1").description("one").build();
         String email = "a%40ab%2ecom";
         when(siteService.getUserSelectedSite(email)).thenReturn(Optional.of(site));
-        this.mockMvc.perform(get("/users/{email}/sites/selected", email))
+        this.mockMvc.perform(get("/sites/users/{email}/selected", email))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id", is("1")))
             .andExpect(jsonPath("$.description", is("one")));
@@ -169,7 +169,7 @@ public class SiteControllerTest {
     public void testGetSelectedSiteIdForUser() throws Exception {
         String email = "a%40ab%2ecom";
         when(siteService.getUserSelectedSiteId(email)).thenReturn(Optional.of("1"));
-        this.mockMvc.perform(get("/users/{email}/sites/selected/id", email))
+        this.mockMvc.perform(get("/sites/users/{email}/selected/id", email))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.siteId", is("1")));
     }
@@ -178,7 +178,7 @@ public class SiteControllerTest {
     public void testGetSelectedSiteForUserWhenNoSelectedSite() throws Exception {
         String email = "a%40ab%2ecom";
         when(siteService.getUserSelectedSite(email)).thenReturn(Optional.empty());
-        this.mockMvc.perform(get("/users/{email}/sites/selected", email))
+        this.mockMvc.perform(get("/sites/users/{email}/selected", email))
             .andExpect(status().isBadRequest());
     }
 
@@ -186,7 +186,7 @@ public class SiteControllerTest {
     public void testGetSelectedSiteIdForUserWhenNoelectedSite() throws Exception {
         String email = "a%40ab%2ecom";
         when(siteService.getUserSelectedSiteId(email)).thenReturn(Optional.empty());
-        this.mockMvc.perform(get("/users/{email}/sites/selected/id", email))
+        this.mockMvc.perform(get("/sites/users/{email}/selected/id", email))
             .andExpect(status().isBadRequest());
     }
 

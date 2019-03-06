@@ -1,6 +1,5 @@
 package uk.gov.hmcts.bar.api.data.utils;
 
-import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.springframework.beans.BeanWrapper;
@@ -56,7 +55,7 @@ public interface Util {
         }
         return inCriteria;
     }
-    
+
 	static In<Integer> getInCriteriaWithIntegerValues(In<Integer> inCriteria, String columnName) {
 		if (inCriteria == null) {
 			return null;
@@ -71,7 +70,7 @@ public interface Util {
 		}
 		return inCriteria;
 	}
-    
+
 	static List<PaymentInstructionStaticsByUser> getFilteredPisList(
 			List<PaymentInstructionStaticsByUser> paymentInstructionStaticsByUserObjects) {
 		Map<Integer, PaymentInstructionStaticsByUser> pisMap = new HashMap<>();
@@ -94,11 +93,11 @@ public interface Util {
     }
 
     static boolean isUserDeliveryManager(String userRoles) {
-        return StringUtils.containsIgnoreCase(userRoles, BarUserRoleEnum.BAR_DELIVERY_MANAGER.getIdamRole());
+        return org.apache.commons.lang3.StringUtils.containsIgnoreCase(userRoles, BarUserRoleEnum.BAR_DELIVERY_MANAGER.getIdamRole());
     }
 
     static boolean isUserSrFeeClerk(String userRoles) {
-        return StringUtils.containsIgnoreCase(userRoles, BarUserRoleEnum.BAR_SENIOR_CLERK.getIdamRole());
+        return org.apache.commons.lang3.StringUtils.containsIgnoreCase(userRoles, BarUserRoleEnum.BAR_SENIOR_CLERK.getIdamRole());
     }
 
     static MultiMap createMultimapFromList(List<PaymentInstructionUserStats> piStatsList) {
@@ -106,7 +105,7 @@ public interface Util {
         piStatsList.forEach(pius -> paymentInstructionStatsUserMap.put(pius.getBarUserId(), pius));
         return paymentInstructionStatsUserMap;
     }
-    
+
 	static MultiMap createMultimapFromPisByUserList(List<PaymentInstructionStaticsByUser> pisByUserList) {
 		MultiMap paymentInstructionStatsByUserMapTemp = new MultiValueMap();
 		MultiMap paymentInstructionStatsMap = new MultiValueMap();
@@ -130,5 +129,16 @@ public interface Util {
 		}
 		return paymentInstructionStatsMap;
 	}
+
+	interface StringUtils {
+        static boolean isAnyBlank(java.lang.String...values) {
+            for (java.lang.String value: values) {
+                if (org.apache.commons.lang3.StringUtils.isBlank(value)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 
 }

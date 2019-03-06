@@ -47,7 +47,7 @@ public class UserResolverTest {
     public void shouldReturnUserTokenDetails_whenGetTokenDetailsIsCalled(){
         when(userTokenParserMock.parse("BearerToken")).thenReturn(userTokenDetailsMock);
         when(barUserServiceMock.saveUser(barUserMock)).thenReturn(barUserMock);
-        User user = userResolverMock.getTokenDetails("BearerToken");
+        userResolverMock.getTokenDetails("BearerToken");
         verify(userTokenParserMock, times(1)).parse("BearerToken");
         verify(barUserServiceMock, times(1)).saveUser(barUserMock);
 
