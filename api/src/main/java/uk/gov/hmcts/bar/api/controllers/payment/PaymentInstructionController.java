@@ -475,7 +475,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/payment-instructions/count")
-    public long getPaymentInstructionCount(
+    public long getPaymentInstructionCount(BarWrappedHttpRequest request,
         @RequestParam(name = "userId", required =  false) String userId,
         @RequestParam(name = "status") String status,
         @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
@@ -483,13 +483,14 @@ public class PaymentInstructionController {
 
         long count = 0;
         if (null == userId && null == startDate && null == endDate){
-            count = paymentInstructionService.getNonResetPaymentInstructionsCount(status);
+            count = paymentInstructionService.getNonResetPaymentInstructionsCount(status, request.getBarUser().getSelectedSiteId());
         }
         else if(null != startDate && null != endDate) {
             PaymentInstructionStatusCriteriaDto paymentInstructionStatusCriteriaDto =
                 PaymentInstructionStatusCriteriaDto.paymentInstructionStatusCriteriaDto().status(status).userId(userId)
                     .startDate(startDate.atStartOfDay())
                     .endDate(endDate.atTime(LocalTime.MAX))
+                    .siteId(request.getBarUser().getSelectedSiteId())
                     .build();
             count = paymentInstructionService.getPaymentInstructionsCount(paymentInstructionStatusCriteriaDto);
         }

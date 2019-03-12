@@ -119,8 +119,8 @@ public class PaymentInstructionService {
 
     }
 
-    public long getNonResetPaymentInstructionsCount(String status) {
-        return paymentInstructionStatusRepository.getNonResetCountByStatus(status);
+    public long getNonResetPaymentInstructionsCount(String status, String siteId) {
+        return paymentInstructionStatusRepository.getNonResetCountByStatus(status, siteId);
     }
 
     public List<PayhubPaymentInstruction> getAllPaymentInstructionsForPayhub(
@@ -262,9 +262,7 @@ public class PaymentInstructionService {
     }
 
     private void savePaymentInstructionStatus(PaymentInstruction pi, String userId) {
-        PaymentInstructionStatusReferenceKey pisrKey = new PaymentInstructionStatusReferenceKey(pi.getId(),
-            pi.getStatus());
-        PaymentInstructionStatus pis = new PaymentInstructionStatus(pisrKey, userId);
+        PaymentInstructionStatus pis = new PaymentInstructionStatus(userId, pi);
         paymentInstructionStatusRepository.save(pis);
     }
 

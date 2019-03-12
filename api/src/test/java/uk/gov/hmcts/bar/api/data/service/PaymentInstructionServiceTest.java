@@ -143,8 +143,6 @@ public class PaymentInstructionServiceTest {
         paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto()
             .siteId("Y431");
         paymentInstructionStatusCriteriaDtoBuilder = PaymentInstructionStatusCriteriaDto.paymentInstructionStatusCriteriaDto();
-        paymentInstructionStatusReferenceKey = new PaymentInstructionStatusReferenceKey(0, "status");
-        paymentInstructionStatus = new PaymentInstructionStatus(paymentInstructionStatusReferenceKey, null);
 
         when(barUserMock.getSelectedSiteId()).thenReturn("Y431");
     }
@@ -174,7 +172,8 @@ public class PaymentInstructionServiceTest {
             .createPaymentInstruction(barUserMock, chequePaymentInstructionMock);
         verify(paymentReferenceService, times(1)).getNextPaymentReference(anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(chequePaymentInstructionMock);
-        verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
+        PaymentInstructionStatus status = new PaymentInstructionStatus(null, createdPaymentInstruction);
+        verify(paymentInstructionStatusRepositoryMock, times(1)).save(status);
         verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",chequePaymentInstructionMock,barUserMock);
     }
 
@@ -193,7 +192,8 @@ public class PaymentInstructionServiceTest {
             .createPaymentInstruction(barUserMock, cashPaymentInstructionMock);
         verify(paymentReferenceService, times(1)).getNextPaymentReference(anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(cashPaymentInstructionMock);
-        verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
+        PaymentInstructionStatus status = new PaymentInstructionStatus(null, createdPaymentInstruction);
+        verify(paymentInstructionStatusRepositoryMock, times(1)).save(status);
         verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",cashPaymentInstructionMock,barUserMock);
 
 
@@ -234,7 +234,8 @@ public class PaymentInstructionServiceTest {
             .createPaymentInstruction(barUserMock, allpayPaymentInstructionMock);
         verify(paymentReferenceService, times(1)).getNextPaymentReference(anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(allpayPaymentInstructionMock);
-        verify(paymentInstructionStatusRepositoryMock, times(1)).save(paymentInstructionStatus);
+        PaymentInstructionStatus status = new PaymentInstructionStatus(null, createdPaymentInstruction);
+        verify(paymentInstructionStatusRepositoryMock, times(1)).save(status);
 
         verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",allpayPaymentInstructionMock,barUserMock);
     }
@@ -270,7 +271,7 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsIsCalledWithNoParams()
         throws Exception {
 
-        when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
+        when(paymentInstructionRepository.findAll(Mockito.any(Specification.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = PaymentInstructionSearchCriteriaDto
@@ -285,7 +286,7 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsIsCalledWithAllParams()
         throws Exception {
 
-        when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
+        when(paymentInstructionRepository.findAll(Mockito.any(Specification.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
@@ -301,7 +302,7 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsIsCalledWithOnlyStatus()
         throws Exception {
 
-        when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
+        when(paymentInstructionRepository.findAll(Mockito.any(Specification.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
@@ -316,7 +317,7 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsIsCalledWithOnlyStartDate()
         throws Exception {
 
-        when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
+        when(paymentInstructionRepository.findAll(Mockito.any(Specification.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
@@ -331,7 +332,7 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsIsCalledWithOnlyEndDate()
         throws Exception {
 
-        when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
+        when(paymentInstructionRepository.findAll(Mockito.any(Specification.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
@@ -346,7 +347,7 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsIsCalledWithOnlyPayerName()
         throws Exception {
 
-        when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
+        when(paymentInstructionRepository.findAll(Mockito.any(Specification.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
@@ -361,7 +362,7 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsIsCalledWithOnlyChequeNumber()
         throws Exception {
 
-        when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
+        when(paymentInstructionRepository.findAll(Mockito.any(Specification.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
@@ -377,7 +378,7 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsIsCalledWithOnlyStartDateAndEndDate()
         throws Exception {
 
-        when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
+        when(paymentInstructionRepository.findAll(Mockito.any(Specification.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
@@ -392,7 +393,7 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsIsCalledWithOnlyStatusAndEndDate()
         throws Exception {
 
-        when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
+        when(paymentInstructionRepository.findAll(Mockito.any(Specification.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
@@ -407,7 +408,7 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsIsCalledWithOnlyStatusAndStartDate()
         throws Exception {
 
-        when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
+        when(paymentInstructionRepository.findAll(Mockito.any(Specification.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
@@ -422,7 +423,7 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnPaymentInstructionList_whenGetAllPaymentInstructionsIsCalledWithOnlyDailySequenceId()
         throws Exception {
 
-        when(paymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
+        when(paymentInstructionRepository.findAll(Mockito.any(Specification.class), Mockito.any(Pageable.class)))
             .thenReturn(piPageMock);
         when(piPageMock.iterator()).thenReturn(piIteratorMock);
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDtoBuilder
@@ -793,11 +794,11 @@ public class PaymentInstructionServiceTest {
     @Test
     public void shouldReturnNonResetPICount_whenGetNonResetPaymentInstructionsCountIsCalled() {
 
-        when(paymentInstructionStatusRepositoryMock.getNonResetCountByStatus(anyString()))
+        when(paymentInstructionStatusRepositoryMock.getNonResetCountByStatus(anyString(), eq("Y431")))
             .thenReturn(1L);
 
         long count = paymentInstructionService
-            .getNonResetPaymentInstructionsCount("D");
+            .getNonResetPaymentInstructionsCount("D", "Y431");
         assertEquals(1, count);
     }
 

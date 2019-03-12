@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
+import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
@@ -18,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 public class PaymentInstructionStatusReferenceKey implements Serializable {
 
 	@NonNull
+    @Column(nullable = false, name = "payment_instruction_id")
 	private Integer paymentInstructionId;
 
 	@NonNull

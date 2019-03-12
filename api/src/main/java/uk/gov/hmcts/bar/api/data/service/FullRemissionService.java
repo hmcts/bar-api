@@ -64,9 +64,7 @@ public class FullRemissionService {
         BeanUtils.copyProperties(updateRequest, existingPi, propNamesToIgnore);
     }
     private void savePaymentInstructionStatus(PaymentInstruction pi, String userId) {
-        PaymentInstructionStatusReferenceKey pisrKey = new PaymentInstructionStatusReferenceKey(pi.getId(),
-            pi.getStatus());
-        PaymentInstructionStatus pis = new PaymentInstructionStatus(pisrKey, userId);
+        PaymentInstructionStatus pis = new PaymentInstructionStatus(userId, pi);
         paymentInstructionStatusRepository.save(pis);
     }
 
