@@ -24,17 +24,19 @@ public interface PaymentInstructionStatusRepository
 
     @Query(name = "PIByUserGroup", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats"
         + "(bu.id, CONCAT(bu.forename,' ',bu.surname), COUNT(pi.id)) FROM BarUser bu, PaymentInstruction pi  WHERE pi.status = :status AND "
-        + " pi.transferredToPayhub = :sentToPayhub AND pi.userId = bu.id GROUP BY bu.id")
-    List<PaymentInstructionUserStats> getPaymentInstructionsByStatusGroupedByUser(@Param("status") String status,@Param("sentToPayhub") boolean sentToPayhub);
+        + " pi.transferredToPayhub = :sentToPayhub AND pi.userId = bu.id AND pi.siteId = :siteId GROUP BY bu.id")
+    List<PaymentInstructionUserStats> getPaymentInstructionsByStatusGroupedByUser(@Param("status") String status,
+                                                                                  @Param("sentToPayhub") boolean sentToPayhub,
+                                                                                  @Param("siteId") String siteId);
 
     @Query(name = "PIRejectedByDM", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionStaticsByUser "
         + "(bu.id, CONCAT(bu.forename,' ',bu.surname), pis.paymentInstructionStatusReferenceKey.paymentInstructionId, pis.paymentInstructionStatusReferenceKey.updateTime) "
         + "FROM PaymentInstructionStatus pis, PaymentInstruction pi, BarUser bu WHERE "
         + "pi.status = :currentStatus AND pi.id = pis.paymentInstructionStatusReferenceKey.paymentInstructionId AND bu.id = pis.barUserId "
-        + "AND pis.paymentInstructionStatusReferenceKey.status= :oldStatus ORDER BY pis.paymentInstructionStatusReferenceKey.paymentInstructionId, "
+        + "AND pis.paymentInstructionStatusReferenceKey.status= :oldStatus AND pi.siteId = :siteId ORDER BY pis.paymentInstructionStatusReferenceKey.paymentInstructionId, "
         + "pis.paymentInstructionStatusReferenceKey.updateTime")
     List<PaymentInstructionStaticsByUser> getPaymentInstructionStatsByCurrentStatusAndByOldStatus(
-        @Param("currentStatus") String currentStatus, @Param("oldStatus") String oldStatus);
+        @Param("currentStatus") String currentStatus, @Param("oldStatus") String oldStatus, @Param("siteId") String siteId);
 
     @Query(name = "PIReportDetails", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionStatusHistory"
         + "(pis.paymentInstructionStatusReferenceKey.paymentInstructionId,pis.barUserId,CONCAT(bu.forename,' ',bu.surname),"
