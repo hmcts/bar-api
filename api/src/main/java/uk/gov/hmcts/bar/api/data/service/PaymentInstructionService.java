@@ -201,9 +201,9 @@ public class PaymentInstructionService {
     }
 
 
-    public MultiMap getPaymentInstructionStats(String status,boolean sentToPayhub) {
+    public MultiMap getPaymentInstructionStats(String siteId,String status,boolean sentToPayhub) {
         List<PaymentInstructionUserStats> paymentInstructionInStatusList = paymentInstructionStatusRepository
-            .getPaymentInstructionsByStatusGroupedByUser(status,sentToPayhub);
+            .getPaymentInstructionsByStatusGroupedByUser(siteId,status,sentToPayhub);
 
         return Util.createMultimapFromList(paymentInstructionInStatusList);
     }

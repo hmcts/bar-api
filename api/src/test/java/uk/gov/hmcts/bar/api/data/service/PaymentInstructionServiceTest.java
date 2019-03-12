@@ -35,9 +35,7 @@ import java.time.LocalTime;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.bar.api.data.service.PaymentInstructionService.STAT_DETAILS;
@@ -613,9 +611,9 @@ public class PaymentInstructionServiceTest {
 
     @Test
     public void verifyRepositoryMethodCalls_whenGetPaymentInstructionStats() throws Exception {
-        paymentInstructionService.getPaymentInstructionStats("",false);
+        paymentInstructionService.getPaymentInstructionStats("Y431","",false);
         verify(paymentInstructionStatusRepositoryMock, times(1))
-            .getPaymentInstructionsByStatusGroupedByUser(anyString(),anyBoolean());
+            .getPaymentInstructionsByStatusGroupedByUser(anyString(),anyString(),anyBoolean());
     }
 
     @Test

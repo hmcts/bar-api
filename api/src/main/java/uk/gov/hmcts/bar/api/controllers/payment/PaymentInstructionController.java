@@ -453,7 +453,8 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error") })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/users/pi-stats")
-    public MultiMap getPIStats(@RequestParam(name = "status", required = true) PaymentStatusEnum status,
+    public MultiMap getPIStats(BarWrappedHttpRequest request,
+                               @RequestParam(name = "status", required = true) PaymentStatusEnum status,
                                @RequestParam(name = "oldStatus", required = false) PaymentStatusEnum oldStatus,
                                @RequestParam(name = "sentToPayhub", required = false, defaultValue = "false") boolean sentToPayhub) {
         MultiMap resultMap = null;
@@ -461,12 +462,11 @@ public class PaymentInstructionController {
             resultMap = paymentInstructionService.getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(status.dbKey(),
                 oldStatus.dbKey());
         } else {
-            resultMap = paymentInstructionService.getPaymentInstructionStats(status.dbKey(),sentToPayhub);
+            resultMap = paymentInstructionService.getPaymentInstructionStats(request.getBarUser().getSelectedSiteId(),status.dbKey(),sentToPayhub);
         }
 
         return resultMap;
     }
-
     @ApiOperation(value = "collect payment instructions count", notes = "Collect  payment instruction count  ")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return count"),
         @ApiResponse(code = 400, message = "Bad request"),
