@@ -53,7 +53,11 @@ public interface PaymentInstructionStatusRepository
 
     @Query(value = "SELECT CONCAT(bu.forename,' ',bu.surname) as name, count(pi.id) as count, pi.status, sum(pi.amount) as totalAmount, pi.payment_type_id as PaymentType, pi.bgc_number as bgc, pis.bar_user_id " +
         "from payment_instruction pi " +
-        "join (select payment_instruction_id, status, bar_user_id, max(update_time) as update_time from payment_instruction_status group by payment_instruction_id, status, bar_user_id) pis on pi.id = pis.payment_instruction_id " +
+        "join (" +
+        "select pis1.payment_instruction_id, pis1.status, pis1.bar_user_id, pis1.update_time from payment_instruction_status pis1 inner join ( " +
+        "select payment_instruction_id, status, max(update_time) as update_time from payment_instruction_status group by payment_instruction_id, status) pis2 " +
+        "on pis1.payment_instruction_id = pis2.payment_instruction_id and pis1.status = pis2.status and pis1.update_time = pis2.update_time" +
+        ") pis on pi.id = pis.payment_instruction_id " +
         "join bar_user bu on pis.bar_user_id = bu.id " +
         "where pi.status = :paymentStatus and pi.transferred_to_payhub = :sentToPayhub and pis.status = :oldPaymentStatus and pis.bar_user_id = :userId " +
         "group by bgc_number, payment_type_id, pi.status, pis.bar_user_id, name order by bgc_number", nativeQuery = true)
@@ -75,7 +79,11 @@ public interface PaymentInstructionStatusRepository
 
     @Query(value = "SELECT CONCAT(bu.forename,' ',bu.surname) as name, count(pi.id) as count, sum(pi.amount) as totalAmount, pi.payment_type_id as PaymentType, pi.bgc_number as bgc, pi.action as action, pis.bar_user_id " +
         "from payment_instruction pi " +
-        "join (select payment_instruction_id, status, bar_user_id, max(update_time) as update_time from payment_instruction_status group by payment_instruction_id, status, bar_user_id) pis on pi.id = pis.payment_instruction_id " +
+        "join (" +
+        "select pis1.payment_instruction_id, pis1.status, pis1.bar_user_id, pis1.update_time from payment_instruction_status pis1 inner join ( " +
+        "select payment_instruction_id, status, max(update_time) as update_time from payment_instruction_status group by payment_instruction_id, status) pis2 " +
+        "on pis1.payment_instruction_id = pis2.payment_instruction_id and pis1.status = pis2.status and pis1.update_time = pis2.update_time" +
+        ") pis on pi.id = pis.payment_instruction_id " +
         "join bar_user bu on pis.bar_user_id = bu.id " +
         "where pi.status = :paymentStatus and pi.transferred_to_payhub = :sentToPayhub and pis.status = :oldPaymentStatus and pis.bar_user_id = :userId and pi.action is not null " +
         "group by bgc_number, payment_type_id, action, pis.bar_user_id, name order by bgc_number",
