@@ -30,7 +30,7 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
     private List<CaseFeeDetail> caseFeeDetails;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "paymentInstructionId", referencedColumnName = "id")
+    @JoinColumn(name = "payment_instruction_id", referencedColumnName = "id")
     private List<PaymentInstructionStatus> statuses;
 
     private Integer actionReason;

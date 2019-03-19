@@ -1,11 +1,11 @@
 package uk.gov.hmcts.bar.api.data.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
+import javax.persistence.*;
 
 @Data
 @NoArgsConstructor
@@ -18,10 +18,14 @@ public class PaymentInstructionStatus {
 	@NonNull
     private String barUserId;
 
-	public PaymentInstructionStatus(PaymentInstructionStatusReferenceKey paymentInstructionStatusReferenceKey,
-			String barUserId) {
-		super();
-		this.paymentInstructionStatusReferenceKey = paymentInstructionStatusReferenceKey;
+    @MapsId("paymentInstructionId")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JsonIgnore
+    private PaymentInstruction paymentInstruction;
+
+	public PaymentInstructionStatus(String barUserId, PaymentInstruction pi) {
+		this.paymentInstructionStatusReferenceKey = new PaymentInstructionStatusReferenceKey(pi.getId(), pi.getStatus());
 		this.barUserId = barUserId;
+		this.paymentInstruction = pi;
 	}
 }

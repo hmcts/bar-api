@@ -74,8 +74,9 @@ public interface PaymentInstructionStatusRepository
     List<PaymentInstructionStats> getRejectedStatsByUserGroupByType(@Param("userId") String userId, @Param("currentStatus") String currentStatus, @Param("oldStatus") String oldStatus);
 
     @Query(name = "PICountByStatus", value = "SELECT count(*) from (select payment_instruction_id, max(update_time) as max_update_time from payment_instruction_status group by payment_instruction_id) "
-        + " as x inner join payment_instruction_status as f on f.payment_instruction_id = x.payment_instruction_id and f.update_time = x.max_update_time and f.status = :status", nativeQuery = true)
-    long getNonResetCountByStatus(@Param("status") String status);
+        + " as x inner join payment_instruction_status as f on f.payment_instruction_id = x.payment_instruction_id and f.update_time = x.max_update_time and f.status = :status "
+        + "join payment_instruction as pi on pi.id = f.payment_instruction_id where pi.site_id = :siteId", nativeQuery = true)
+    long getNonResetCountByStatus(@Param("status") String status, @Param("siteId") String siteId);
 
     @Query(value = "SELECT CONCAT(bu.forename,' ',bu.surname) as name, count(pi.id) as count, sum(pi.amount) as totalAmount, pi.payment_type_id as PaymentType, pi.bgc_number as bgc, pi.action as action, pis.bar_user_id " +
         "from payment_instruction pi " +
