@@ -53,10 +53,11 @@ public class RestActions {
         }
     }
 
-    public ResultActions getCsv(String urlTemplate) {
+    public ResultActions getCsv(String urlTemplate,String siteId) {
         List mediatypes = new ArrayList();
         mediatypes.add(new MediaType("text", "csv"));
         httpHeaders.setAccept(mediatypes);
+        httpHeaders.set(SITEID_HEADER, siteId);
         try {
             return mvc.perform(MockMvcRequestBuilders
                 .get(urlTemplate)
@@ -70,7 +71,7 @@ public class RestActions {
     }
 
     public ResultActions put(String urlTemplate, Object dto, String siteId) {
-        httpHeaders.set("SiteId", siteId);
+        httpHeaders.set(SITEID_HEADER, siteId);
         return put(urlTemplate, dto);
     }
 
@@ -91,7 +92,7 @@ public class RestActions {
     }
 
     public ResultActions post(String urlTemplate, Object dto, String siteId) {
-        httpHeaders.set("SiteId", siteId);
+        httpHeaders.set(SITEID_HEADER, siteId);
         return post(urlTemplate, dto);
     }
 
@@ -127,7 +128,7 @@ public class RestActions {
     }
 
     public ResultActions patch(String urlTemplate, Object dto, String siteId) {
-        httpHeaders.set("SiteId", siteId);
+        httpHeaders.set(SITEID_HEADER, siteId);
         return post(urlTemplate, dto);
     }
 

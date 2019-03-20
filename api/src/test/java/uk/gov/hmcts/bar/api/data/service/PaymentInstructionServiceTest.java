@@ -35,10 +35,9 @@ import java.time.LocalTime;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.bar.api.data.service.PaymentInstructionService.STAT_DETAILS;
 import static uk.gov.hmcts.bar.api.data.service.PaymentInstructionService.STAT_GROUP_DETAILS;
@@ -632,7 +631,7 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnEmptyPaymentInstructionList_whengetAllPaymentInstructionsByTTBWithIncorrectDates()
         throws Exception {
 
-        List<PaymentInstruction> paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByTTB(LocalDate.now(), LocalDate.now().minusDays(1));
+        List<PaymentInstruction> paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByTTB(LocalDate.now(), LocalDate.now().minusDays(1),"Y431");
         assertTrue(paymentInstructionList.isEmpty());
     }
 
@@ -774,7 +773,7 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnEmptyMap_whenGetStatusHistortMapForTTBCalledWithStartdateGreaterThanEndDate()
         throws Exception {
         Map<Integer, List<PaymentInstructionStatusHistory>> pishMap = paymentInstructionService
-            .getStatusHistoryMapForTTB(LocalDate.now(), LocalDate.now().minusDays(1));
+            .getStatusHistoryMapForTTB(LocalDate.now(), LocalDate.now().minusDays(1),"Y431");
         assertTrue(pishMap.isEmpty());
     }
 
