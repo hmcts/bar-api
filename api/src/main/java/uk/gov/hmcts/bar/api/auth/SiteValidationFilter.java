@@ -29,7 +29,7 @@ public class SiteValidationFilter extends GenericFilterBean {
     private static AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Autowired
-    SiteValidationFilter(BarUserService barUserService) {
+    public SiteValidationFilter(BarUserService barUserService) {
         this.barUserService = barUserService;
     }
 

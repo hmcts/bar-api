@@ -135,20 +135,17 @@ public class PaymentInstructionService {
         return payhubPaymentInstructionRepository.findAll(piForPayhubSpecification);
     }
 
-    public PaymentInstruction getPaymentInstruction(Integer id) {
-        Optional<PaymentInstruction> op = paymentInstructionRepository.findById(id);
+    public PaymentInstruction getPaymentInstruction(Integer id, String siteId) {
+        Optional<PaymentInstruction> op = paymentInstructionRepository.findByIdAndSiteId(id, siteId);
         return op.orElse(null);
     }
 
-    public void deletePaymentInstruction(Integer id) {
-        try {
-            paymentInstructionStatusRepository.deleteByPaymentInstructionId(id);
-            paymentInstructionRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException erdae) {
-            LOG.error("Resource not found: " + erdae.getMessage(), erdae);
+    public void deletePaymentInstruction(Integer id, String siteId) {
+        paymentInstructionStatusRepository.deleteByPaymentInstructionId(id, siteId);
+        int deletedPayment = paymentInstructionRepository.deleteByIdAndSiteId(id, siteId);
+        if (deletedPayment <= 0){
             throw new PaymentInstructionNotFoundException(id);
         }
-
     }
 
     public PaymentInstruction submitPaymentInstruction(BarUser barUser, Integer id, PaymentInstructionUpdateRequest paymentInstructionUpdateRequest) throws PaymentProcessException {

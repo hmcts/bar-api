@@ -734,4 +734,46 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             }));
     }
 
+    @Test
+    public void whenUserWithDifferentSiteIdTriesToAccessPayment() throws Exception {
+        AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .status("D")
+            .allPayTransactionId("12345").build();
+
+        restActions
+            .post("/allpay",  proposedAllPayPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        restActions
+            .get("/payment-instructions/1")
+            .andExpect(status().isOk());
+
+        restActions.get("/payment-instructions/1", "Y610").andExpect(status().isNotFound());
+
+    }
+
+    @Test
+    public void whenUserWithDifferentSiteIdTriesToDeletePayment() throws Exception {
+        AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .status("D")
+            .allPayTransactionId("12345").build();
+
+        restActions
+            .post("/allpay",  proposedAllPayPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        restActions
+            .delete("/payment-instructions/1", "Y610")
+            .andExpect(status().isNotFound());
+
+        restActions.delete("/payment-instructions/1").andExpect(status().isNoContent());
+
+    }
+
 }

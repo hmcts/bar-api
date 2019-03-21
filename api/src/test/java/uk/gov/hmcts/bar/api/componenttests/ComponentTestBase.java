@@ -13,10 +13,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.bar.api.BarServiceApplication;
-import uk.gov.hmcts.bar.api.auth.MockSiteIdValidationFilter;
+import uk.gov.hmcts.bar.api.auth.SiteValidationFilter;
 import uk.gov.hmcts.bar.api.componenttests.sugar.CustomResultMatcher;
 import uk.gov.hmcts.bar.api.componenttests.sugar.RestActions;
 import uk.gov.hmcts.bar.api.componenttests.utils.DbTestUtil;
+import uk.gov.hmcts.bar.api.data.service.BarUserService;
 import uk.gov.hmcts.bar.multisite.MultisiteConfiguration;
 import uk.gov.hmcts.reform.auth.checker.spring.useronly.UserDetails;
 
@@ -43,6 +44,9 @@ public class ComponentTestBase {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
+    @Autowired
+    private BarUserService barUserService;
+
     public final UserDetails userDetails =
         new UserDetails("1234", "abc123", Collections.singletonList("bar-post-clerk"));
     public final UserDetails feeClerkUserDetails =
@@ -64,11 +68,11 @@ public class ComponentTestBase {
     @Before
     public void setUp() throws Exception {
         DefaultMockMvcBuilder mvc = webAppContextSetup(webApplicationContext).apply(springSecurity());
-        this.restActions = new RestActions(mvc.addFilter(new MockSiteIdValidationFilter(userDetails)).build(), objectMapper, userDetails);
-        this.restActionsForFeeClerk = new RestActions(mvc.addFilter(new MockSiteIdValidationFilter(feeClerkUserDetails)).build(), objectMapper, feeClerkUserDetails);
-        this.restActionsForSrFeeClerk = new RestActions(mvc.addFilter(new MockSiteIdValidationFilter(srFeeClerkUserDetails)).build(), objectMapper, srFeeClerkUserDetails);
-        this.restActionsForDM = new RestActions(mvc.addFilter(new MockSiteIdValidationFilter(dmUserDetails)).build(), objectMapper, dmUserDetails);
-        this.restActionsForAdmin = new RestActions(mvc.addFilter(new MockSiteIdValidationFilter(adminUserDetails)).build(), objectMapper, adminUserDetails);
+        this.restActions = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, userDetails);
+        this.restActionsForFeeClerk = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, feeClerkUserDetails);
+        this.restActionsForSrFeeClerk = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, srFeeClerkUserDetails);
+        this.restActionsForDM = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, dmUserDetails);
+        this.restActionsForAdmin = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, adminUserDetails);
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction_status");
         DbTestUtil.emptyTable(webApplicationContext, "case_fee_detail");
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction_status");
