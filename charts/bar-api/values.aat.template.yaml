@@ -1,3 +1,5 @@
 java:
   environment:
+    S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     IDAM_CLIENT_BASE_URL: https://preprod-idamapi.reform.hmcts.net:3511
+    PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
