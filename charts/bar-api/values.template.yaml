@@ -15,7 +15,8 @@ java:
   applicationPort: 8080
   keyVaults:
     "bar-aat":
-      excludeEnvironmentSuffix: true # this is required as bar resourceGroup has different naming convention (rg suffix)
+      # this is required as bar resourceGroup has different naming convention (rg suffix)
+      excludeEnvironmentSuffix: true
       resourceGroup: bar-aat-rg
       secrets:
         - bar-S2S-SECRET
