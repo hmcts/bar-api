@@ -30,6 +30,6 @@ withPipeline(type, product, app) {
     setVaultName('bar')
     loadVaultSecrets(secrets)
     enableDockerBuild()
-    enableDeployToAKS()
+    installCharts()
     enableSlackNotifications('#bar-tech')
 }
