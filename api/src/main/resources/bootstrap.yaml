@@ -1,0 +1,6 @@
+spring:
+  cloud:
+    propertiesvolume:
+      paths: /mnt/secrets/bar
+      aliases:
+        bar.bar-S2S-SECRET: S2S_SECRET

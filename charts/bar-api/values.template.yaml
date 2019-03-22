@@ -1,0 +1,34 @@
+postgresql:
+  initdbScripts:
+    init.sql: |-
+      CREATE USER bar WITH PASSWORD 'bar';
+      CREATE DATABASE bar WITH OWNER = bar ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+  nameOverride: bar-db
+  persistence:
+    enabled: false
+
+java:
+  # Don't modify below here
+  image: ${IMAGE_NAME}
+  ingressHost: ${SERVICE_FQDN}
+
+  applicationPort: 8080
+  keyVaults:
+    "bar-aat":
+      # this is required as bar resourceGroup has different naming convention (rg suffix)
+      excludeEnvironmentSuffix: true
+      resourceGroup: bar-aat-rg
+      secrets:
+        - bar-S2S-SECRET
+  environment:
+    SPRING_DATASOURCE_URL: jdbc:postgresql://${SERVICE_NAME}-bar-db:5432/bar
+    SPRING_DATASOURCE_USERNAME: bar
+    SPRING_DATASOURCE_PASSWORD: bar
+
+    SPRING_LIQUIBASE_ENABLED: true
+
+    S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    IDAM_CLIENT_BASE_URL: https://preprod-idamapi.reform.hmcts.net:3511
+    PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
+
+    APPINSIGHTS_INSTRUMENTATIONKEY: fake-key
