@@ -14,12 +14,10 @@ java:
 
   applicationPort: 8080
   keyVaults:
-    "bar-aat":
-      # this is required as bar resourceGroup has different naming convention (rg suffix)
-      excludeEnvironmentSuffix: true
-      resourceGroup: bar-aat-rg
+    "s2s":
+      resourceGroup: rpe-service-auth-provider
       secrets:
-        - bar-S2S-SECRET
+        - microservicekey-bar-api
   environment:
     SPRING_DATASOURCE_URL: jdbc:postgresql://${SERVICE_NAME}-bar-db:5432/bar
     SPRING_DATASOURCE_USERNAME: bar

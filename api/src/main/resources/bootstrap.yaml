@@ -1,6 +1,6 @@
 spring:
   cloud:
     propertiesvolume:
-      paths: /mnt/secrets/bar
+      paths: /mnt/secrets/s2s
       aliases:
-        bar.bar-S2S-SECRET: S2S_SECRET
+        s2s.microservicekey-bar-api: S2S_SECRET
