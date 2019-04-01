@@ -16,6 +16,10 @@ import java.util.Optional;
 public interface PaymentInstructionRepository extends BaseRepository<PaymentInstruction, Integer>, JpaSpecificationExecutor<PaymentInstruction> {
     Optional<PaymentInstruction>  findById(Integer id);
 
+    Optional<PaymentInstruction>  findByIdAndSiteId(Integer id, String siteId);
+
+    int deleteByIdAndSiteId(Integer id, String siteId);
+
     @Query("SELECT pi FROM PaymentInstruction pi, CaseFeeDetail cfd  WHERE " +
             " cfd.paymentInstructionId = pi.id AND cfd.caseReference like %:caseReference%")
     List<PaymentInstruction> findByCaseReference(@Param("caseReference") String caseReference);

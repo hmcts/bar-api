@@ -150,8 +150,8 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/payment-instructions/{id}")
-    public ResponseEntity<PaymentInstruction> getPaymentInstruction(@PathVariable("id") Integer id) {
-        PaymentInstruction paymentInstruction = paymentInstructionService.getPaymentInstruction(id);
+    public ResponseEntity<PaymentInstruction> getPaymentInstruction(BarWrappedHttpRequest request, @PathVariable("id") Integer id) {
+        PaymentInstruction paymentInstruction = paymentInstructionService.getPaymentInstruction(id, request.getBarUser().getSelectedSiteId());
         if (paymentInstruction == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -164,8 +164,8 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/payment-instructions/{id}")
-    public void deletePaymentInstruction(@PathVariable("id") Integer id) {
-        paymentInstructionService.deletePaymentInstruction(id);
+    public void deletePaymentInstruction(BarWrappedHttpRequest request, @PathVariable("id") Integer id) {
+        paymentInstructionService.deletePaymentInstruction(id, request.getBarUser().getSelectedSiteId());
     }
 
     @ApiOperation(value = "Create card payment instruction", notes = "Create card payment instruction with the given values.")

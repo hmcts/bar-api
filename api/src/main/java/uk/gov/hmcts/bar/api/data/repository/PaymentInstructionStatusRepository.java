@@ -97,7 +97,9 @@ public interface PaymentInstructionStatusRepository
 
     @Transactional
     @Modifying
-    @Query(value = "DELETE from payment_instruction_status where payment_instruction_id = :paymentInstructionId", nativeQuery = true)
-    int deleteByPaymentInstructionId(@Param("paymentInstructionId") Integer paymentInstructionId);
+    @Query(value = "DELETE from payment_instruction_status where payment_instruction_id = :paymentInstructionId and " +
+        "(SELECT site_id from payment_instruction where id = :paymentInstructionId) = :siteId", nativeQuery = true)
+    int deleteByPaymentInstructionId(@Param("paymentInstructionId") Integer paymentInstructionId,
+                                     @Param("siteId") String siteId);
 
 }

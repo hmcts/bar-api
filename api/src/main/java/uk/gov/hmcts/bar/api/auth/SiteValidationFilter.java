@@ -24,12 +24,12 @@ public class SiteValidationFilter extends GenericFilterBean {
     private final BarUserService barUserService;
 
     private static final String[] excludeUrlPatterns = {"/swagger-ui.html", "/webjars/springfox-swagger-ui/**", "/swagger-resources/**",
-        "/v2/**", "/health","/payment-types", "/info", "/sites/**"};
+        "/v2/**", "/health","/health/liveness", "/payment-types", "/info", "/sites/**"};
 
     private static AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Autowired
-    SiteValidationFilter(BarUserService barUserService) {
+    public SiteValidationFilter(BarUserService barUserService) {
         this.barUserService = barUserService;
     }
 
