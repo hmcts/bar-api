@@ -242,29 +242,28 @@ public class PaymentInstructionServiceTest {
 
     @Test
     public void shouldDeletePaymentInstruction_whenDeletePaymentInstructionIsCalled() throws Exception {
+        when(paymentInstructionRepository.deleteByIdAndSiteId(anyInt(), anyString())).thenReturn(1);
+        paymentInstructionServiceMock.deletePaymentInstruction(1, "Y431");
 
-        paymentInstructionServiceMock.deletePaymentInstruction(1);
-
-        verify(paymentInstructionRepository, times(1)).deleteById(1);
+        verify(paymentInstructionRepository, times(1)).deleteByIdAndSiteId(1, "Y431");
     }
 
     @Test(expected = PaymentInstructionNotFoundException.class)
-    public void shouldThrowPaymentInstructionNotFoundException_whenDeletePaymentInstructionIsCalledAndNotFound()
-        throws Exception {
+    public void shouldThrowPaymentInstructionNotFoundException_whenDeletePaymentInstructionIsCalledAndNotFound() {
         PaymentInstructionService service = mock(PaymentInstructionService.class);
-        doThrow(PaymentInstructionNotFoundException.class).when(service).deletePaymentInstruction(1);
-        service.deletePaymentInstruction(1);
-
+        doThrow(PaymentInstructionNotFoundException.class).when(service).deletePaymentInstruction(1, "Y431");
+        service.deletePaymentInstruction(1, "Y431");
     }
 
     @Test
-    public void shouldDeleteDraftPaymentInstruction_whenDeletePaymentInstructionIsCalled() {
-
-        ArgumentCaptor<Integer> idCapture = ArgumentCaptor.forClass(Integer.class);
-
-        paymentInstructionServiceMock.deletePaymentInstruction(1);
-        verify(paymentInstructionRepository, times(1)).deleteById(idCapture.capture());
-
+    public void shouldNotDeletePaymentInstruction_whenSiteIdDoesNotMach() {
+        when(paymentInstructionRepository.deleteByIdAndSiteId(anyInt(), anyString())).thenReturn(0);
+        try{
+            paymentInstructionServiceMock.deletePaymentInstruction(1, "Y431");
+            fail("should fail here");
+        } catch (PaymentInstructionNotFoundException e) {
+            assertEquals("payment instruction: id = 1", e.getMessage());
+        }
     }
 
     @Test
@@ -437,9 +436,9 @@ public class PaymentInstructionServiceTest {
     @Test
     public void shouldReturnPaymentInstruction_whenGetPaymentInstructionIsCalledForId() {
         Optional<PaymentInstruction> op = Optional.of(paymentInstructionMock);
-        when(paymentInstructionRepository.findById(Mockito.any(Integer.class))).thenReturn(op);
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), anyString())).thenReturn(op);
 
-        PaymentInstruction pi = paymentInstructionService.getPaymentInstruction(3);
+        PaymentInstruction pi = paymentInstructionService.getPaymentInstruction(3, "Y431");
         assertEquals(paymentInstructionMock, pi);
     }
 
@@ -447,7 +446,7 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnNull_whenGetPaymentInstructionIsCalledForWrongId() {
         when(paymentInstructionRepository.getOne(Mockito.any(Integer.class))).thenReturn(null);
 
-        PaymentInstruction pi = paymentInstructionService.getPaymentInstruction(3);
+        PaymentInstruction pi = paymentInstructionService.getPaymentInstruction(3, "Y431");
         assertEquals(null, pi);
     }
 
