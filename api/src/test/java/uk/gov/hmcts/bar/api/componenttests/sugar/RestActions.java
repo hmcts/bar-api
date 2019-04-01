@@ -145,12 +145,12 @@ public class RestActions {
         addSiteIdHeader(siteId);
         try {
             return mvc.perform(MockMvcRequestBuilders
-                .patch(urlTemplate, request)
+                .patch(urlTemplate, dto)
                 .with(user(userDetails))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .headers(httpHeaders)
-                .content(objectMapper.writeValueAsString(request)));
+                .content(objectMapper.writeValueAsString(dto)));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
