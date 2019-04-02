@@ -32,7 +32,7 @@ public class BasePaymentInstruction {
 
     public static final String[] CSV_TABLE_HEADER = {"Daily sequential payment ID", "Date", "Payee name", "Cheque Amount",
         "Postal Order Amount", "Cash Amount", "Card Amount", "AllPay Amount", "Action Taken", "Case ref no.","BGC Slip No.",
-        "Fee Amount", "Fee code", "Fee description","Recorded user","Recorded time","Validated user","Validated time","Approved user","Approved time","Transferred to BAR user","Transferred to BAR time","Sent to PayHub"};
+        "Fee Amount", "Fee code", "Fee description","Remission amount","Remission reference","Recorded user","Recorded time","Validated user","Validated time","Approved user","Approved time","Transferred to BAR user","Transferred to BAR time","Sent to PayHub"};
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
