@@ -93,7 +93,7 @@ public class PaymentInstructionController {
         List<PaymentInstruction> paymentInstructionList = null;
 
         if (checkAcceptHeaderForCsv(headers)){
-            paymentInstructionList =  paymentInstructionService.getAllPaymentInstructionsByTTB(startDate,endDate);
+            paymentInstructionList =  paymentInstructionService.getAllPaymentInstructionsByTTB(startDate,endDate,request.getBarUser().getSelectedSiteId());
         } else {
             PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto =
                 createPaymentInstructionCriteria(status, startDate, endDate, payerName, chequeNumber, postalOrderNumber,

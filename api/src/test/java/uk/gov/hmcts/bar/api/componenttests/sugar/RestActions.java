@@ -51,16 +51,17 @@ public class RestActions {
             throw new RuntimeException(e);
         }
     }
-
+  
     public ResultActions get(String urlTemplate) {
         return get(urlTemplate, DEFAULT_SITE_ID);
     }
 
-    public ResultActions getCsv(String urlTemplate) {
+    public ResultActions getCsv(String urlTemplate,String siteId) {
         setSecurityContext();
         List mediatypes = new ArrayList();
         mediatypes.add(new MediaType("text", "csv"));
         httpHeaders.setAccept(mediatypes);
+        httpHeaders.set(SITEID_HEADER, siteId);
         try {
             return mvc.perform(MockMvcRequestBuilders
                 .get(urlTemplate)
@@ -72,7 +73,7 @@ public class RestActions {
             throw new RuntimeException(e);
         }
     }
-
+  
     public ResultActions put(String urlTemplate, Object dto, String siteId) {
         setSecurityContext();
         addSiteIdHeader(siteId);
@@ -88,12 +89,12 @@ public class RestActions {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
+    } 
+  
     public ResultActions put(String urlTemplate, Object dto) {
         return put(urlTemplate, dto, DEFAULT_SITE_ID);
     }
-
+  
     public ResultActions post(String urlTemplate, Object dto, String siteId) {
         setSecurityContext();
         addSiteIdHeader(siteId);
@@ -110,7 +111,7 @@ public class RestActions {
             throw new RuntimeException(e);
         }
     }
-
+  
     public ResultActions post(String urlTemplate, Object dto) {
         return post(urlTemplate, dto, DEFAULT_SITE_ID);
     }
@@ -134,22 +135,22 @@ public class RestActions {
             throw new RuntimeException(e);
         }
     }
-
+  
     public ResultActions patch(String urlTemplate, Object dto) {
         return patch(urlTemplate, dto, DEFAULT_SITE_ID);
     }
 
-    public ResultActions patch(String urlTemplate, Object request, String siteId) {
+    public ResultActions patch(String urlTemplate, Object dto, String siteId) {
         setSecurityContext();
         addSiteIdHeader(siteId);
         try {
             return mvc.perform(MockMvcRequestBuilders
-                .patch(urlTemplate, request)
+                .patch(urlTemplate, dto)
                 .with(user(userDetails))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .headers(httpHeaders)
-                .content(objectMapper.writeValueAsString(request)));
+                .content(objectMapper.writeValueAsString(dto)));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

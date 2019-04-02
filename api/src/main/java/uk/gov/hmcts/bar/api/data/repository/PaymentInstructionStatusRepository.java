@@ -44,12 +44,12 @@ public interface PaymentInstructionStatusRepository
         + "FROM PaymentInstructionStatus pis, BarUser bu  WHERE "
         + "bu.id = pis.barUserId AND pis.paymentInstructionStatusReferenceKey.paymentInstructionId in "
         + "(SELECT pis1.paymentInstructionStatusReferenceKey.paymentInstructionId "
-        + " FROM PaymentInstructionStatus pis1 where pis1.paymentInstructionStatusReferenceKey.status in ('TTB','C') "
+        + " FROM PaymentInstructionStatus pis1 join PaymentInstruction pi on pi.id = pis1.paymentInstructionStatusReferenceKey.paymentInstructionId where pi.siteId= :siteId and  pis1.paymentInstructionStatusReferenceKey.status in ('TTB','C') "
         + " AND pis1.paymentInstructionStatusReferenceKey.updateTime >= :historyStartDate "
         + " AND pis1.paymentInstructionStatusReferenceKey.updateTime <= :historyEndDate ) ORDER BY "
         + " pis.paymentInstructionStatusReferenceKey.paymentInstructionId,pis.paymentInstructionStatusReferenceKey.updateTime")
     List<PaymentInstructionStatusHistory>  getPaymentInstructionStatusHistoryForTTB
-        (@Param("historyStartDate") LocalDateTime historyStartDate, @Param("historyEndDate") LocalDateTime historyEndDate);
+        (@Param("historyStartDate") LocalDateTime historyStartDate, @Param("historyEndDate") LocalDateTime historyEndDate, @Param("siteId") String siteId);
 
     @Query(value = "SELECT CONCAT(bu.forename,' ',bu.surname) as name, count(pi.id) as count, pi.status, sum(pi.amount) as totalAmount, pi.payment_type_id as PaymentType, pi.bgc_number as bgc, pis.bar_user_id " +
         "from payment_instruction pi " +

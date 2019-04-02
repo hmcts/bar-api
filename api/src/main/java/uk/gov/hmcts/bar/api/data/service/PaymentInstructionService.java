@@ -263,7 +263,7 @@ public class PaymentInstructionService {
         paymentInstructionStatusRepository.save(pis);
     }
 
-    public Map<Integer, List<PaymentInstructionStatusHistory>> getStatusHistoryMapForTTB(LocalDate startDate,  LocalDate endDate) {
+    public Map<Integer, List<PaymentInstructionStatusHistory>> getStatusHistoryMapForTTB(LocalDate startDate,  LocalDate endDate, String siteId) {
 
         if (null != endDate && startDate.isAfter(endDate)) {
             LOG.error("PaymentInstructionService - Error while generating daily fees csv file. Incorrect start and end dates ");
@@ -278,7 +278,7 @@ public class PaymentInstructionService {
         }
 
         List<PaymentInstructionStatusHistory> statusHistoryList = paymentInstructionStatusRepository.getPaymentInstructionStatusHistoryForTTB
-            (startDate.atStartOfDay(), searchEndDate.atStartOfDay());
+            (startDate.atStartOfDay(), searchEndDate.atStartOfDay(),siteId);
 
         final Map<Integer, List<PaymentInstructionStatusHistory>> statusHistoryMapByPaymentInstructionId = new HashMap<>();
         for (final PaymentInstructionStatusHistory statusHistory : statusHistoryList) {
@@ -294,8 +294,8 @@ public class PaymentInstructionService {
         return statusHistoryMapByPaymentInstructionId;
     }
 
-    public List<PaymentInstruction> getAllPaymentInstructionsByTTB(LocalDate startDate, LocalDate endDate) {
-        Map<Integer, List<PaymentInstructionStatusHistory>> statusHistortMapForTTB = getStatusHistoryMapForTTB(startDate, endDate);
+    public List<PaymentInstruction> getAllPaymentInstructionsByTTB(LocalDate startDate, LocalDate endDate, String siteId) {
+        Map<Integer, List<PaymentInstructionStatusHistory>> statusHistortMapForTTB = getStatusHistoryMapForTTB(startDate, endDate,siteId);
         Iterator<Map.Entry<Integer, List<PaymentInstructionStatusHistory>>> iterator = statusHistortMapForTTB.entrySet().iterator();
         List<PaymentInstruction> paymentInstructionsList = new ArrayList<>();
         while (iterator.hasNext()) {

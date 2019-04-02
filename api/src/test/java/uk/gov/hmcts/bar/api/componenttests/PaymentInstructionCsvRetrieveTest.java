@@ -24,33 +24,33 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         DbTestUtil.insertBGCNumber(getWebApplicationContext());
         DbTestUtil.insertPOPaymentInstructionWhichIsSenttoPayhub(getWebApplicationContext());
 
-        PostalOrder validatedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+        PostalOrder validatedPostalOrderPaymentInstructionRequestY431 = postalOrderPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(533)
             .currency("GBP").status("V")
             .postalOrderNumber("000000").build();
 
-        PostalOrder approvedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+        PostalOrder approvedPostalOrderPaymentInstructionRequestY431 = postalOrderPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(533)
             .currency("GBP").status("A")
             .postalOrderNumber("000000").bgcNumber("123456").build();
 
 
-        PostalOrder ttbPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+        PostalOrder ttbPostalOrderPaymentInstructionRequestY431 = postalOrderPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(533)
             .currency("GBP").status("TTB")
             .postalOrderNumber("000000").build();
 
         restActions
-            .put("/postal-orders/1", validatedPostalOrderPaymentInstructionRequest)
+            .put("/postal-orders/1", validatedPostalOrderPaymentInstructionRequestY431,"Y431")
             .andExpect(status().isOk());
         restActions
-            .put("/postal-orders/1", approvedPostalOrderPaymentInstructionRequest)
+            .put("/postal-orders/1", approvedPostalOrderPaymentInstructionRequestY431,"Y431")
             .andExpect(status().isOk());
         restActions
-            .put("/postal-orders/1", ttbPostalOrderPaymentInstructionRequest)
+            .put("/postal-orders/1", ttbPostalOrderPaymentInstructionRequestY431,"Y431")
             .andExpect(status().isOk());
 
         LocalDateTime currentDateTime = LocalDateTime.now();
@@ -64,27 +64,31 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         String expectedHeader =convertLine(CashPaymentInstruction.CSV_TABLE_HEADER);
         String dailySequenceId = "1";
         String payeeName = "Mr Payer Payer";
-        String amount = "5.33";
+        String amountSite1 = "5.33";
+        String amountSite2 = "6.10";
         String bgcNumber = "123456";
         String sentToPayhub="No";
 
         restActions
-            .getCsv("/payment-instructions?startDate=" + paramStartDate)
+            .getCsv("/payment-instructions?startDate=" + paramStartDate,"Y431")
             .andExpect(status().isOk())
             .andExpect(result -> {
                 String csv  = result.getResponse().getContentAsString();
+                System.out.println(csv);
                 int indexOfdailySequenceId = result.getResponse().getContentAsString().indexOf("1");
                 String actualHeader = csv.substring(0,indexOfdailySequenceId - 2);
                 Assert.assertEquals(expectedHeader,actualHeader);
                 Assert.assertTrue(csv.contains(dailySequenceId));
                 Assert.assertTrue(csv.contains(paymentDate));
                 Assert.assertTrue(csv.contains(payeeName));
-                Assert.assertTrue(csv.contains(amount));
+                Assert.assertTrue(csv.contains(amountSite1));
+                Assert.assertFalse(csv.contains(amountSite2));
                 Assert.assertTrue(csv.contains(bgcNumber));
                 Assert.assertTrue(csv.contains(recordedUser));
                 Assert.assertTrue(csv.contains(recordedDateTime));
                 Assert.assertTrue(csv.contains(sentToPayhub));
             });
+
     }
 
     @Test
@@ -138,7 +142,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         String sentToPayhub="No";
 
         restActions
-            .getCsv("/payment-instructions?startDate=" + paramStartDate)
+            .getCsv("/payment-instructions?startDate=" + paramStartDate,"Y431")
             .andExpect(status().isOk())
             .andExpect(result -> {
                 String csv  = result.getResponse().getContentAsString();
@@ -206,7 +210,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         String sentToPayhub="No";
 
         restActions
-            .getCsv("/payment-instructions?startDate=" + paramStartDate)
+            .getCsv("/payment-instructions?startDate=" + paramStartDate,"Y431")
             .andExpect(status().isOk())
             .andExpect(result -> {
                 String csv  = result.getResponse().getContentAsString();
@@ -277,7 +281,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         String sentToPayhub="Yes";
 
         restActions
-            .getCsv("/payment-instructions?startDate=" + paramStartDate)
+            .getCsv("/payment-instructions?startDate=" + paramStartDate,"Y431")
             .andExpect(status().isOk())
             .andExpect(result -> {
                 String csv  = result.getResponse().getContentAsString();
@@ -347,7 +351,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         String sentToPayhub="Fail";
 
         restActions
-            .getCsv("/payment-instructions?startDate=" + paramStartDate)
+            .getCsv("/payment-instructions?startDate=" + paramStartDate,"Y431")
             .andExpect(status().isOk())
             .andExpect(result -> {
                 String csv  = result.getResponse().getContentAsString();
@@ -427,7 +431,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         String sentToPayhub="";
 
         restActions
-            .getCsv("/payment-instructions?startDate=" + paramStartDate)
+            .getCsv("/payment-instructions?startDate=" + paramStartDate,"Y431")
             .andExpect(status().isOk())
             .andExpect(result -> {
                 String csv  = result.getResponse().getContentAsString();
