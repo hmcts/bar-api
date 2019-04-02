@@ -81,7 +81,6 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
         csvRow[8] = line.getAction();
         csvRow[9] = line.getCaseRef();
         csvRow[10] = line.getBgcNumber();
-        csvRow[10] = line.getBgcNumber();
         csvRow[11] = (formatNumber(line.getFeeAmount()));
         csvRow[12] = line.getFeeCode();
         csvRow[13] = line.getFeeDescription();
