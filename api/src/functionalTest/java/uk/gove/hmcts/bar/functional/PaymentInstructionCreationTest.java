@@ -1,13 +1,14 @@
 package uk.gove.hmcts.bar.functional;
 
+import io.restassured.response.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static io.restassured.RestAssured.given;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import java.util.HashMap;
 
 @RunWith(SpringRunner.class)
 public class PaymentInstructionCreationTest extends FunctionalTest {
@@ -19,18 +20,12 @@ public class PaymentInstructionCreationTest extends FunctionalTest {
             .put("amount", 550)
             .put("status", "D")
             .put("currency", "GBP")
-            .put("authorization_code", "123456");
-        String token = authenticatorClient.authenticate(users.get(Roles.FEE_CLERK), password);
-        given()
-            .relaxedHTTPSValidation()
-            .header(CONTENT_TYPE, "application/json")
-            .header("Authorization", token)
-            .header("SiteId", Sites.Y431.name())
-            .body(payload.toString())
-            .when()
-            .post("/cards")
-            .then()
-            .statusCode(201);
+            .put("authorization_code", "123456")
+            .put("site_id", Sites.Y610.name());
+        String token = authenticatorClient.authenticate(users.get(Roles.FEE_CLERK_Y431), password);
+        Response response = createCardPaymentInstruction(payload.toString(), token, Sites.Y431.name());
+        response.then().statusCode(201);
+        Assert.assertEquals(Sites.Y431.name(), response.as(HashMap.class).get("site_id"));
     }
 
     @Test
@@ -41,16 +36,8 @@ public class PaymentInstructionCreationTest extends FunctionalTest {
             .put("status", "D")
             .put("currency", "GBP")
             .put("authorization_code", "123456");
-        String token = authenticatorClient.authenticate(users.get(Roles.FEE_CLERK), password);
-        given()
-            .relaxedHTTPSValidation()
-            .header(CONTENT_TYPE, "application/json")
-            .header("Authorization", token)
-            .header("SiteId", Sites.Y610.name())
-            .body(payload.toString())
-            .when()
-            .post("/cards")
-            .then()
+        String token = authenticatorClient.authenticate(users.get(Roles.FEE_CLERK_Y431), password);
+        createCardPaymentInstruction(payload.toString(), token, Sites.Y610.name()).then()
             .statusCode(403);
     }
 }

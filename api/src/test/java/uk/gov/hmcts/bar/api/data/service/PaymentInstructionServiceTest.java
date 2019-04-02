@@ -558,12 +558,12 @@ public class PaymentInstructionServiceTest {
             .amount(200)
             .payerName("Payer Name")
             .currency("GBP").build();
-        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(paymentInstructionMock));
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), anyString())).thenReturn(Optional.of(paymentInstructionMock));
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
             .thenReturn(paymentInstructionMock);
         when(paymentInstructionMock.getStatus()).thenReturn("status");
         paymentInstructionService.updatePaymentInstruction(barUserMock, 1, pir);
-        verify(paymentInstructionRepository, times(1)).findById(anyInt());
+        verify(paymentInstructionRepository, times(1)).findByIdAndSiteId(anyInt(), eq("Y431"));
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
         verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",paymentInstructionMock,barUserMock);
 
@@ -577,14 +577,14 @@ public class PaymentInstructionServiceTest {
             .payerName("Payer Name")
             .currency("GBP")
             .bgcNumber("12345").build();
-        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(pi));
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), eq("Y431"))).thenReturn(Optional.of(pi));
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
             .thenAnswer(i -> i.getArguments()[0]);
         when(bankGiroCreditRepositoryMock.save(any(BankGiroCredit.class))).thenAnswer(i -> i.getArguments()[0]);
         // when(paymentInstructionMock.getStatus()).thenReturn("status");
         PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(barUserMock, 1, pir);
         assertEquals(pir.getBgcNumber(), updatedPaymentInstruction.getBgcNumber());
-        verify(paymentInstructionRepository, times(1)).findById(anyInt());
+        verify(paymentInstructionRepository, times(1)).findByIdAndSiteId(anyInt(), eq("Y431"));
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(pi);
         verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",pi,barUserMock);
 
@@ -598,14 +598,14 @@ public class PaymentInstructionServiceTest {
             .payerName("Payer Name")
             .currency("GBP")
             .bgcNumber("12345").build();
-        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(pi));
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), eq("Y431"))).thenReturn(Optional.of(pi));
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
             .thenAnswer(i -> i.getArguments()[0]);
         when(bankGiroCreditRepositoryMock.save(any(BankGiroCredit.class))).thenAnswer(i -> i.getArguments()[0]);
         // when(paymentInstructionMock.getStatus()).thenReturn("status");
         PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(barUserMock, 1, pir);
         assertNull(updatedPaymentInstruction.getBgcNumber());
-        verify(paymentInstructionRepository, times(1)).findById(anyInt());
+        verify(paymentInstructionRepository, times(1)).findByIdAndSiteId(anyInt(), eq("Y431"));
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(pi);
         verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",pi,barUserMock);
     }
@@ -831,6 +831,28 @@ public class PaymentInstructionServiceTest {
         } catch (PaymentProcessException e) {
             assertEquals("Please remove all case and fee details before attempting this action.", e.getMessage());
         }
+    }
+
+    @Test
+    public void testUpdatePaymentWithDifferentSiteIdWhatTheUserHas() {
+        PaymentInstructionRequest pir = PaymentInstructionRequest.paymentInstructionRequestWith()
+            .amount(200)
+            .payerName("Payer Name")
+            .currency("GBP").build();
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), anyString())).thenReturn(Optional.empty());
+        when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
+            .thenReturn(paymentInstructionMock);
+        when(paymentInstructionMock.getStatus()).thenReturn("status");
+        try {
+            paymentInstructionService.updatePaymentInstruction(barUserMock, 1, pir);
+            fail("Should fail here, as no payment found");
+        } catch (Exception e) {
+            assertEquals("payment instruction on site Y431: id = 1", e.getMessage());
+        }
+        verify(paymentInstructionRepository, times(1)).findByIdAndSiteId(anyInt(), eq("Y431"));
+        verify(paymentInstructionRepository, times(0)).saveAndRefresh(paymentInstructionMock);
+        verify(auditRepository,times(0)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",paymentInstructionMock,barUserMock);
+
     }
 
 }

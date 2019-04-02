@@ -20,7 +20,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 
 import java.net.URI;
-import java.net.URLDecoder;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -89,14 +88,6 @@ public class AuthenticatorClient {
             // The following two params are needed for strategic idam
             params.add(new BasicNameValuePair("save", "Sign in"));
             params.add(new BasicNameValuePair("selfRegistrationEnabled", "false"));
-            // These params are needed for tactical idam, I leave it here now we still switching back and forth
-//            String state = idamUrl.substring(idamUrl.indexOf("state=") + 6, idamUrl.indexOf("&client"));
-//            String redirectUri = URLDecoder.decode(idamUrl.substring(idamUrl.indexOf("redirect_uri=") + 13), "UTF-8");
-//            params.add(new BasicNameValuePair("state", state));
-//            params.add(new BasicNameValuePair("response_type", "code"));
-//            params.add(new BasicNameValuePair("client_id", "bar_frontend"));
-//            params.add(new BasicNameValuePair("continue", redirectUri + "?state=" + state));
-//            params.add(new BasicNameValuePair("redirect_uri", redirectUri));
             post.setEntity(new UrlEncodedFormEntity(params));
             response = client.execute(post, context);
             String returnUrl = getFinalUrl(context, post).toString();
