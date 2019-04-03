@@ -61,6 +61,9 @@ public abstract class FunctionalTest {
     @Before
     public void setup() {
         RestAssured.baseURI = testUrl;
+        if (proxyEnabled) {
+            RestAssured.proxy(proxyUrl, proxyPort);
+        }
         log.info("Bar-Api base url is :{}", testUrl);
         authenticatorClient = new AuthenticatorClient(barWebUrl, proxyEnabled, proxyUrl, proxyPort);
         // assign users to sites
