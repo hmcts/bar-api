@@ -14,9 +14,8 @@ import java.util.Optional;
 
 @Repository
 public interface PaymentInstructionRepository extends BaseRepository<PaymentInstruction, Integer>, JpaSpecificationExecutor<PaymentInstruction> {
-    Optional<PaymentInstruction>  findById(Integer id);
-
-    Optional<PaymentInstruction>  findByIdAndSiteId(Integer id, String siteId);
+    Optional<PaymentInstruction> findById(Integer id);
+    Optional<PaymentInstruction> findByIdAndSiteId(Integer id, String siteId);
 
     int deleteByIdAndSiteId(Integer id, String siteId);
 

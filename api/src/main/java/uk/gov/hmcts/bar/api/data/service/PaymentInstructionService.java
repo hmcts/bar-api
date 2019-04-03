@@ -174,9 +174,9 @@ public class PaymentInstructionService {
     }
 
     public PaymentInstruction updatePaymentInstruction(BarUser barUser, Integer id, PaymentInstructionRequest paymentInstructionRequest)  {
-        Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
+        Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findByIdAndSiteId(id, barUser.getSelectedSiteId());
         PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
-            .orElseThrow(() -> new PaymentInstructionNotFoundException(id));
+            .orElseThrow(() -> new PaymentInstructionNotFoundException(id, barUser.getSelectedSiteId()));
 
         // handle bgc number
         if (paymentInstructionRequest.getBgcNumber() != null) {
