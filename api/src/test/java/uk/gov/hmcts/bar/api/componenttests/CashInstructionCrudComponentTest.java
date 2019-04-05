@@ -202,6 +202,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
             .currency("GBP").status("D").build();
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .paymentInstructionId(1)
             .caseReference("case102")
             .feeCode("X001")
             .amount(200)
@@ -227,6 +228,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
             .currency("GBP").status("D").build();
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .paymentInstructionId(1)
             .caseReference("????????")
             .build();
 

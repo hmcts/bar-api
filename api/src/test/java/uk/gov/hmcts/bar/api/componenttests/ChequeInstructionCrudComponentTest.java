@@ -221,6 +221,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .feeCode("X001")
             .amount(200)
             .feeVersion("1")
+            .paymentInstructionId(1)
             .build();
 
         restActions
@@ -245,6 +246,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
             .chequeNumber("000000").status("D").build();
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .paymentInstructionId(1)
             .caseReference("??????????")
             .build();
 
