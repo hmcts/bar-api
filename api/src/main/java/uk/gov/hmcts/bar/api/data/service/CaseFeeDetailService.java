@@ -34,7 +34,7 @@ public class CaseFeeDetailService {
 
     public CaseFeeDetail saveCaseFeeDetail(BarUser barUser,CaseFeeDetailRequest caseFeeDetailRequest) {
         Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findByIdAndSiteId(caseFeeDetailRequest.getPaymentInstructionId(), barUser.getSelectedSiteId());
-        optionalPaymentInstruction
+        PaymentInstruction paymentInstruction = optionalPaymentInstruction
             .orElseThrow(() -> new PaymentInstructionNotFoundException(caseFeeDetailRequest.getPaymentInstructionId(), barUser.getSelectedSiteId()));
 
         CaseFeeDetail caseFeeDetail = caseFeeDetailRepository.saveAndRefresh(CaseFeeDetail.caseFeeDetailWith()
@@ -56,7 +56,7 @@ public class CaseFeeDetailService {
     public CaseFeeDetail updateCaseFeeDetail(BarUser barUser,Integer feeId, CaseFeeDetailRequest caseFeeDetailRequest) {
 
         Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findByIdAndSiteId(caseFeeDetailRequest.getPaymentInstructionId(), barUser.getSelectedSiteId());
-        optionalPaymentInstruction
+        PaymentInstruction paymentInstruction = optionalPaymentInstruction
             .orElseThrow(() -> new PaymentInstructionNotFoundException(caseFeeDetailRequest.getPaymentInstructionId(), barUser.getSelectedSiteId()));
 
         Optional<CaseFeeDetail> optExistingCaseFeeDetail = caseFeeDetailRepository.findById(feeId);
