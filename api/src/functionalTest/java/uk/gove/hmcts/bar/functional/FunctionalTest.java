@@ -3,6 +3,8 @@ package uk.gove.hmcts.bar.functional;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
@@ -92,5 +94,25 @@ public abstract class FunctionalTest {
             .body(payload)
             .when()
             .post("/cards");
+    }
+
+    protected void addCaseFee(int amount, String token, String paymentId, String siteId) throws JSONException {
+        JSONObject payload = new JSONObject()
+            .put("payment_instruction_id", paymentId)
+            .put("case_reference", "123asd")
+            .put("fee_code", "code01")
+            .put("amount", amount)
+            .put("fee_description", "dummmy fee")
+            .put("fee_version", "v1");
+        given()
+            .relaxedHTTPSValidation()
+            .header(CONTENT_TYPE, "application/json")
+            .header("Authorization", token)
+            .header("SiteId", siteId)
+            .body(payload.toString())
+            .when()
+            .post("/fees")
+            .then()
+            .statusCode(201);
     }
 }

@@ -459,11 +459,11 @@ public class PaymentInstructionServiceTest {
         existingPaymentInstruction.setActionReason(2);
         existingPaymentInstruction.setActionComment("Valami tortent");
         existingPaymentInstruction.setAction("Process");
-        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(existingPaymentInstruction));
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), anyString())).thenReturn(Optional.of(existingPaymentInstruction));
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
             .thenReturn(existingPaymentInstruction);
         PaymentInstruction updatedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(barUserMock, 1, pir);
-        verify(paymentInstructionRepository, times(1)).findById(anyInt());
+        verify(paymentInstructionRepository, times(1)).findByIdAndSiteId(anyInt(), anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(argument.capture());
         assertEquals("D", argument.getValue().getStatus());
         assertEquals("Process", argument.getValue().getAction());
@@ -482,7 +482,7 @@ public class PaymentInstructionServiceTest {
         existingPaymentInstruction.setActionReason(2);
         existingPaymentInstruction.setActionComment("Valami tortent");
         existingPaymentInstruction.setAction("Process");
-        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(existingPaymentInstruction));
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), anyString())).thenReturn(Optional.of(existingPaymentInstruction));
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
             .thenReturn(existingPaymentInstruction);
         PaymentInstruction updatedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(barUserMock, 1, pir);
@@ -498,12 +498,12 @@ public class PaymentInstructionServiceTest {
         when(ff4jMock.check(PaymentActionEnum.SUSPENSE.featureKey())).thenReturn(true);
         PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
             .status("D").action("Suspense").build();
-        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(paymentInstructionMock));
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), anyString())).thenReturn(Optional.of(paymentInstructionMock));
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
             .thenReturn(paymentInstructionMock);
 
         paymentInstructionService.submitPaymentInstruction(barUserMock, 1, pir);
-        verify(paymentInstructionRepository, times(1)).findById(anyInt());
+        verify(paymentInstructionRepository, times(1)).findByIdAndSiteId(anyInt(), anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
         verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",paymentInstructionMock,barUserMock);
         verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",paymentInstructionMock,barUserMock);
@@ -539,7 +539,7 @@ public class PaymentInstructionServiceTest {
         PaymentInstruction pi = TestUtils.createPaymentInstructions("CASH",10000);
         List<CaseFeeDetail> cfdList = new ArrayList<>();
         pi.setCaseFeeDetails(cfdList);
-        when(paymentInstructionRepository.findById(any(Integer.class))).thenReturn(Optional.of(pi));
+        when(paymentInstructionRepository.findByIdAndSiteId(any(Integer.class), anyString())).thenReturn(Optional.of(pi));
         when(ff4jMock.check(anyString())).thenReturn(true);
         try {
             PaymentInstructionUpdateRequest pir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
@@ -807,7 +807,7 @@ public class PaymentInstructionServiceTest {
             .status("A").action("Return").build();
         PaymentInstruction existingPaymentInstruction = TestUtils.createPaymentInstructions("CHEQUE", 10000);
         existingPaymentInstruction.setCaseFeeDetails(Arrays.asList(new CaseFeeDetail()));
-        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(existingPaymentInstruction));
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), anyString())).thenReturn(Optional.of(existingPaymentInstruction));
         try {
             paymentInstructionService.submitPaymentInstruction(barUserMock, 1, pir);
             fail("should fail here");
@@ -824,7 +824,7 @@ public class PaymentInstructionServiceTest {
         PaymentInstruction existingPaymentInstruction = new ChequePaymentInstruction();
         existingPaymentInstruction.setPaymentType(PaymentType.paymentTypeWith().id("CHEQUE").name("Cheque").build());
         existingPaymentInstruction.setCaseFeeDetails(Arrays.asList(new CaseFeeDetail()));
-        when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(existingPaymentInstruction));
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), anyString())).thenReturn(Optional.of(existingPaymentInstruction));
         try {
             paymentInstructionService.submitPaymentInstruction(barUserMock, 1, pir);
             fail("should fail here");
