@@ -220,7 +220,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
     }
 
     @Test
-    public void whenCaseReferenceForACashPaymentInstructionIsUpdated_expectStatus_200() throws Exception {
+    public void whenCaseReferenceForACashPaymentInstructionIsUpdated_expectStatus_404() throws Exception {
         Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
@@ -235,7 +235,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
             .build();
 
         CaseFeeDetailRequest updatedCaseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-            .paymentInstructionId(1)
+            .paymentInstructionId(100)
             .caseReference("case103")
             .feeCode("X001")
             .amount(200)
@@ -250,23 +250,15 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
         MvcResult resultOfPost = restActions
             .post("/fees",caseFeeDetailRequest)
-            .andExpect(status().isCreated())
             .andReturn();
 
         CaseFeeDetail createdcaseFeeDetail = getObjectMapper().readValue(resultOfPost.getResponse().getContentAsString(),CaseFeeDetail.class);
 
         MvcResult resultOfPut = restActions
             .put("/fees/"+createdcaseFeeDetail.getCaseFeeId(),updatedCaseFeeDetailRequest)
-            .andExpect(status().isOk())
+            .andExpect(status().isNotFound())
             .andReturn();
 
-        CaseFeeDetail updatedcaseFeeDetail = getObjectMapper().readValue(resultOfPut.getResponse().getContentAsString(),CaseFeeDetail.class);
-        assertTrue(updatedcaseFeeDetail.getCaseReference().equals("case103"));
-
-        restActions.get("/payment-instructions/1").andExpect(status().isOk())
-            .andExpect(body().as(CashPaymentInstruction.class, (pi) -> {
-                assertThat(pi.getAmount() == 500);
-            }));
     }
 
     @Test
