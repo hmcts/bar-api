@@ -76,7 +76,7 @@ public class CaseFeeDetailTest extends FunctionalTest {
             .when()
             .post("/fees")
             .then()
-            .statusCode(404);
+            .statusCode(403);
     }
 
 
@@ -162,7 +162,7 @@ public class CaseFeeDetailTest extends FunctionalTest {
             .when()
             .put("/fees/"+response.get("case_fee_id"))
             .then()
-            .statusCode(404);
+            .statusCode(403);
 
     }
 
