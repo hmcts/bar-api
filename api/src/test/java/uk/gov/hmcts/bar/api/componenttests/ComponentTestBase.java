@@ -56,7 +56,17 @@ public class ComponentTestBase {
     public final UserDetails dmUserDetails =
             new UserDetails("dm-manager", "abc123", Collections.singletonList("bar-delivery-manager"));
     public final UserDetails adminUserDetails =
-        new UserDetails("admin", "abc123", Collections.singletonList("super"));
+        new UserDetails("admin-site2", "abc123", Collections.singletonList("super"));
+    public final UserDetails postClerkUserDetailsSite2 =
+        new UserDetails("post-clerk-site2", "abc123", Collections.singletonList("bar-post-clerk"));
+    public final UserDetails feeClerkUserDetailsSite2 =
+        new UserDetails("fee-clerk-site2", "abc123", Collections.singletonList("bar-fee-clerk"));
+    public final UserDetails srFeeClerkUserDetailsSite2 =
+        new UserDetails("sr-fee-clerk-site2", "abc123", Collections.singletonList("bar-senior-clerk"));
+    public final UserDetails dmUserUserDetailsSite2 =
+        new UserDetails("dm-manager-site2", "abc123", Collections.singletonList("bar-delivery-manager"));
+    public final UserDetails adminUserDetailsSite2 =
+        new UserDetails("admin-site2", "abc123", Collections.singletonList("super"));
 
 
     public RestActions restActions;
@@ -64,6 +74,11 @@ public class ComponentTestBase {
     public RestActions restActionsForSrFeeClerk;
     public RestActions restActionsForDM;
     public RestActions restActionsForAdmin;
+    public RestActions restActionsPostClerkSite2;
+    public RestActions restActionsForFeeClerkSite2;
+    public RestActions restActionsForSrFeeClerkSite2;
+    public RestActions restActionsForDMSite2;
+    public RestActions restActionsForAdminSite2;
 
     @Before
     public void setUp() throws Exception {
@@ -73,6 +88,12 @@ public class ComponentTestBase {
         this.restActionsForSrFeeClerk = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, srFeeClerkUserDetails);
         this.restActionsForDM = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, dmUserDetails);
         this.restActionsForAdmin = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, adminUserDetails);
+        this.restActionsPostClerkSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, postClerkUserDetailsSite2);
+        this.restActionsForFeeClerkSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, feeClerkUserDetailsSite2);
+        this.restActionsForSrFeeClerkSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, srFeeClerkUserDetailsSite2);
+        this.restActionsForDMSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, dmUserUserDetailsSite2);
+        this.restActionsForAdminSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, adminUserDetailsSite2);
+
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction_status");
         DbTestUtil.emptyTable(webApplicationContext, "case_fee_detail");
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction_status");
@@ -105,6 +126,10 @@ public class ComponentTestBase {
 
     public WebApplicationContext getWebApplicationContext() {
         return webApplicationContext;
+    }
+
+    public ObjectMapper getObjectMapper(){
+        return objectMapper;
     }
 
 }
