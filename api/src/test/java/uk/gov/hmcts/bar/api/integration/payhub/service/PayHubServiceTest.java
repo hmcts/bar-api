@@ -10,7 +10,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.http.params.HttpParams;
 import org.hamcrest.core.Is;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.bar.api.data.TestUtils;
 import uk.gov.hmcts.bar.api.data.exceptions.BadRequestException;
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
+import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubFullRemission;
 import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
@@ -32,6 +32,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class PayHubServiceTest {
@@ -39,7 +41,7 @@ public class PayHubServiceTest {
     public static final LocalDateTime TRANSFER_DATE = LocalDateTime.now();
     public static final String payload1 = "{\"amount\":100.00,\"currency\":\"GBP\",\"site_id\":\"Y431\",\"giro_slip_no\":\"\",\"fees\":[{\"code\":\"x00335\",\"calculated_amount\":50.00,\"version\":\"1\",\"reference\":\"12345\"},{\"code\":\"x00335\",\"calculated_amount\":50.00,\"version\":\"1\",\"reference\":\"12345\"}],\"requestor_reference\":\"Y431-2018081313A0001\",\"reported_date_offline\":\"" + TRANSFER_DATE.format(DateTimeFormatter.ISO_DATE_TIME) + "\",\"payment_method\":\"CHEQUE\",\"requestor\":\"DIGITAL_BAR\",\"external_reference\":\"D\"}";
     public static final String payload2 = "{\"amount\":200.00,\"currency\":\"GBP\",\"site_id\":\"Y431\",\"giro_slip_no\":\"\",\"fees\":[{\"code\":\"x00335\",\"calculated_amount\":100.00,\"version\":\"1\",\"reference\":\"12345\"},{\"code\":\"x00335\",\"calculated_amount\":100.00,\"version\":\"1\",\"reference\":\"12345\"}],\"requestor_reference\":\"Y431-2018081313A0002\",\"reported_date_offline\":\"" + TRANSFER_DATE.format(DateTimeFormatter.ISO_DATE_TIME) + "\",\"payment_method\":\"CARD\",\"requestor\":\"DIGITAL_BAR\",\"external_reference\":\"123456\",\"external_provider\":\"barclaycard\"}";
-
+    public static final String payload3 = "{\"case_reference\":\"12345\",\"hwf_reference\":\"12345678901\",\"fee\":{\"code\":\"x00335\",\"version\":\"1\",\"reference\":\"12345\",\"calculated_amount\":10.00},\"beneficiary_name\":\"John Doe\",\"hwf_amount\":10.00}";
 
     private PayHubService payHubService;
 
@@ -56,6 +58,7 @@ public class PayHubServiceTest {
     private EntityManager entityManager;
 
     private List<PayhubPaymentInstruction> paymentInstructions;
+    private List<PayhubFullRemission> fullRemissions;
 
     private BarUser barUser;
 
@@ -68,6 +71,7 @@ public class PayHubServiceTest {
                                             "http://localhost:8080",
                                             entityManager);
         paymentInstructions = new ArrayList<>();
+        fullRemissions = new ArrayList<>();
         paymentInstructions.add(
             TestUtils.createSamplePayhuPaymentInstruction(10000, new int [][] {{5000, 0, 0}, {5000, 0, 0}})
         );
@@ -86,6 +90,14 @@ public class PayHubServiceTest {
         paymentInstructions.get(1).setSiteId("Y431");
         paymentInstructions.get(1).setDailySequenceId("13A0002");
         paymentInstructions.get(1).setAuthorizationCode("123456");
+
+        fullRemissions.add(TestUtils.createSampleFullRemissionInstruction(new int[] {1000, 0, 0}));
+        fullRemissions.get(0).setId(3);
+        fullRemissions.get(0).setStatus("TTB");
+        fullRemissions.get(0).setSiteId("Y431");
+        fullRemissions.get(0).setDailySequenceId("13A0003");
+        fullRemissions.get(0).setRemissionReference("12345678901");
+
         barUser = BarUser.builder().email("fee.clerk@hmcts.net").forename("Fee").surname("Clerk")
             .roles(new HashSet<>(Arrays.asList("dummy_role1, dummy_role2"))).id("54321").build();
     }
@@ -98,7 +110,7 @@ public class PayHubServiceTest {
             HttpPost httpPost = invocation.getArgument(0);
             Collection<String> requestBody = IOUtil.readLines(httpPost.getEntity().getContent());
             String strRequest = requestBody.stream().reduce("", String::concat);
-            Assert.assertTrue(compareJson(strRequest, payload1) || compareJson(strRequest, payload2));
+            assertTrue(compareJson(strRequest, payload1) || compareJson(strRequest, payload2));
             assertThat(httpPost.getMethod(), Is.is("POST"));
             assertThat(httpPost.getURI().toString(), Is.is("http://localhost:8080/payment-records"));
             assertThat(httpPost.getHeaders("Authorization")[0].getValue(), Is.is("1234ABCD"));
@@ -112,7 +124,34 @@ public class PayHubServiceTest {
         this.paymentInstructions.forEach(it -> {
             assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
             assertThat(it.isTransferredToPayhub(), Is.is(true));
-            Assert.assertEquals(null, it.getPayhubError());
+            assertNull(it.getPayhubError());
+        });
+    }
+
+    @Test
+    public void testSendValidRequestToPayHubWithFullRemission() throws Exception {
+        when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
+        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
+        when(paymentInstructionService.getAllRemissionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.fullRemissions);
+        when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> {
+            HttpPost httpPost = invocation.getArgument(0);
+            Collection<String> requestBody = IOUtil.readLines(httpPost.getEntity().getContent());
+            String strRequest = requestBody.stream().reduce("", String::concat);
+            assertTrue(compareJson(strRequest, payload1) || compareJson(strRequest, payload2) || compareJson(strRequest, payload3));
+            assertThat(httpPost.getMethod(), Is.is("POST"));
+            assertThat(httpPost.getURI().toString(), Is.is("http://localhost:8080/payment-records"));
+            assertThat(httpPost.getHeaders("Authorization")[0].getValue(), Is.is("1234ABCD"));
+            assertThat(httpPost.getHeaders("ServiceAuthorization")[0].getValue(), Is.is("this_is_a_one_time_password"));
+            return createPayhubResponse();
+        });
+        PayHubResponseReport stat = payHubService.sendPaymentInstructionToPayHub(barUser, "1234ABCD", TRANSFER_DATE);
+        assertThat(stat.getTotal(), Is.is(3));
+        assertThat(stat.getSuccess(), Is.is(3));
+        verify(entityManager, times(3)).merge(any(PaymentInstructionPayhubReference.class));
+        this.paymentInstructions.forEach(it -> {
+            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
+            assertThat(it.isTransferredToPayhub(), Is.is(true));
+            assertNull(it.getPayhubError());
         });
     }
 
@@ -391,6 +430,7 @@ public class PayHubServiceTest {
     }
 
     private boolean compareJson(String actual, String expected) throws IOException {
+        System.out.println(actual);
         final ObjectMapper mapper = new ObjectMapper();
 
         final JsonNode tree1 = mapper.readTree(actual);
