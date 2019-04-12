@@ -223,6 +223,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .allPayTransactionId("12345").build();
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .paymentInstructionId(1)
             .caseReference("case102")
             .feeCode("X001")
             .amount(200)
@@ -251,6 +252,7 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
             .allPayTransactionId("12345").build();
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .paymentInstructionId(1)
             .caseReference("<><<>><>")
             .build();
 

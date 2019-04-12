@@ -412,8 +412,8 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/fees")
-    public CaseFeeDetail saveCaseFeeDetail(@RequestBody CaseFeeDetailRequest caseFeeDetailRequest) {
-        return caseFeeDetailService.saveCaseFeeDetail(caseFeeDetailRequest);
+    public CaseFeeDetail saveCaseFeeDetail(BarWrappedHttpRequest request,@RequestBody CaseFeeDetailRequest caseFeeDetailRequest) {
+        return caseFeeDetailService.saveCaseFeeDetail(request.getBarUser(),caseFeeDetailRequest);
     }
 
     @ApiOperation(value = "Update case fee details", notes = "Update case fee details with the given values.")
@@ -422,9 +422,9 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error") })
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/fees/{caseFeeId}")
-    public CaseFeeDetail updateCaseFeeDetail(@PathVariable("caseFeeId") Integer caseFeeId,
+    public CaseFeeDetail updateCaseFeeDetail(BarWrappedHttpRequest request,@PathVariable("caseFeeId") Integer caseFeeId,
                                              @RequestBody CaseFeeDetailRequest caseFeeDetailRequest) {
-        return caseFeeDetailService.updateCaseFeeDetail(caseFeeId, caseFeeDetailRequest);
+        return caseFeeDetailService.updateCaseFeeDetail(request.getBarUser(),caseFeeId, caseFeeDetailRequest);
     }
 
     @ApiOperation(value = "Delete case fee details", notes = "Delete case fee details with the given values.")

@@ -4,10 +4,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONParser;
-import uk.gov.hmcts.bar.api.data.model.CaseFeeDetailRequest;
-import uk.gov.hmcts.bar.api.data.model.Cash;
-import uk.gov.hmcts.bar.api.data.model.CashPaymentInstruction;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest;
+import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.bar.api.data.model.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -202,6 +200,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
             .currency("GBP").status("D").build();
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .paymentInstructionId(1)
             .caseReference("case102")
             .feeCode("X001")
             .amount(200)
@@ -219,14 +218,58 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 
 
     }
+
     @Test
-    public void whenInvalidCaseReferenceForACashPaymentInstructionIsCreated_expectStatus_201() throws Exception {
+    public void whenCaseReferenceForACashPaymentInstructionIsUpdated_expectStatus_404() throws Exception {
         Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP").status("D").build();
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .paymentInstructionId(1)
+            .caseReference("case102")
+            .feeCode("X001")
+            .amount(200)
+            .feeVersion("1")
+            .build();
+
+        CaseFeeDetailRequest updatedCaseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .paymentInstructionId(100)
+            .caseReference("case103")
+            .feeCode("X001")
+            .amount(200)
+            .feeVersion("1")
+            .build();
+
+
+        restActions
+            .post("/cash",  proposedCashPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+
+        MvcResult resultOfPost = restActions
+            .post("/fees",caseFeeDetailRequest)
+            .andReturn();
+
+        CaseFeeDetail createdcaseFeeDetail = getObjectMapper().readValue(resultOfPost.getResponse().getContentAsString(),CaseFeeDetail.class);
+
+        MvcResult resultOfPut = restActions
+            .put("/fees/"+createdcaseFeeDetail.getCaseFeeId(),updatedCaseFeeDetailRequest)
+            .andExpect(status().isNotFound())
+            .andReturn();
+
+    }
+
+    @Test
+    public void whenInvalidCaseReferenceForACashPaymentInstructionIsCreated_expectStatus_400() throws Exception {
+        Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP").status("D").build();
+
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .paymentInstructionId(1)
             .caseReference("????????")
             .build();
 
@@ -360,6 +403,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isNotFound());
 
     }
+
 
 	@Test
 	public void whenCashPaymentInstructionSubmittedToSrFeeClerkByFeeClerk_expectThePIToAppearInSrFeeClerkOverview()
