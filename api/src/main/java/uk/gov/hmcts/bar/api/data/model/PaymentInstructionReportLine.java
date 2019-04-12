@@ -27,6 +27,8 @@ public class PaymentInstructionReportLine {
     private Integer         feeAmount;
     private String          feeCode;
     private String          feeDescription;
+    private Integer         remissionAmount;
+    private String          remissionReference;
     private String          recordedUser;
     private LocalDateTime   recordedTime;
     private String          validatedUser;

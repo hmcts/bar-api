@@ -25,6 +25,9 @@ public final class DbTestUtil {
 
     private static final String INSERT_CARD_PI_QUERY_TRANSFERRED_TO_PAYHUB_YES =
         "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id,bgc_number,transferred_to_payhub) VALUES (1,'John Doe',null,'CARD',{ts '2018-03-25 23:32:23.871'},600,'GBP',null,'TTB',null,'Y431',1,'Process','1234','123456',true);";
+    private static final String INSERT_FR_PI_QUERY_TRANSFERRED_TO_PAYHUB_YES =
+        "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id,bgc_number,transferred_to_payhub,remission_reference) VALUES (1,'John Doe',null,'CARD',{ts '2018-03-25 23:32:23.871'},600,'GBP',null,'TTB',null,'Y431',1,'Process','1234','123456',true,'01234567891');\n"+
+        "INSERT INTO case_fee_detail (case_fee_id,payment_instruction_id,fee_code,amount,fee_description,fee_version,case_reference,remission_amount,remission_benefiter,remission_authorisation,refund_amount) VALUES (1,1,'X0165',55000,'Filing an application for a divorce, nullity or civil partnership dissolution – fees order 1.2.','1','12345',null,null,null,null);";
     private static final String INSERT_PO_PI_QUERY_TRANSFERRED_TO_PAYHUB_YES =
         "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id,bgc_number,transferred_to_payhub) VALUES (1,'John Doe',null,'POSTAL_ORDER',{ts '2018-03-25 23:32:23.871'},600,'GBP',null,'TTB',null,'Y431',1,'Process','1234','123456',true);\n"+
         "INSERT INTO payment_instruction (id,payer_name,cheque_number,payment_type_id,payment_date,amount,currency,all_pay_transaction_id,status,postal_order_number,site_id,daily_sequence_id,action,user_id,bgc_number,transferred_to_payhub) VALUES (2,'John Doe',null,'POSTAL_ORDER',{ts '2018-03-25 23:32:23.871'},600,'GBP',null,'TTB',null,'Y610',1,'Process','1234','123456',true);";
@@ -198,7 +201,18 @@ public final class DbTestUtil {
         }
     }
 
+    public static void insertFRPaymentInstructionWhichIsSentToPayhub(ApplicationContext applicationContext) throws SQLException {
+        DataSource dataSource = applicationContext.getBean(DataSource.class);
+        try (Connection dbConnection = dataSource.getConnection(); Statement stmt = dbConnection.createStatement()) {
+            emptyTable(applicationContext, "payment_instruction_status");
+            emptyTable(applicationContext, "bar_user");
+            emptyTable(applicationContext, "payment_instruction");
 
+            stmt.executeQuery(INSERT_FR_PI_QUERY_TRANSFERRED_TO_PAYHUB_YES);
+            stmt.executeQuery(INSERT_BAR_USER);
+            stmt.executeQuery(INSERT_PIS_QUERY);
+        }
+    }
 
     public static void insertBGCNumber(ApplicationContext applicationContext) throws SQLException {
         DataSource dataSource = applicationContext.getBean(DataSource.class);

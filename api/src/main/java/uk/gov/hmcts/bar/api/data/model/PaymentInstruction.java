@@ -24,7 +24,7 @@ import java.util.List;
 @DiscriminatorColumn(name = "payment_type_id")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class PaymentInstruction extends BasePaymentInstruction {
-
+    private static final String FULL_REMISSION_ID = "FULL_REMISSION";
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "paymentInstructionId", referencedColumnName = "id")
     private List<CaseFeeDetail> caseFeeDetails;
@@ -52,6 +52,16 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
                 line.setFeeAmount(caseFeeDetail.getAmount());
                 line.setFeeCode(caseFeeDetail.getFeeCode());
                 line.setFeeDescription(caseFeeDetail.getFeeDescription());
+                if (this.getPaymentType().getId().equals(FULL_REMISSION_ID))
+                {
+                    line.setRemissionAmount(caseFeeDetail.getAmount());
+                    line.setRemissionReference(this.remissionReference);
+                }
+                else
+                {
+                    line.setRemissionAmount(caseFeeDetail.getRemissionAmount());
+                    line.setRemissionReference(caseFeeDetail.getRemissionAuthorisation());
+                }
                 paymentLines.add(line);
             });
         }

@@ -69,7 +69,7 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
     private String[] convertReportCellToString(PaymentInstructionReportLine line){
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
-        String[] csvRow = new String[23];
+        String[] csvRow = new String[25];
         csvRow[0] = line.getDailyId() == null ? null : line.getDailyId().toString();
         csvRow[1] = Util.getFormattedDateTime(line.getDate(),dateFormatter);
         csvRow[2] = line.getName();
@@ -84,15 +84,17 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
         csvRow[11] = (formatNumber(line.getFeeAmount()));
         csvRow[12] = line.getFeeCode();
         csvRow[13] = line.getFeeDescription();
-        csvRow[14] = line.getRecordedUser();
-        csvRow[15] = Util.getFormattedDateTime(line.getRecordedTime(),dateTimeFormatter);
-        csvRow[16] = line.getValidatedUser();
-        csvRow[17] = Util.getFormattedDateTime(line.getValidatedTime(),dateTimeFormatter);
-        csvRow[18] = line.getApprovedUser();
-        csvRow[19] = Util.getFormattedDateTime(line.getApprovedTime(),dateTimeFormatter);
-        csvRow[20] = line.getTransferredToBarUser();
-        csvRow[21] = Util.getFormattedDateTime(line.getTransferredToBarTime(),dateTimeFormatter);
-        csvRow[22] = (line.getSentToPayhub());
+        csvRow[14] = formatNumber(line.getRemissionAmount());
+        csvRow[15] = line.getRemissionReference();
+        csvRow[16] = line.getRecordedUser();
+        csvRow[17] = Util.getFormattedDateTime(line.getRecordedTime(),dateTimeFormatter);
+        csvRow[18] = line.getValidatedUser();
+        csvRow[19] = Util.getFormattedDateTime(line.getValidatedTime(),dateTimeFormatter);
+        csvRow[20] = line.getApprovedUser();
+        csvRow[21] = Util.getFormattedDateTime(line.getApprovedTime(),dateTimeFormatter);
+        csvRow[22] = line.getTransferredToBarUser();
+        csvRow[23] = Util.getFormattedDateTime(line.getTransferredToBarTime(),dateTimeFormatter);
+        csvRow[24] = (line.getSentToPayhub());
         return csvRow;
     }
 
