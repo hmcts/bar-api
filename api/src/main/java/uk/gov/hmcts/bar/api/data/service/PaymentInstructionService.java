@@ -152,7 +152,7 @@ public class PaymentInstructionService {
         if (!checkIfActionEnabled(paymentInstructionUpdateRequest)) {
             throw new FeatureAccessException(paymentInstructionUpdateRequest.getAction() + " is not allowed");
         }
-        Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findById(id);
+        Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findByIdAndSiteId(id, barUser.getSelectedSiteId());
         PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
             .orElseThrow(() -> new PaymentInstructionNotFoundException(id));
 
@@ -168,7 +168,7 @@ public class PaymentInstructionService {
         savePaymentInstructionStatus(existingPaymentInstruction, barUser.getId());
         PaymentInstruction paymentInstruction = paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
 
-        auditRepository.trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUser);
+        auditRepository.trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction, barUser);
 
         return paymentInstruction;
     }
