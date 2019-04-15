@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
@@ -20,6 +21,7 @@ public class PaymentInstructionPayhubReference {
 
     @Id
     private int paymentInstructionId;
+    @NotNull(message = "Reference id can not be null")
     private String reference;
     private String paymentGroupReference;
 }

@@ -19,7 +19,7 @@ import java.util.Optional;
 @JsonIgnoreProperties({"bgc_number", "id", "payer_name", "status", "action", "payment_date", "daily_sequence_id",
     "authorization_code", "transferred_to_payhub", "payment_type", "authorization_code", "cheque_number",
     "postal_order_number", "all_pay_transaction_id", "transfer_date", "payhub_error", "report_date", "remission_reference",
-    "amount", "currency", "site_id"})
+    "amount", "currency"})
 public class PayhubFullRemission extends BasePaymentInstruction {
 
     @OneToMany(cascade = CascadeType.ALL)

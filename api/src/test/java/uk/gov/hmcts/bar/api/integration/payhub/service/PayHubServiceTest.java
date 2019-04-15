@@ -9,7 +9,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.http.params.HttpParams;
-import org.hamcrest.core.Is;
+import org.hamcrest.core.AnyOf;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -32,6 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
@@ -41,7 +42,7 @@ public class PayHubServiceTest {
     public static final LocalDateTime TRANSFER_DATE = LocalDateTime.now();
     public static final String payload1 = "{\"amount\":100.00,\"currency\":\"GBP\",\"site_id\":\"Y431\",\"giro_slip_no\":\"\",\"fees\":[{\"code\":\"x00335\",\"calculated_amount\":50.00,\"version\":\"1\",\"reference\":\"12345\"},{\"code\":\"x00335\",\"calculated_amount\":50.00,\"version\":\"1\",\"reference\":\"12345\"}],\"requestor_reference\":\"Y431-2018081313A0001\",\"reported_date_offline\":\"" + TRANSFER_DATE.format(DateTimeFormatter.ISO_DATE_TIME) + "\",\"payment_method\":\"CHEQUE\",\"requestor\":\"DIGITAL_BAR\",\"external_reference\":\"D\"}";
     public static final String payload2 = "{\"amount\":200.00,\"currency\":\"GBP\",\"site_id\":\"Y431\",\"giro_slip_no\":\"\",\"fees\":[{\"code\":\"x00335\",\"calculated_amount\":100.00,\"version\":\"1\",\"reference\":\"12345\"},{\"code\":\"x00335\",\"calculated_amount\":100.00,\"version\":\"1\",\"reference\":\"12345\"}],\"requestor_reference\":\"Y431-2018081313A0002\",\"reported_date_offline\":\"" + TRANSFER_DATE.format(DateTimeFormatter.ISO_DATE_TIME) + "\",\"payment_method\":\"CARD\",\"requestor\":\"DIGITAL_BAR\",\"external_reference\":\"123456\",\"external_provider\":\"barclaycard\"}";
-    public static final String payload3 = "{\"case_reference\":\"12345\",\"hwf_reference\":\"12345678901\",\"fee\":{\"code\":\"x00335\",\"version\":\"1\",\"reference\":\"12345\",\"calculated_amount\":10.00},\"beneficiary_name\":\"John Doe\",\"hwf_amount\":10.00}";
+    public static final String payload3 = "{\"site_id\":\"Y431\", \"case_reference\":\"12345\",\"hwf_reference\":\"12345678901\",\"fee\":{\"code\":\"x00335\",\"version\":\"1\",\"reference\":\"12345\",\"calculated_amount\":10.00},\"beneficiary_name\":\"John Doe\",\"hwf_amount\":10.00}";
 
     private PayHubService payHubService;
 
@@ -111,19 +112,19 @@ public class PayHubServiceTest {
             Collection<String> requestBody = IOUtil.readLines(httpPost.getEntity().getContent());
             String strRequest = requestBody.stream().reduce("", String::concat);
             assertTrue(compareJson(strRequest, payload1) || compareJson(strRequest, payload2));
-            assertThat(httpPost.getMethod(), Is.is("POST"));
-            assertThat(httpPost.getURI().toString(), Is.is("http://localhost:8080/payment-records"));
-            assertThat(httpPost.getHeaders("Authorization")[0].getValue(), Is.is("1234ABCD"));
-            assertThat(httpPost.getHeaders("ServiceAuthorization")[0].getValue(), Is.is("this_is_a_one_time_password"));
-            return createPayhubResponse();
+            assertThat(httpPost.getMethod(), is("POST"));
+            assertThat(httpPost.getURI().toString(), is("http://localhost:8080/payment-records"));
+            assertThat(httpPost.getHeaders("Authorization")[0].getValue(), is("1234ABCD"));
+            assertThat(httpPost.getHeaders("ServiceAuthorization")[0].getValue(), is("this_is_a_one_time_password"));
+            return createPayhubResponse(httpPost.getURI().toString());
         });
         PayHubResponseReport stat = payHubService.sendPaymentInstructionToPayHub(barUser, "1234ABCD", TRANSFER_DATE);
-        assertThat(stat.getTotal(), Is.is(2));
-        assertThat(stat.getSuccess(), Is.is(2));
+        assertThat(stat.getTotal(), is(2));
+        assertThat(stat.getSuccess(), is(2));
         verify(entityManager, times(2)).merge(any(PaymentInstructionPayhubReference.class));
         this.paymentInstructions.forEach(it -> {
-            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
-            assertThat(it.isTransferredToPayhub(), Is.is(true));
+            assertThat(it.getReportDate(), is(TRANSFER_DATE));
+            assertThat(it.isTransferredToPayhub(), is(true));
             assertNull(it.getPayhubError());
         });
     }
@@ -138,19 +139,19 @@ public class PayHubServiceTest {
             Collection<String> requestBody = IOUtil.readLines(httpPost.getEntity().getContent());
             String strRequest = requestBody.stream().reduce("", String::concat);
             assertTrue(compareJson(strRequest, payload1) || compareJson(strRequest, payload2) || compareJson(strRequest, payload3));
-            assertThat(httpPost.getMethod(), Is.is("POST"));
-            assertThat(httpPost.getURI().toString(), Is.is("http://localhost:8080/payment-records"));
-            assertThat(httpPost.getHeaders("Authorization")[0].getValue(), Is.is("1234ABCD"));
-            assertThat(httpPost.getHeaders("ServiceAuthorization")[0].getValue(), Is.is("this_is_a_one_time_password"));
-            return createPayhubResponse();
+            assertThat(httpPost.getMethod(), is("POST"));
+            assertThat(httpPost.getURI().toString(), AnyOf.anyOf(is("http://localhost:8080/payment-records"), is("http://localhost:8080/remission")));
+            assertThat(httpPost.getHeaders("Authorization")[0].getValue(), is("1234ABCD"));
+            assertThat(httpPost.getHeaders("ServiceAuthorization")[0].getValue(), is("this_is_a_one_time_password"));
+            return createPayhubResponse(httpPost.getURI().toString());
         });
         PayHubResponseReport stat = payHubService.sendPaymentInstructionToPayHub(barUser, "1234ABCD", TRANSFER_DATE);
-        assertThat(stat.getTotal(), Is.is(3));
-        assertThat(stat.getSuccess(), Is.is(3));
+        assertThat(stat.getTotal(), is(3));
+        assertThat(stat.getSuccess(), is(3));
         verify(entityManager, times(3)).merge(any(PaymentInstructionPayhubReference.class));
         this.paymentInstructions.forEach(it -> {
-            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
-            assertThat(it.isTransferredToPayhub(), Is.is(true));
+            assertThat(it.getReportDate(), is(TRANSFER_DATE));
+            assertThat(it.isTransferredToPayhub(), is(true));
             assertNull(it.getPayhubError());
         });
     }
@@ -162,12 +163,12 @@ public class PayHubServiceTest {
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(403, "{\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}"));
         PayHubResponseReport stat = payHubService.sendPaymentInstructionToPayHub(barUser, "1234ABCD", TRANSFER_DATE);
         this.paymentInstructions.forEach(it -> {
-            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
-            assertThat(it.isTransferredToPayhub(), Is.is(false));
-            assertThat(it.getPayhubError(), Is.is("Failed(403): {\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}"));
+            assertThat(it.getReportDate(), is(TRANSFER_DATE));
+            assertThat(it.isTransferredToPayhub(), is(false));
+            assertThat(it.getPayhubError(), is("Failed(403): {\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}"));
         });
-        assertThat(stat.getTotal(), Is.is(2));
-        assertThat(stat.getSuccess(), Is.is(0));
+        assertThat(stat.getTotal(), is(2));
+        assertThat(stat.getSuccess(), is(0));
         verify(entityManager, times(0)).merge(any(PaymentInstructionPayhubReference.class));
     }
 
@@ -178,9 +179,9 @@ public class PayHubServiceTest {
         when(httpClient.execute(any(HttpPost.class))).thenThrow(new RuntimeException("something went wrong"));
         payHubService.sendPaymentInstructionToPayHub(barUser, "1234ABCD", TRANSFER_DATE);
         this.paymentInstructions.forEach(it -> {
-            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
-            assertThat(it.isTransferredToPayhub(), Is.is(false));
-            assertThat(it.getPayhubError(), Is.is("Failed to send payment instruction to PayHub: something went wrong"));
+            assertThat(it.getReportDate(), is(TRANSFER_DATE));
+            assertThat(it.isTransferredToPayhub(), is(false));
+            assertThat(it.getPayhubError(), is("Failed to send payment instruction to PayHub: something went wrong"));
         });
         verify(entityManager, times(0)).merge(any(PaymentInstructionPayhubReference.class));
     }
@@ -192,9 +193,9 @@ public class PayHubServiceTest {
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(200, "{ \"somekey\" : \"somevalue\" }"));
         payHubService.sendPaymentInstructionToPayHub(barUser, "1234ABCD", TRANSFER_DATE);
         this.paymentInstructions.forEach(it -> {
-            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
-            assertThat(it.isTransferredToPayhub(), Is.is(false));
-            assertThat(it.getPayhubError(), Is.is("Unable to parse response: { \"somekey\" : \"somevalue\" }"));
+            assertThat(it.getReportDate(), is(TRANSFER_DATE));
+            assertThat(it.isTransferredToPayhub(), is(false));
+            assertThat(it.getPayhubError(), is("Reference id can not be null"));
         });
         verify(entityManager, times(0)).merge(any(PaymentInstructionPayhubReference.class));
     }
@@ -206,9 +207,9 @@ public class PayHubServiceTest {
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(200, "some unparsable message"));
         payHubService.sendPaymentInstructionToPayHub(barUser, "1234ABCD", TRANSFER_DATE);
         this.paymentInstructions.forEach(it -> {
-            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
-            assertThat(it.isTransferredToPayhub(), Is.is(false));
-            assertThat(it.getPayhubError(), Is.is("Failed to parse payhub response: \"some unparsable message\": Unrecognized token 'some': was expecting ('true', 'false' or 'null')\n" +
+            assertThat(it.getReportDate(), is(TRANSFER_DATE));
+            assertThat(it.isTransferredToPayhub(), is(false));
+            assertThat(it.getPayhubError(), is("Failed to parse payhub response: \"some unparsable message\": Unrecognized token 'some': was expecting ('true', 'false' or 'null')\n" +
                 " at [Source: (String)\"some unparsable message\"; line: 1, column: 5]"));
         });
         verify(entityManager, times(0)).merge(any(PaymentInstructionPayhubReference.class));
@@ -244,9 +245,9 @@ public class PayHubServiceTest {
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(500, tooLongErrorMessage));
         payHubService.sendPaymentInstructionToPayHub(barUser, "1234ABCD", TRANSFER_DATE);
         this.paymentInstructions.forEach(it -> {
-            assertThat(it.getReportDate(), Is.is(TRANSFER_DATE));
-            assertThat(it.isTransferredToPayhub(), Is.is(false));
-            assertThat(it.getPayhubError(), Is.is(truncatedErrorMessage));
+            assertThat(it.getReportDate(), is(TRANSFER_DATE));
+            assertThat(it.isTransferredToPayhub(), is(false));
+            assertThat(it.getPayhubError(), is(truncatedErrorMessage));
         });
         verify(entityManager, times(0)).merge(any(PaymentInstructionPayhubReference.class));
     }
@@ -256,17 +257,21 @@ public class PayHubServiceTest {
         LocalDateTime reportDate = LocalDate.now().plusDays(3).atTime(20, 20);
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
-        when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> createPayhubResponse());
+        when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> createPayhubResponse("/payment-records"));
         payHubService.sendPaymentInstructionToPayHub(barUser, "1234ABCD", reportDate);
     }
 
-    private PayHubHttpResponse createPayhubResponse() {
-        return new PayHubHttpResponse(200, "{\n" +
-            "      \"reference\": \"RC-1534-8634-8352-6509\",\n" +
-            "      \"date_created\": \"2018-08-21T14:58:03.630+0000\",\n" +
-            "      \"status\": \"Initiated\",\n" +
-            "      \"payment_group_reference\": \"2018-15348634835\"\n" +
-            "    }");
+    private PayHubHttpResponse createPayhubResponse(String uri) {
+        if (uri.contains("remission")){
+            return new PayHubHttpResponse(200, "RM-1555-3390-9530-6022");
+        } else {
+            return new PayHubHttpResponse(200, "{\n" +
+                "      \"reference\": \"RC-1534-8634-8352-6509\",\n" +
+                "      \"date_created\": \"2018-08-21T14:58:03.630+0000\",\n" +
+                "      \"status\": \"Initiated\",\n" +
+                "      \"payment_group_reference\": \"2018-15348634835\"\n" +
+                "    }");
+        }
     }
 
     public static class PayHubHttpResponse implements CloseableHttpResponse {
