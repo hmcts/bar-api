@@ -596,7 +596,7 @@ public class PaymentInstructionController {
     ){
 		return PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto().status(status).userId(userId)
 				.startDate(startDate == null ? null : startDate.atStartOfDay())
-				.endDate(endDate == null ? null : endDate.atTime(LocalTime.now())).payerName(payerName)
+				.endDate(endDate == null ? null : endDate.atTime(LocalTime.of(23, 59, 59))).payerName(payerName)
 				.chequeNumber(chequeNumber).postalOrderNumer(postalOrderNumber).dailySequenceId(dailySequenceId)
 				.allPayInstructionId(allPayInstructionId).paymentType(paymentType).action(action)
 				.caseReference(caseReference).multiplePiIds(multiplePiIds).bgcNumber(bgcNumber)
