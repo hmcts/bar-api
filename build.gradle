@@ -134,7 +134,8 @@ def sonarExclusions = [
         '**/ResourceNotFoundException.java',
         '**/*Configuration.java',
         '**/BaseRepository.java',
-        '**/*Exception.java'
+        '**/*Exception.java',
+        '**/PayHubHealthCheck.java'
 ]
 
 sonarqube {
