@@ -3,6 +3,9 @@ package uk.gov.hmcts.bar.api.integration.payhub.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netflix.hystrix.contrib.javanica.annotation.DefaultProperties;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -43,6 +46,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
 @Transactional
+@DefaultProperties(groupKey = "bar", commandProperties = {
+    @HystrixProperty(name ="circuitBreaker.requestVolumeThreshold", value = "10"),
+    @HystrixProperty(name ="circuitBreaker.errorThresholdPercentage", value = "50"),
+    @HystrixProperty(name ="metrics.rollingStats.timeInMilliseconds", value = "60000"),
+})
 public class PayHubService {
 
     private static final Logger LOG = getLogger(PayHubService.class);
@@ -79,6 +87,7 @@ public class PayHubService {
 
     @PreAuthorize("hasAuthority(T(uk.gov.hmcts.bar.api.data.enums.BarUserRoleEnum).BAR_DELIVERY_MANAGER.getIdamRole())")
     @Featured(featureKey = PAYHUB_FEATURE_KEY)
+    @HystrixCommand(commandKey = "sendPaymentInstruction")
     public PayHubResponseReport sendPaymentInstructionToPayHub(BarUser barUser, String userToken, LocalDateTime reportDate) {
         validateReportDate(reportDate);
 

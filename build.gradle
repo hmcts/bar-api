@@ -90,6 +90,8 @@ subprojects {
         compile (group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.2') {
             exclude(module: 'java-logging-spring')
         }
+        compile 'uk.gov.hmcts.reform:health-spring-boot-starter:0.0.4'
+        compile group: 'com.netflix.hystrix', name: 'hystrix-javanica', version: '1.5.12'
         compileOnly 'org.projectlombok:lombok:1.16.16'
         compileOnly 'com.google.code.findbugs:annotations:3.0.1'
 
