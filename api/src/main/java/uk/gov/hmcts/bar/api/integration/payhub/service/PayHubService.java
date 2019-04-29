@@ -87,7 +87,6 @@ public class PayHubService {
 
     @PreAuthorize("hasAuthority(T(uk.gov.hmcts.bar.api.data.enums.BarUserRoleEnum).BAR_DELIVERY_MANAGER.getIdamRole())")
     @Featured(featureKey = PAYHUB_FEATURE_KEY)
-    @HystrixCommand(commandKey = "sendPaymentInstruction")
     public PayHubResponseReport sendPaymentInstructionToPayHub(BarUser barUser, String userToken, LocalDateTime reportDate) {
         validateReportDate(reportDate);
 
@@ -114,8 +113,7 @@ public class PayHubService {
             try {
                 String payload = objectMapper.writeValueAsString(payHubPayload);
                 StringEntity entity = new StringEntity(payload);
-                httpPost.setEntity(entity);
-                CloseableHttpResponse response = httpClient.execute(httpPost);
+                CloseableHttpResponse response = send(httpPost, entity);
                 reference = handlePayHubResponse(response, objectMapper, payHubErrorMessage, payHubPayload);
                 response.close();
             } catch (JsonProcessingException e) {
@@ -137,6 +135,12 @@ public class PayHubService {
                 reportDate);
         });
         return resp;
+    }
+
+    @HystrixCommand(commandKey = "sendPaymentInstruction")
+    private CloseableHttpResponse send(HttpPost httpPost, StringEntity entity) throws IOException {
+        httpPost.setEntity(entity);
+        return httpClient.execute(httpPost);
     }
 
 
