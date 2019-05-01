@@ -1,5 +1,7 @@
 package uk.gov.hmcts.bar.api.health;
 
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.vavr.control.Try;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.Health;
@@ -11,13 +13,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
+import java.util.function.Supplier;
 
 @Component
 public class PayHubHealthCheck implements HealthIndicator {
 
     private final RestTemplate restTemplate;
     private final String payHubUrl;
-    private static final String livenessEndpoint = "/health/liveness";
+    private static final String LIVENESS_ENDPOINT = "/health/liveness";
+    private final Supplier<PayHubStatus> decoratedSupplier;
 
     @Autowired
     public PayHubHealthCheck(RestTemplateBuilder restTemplateBuilder, @Value("${payment.api.url}") String payHubUrl) {
@@ -26,11 +30,13 @@ public class PayHubHealthCheck implements HealthIndicator {
             .setConnectTimeout(Duration.ofSeconds(2))
             .setReadTimeout(Duration.ofSeconds(2))
             .build();
+        CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults("checkPayHub");
+        decoratedSupplier = CircuitBreaker.decorateSupplier(circuitBreaker, this::check);
     }
 
     @Override
     public Health health() {
-        PayHubStatus status = check();
+        PayHubStatus status = checkWithProtection();
         if (!status.isUp) {
             return Health.down()
                 .withDetail("Error: ", status.errorDetails).build();
@@ -39,16 +45,17 @@ public class PayHubHealthCheck implements HealthIndicator {
     }
 
     private PayHubStatus check() {
-        try {
-            ResponseEntity<String> response = restTemplate.getForEntity(payHubUrl + livenessEndpoint, String.class);
-            if (response.getStatusCode().equals(HttpStatus.OK)) {
-                return new PayHubStatus(true, "");
-            } else {
-                return new PayHubStatus(false, "response: " + response.getStatusCodeValue() + ", " + response.getBody());
-            }
-        } catch (Exception e) {
-            return new PayHubStatus(false, e.getMessage());
+        ResponseEntity<String> response = restTemplate.getForEntity(payHubUrl + LIVENESS_ENDPOINT, String.class);
+        if (response.getStatusCode().equals(HttpStatus.OK) && response.getBody().contains("UP")) {
+            return new PayHubStatus(true, "");
+        } else {
+            throw new RuntimeException("status_code: " + response.getStatusCode() + ", response: " + response.getBody());
         }
+    }
+
+    private PayHubStatus checkWithProtection() {
+        return Try.ofSupplier(decoratedSupplier)
+            .recover(throwable -> new PayHubStatus(false, throwable.getMessage())).get();
     }
 
     static class PayHubStatus {

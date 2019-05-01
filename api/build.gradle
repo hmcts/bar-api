@@ -58,8 +58,9 @@ dependencies {
     compile group: 'org.ff4j', name: 'ff4j-spring-boot-web-api', version: '1.7.3'
     compile group: 'org.ff4j', name: 'ff4j-store-springjdbc', version: '1.7.3'
     compile group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.25.0.RELEASE'
-    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.1.1.RELEASE'
     compile group: 'com.google.guava', name: 'guava', version:'27.0-jre'
+    compile group: 'io.github.resilience4j', name: 'resilience4j-circuitbreaker', version: '0.14.1'
+    compile group: 'io.github.resilience4j', name: 'resilience4j-retry', version: '0.14.1'
 
 
     compile 'org.liquibase:liquibase-core'
