@@ -59,13 +59,14 @@ public interface PaymentInstructionStatusRepository
         "on pis1.payment_instruction_id = pis2.payment_instruction_id and pis1.status = pis2.status and pis1.update_time = pis2.update_time" +
         ") pis on pi.id = pis.payment_instruction_id " +
         "join bar_user bu on pis.bar_user_id = bu.id " +
-        "where pi.status = :paymentStatus and pi.transferred_to_payhub = :sentToPayhub and pis.status = :oldPaymentStatus and pis.bar_user_id = :userId " +
+        "where pi.status = :paymentStatus and pi.transferred_to_payhub = :sentToPayhub and pis.status = :oldPaymentStatus and pis.bar_user_id = :userId and pi.site_id = :siteId " +
         "group by bgc_number, payment_type_id, pi.status, pis.bar_user_id, name order by bgc_number", nativeQuery = true)
     List<PaymentInstructionStats> getStatsByUserGroupByType(
         @Param("userId") String userId,
         @Param("paymentStatus") String paymentStatus,
         @Param("oldPaymentStatus") String oldPaymentStatus,
-        @Param("sentToPayhub") boolean sentToPayhub);
+        @Param("sentToPayhub") boolean sentToPayhub,
+        @Param("siteId") String siteId);
 
     @Query(name = "PIStatsRejectedByDMByType", value = "SELECT user_id as userId, count(id) as count, status, sum(amount) as totalAmount, payment_type_id as PaymentType, "
         + "bgc_number as bgc FROM payment_instruction pi, bar_user bu, payment_instruction_status pis where pi.status = :currentStatus AND pis.payment_instruction_id = pi.id AND "
@@ -86,14 +87,15 @@ public interface PaymentInstructionStatusRepository
         "on pis1.payment_instruction_id = pis2.payment_instruction_id and pis1.status = pis2.status and pis1.update_time = pis2.update_time" +
         ") pis on pi.id = pis.payment_instruction_id " +
         "join bar_user bu on pis.bar_user_id = bu.id " +
-        "where pi.status = :paymentStatus and pi.transferred_to_payhub = :sentToPayhub and pis.status = :oldPaymentStatus and pis.bar_user_id = :userId and pi.action is not null " +
+        "where pi.status = :paymentStatus and pi.transferred_to_payhub = :sentToPayhub and pis.status = :oldPaymentStatus and pis.bar_user_id = :userId and pi.action is not null and pi.site_id = :siteId " +
         "group by bgc_number, payment_type_id, action, pis.bar_user_id, name order by bgc_number",
         nativeQuery = true)
     List<PaymentInstructionStats> getStatsByUserGroupByActionAndType(
         @Param("userId") String userId,
         @Param("paymentStatus") String paymentStatus,
         @Param("oldPaymentStatus") String oldPaymentStatus,
-        @Param("sentToPayhub") boolean sentToPayhub);
+        @Param("sentToPayhub") boolean sentToPayhub,
+        @Param("siteId") String siteId);
 
     @Transactional
     @Modifying

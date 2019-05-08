@@ -505,13 +505,14 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/users/{id}/payment-instructions/stats")
     public Resource<MultiMap> getPaymentInstructionStatsByUser(
+        BarWrappedHttpRequest request,
         @PathVariable("id") String id,
         @RequestParam(name = "status", required = false) String status,
         @RequestParam(name = "old_status", required = false) Optional<String> oldStatus,
         @RequestParam(name = "sentToPayhub", required = false, defaultValue = "false") boolean sentToPayhub) {
 
-        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType(id, status, oldStatus, sentToPayhub);
-        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUser(id, status, oldStatus, sentToPayhub)).withSelfRel();
+        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType(id, status, oldStatus, sentToPayhub, request.getBarUser().getSelectedSiteId());
+        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUser(request, id, status, oldStatus, sentToPayhub)).withSelfRel();
         return new Resource<>(stats, link);
     }
 
@@ -522,13 +523,14 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/users/{id}/payment-instructions/action-stats")
     public Resource<MultiMap> getPaymentInstructionStatsByUserGroupByAction(
+        BarWrappedHttpRequest request,
         @PathVariable("id") String id,
         @RequestParam(name = "status", required = false) String status,
         @RequestParam(name = "old_status", required = false) Optional<String> oldStatus,
         @RequestParam(name = "sentToPayhub", required = false, defaultValue = "false") boolean sentToPayhub) {
 
-        MultiMap stats = paymentInstructionService.getPaymentInstructionsByUserGroupByActionAndType(id, status, oldStatus, sentToPayhub);
-        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUserGroupByAction(id, status, oldStatus, sentToPayhub)).withSelfRel();
+        MultiMap stats = paymentInstructionService.getPaymentInstructionsByUserGroupByActionAndType(id, status, oldStatus, sentToPayhub, request.getBarUser().getSelectedSiteId());
+        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUserGroupByAction(request, id, status, oldStatus, sentToPayhub)).withSelfRel();
         return new Resource<>(stats, link);
     }
 

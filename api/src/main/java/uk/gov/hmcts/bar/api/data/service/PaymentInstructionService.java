@@ -214,16 +214,16 @@ public class PaymentInstructionService {
         return Util.createMultimapFromPisByUserList(paymentInstructionStaticsByUserObjects);
     }
 
-    public MultiMap getPaymentStatsByUserGroupByType(String userId, String status, Optional<String> oldStatus, boolean sentToPayhub) {
+    public MultiMap getPaymentStatsByUserGroupByType(String userId, String status, Optional<String> oldStatus, boolean sentToPayhub, String siteId) {
         String oldPaymentStatus = oldStatus.orElse(status);
-        List<PaymentInstructionStats> results = paymentInstructionStatusRepository.getStatsByUserGroupByType(userId, status, oldPaymentStatus, sentToPayhub);
+        List<PaymentInstructionStats> results = paymentInstructionStatusRepository.getStatsByUserGroupByType(userId, status, oldPaymentStatus, sentToPayhub, siteId);
 
         return createHateoasResponse(results, userId, status, oldStatus.orElse(null));
     }
 
-    public MultiMap getPaymentInstructionsByUserGroupByActionAndType(String userId, String status, Optional<String> oldStatus, boolean sentToPayhub) {
+    public MultiMap getPaymentInstructionsByUserGroupByActionAndType(String userId, String status, Optional<String> oldStatus, boolean sentToPayhub, String siteId) {
         String oldPaymentStatus = oldStatus.orElse(status);
-        List<PaymentInstructionStats> results =  paymentInstructionStatusRepository.getStatsByUserGroupByActionAndType(userId, status, oldPaymentStatus, sentToPayhub);
+        List<PaymentInstructionStats> results =  paymentInstructionStatusRepository.getStatsByUserGroupByActionAndType(userId, status, oldPaymentStatus, sentToPayhub, siteId);
 
         return createHateoasResponse(results, userId, status, oldStatus.orElse(null));
     }
