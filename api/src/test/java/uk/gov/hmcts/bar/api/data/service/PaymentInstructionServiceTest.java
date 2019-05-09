@@ -22,13 +22,14 @@ import uk.gov.hmcts.bar.api.data.exceptions.PaymentProcessException;
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto.PaymentInstructionSearchCriteriaDtoBuilder;
 import uk.gov.hmcts.bar.api.data.repository.BankGiroCreditRepository;
-import uk.gov.hmcts.bar.api.data.repository.PayhubPaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionStatusRepository;
 import uk.gov.hmcts.bar.api.data.validators.ActionValidator;
 import uk.gov.hmcts.bar.api.data.validators.FullRemissionValidator;
 import uk.gov.hmcts.bar.api.data.validators.UnallocatedAmountValidator;
 import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
+import uk.gov.hmcts.bar.api.integration.payhub.repository.PayhubFullRemissionRepository;
+import uk.gov.hmcts.bar.api.integration.payhub.repository.PayhubPaymentInstructionRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -52,6 +53,9 @@ public class PaymentInstructionServiceTest {
 
     @Mock
     private PayhubPaymentInstructionRepository payhubPaymentInstructionRepository;
+
+    @Mock
+    private PayhubFullRemissionRepository payhubFullRemissionRepository;
 
     @Mock
     private PaymentReferenceService paymentReferenceService;
@@ -138,6 +142,7 @@ public class PaymentInstructionServiceTest {
             paymentTypeService,
             validatorService,
             payhubPaymentInstructionRepository,
+            payhubFullRemissionRepository,
             auditRepository);
         paymentInstructionSearchCriteriaDtoBuilder = PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto()
             .siteId("Y431");

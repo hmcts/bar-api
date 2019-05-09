@@ -8,7 +8,6 @@ import org.ff4j.FF4j;
 import org.ff4j.exception.FeatureAccessException;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,7 +25,10 @@ import uk.gov.hmcts.bar.api.data.exceptions.PaymentProcessException;
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.repository.*;
 import uk.gov.hmcts.bar.api.data.utils.Util;
+import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubFullRemission;
 import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
+import uk.gov.hmcts.bar.api.integration.payhub.repository.PayhubFullRemissionRepository;
+import uk.gov.hmcts.bar.api.integration.payhub.repository.PayhubPaymentInstructionRepository;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -59,6 +61,7 @@ public class PaymentInstructionService {
     private final FF4j ff4j;
     private PaymentTypeService paymentTypeService;
     private final PayhubPaymentInstructionRepository payhubPaymentInstructionRepository;
+    private final PayhubFullRemissionRepository payhubFullRemissionRepository;
     private final AuditRepository auditRepository;
     private final PaymentInstructionUpdateValidatorService updateValidatorService;
 
@@ -70,6 +73,7 @@ public class PaymentInstructionService {
                                      PaymentTypeService paymentTypeService,
                                      PaymentInstructionUpdateValidatorService updateValidatorService,
                                      PayhubPaymentInstructionRepository payhubPaymentInstructionRepository,
+                                     PayhubFullRemissionRepository payhubFullRemissionRepository,
                                      AuditRepository auditRepository
 
     ) {
@@ -82,6 +86,7 @@ public class PaymentInstructionService {
         this.payhubPaymentInstructionRepository = payhubPaymentInstructionRepository;
         this.auditRepository = auditRepository;
         this.updateValidatorService = updateValidatorService;
+        this.payhubFullRemissionRepository = payhubFullRemissionRepository;
     }
 
     public PaymentInstruction createPaymentInstruction(BarUser barUser, PaymentInstruction paymentInstruction)  {
@@ -133,6 +138,16 @@ public class PaymentInstructionService {
 
         Specification<PayhubPaymentInstruction> piForPayhubSpecification = paymentInstructionsSpecification.getPaymentInstructionsSpecification();
         return payhubPaymentInstructionRepository.findAll(piForPayhubSpecification);
+    }
+
+    public List<PayhubFullRemission> getAllRemissionsForPayhub(BarUser barUser,
+                                                                    PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto)  {
+        paymentInstructionSearchCriteriaDto.setSiteId(barUser.getSelectedSiteId());
+        PaymentInstructionsSpecifications<PayhubFullRemission> paymentInstructionsSpecification =
+            new PaymentInstructionsSpecifications<>(paymentInstructionSearchCriteriaDto, paymentTypeService);
+
+        Specification<PayhubFullRemission> piForPayhubSpecification = paymentInstructionsSpecification.getPaymentInstructionsSpecification();
+        return payhubFullRemissionRepository.findAll(piForPayhubSpecification);
     }
 
     public PaymentInstruction getPaymentInstruction(Integer id, String siteId) {

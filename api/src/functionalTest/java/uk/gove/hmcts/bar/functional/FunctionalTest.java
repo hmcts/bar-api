@@ -118,4 +118,15 @@ public abstract class FunctionalTest {
             .then()
             .statusCode(201);
     }
+
+    protected Response createFullRemission(String payload, String token, String siteId) {
+        return given()
+            .relaxedHTTPSValidation()
+            .header(CONTENT_TYPE, "application/json")
+            .header("Authorization", token)
+            .header("SiteId", siteId)
+            .body(payload)
+            .when()
+            .post("/remissions");
+    }
 }
