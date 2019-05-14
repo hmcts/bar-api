@@ -126,6 +126,8 @@ public class TestUtils {
         }
         if (amounts[2] != 0){
             cf.setRemissionAmount(amounts[2]);
+            cf.setRemissionAuthorisation("12345678901");
+            cf.setRemissionBenefiter("John Doe");
         }
         return cf;
     }

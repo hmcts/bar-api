@@ -21,6 +21,7 @@ import uk.gov.hmcts.bar.api.data.exceptions.BadRequestException;
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
 import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubFullRemission;
+import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPartialRemission;
 import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
 import uk.gov.hmcts.bar.api.integration.payhub.exception.PayHubConnectionException;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -38,8 +39,9 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Consumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -105,7 +107,7 @@ public class PayHubService {
         ObjectMapper objectMapper = new ObjectMapper();
         resp.setTotal(paymentsPayload.size() + remissionsPayload.size());
 
-        Function<HttpPost, Consumer<BasePaymentInstruction>> createConsumer = httpPost -> (payHubPayload) -> {
+        BiFunction<HttpPost, Boolean, Function<BasePaymentInstruction, List<PayhubPartialRemission>>> createPaymentHandler = (httpPost, shouldUpdate) -> payHubPayload -> {
             payHubPayload.setReportDate(reportDate);
             StringBuilder payHubErrorMessage = new StringBuilder();
             PaymentInstructionPayhubReference reference = null;
@@ -123,33 +125,50 @@ public class PayHubService {
                 payHubErrorMessage.append("Failed to send payment instruction to PayHub: " + e.getMessage());
             }
             boolean payHubStatus = false;
-
+            List<PayhubPartialRemission> partialRemission = new ArrayList<>();
             if (reference != null) {
                 Set<ConstraintViolation<PaymentInstructionPayhubReference>> violations = validator.validate(reference);
                 if (!violations.isEmpty()) {
                     violations.stream().map(ConstraintViolation::getMessage).forEach(payHubErrorMessage::append);
                 } else {
                     payHubStatus = true;
-                    entityManager.merge(reference);
+                    if (shouldUpdate) {
+                        entityManager.merge(reference);
+                    }
                     resp.increaseSuccess();
+                    PaymentInstructionPayhubReference finalReference = reference;
+                    payHubPayload.getCaseFeeDetails()
+                        .forEach(it -> partialRemission.add(createPayhubPartialRemission(it, finalReference.getPaymentGroupReference(), payHubPayload)));
                 }
             }
-            updatePaymentInstruction(
-                payHubPayload,
-                payHubStatus,
-                payHubErrorMessage.substring(0, payHubErrorMessage.length() > 1024 ? 1024 : payHubErrorMessage.length()),
-                reportDate);
+            if (shouldUpdate) {
+                updatePaymentInstruction(
+                    payHubPayload,
+                    payHubStatus,
+                    payHubErrorMessage.substring(0, payHubErrorMessage.length() > 1024 ? 1024 : payHubErrorMessage.length()),
+                    reportDate);
+            }
+            return partialRemission;
         };
 
         // Run for payment instructions
         HttpPost httpPost = prepareHttpPost("/payment-records", userToken, oneTimePassword);
-        Consumer<BasePaymentInstruction> consumer = createConsumer.apply(httpPost);
-        paymentsPayload.forEach(consumer);
+        Function<BasePaymentInstruction, List<PayhubPartialRemission>> handler = createPaymentHandler.apply(httpPost, true);
+        List<PayhubPartialRemission> partialRemissions = paymentsPayload.stream()
+            .map(handler)
+            .flatMap(Collection::stream)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
 
         // Run for full remissions
         httpPost = prepareHttpPost("/remission", userToken, oneTimePassword);
-        consumer = createConsumer.apply(httpPost);
-        remissionsPayload.forEach(consumer);
+        handler = createPaymentHandler.apply(httpPost, true);
+        remissionsPayload.stream().map(handler).collect(Collectors.toList());
+
+        // Partial remission
+        handler = createPaymentHandler.apply(httpPost, false);
+        resp.setTotal(resp.getTotal() + partialRemissions.size());
+        partialRemissions.stream().map(handler).collect(Collectors.toList());
         return resp;
     }
 
@@ -249,6 +268,22 @@ public class PayHubService {
         if (reportDate.isAfter(now)) {
             LOG.error("transfer date validation failed. It can not be in a future date.");
             throw new BadRequestException("The transfer date can not be a future date: " + reportDate.toString());
+        }
+    }
+
+    private PayhubPartialRemission createPayhubPartialRemission(BaseCaseFeeDetail caseFeeDetail, String groupReference, BasePaymentInstruction pi) {
+        if (caseFeeDetail.getRemissionAmount() != null && caseFeeDetail.getRemissionAmount() > 0) {
+            return new PayhubPartialRemission(
+                pi.getId(),
+                caseFeeDetail.getRemissionBenefiter(),
+                caseFeeDetail.getRemissionAmount(),
+                caseFeeDetail.getCaseReference(),
+                caseFeeDetail.getRemissionAuthorisation(),
+                groupReference,
+                pi.getSiteId(),
+                caseFeeDetail);
+        } else {
+            return null;
         }
     }
 

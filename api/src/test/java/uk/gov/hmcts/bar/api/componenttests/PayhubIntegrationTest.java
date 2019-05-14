@@ -35,6 +35,14 @@ public class PayhubIntegrationTest extends ComponentTestBase {
                 .withBody("{\"reference\": \"RC-1534-8634-8352-6509\", \"date_created\": \"2018-08-21T14:58:03.630+0000\", \"status\": \"Initiated\", \"payment_group_reference\": \"2018-15348634835\"}")
             )
         );
+
+        wireMockRule.stubFor(post(urlPathMatching("/remission"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", MediaType.TEXT_PLAIN)
+                .withBody("RM-1534-8634-8352-6509")
+            )
+        );
     }
 
     @Test
@@ -45,8 +53,8 @@ public class PayhubIntegrationTest extends ComponentTestBase {
             .get("/payment-instructions/send-to-payhub/")
             .andExpect(status().isOk())
             .andExpect(body().as(Map.class, map -> {
-                Assert.assertEquals(3, map.get("total"));
-                Assert.assertEquals(3, map.get("success"));
+                Assert.assertEquals(4, map.get("total"));
+                Assert.assertEquals(4, map.get("success"));
             }));
     }
 
@@ -59,8 +67,8 @@ public class PayhubIntegrationTest extends ComponentTestBase {
             .get("/payment-instructions/send-to-payhub/" + reportDate)
             .andExpect(status().isOk())
             .andExpect(body().as(Map.class, map -> {
-                Assert.assertEquals(3, map.get("total"));
-                Assert.assertEquals(3, map.get("success"));
+                Assert.assertEquals(4, map.get("total"));
+                Assert.assertEquals(4, map.get("success"));
             }));
     }
 
