@@ -63,6 +63,9 @@ public abstract class FunctionalTest {
     @Before
     public void setup() {
         RestAssured.baseURI = testUrl;
+        if (proxyEnabled) {
+            RestAssured.proxy(proxyUrl, proxyPort);
+        }
         log.info("Bar-Api base url is :{}", testUrl);
         authenticatorClient = new AuthenticatorClient(barWebUrl, proxyEnabled, proxyUrl, proxyPort);
         // assign users to sites
@@ -114,5 +117,16 @@ public abstract class FunctionalTest {
             .post("/fees")
             .then()
             .statusCode(201);
+    }
+
+    protected Response createFullRemission(String payload, String token, String siteId) {
+        return given()
+            .relaxedHTTPSValidation()
+            .header(CONTENT_TYPE, "application/json")
+            .header("Authorization", token)
+            .header("SiteId", siteId)
+            .body(payload)
+            .when()
+            .post("/remissions");
     }
 }

@@ -17,7 +17,7 @@ import java.util.List;
 @Table(name = "payment_instruction")
 @JsonIgnoreProperties({"bgc_number", "id", "payer_name", "status", "action", "payment_date", "daily_sequence_id",
     "authorization_code", "transferred_to_payhub", "payment_type", "authorization_code", "cheque_number",
-    "postal_order_number", "all_pay_transaction_id", "transfer_date", "payhub_error", "report_date"})
+    "postal_order_number", "all_pay_transaction_id", "transfer_date", "payhub_error", "report_date", "remission_reference"})
 public class PayhubPaymentInstruction extends BasePaymentInstruction {
 
     public static final String SERVICE = "DIGITAL_BAR";
@@ -59,7 +59,8 @@ public class PayhubPaymentInstruction extends BasePaymentInstruction {
         return convertNullToEmpty(getAuthorizationCode()) +
             convertNullToEmpty(getPostalOrderNumber()) +
             convertNullToEmpty(getChequeNumber()) +
-            convertNullToEmpty(getAllPayTransactionId());
+            convertNullToEmpty(getAllPayTransactionId()) +
+            convertNullToEmpty(getRemissionReference());
     }
 
     @JsonProperty("external_provider")

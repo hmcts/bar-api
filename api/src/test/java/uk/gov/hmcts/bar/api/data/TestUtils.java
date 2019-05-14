@@ -2,6 +2,7 @@ package uk.gov.hmcts.bar.api.data;
 
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubCaseFeeDetail;
+import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubFullRemission;
 import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,13 @@ public class TestUtils {
         PayhubPaymentInstruction ppi = new PayhubPaymentInstruction("John Doe", paymentAmount, "GBP", "TTB");
         ppi.setPaymentDate(LocalDateTime.of(2018, 8, 13, 0, 0));
         ppi.setCaseFeeDetails(Arrays.stream(caseDetails).map(amounts -> TestUtils.createPayhubCaseFeeDetail(amounts)).collect(Collectors.toList()));
+        return ppi;
+    }
+
+    public static PayhubFullRemission createSampleFullRemissionInstruction(int[] caseDetail) {
+        PayhubFullRemission ppi = new PayhubFullRemission("John Doe", "GBP", "TTB");
+        ppi.setPaymentDate(LocalDateTime.of(2018, 8, 13, 0, 0));
+        ppi.setCaseFeeDetails(Arrays.asList(TestUtils.createPayhubCaseFeeDetail(caseDetail)));
         return ppi;
     }
 

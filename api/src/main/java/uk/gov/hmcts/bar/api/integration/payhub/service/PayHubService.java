@@ -19,11 +19,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.bar.api.aop.features.Featured;
 import uk.gov.hmcts.bar.api.data.exceptions.BadRequestException;
-import uk.gov.hmcts.bar.api.data.model.BarUser;
-import uk.gov.hmcts.bar.api.data.model.PayHubResponseReport;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionPayhubReference;
-import uk.gov.hmcts.bar.api.data.model.PaymentInstructionSearchCriteriaDto;
+import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
+import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubFullRemission;
 import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
 import uk.gov.hmcts.bar.api.integration.payhub.exception.PayHubConnectionException;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -31,15 +29,18 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -67,6 +68,8 @@ public class PayHubService {
 
     private final String payHubUrl;
 
+    private final Validator validator;
+
     private final CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults("sendToPayhub");
 
     public PayHubService(AuthTokenGenerator authTokenGenerator,
@@ -79,6 +82,8 @@ public class PayHubService {
         this.httpClient = httpClient;
         this.payHubUrl = payHubUrl;
         this.entityManager = entityManager;
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
     @PreAuthorize("hasAuthority(T(uk.gov.hmcts.bar.api.data.enums.BarUserRoleEnum).BAR_DELIVERY_MANAGER.getIdamRole())")
@@ -92,20 +97,19 @@ public class PayHubService {
         String oneTimePassword = this.serviceAuthTokenGenerator.generate();
 
         // collect payment instructions
-        List<PayhubPaymentInstruction> payloads = collectPaymentInstructions(barUser);
+        List<PayhubPaymentInstruction> paymentsPayload = collectPaymentInstructions(barUser);
+
+        // collect full-remissions
+        List<PayhubFullRemission> remissionsPayload = collectFullRemissions(barUser);
 
         // send to payhub
         ObjectMapper objectMapper = new ObjectMapper();
-        resp.setTotal(payloads.size());
-        payloads.forEach(payHubPayload -> {
+        resp.setTotal(paymentsPayload.size() + remissionsPayload.size());
+
+        Function<HttpPost, Consumer<BasePaymentInstruction>> createConsumer = httpPost -> (payHubPayload) -> {
             payHubPayload.setReportDate(reportDate);
-            HttpPost httpPost = new HttpPost(payHubUrl + "/payment-records");
-            httpPost.setHeader("Content-type", "application/json");
-            httpPost.setHeader("Authorization", userToken);
-            httpPost.setHeader("ServiceAuthorization", oneTimePassword);
-            StringBuilder payHubErrorMessage = new StringBuilder("");
+            StringBuilder payHubErrorMessage = new StringBuilder();
             PaymentInstructionPayhubReference reference = null;
-            boolean payHubStatus = false;
             try {
                 String payload = objectMapper.writeValueAsString(payHubPayload);
                 StringEntity entity = new StringEntity(payload);
@@ -119,17 +123,34 @@ public class PayHubService {
                 LOG.error("Failed to send payment instruction to PayHub" + e.getMessage(), e);
                 payHubErrorMessage.append("Failed to send payment instruction to PayHub: " + e.getMessage());
             }
-            if (reference != null){
-                payHubStatus = true;
-                entityManager.merge(reference);
-                resp.increaseSuccess();
+            boolean payHubStatus = false;
+
+            if (reference != null) {
+                Set<ConstraintViolation<PaymentInstructionPayhubReference>> violations = validator.validate(reference);
+                if (!violations.isEmpty()) {
+                    violations.stream().map(ConstraintViolation::getMessage).forEach(payHubErrorMessage::append);
+                } else {
+                    payHubStatus = true;
+                    entityManager.merge(reference);
+                    resp.increaseSuccess();
+                }
             }
             updatePaymentInstruction(
                 payHubPayload,
                 payHubStatus,
                 payHubErrorMessage.substring(0, payHubErrorMessage.length() > 1024 ? 1024 : payHubErrorMessage.length()),
                 reportDate);
-        });
+        };
+
+        // Run for payment instructions
+        HttpPost httpPost = prepareHttpPost("/payment-records", userToken, oneTimePassword);
+        Consumer<BasePaymentInstruction> consumer = createConsumer.apply(httpPost);
+        paymentsPayload.forEach(consumer);
+
+        // Run for full remissions
+        httpPost = prepareHttpPost("/remission", userToken, oneTimePassword);
+        consumer = createConsumer.apply(httpPost);
+        remissionsPayload.forEach(consumer);
         return resp;
     }
 
@@ -146,18 +167,34 @@ public class PayHubService {
         }
     }
 
+    private HttpPost prepareHttpPost(String uri, String userToken, String oneTimePassword) {
+        HttpPost httpPost = new HttpPost(payHubUrl + uri);
+        httpPost.setHeader("Content-type", "application/json");
+        httpPost.setHeader("Authorization", userToken);
+        httpPost.setHeader("ServiceAuthorization", oneTimePassword);
+        return httpPost;
+    }
 
     private List<PayhubPaymentInstruction> collectPaymentInstructions(BarUser barUser) {
         PaymentInstructionSearchCriteriaDto criteriaDto = new PaymentInstructionSearchCriteriaDto();
         criteriaDto.setStatus("TTB");
         criteriaDto.setTransferredToPayhub(false);
+        criteriaDto.setPaymentType("CARD,CHEQUE,CASH,POSTAL_ORDER");
         return paymentInstructionService.getAllPaymentInstructionsForPayhub(barUser, criteriaDto);
+    }
+
+    private List<PayhubFullRemission> collectFullRemissions(BarUser barUser) {
+        PaymentInstructionSearchCriteriaDto criteriaDto = new PaymentInstructionSearchCriteriaDto();
+        criteriaDto.setStatus("TTB");
+        criteriaDto.setTransferredToPayhub(false);
+        criteriaDto.setPaymentType("FULL_REMISSION");
+        return paymentInstructionService.getAllRemissionsForPayhub(barUser, criteriaDto);
     }
 
     private PaymentInstructionPayhubReference handlePayHubResponse(CloseableHttpResponse response,
                                          ObjectMapper objectMapper,
                                          StringBuilder payHubErrorMessage,
-                                         PayhubPaymentInstruction ppi) throws IOException {
+                                         BasePaymentInstruction ppi) throws IOException {
         String rawMessage;
         try (Scanner scanner = new Scanner(response.getEntity().getContent(), StandardCharsets.UTF_8.name())) {
             rawMessage = scanner.useDelimiter("\\A").next();
@@ -170,16 +207,15 @@ public class PayHubService {
             status.getStatusCode() == HttpStatus.SC_OK) {
 
             try {
-                Map<String, String> parsedResponse = objectMapper.readValue(rawMessage, typeRef);
-                if (isValidPayhubResponse(parsedResponse)){
-                    reference = PaymentInstructionPayhubReference.builder()
-                        .reference(parsedResponse.get(REFERENCE_KEY))
-                        .paymentGroupReference(parsedResponse.get(GROUP_REFERENCE_KEY))
-                        .paymentInstructionId(ppi.getId()).build();
-                } else {
-                    String message = "Unable to parse response: " + rawMessage;
-                    payHubErrorMessage.append(message);
-                    LOG.error(message);
+                Map<String, String> parsedResponse = parsePayhubResponse(rawMessage, objectMapper);
+                reference = PaymentInstructionPayhubReference.builder()
+                    .reference(parsedResponse.get(REFERENCE_KEY))
+                    .paymentGroupReference(parsedResponse.get(GROUP_REFERENCE_KEY))
+                    .paymentInstructionId(ppi.getId()).build();
+                Set<ConstraintViolation<PaymentInstructionPayhubReference>> violations = validator.validate(reference);
+                if (!violations.isEmpty()) {
+                    violations.stream().map(ConstraintViolation::getMessage).forEach(payHubErrorMessage::append);
+                    return null;
                 }
             }catch (IOException e) {
                 String message = "Failed to parse payhub response: \"" + rawMessage + "\": " + e.getMessage();
@@ -193,12 +229,17 @@ public class PayHubService {
         return reference;
     }
 
-    private boolean isValidPayhubResponse(Map<String, String> response) {
-        return StringUtils.isNotEmpty(response.get(REFERENCE_KEY)) &&
-            StringUtils.isNotEmpty(response.get(GROUP_REFERENCE_KEY));
+    private Map<String, String> parsePayhubResponse(String rawMessage, ObjectMapper objectMapper) throws IOException {
+        if (rawMessage.startsWith("RM-")){
+            Map<String, String> resp = new HashMap<>();
+            resp.put(REFERENCE_KEY, rawMessage);
+            resp.put(GROUP_REFERENCE_KEY, "");
+            return resp;
+        }
+        return objectMapper.readValue(rawMessage, typeRef);
     }
 
-    private void updatePaymentInstruction(PayhubPaymentInstruction pi, boolean status, String errorMessage, LocalDateTime reportDate) {
+    private void updatePaymentInstruction(BasePaymentInstruction pi, boolean status, String errorMessage, LocalDateTime reportDate) {
         pi.setTransferredToPayhub(status);
         pi.setPayhubError(status ? null : errorMessage);
         pi.setReportDate(reportDate);
