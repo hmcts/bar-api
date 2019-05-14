@@ -3,7 +3,7 @@ package uk.gov.hmcts.bar.api.integration.payhub.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -22,6 +22,7 @@ import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.service.PaymentInstructionService;
 import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubFullRemission;
 import uk.gov.hmcts.bar.api.integration.payhub.data.PayhubPaymentInstruction;
+import uk.gov.hmcts.bar.api.integration.payhub.exception.PayHubConnectionException;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
 import javax.persistence.EntityManager;
@@ -68,6 +69,8 @@ public class PayHubService {
 
     private final Validator validator;
 
+    private final CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults("sendToPayhub");
+
     public PayHubService(AuthTokenGenerator authTokenGenerator,
                          PaymentInstructionService paymentInstructionService,
                          CloseableHttpClient httpClient,
@@ -109,8 +112,7 @@ public class PayHubService {
             try {
                 String payload = objectMapper.writeValueAsString(payHubPayload);
                 StringEntity entity = new StringEntity(payload);
-                httpPost.setEntity(entity);
-                CloseableHttpResponse response = httpClient.execute(httpPost);
+                CloseableHttpResponse response = sendWithProtection(httpPost, entity, circuitBreaker);
                 reference = handlePayHubResponse(response, objectMapper, payHubErrorMessage, payHubPayload);
                 response.close();
             } catch (JsonProcessingException e) {
@@ -149,6 +151,19 @@ public class PayHubService {
         consumer = createConsumer.apply(httpPost);
         remissionsPayload.forEach(consumer);
         return resp;
+    }
+
+    private CloseableHttpResponse sendWithProtection(HttpPost httpPost, StringEntity entity, CircuitBreaker circuitBreaker) {
+        return circuitBreaker.executeSupplier(() -> send(httpPost, entity));
+    }
+
+    private CloseableHttpResponse send(HttpPost httpPost, StringEntity entity) {
+        httpPost.setEntity(entity);
+        try {
+            return httpClient.execute(httpPost);
+        } catch (IOException e) {
+            throw new PayHubConnectionException(e);
+        }
     }
 
     private HttpPost prepareHttpPost(String uri, String userToken, String oneTimePassword) {
