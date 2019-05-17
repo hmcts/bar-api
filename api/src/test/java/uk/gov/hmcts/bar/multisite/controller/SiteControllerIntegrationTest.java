@@ -5,10 +5,7 @@ import uk.gov.hmcts.bar.api.componenttests.ComponentTestBase;
 import uk.gov.hmcts.bar.multisite.model.Site;
 import uk.gov.hmcts.bar.multisite.model.SiteRequest;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -208,6 +205,36 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
                     assertThat(site.get("siteId")).isEqualTo("TEST01");
                 }));
         }
+    }
+
+    @Test
+    public void testRetrieveSites() throws Exception {
+        String email = "1234@hmcts.net";
+        SiteRequest site1 = SiteRequest.builder().id("test02").description("test 02").build();
+        SiteRequest site2 = SiteRequest.builder().id("test03").description("test 03").build();
+
+        createSite(site1, email);
+
+        restActionsForDM
+            .post("/sites", site2)
+            .andExpect(status().isCreated())
+            .andExpect(body().as(Site.class, s -> {
+                assertThat(s.getId()).isEqualTo(site2.getId().toUpperCase());
+            }));
+
+        restActions
+            .get("/sites")
+            .andExpect(status().isOk())
+            .andExpect(body().as(List.class, list -> {
+               assertThat(list.size()).isEqualTo(2);
+            }));
+
+        restActions
+            .get("/sites?my-sites=true")
+            .andExpect(status().isOk())
+            .andExpect(body().as(List.class, list -> {
+                assertThat(list.size()).isEqualTo(1);
+            }));
     }
 
     private void createSite(SiteRequest site, String email) throws Exception {
