@@ -58,6 +58,19 @@ public class SiteController {
         return siteService.getAllSites();
     }
 
+    @ApiOperation(value = "List all the sites for the logged-in user",
+        notes = "List all the sites for the logged-in user, any authenticated user can access it",
+        produces = "application/json")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Return all the sites for the logged-in user"),
+        @ApiResponse(code = 404, message = "Endpoint not found"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    @GetMapping("/sites/my-sites")
+    public Iterable<Site> getMySites(){
+        BarUser barUser = barUserService.getBarUser().orElseThrow(() -> new UserValidationException("Failed to retrieve authenticated user"));
+        return siteService.getUsersSite(barUser.getEmail().toUpperCase());
+    }
+
     @ApiOperation(value = "Save a site to the database",
         notes = "Save a site to the database, only bar-delivery-manager can use it",
         produces = "application/json")
