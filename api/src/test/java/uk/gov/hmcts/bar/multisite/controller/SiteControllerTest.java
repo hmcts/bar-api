@@ -7,6 +7,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.util.NestedServletException;
+import uk.gov.hmcts.bar.api.data.model.BarUser;
+import uk.gov.hmcts.bar.api.data.service.BarUserService;
 import uk.gov.hmcts.bar.multisite.model.Site;
 import uk.gov.hmcts.bar.multisite.service.SiteService;
 
@@ -28,6 +31,8 @@ public class SiteControllerTest {
     @Mock
     private SiteService siteService;
 
+    @Mock
+    private BarUserService barUserService;
 
     @InjectMocks
     private SiteController siteController;
@@ -50,6 +55,27 @@ public class SiteControllerTest {
 
         verify(siteService, times(1)).getAllSites();
         verifyNoMoreInteractions(siteService);
+    }
+
+    @Test
+    public void testGetAllSitesForUser() throws Exception {
+        when(siteService.getUsersSite("USER@EMAIL.COM")).thenReturn(getSitesForUser());
+        when(barUserService.getBarUser()).thenReturn(Optional.of(BarUser.builder().email("user@email.com").build()));
+        this.mockMvc.perform(get("/sites?my-sites=true"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0].id", is("1")))
+            .andExpect(jsonPath("$[1].id", is("2")));
+
+        verify(siteService, times(1)).getUsersSite("USER@EMAIL.COM");
+        verifyNoMoreInteractions(siteService);
+    }
+
+    @Test(expected = NestedServletException.class)
+    public void testGetAllSitesForUserWhenUserNotFound() throws Exception {
+        when(siteService.getUsersSite("USER@EMAIL.COM")).thenReturn(getSitesForUser());
+        when(barUserService.getBarUser()).thenReturn(Optional.empty());
+        this.mockMvc.perform(get("/sites?my-sites=true"));
     }
 
     @Test
@@ -195,6 +221,13 @@ public class SiteControllerTest {
            Site.siteWith().id("1").description("one").build(),
            Site.siteWith().id("2").description("two").build(),
            Site.siteWith().id("3").description("three").build()
+        );
+    }
+
+    private List<Site> getSitesForUser() {
+        return Arrays.asList(
+            Site.siteWith().id("1").description("one").build(),
+            Site.siteWith().id("2").description("two").build()
         );
     }
 }

@@ -9,7 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import uk.gov.hmcts.bar.api.auth.UserValidationException;
 import uk.gov.hmcts.bar.api.data.exceptions.BadRequestException;
+import uk.gov.hmcts.bar.api.data.model.BarUser;
+import uk.gov.hmcts.bar.api.data.service.BarUserService;
 import uk.gov.hmcts.bar.multisite.aop.ToUpperCase;
 import uk.gov.hmcts.bar.multisite.model.Site;
 import uk.gov.hmcts.bar.multisite.model.SiteRequest;
@@ -19,6 +22,7 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 @RestController
@@ -27,24 +31,30 @@ import java.util.function.Supplier;
 public class SiteController {
 
     private final SiteService siteService;
+    private final BarUserService barUserService;
 
     private Supplier<? extends RuntimeException> createNoSelectedSiteError = () -> new BadRequestException("Can't find the user's selected site");
 
     @Autowired
-    public SiteController(SiteService siteService) {
+    public SiteController(SiteService siteService, BarUserService barUserService) {
         this.siteService = siteService;
+        this.barUserService = barUserService;
     }
 
 
-    @ApiOperation(value = "List all the available sites",
-        notes = "List all the available sites, publicly available",
+    @ApiOperation(value = "List all or user's available sites depending on the parameter",
+        notes = "List all/authenticated users' sites, authentication is needed",
         produces = "application/json")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Return all the saved sites"),
         @ApiResponse(code = 404, message = "Endpoint not found"),
         @ApiResponse(code = 500, message = "Internal server error")})
     @GetMapping("/sites")
-    public Iterable<Site> getSites(){
+    public Iterable<Site> getSites(@RequestParam(name = "my-sites", required = false) Optional<Boolean> mySites) {
+        if (mySites.isPresent() && mySites.get() == true) {
+            BarUser barUser = barUserService.getBarUser().orElseThrow(() -> new UserValidationException("Failed to retrieve authenticated user"));
+            return siteService.getUsersSite(barUser.getEmail().toUpperCase());
+        }
         return siteService.getAllSites();
     }
 
