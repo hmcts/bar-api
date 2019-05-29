@@ -2,6 +2,7 @@ package uk.gov.hmcts.bar.api.data.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.model.CaseFeeDetail;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionRepository;
@@ -26,6 +27,10 @@ public class UnallocatedAmountService {
 	public int calculateUnallocatedAmount(PaymentInstruction paymentInstruction) {
 
 		int unallocatedAmount = 0 ;
+		// Assign post clerk payments to fee clerk
+        if (paymentInstruction.getStatus().equals(PaymentStatusEnum.DRAFT.dbKey())) {
+            return unallocatedAmount;
+        }
 		if (!(paymentInstruction.getPaymentType().getId().equals("FULL_REMISSION"))){
 
 		List<CaseFeeDetail> cfdList = paymentInstruction.getCaseFeeDetails();
