@@ -1,6 +1,6 @@
 plugins {
     id 'application'
-    id 'org.springframework.boot' version '2.1.4.RELEASE'
+    id 'org.springframework.boot' version '2.1.5.RELEASE'
     id 'io.spring.dependency-management' version '1.0.5.RELEASE'
     id 'org.owasp.dependencycheck' version '3.1.2'
     id "com.gorylenko.gradle-git-properties" version "1.4.21"
@@ -33,10 +33,19 @@ allprojects {
 
     dependencyManagement {
         imports {
-            mavenBom 'org.springframework.boot:spring-boot-starter:2.1.4.RELEASE'
+            mavenBom 'org.springframework.boot:spring-boot-starter:2.1.5.RELEASE'
         }
+        
+        
 
         dependencies {
+
+            // solves CVE-2019-12086
+            // remove once spring manager incorporates this changes
+            dependencySet(group: 'com.fasterxml.jackson.core', version: '2.9.9') {
+                entry 'jackson-core'
+                entry 'jackson-databind'
+            }
 
             dependency 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.8'
             dependency 'com.google.guava:guava:27.0-jre'
