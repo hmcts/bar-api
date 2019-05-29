@@ -470,8 +470,8 @@ public class PaymentInstructionServiceTest {
         PaymentInstruction updatedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(barUserMock, 1, pir);
         verify(paymentInstructionRepository, times(1)).findByIdAndSiteId(anyInt(), anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(argument.capture());
-        assertEquals("D", argument.getValue().getStatus());
-        assertEquals("Process", argument.getValue().getAction());
+        assertEquals("P", argument.getValue().getStatus());
+        assertEquals(null, argument.getValue().getAction());
         assertEquals(null, argument.getValue().getActionComment());
         assertEquals(null, argument.getValue().getActionReason());
         verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUserMock);
