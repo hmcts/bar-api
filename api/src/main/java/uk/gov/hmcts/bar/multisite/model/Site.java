@@ -28,11 +28,11 @@ public class Site {
     private String description;
 
     @Transient
-    private List<String> emails = new ArrayList<>();
+    private List<SiteUserDto> siteUsers = new ArrayList<>();
 
-    public Site(String id, String description, List<String> emails) {
+    public Site(String id, String description, List<SiteUserDto> siteUsers) {
         this.id = id.trim().toUpperCase();
         this.description = description;
-        this.emails = emails;
+        this.siteUsers = siteUsers;
     }
 }

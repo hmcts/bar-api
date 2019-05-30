@@ -12,6 +12,7 @@ import uk.gov.hmcts.bar.api.data.model.BarUser;
 import uk.gov.hmcts.bar.api.data.service.BarUserService;
 import uk.gov.hmcts.bar.multisite.model.Site;
 import uk.gov.hmcts.bar.multisite.service.SiteService;
+import uk.gov.hmcts.bar.multisite.utils.SiteUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -123,12 +124,12 @@ public class SiteControllerTest {
     public void testGetSiteWithUsers() throws Exception {
         String id = "1";
         when(siteService.getSitesWithUsers(id)).thenReturn(
-            Site.siteWith().id("1").description("one").emails(Arrays.asList("a@a.com", "b@b.com", "c@c.com")).build());
+            Site.siteWith().id("1").description("one").siteUsers(SiteUtils.createUsers()).build());
         this.mockMvc.perform(get("/sites/1/users"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id", is("1")))
             .andExpect(jsonPath("$.description", is("one")))
-            .andExpect(jsonPath("$.emails[0]", is("a@a.com")));
+            .andExpect(jsonPath("$.siteUsers[0].email", is("a@a.com")));
 
         verify(siteService, times(1)).getSitesWithUsers(id);
 

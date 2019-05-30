@@ -109,6 +109,7 @@ public class ComponentTestBase {
         DbTestUtil.addTestUser(webApplicationContext, srFeeClerkUserDetails);
         DbTestUtil.addTestUser(webApplicationContext, dmUserDetails);
         DbTestUtil.addTestUser(webApplicationContext, adminUserDetails);
+        DbTestUtil.addTestSiteUser(webApplicationContext);
 
         wireMockRule.stubFor(get(urlPathMatching("/sites/(.+)/users/(.+)"))
             .willReturn(aResponse()

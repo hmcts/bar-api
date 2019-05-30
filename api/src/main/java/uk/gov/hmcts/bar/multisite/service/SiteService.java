@@ -27,7 +27,7 @@ public class SiteService {
 
     public Site getSitesWithUsers(String id) {
         Site site = siteRepository.findById(id).orElseThrow(() -> new BadRequestException("This site id does not exist: " + id));
-        site.setEmails(siteRepository.findAllEmailsToSite(id));
+        site.setSiteUsers(siteRepository.findAllEmailsToSite(id));
         return site;
     }
 

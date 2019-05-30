@@ -69,15 +69,17 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
     @Test
     public void addUserToSite() throws Exception {
 
-        createSite(SiteRequest.builder().id("test01").description("test 01").build(), "user@hmcts.net");
+        createSite(SiteRequest.builder().id("test01").description("test 01").build(), "USER@HMCTS.NET");
 
         // Check if the user is assigned
         restActionsForDM
             .get("/sites/test01/users")
             .andExpect(status().isOk())
-            .andExpect(body().as(Site.class, site -> {
-                assertThat(site.getId()).isEqualTo("TEST01");
-                assertThat(site.getEmails()).isEqualTo(Collections.singletonList("USER@HMCTS.NET"));
+            .andExpect(body().as(Map.class, site -> {
+                assertThat(site.get("id")).isEqualTo("TEST01");
+                List<Map> users = (List<Map>) site.get("siteUsers");
+                assertThat(users.size()).isEqualTo(1);
+                assertThat(users.get(0).get("email")).isEqualTo("USER@HMCTS.NET");
             }));
     }
 
@@ -100,10 +102,11 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
         restActionsForDM
             .get("/sites/test01/users")
             .andExpect(status().isOk())
-            .andExpect(body().as(Site.class, site -> {
-                assertThat(site.getId()).isEqualTo("TEST01");
-                assertThat(site.getEmails().size()).isEqualTo(1);
-                assertThat(site.getEmails()).isEqualTo(Collections.singletonList("USER@HMCTS.NET"));
+            .andExpect(body().as(Map.class, site -> {
+                assertThat(site.get("id")).isEqualTo("TEST01");
+                List<Map> users = (List<Map>) site.get("siteUsers");
+                assertThat(users.size()).isEqualTo(1);
+                assertThat(users.get(0).get("email")).isEqualTo("USER@HMCTS.NET");
             }));
 
         // Remove user from site
@@ -117,7 +120,7 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
             .andExpect(status().isOk())
             .andExpect(body().as(Site.class, site -> {
                 assertThat(site.getId()).isEqualTo("TEST01");
-                assertThat(site.getEmails().size()).isEqualTo(0);
+                assertThat(site.getSiteUsers().size()).isEqualTo(0);
             }));
     }
 
