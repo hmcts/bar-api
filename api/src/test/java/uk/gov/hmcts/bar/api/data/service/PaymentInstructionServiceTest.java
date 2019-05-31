@@ -15,6 +15,7 @@ import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.hateoas.Resource;
 import uk.gov.hmcts.bar.api.audit.AuditRepository;
 import uk.gov.hmcts.bar.api.data.TestUtils;
+import uk.gov.hmcts.bar.api.data.enums.BarUserRoleEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.MissingSiteIdException;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
@@ -124,6 +125,9 @@ public class PaymentInstructionServiceTest {
     private PaymentInstructionStatusCriteriaDto.PaymentInstructionStatusCriteriaDtoBuilder paymentInstructionStatusCriteriaDtoBuilder;
 
     private PaymentTypeService paymentTypeService;
+    private static final String BAR_POST_CLERK_ROLE = BarUserRoleEnum.BAR_POST_CLERK.getIdamRole();
+    private static final String BAR_FEE_CLERK_ROLE = BarUserRoleEnum.BAR_FEE_CLERK.getIdamRole();
+
 
     @Mock
     private UnallocatedAmountService unallocatedAmountService;
@@ -149,6 +153,7 @@ public class PaymentInstructionServiceTest {
         paymentInstructionStatusCriteriaDtoBuilder = PaymentInstructionStatusCriteriaDto.paymentInstructionStatusCriteriaDto();
 
         when(barUserMock.getSelectedSiteId()).thenReturn("Y431");
+
     }
 
     private void setUpValidator() {
@@ -162,7 +167,7 @@ public class PaymentInstructionServiceTest {
     @Test
     public void shouldReturnPaymentInstruction_whenSavePaymentInstructionForGivenChequeInstructionIsCalled()
         throws Exception {
-
+        when(barUserMock.getRoles()).thenReturn(BAR_POST_CLERK_ROLE);
         when(paymentReferenceService.getNextPaymentReference(anyString()))
             .thenReturn(paymentReferenceMock);
         when(paymentReferenceMock.getSequenceId()).thenReturn(1);
@@ -184,7 +189,7 @@ public class PaymentInstructionServiceTest {
     @Test
     public void shouldReturnPaymentInstruction_whenSavePaymentInstructionForGivenCashInstructionIsCalled()
         throws Exception {
-
+        when(barUserMock.getRoles()).thenReturn(BAR_POST_CLERK_ROLE);
         when(paymentReferenceService.getNextPaymentReference(anyString()))
             .thenReturn(paymentReferenceMock);
         when(paymentInstructionRepository.saveAndFlush(any(CashPaymentInstruction.class)))
@@ -206,7 +211,7 @@ public class PaymentInstructionServiceTest {
     @Test
     public void shouldReturnPaymentInstruction_whenSavePaymentInstructionForGivenPostalOrderInstructionIsCalled()
         throws Exception {
-
+        when(barUserMock.getRoles()).thenReturn(BAR_POST_CLERK_ROLE);
         when(paymentReferenceService.getNextPaymentReference(barUserMock.getSelectedSiteId()))
             .thenReturn(paymentReferenceMock);
         when(paymentInstructionRepository.saveAndFlush(any(PostalOrderPaymentInstruction.class)))
@@ -224,7 +229,7 @@ public class PaymentInstructionServiceTest {
     @Test
     public void shouldReturnPaymentInstruction_whenSavePaymentInstructionForGivenAllPayInstructionIsCalled()
         throws Exception {
-
+        when(barUserMock.getRoles()).thenReturn(BAR_POST_CLERK_ROLE);
         when(paymentReferenceService.getNextPaymentReference(anyString()))
             .thenReturn(paymentReferenceMock);
         when(paymentReferenceMock.getSequenceId()).thenReturn(1);
@@ -233,6 +238,7 @@ public class PaymentInstructionServiceTest {
         when(paymentInstructionRepository.saveAndRefresh(any(AllPayPaymentInstruction.class)))
             .thenReturn(paymentInstructionMock);
         when(paymentInstructionMock.getStatus()).thenReturn("status");
+
 
         PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
             .createPaymentInstruction(barUserMock, allpayPaymentInstructionMock);
@@ -243,6 +249,32 @@ public class PaymentInstructionServiceTest {
 
         verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",allpayPaymentInstructionMock,barUserMock);
     }
+
+    @Test
+    public void shouldReturnPaymentInstruction_whenSavePaymentInstructionForFeeClerkRoleIsCalled()
+        throws Exception {
+        when(barUserMock.getRoles()).thenReturn("bar-fee-clerk");
+        when(paymentReferenceService.getNextPaymentReference(anyString()))
+            .thenReturn(paymentReferenceMock);
+        when(paymentReferenceMock.getSequenceId()).thenReturn(1);
+        when(paymentInstructionRepository.saveAndFlush(any(AllPayPaymentInstruction.class)))
+            .thenReturn(allpayPaymentInstructionMock);
+        when(paymentInstructionRepository.saveAndRefresh(any(AllPayPaymentInstruction.class)))
+            .thenReturn(paymentInstructionMock);
+        when(paymentInstructionMock.getStatus()).thenReturn("status");
+
+
+        PaymentInstruction createdPaymentInstruction = paymentInstructionServiceMock
+            .createPaymentInstruction(barUserMock, allpayPaymentInstructionMock);
+        verify(paymentReferenceService, times(1)).getNextPaymentReference(anyString());
+        verify(paymentInstructionRepository, times(1)).saveAndRefresh(allpayPaymentInstructionMock);
+        PaymentInstructionStatus status = new PaymentInstructionStatus(null, createdPaymentInstruction);
+        verify(paymentInstructionStatusRepositoryMock, times(2)).save(status);
+
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",allpayPaymentInstructionMock,barUserMock);
+    }
+
+
 
     @Test
     public void shouldDeletePaymentInstruction_whenDeletePaymentInstructionIsCalled() throws Exception {
