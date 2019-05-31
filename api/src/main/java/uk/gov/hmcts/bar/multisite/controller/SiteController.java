@@ -58,6 +58,7 @@ public class SiteController {
         return siteService.getAllSites();
     }
 
+
     @ApiOperation(value = "Save a site to the database",
         notes = "Save a site to the database, only bar-delivery-manager can use it",
         produces = "application/json")

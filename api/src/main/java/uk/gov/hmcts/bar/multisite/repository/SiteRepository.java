@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.bar.multisite.model.Site;
+import uk.gov.hmcts.bar.multisite.model.SiteUserDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,8 +14,8 @@ import java.util.Optional;
 @Repository
 public interface SiteRepository extends CrudRepository<Site, String> {
 
-    @Query(value = "SELECT user_email from user_site where site_id=:siteId", nativeQuery = true)
-    List<String> findAllEmailsToSite(@Param("siteId") String siteId);
+    @Query(value = "SELECT us.user_email as email, bu.forename, bu.surname from user_site us left join bar_user bu on us.user_email = upper(bu.email) where us.site_id=:siteId", nativeQuery = true)
+    List<SiteUserDto> findAllEmailsToSite(@Param("siteId") String siteId);
 
     @Modifying
     @Query(value = "insert into user_site (site_id, user_email) VALUES (:siteId, :email)", nativeQuery = true)

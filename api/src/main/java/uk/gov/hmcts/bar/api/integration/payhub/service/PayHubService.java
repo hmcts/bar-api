@@ -52,6 +52,7 @@ public class PayHubService {
     private static final Logger LOG = getLogger(PayHubService.class);
     private static final TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
     private static final String REFERENCE_KEY = "reference";
+    private static final String REMISSION_REFERENCE_KEY = "remission_reference";
     private static final String GROUP_REFERENCE_KEY = "payment_group_reference";
     private static final String PAYHUB_FEATURE_KEY = "send-to-payhub";
 
@@ -227,7 +228,7 @@ public class PayHubService {
             try {
                 Map<String, String> parsedResponse = parsePayhubResponse(rawMessage, objectMapper);
                 reference = PaymentInstructionPayhubReference.builder()
-                    .reference(parsedResponse.get(REFERENCE_KEY))
+                    .reference(parsedResponse.get(REFERENCE_KEY) == null ? parsedResponse.get(REMISSION_REFERENCE_KEY) : parsedResponse.get(REFERENCE_KEY))
                     .paymentGroupReference(parsedResponse.get(GROUP_REFERENCE_KEY))
                     .paymentInstructionId(ppi.getId()).build();
                 Set<ConstraintViolation<PaymentInstructionPayhubReference>> violations = validator.validate(reference);

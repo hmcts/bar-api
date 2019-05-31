@@ -7,9 +7,9 @@ import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.bar.api.data.exceptions.BadRequestException;
 import uk.gov.hmcts.bar.multisite.model.Site;
 import uk.gov.hmcts.bar.multisite.repository.SiteRepository;
+import uk.gov.hmcts.bar.multisite.utils.SiteUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -36,9 +36,12 @@ public class SiteServiceTest {
         String siteId = "1";
         Site site = Site.siteWith().id(siteId).description("one").build();
         when(siteRepository.findById(siteId)).thenReturn(Optional.of(site));
-        when(siteRepository.findAllEmailsToSite(siteId)).thenReturn(Arrays.asList("a@a.com", "b@b.com", "c@c.com"));
+        when(siteRepository.findAllEmailsToSite(siteId)).thenReturn(SiteUtils.createUsers());
         Site fullSite = service.getSitesWithUsers("1");
-        assertEquals(Arrays.asList("a@a.com", "b@b.com", "c@c.com"), fullSite.getEmails());
+        assertEquals(3, fullSite.getSiteUsers().size());
+        assertEquals("A", fullSite.getSiteUsers().get(0).getForename());
+        assertEquals("User", fullSite.getSiteUsers().get(0).getSurname());
+        assertEquals("b@b.com", fullSite.getSiteUsers().get(1).getEmail());
         assertEquals("one", fullSite.getDescription());
     }
 

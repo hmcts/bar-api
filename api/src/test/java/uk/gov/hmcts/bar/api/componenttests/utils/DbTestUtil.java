@@ -116,6 +116,16 @@ public final class DbTestUtil {
         }
     }
 
+    public static void addTestSiteUser(ApplicationContext applicationContext) throws SQLException {
+        DataSource dataSource = applicationContext.getBean(DataSource.class);
+        String insertUserSqlTemplate = getSqlTemplate(applicationContext, PROPERTY_KEY_INSERT_USER_SQL_TAMPLATE);
+        try (Connection dbConnection = dataSource.getConnection(); Statement stmt = dbConnection.createStatement()) {
+
+            String[] columnValues = new String[] { "'Site'", "'User'", "'234567'", "'bar-delivery-manager'" , "'USER@HMCTS.NET'" };
+            stmt.executeQuery(String.format(insertUserSqlTemplate, columnValues));
+        }
+    }
+
     public static void insertPaymentInstructions(ApplicationContext applicationContext) throws SQLException {
         DataSource dataSource = applicationContext.getBean(DataSource.class);
         try (Connection dbConnection = dataSource.getConnection(); Statement stmt = dbConnection.createStatement()) {
