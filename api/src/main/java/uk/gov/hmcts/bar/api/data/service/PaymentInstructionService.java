@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.bar.api.audit.AuditRepository;
 import uk.gov.hmcts.bar.api.controllers.payment.PaymentInstructionController;
+import uk.gov.hmcts.bar.api.data.enums.BarUserRoleEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
@@ -97,6 +98,11 @@ public class PaymentInstructionService {
         paymentInstruction.setUserId(barUser.getId());
         PaymentInstruction savedPaymentInstruction = paymentInstructionRepository.saveAndRefresh(paymentInstruction);
         savePaymentInstructionStatus(savedPaymentInstruction, barUser.getId());
+        if ((barUser.getRoles().contains(BarUserRoleEnum.BAR_FEE_CLERK.getIdamRole()))) {
+            savedPaymentInstruction.setStatus(PaymentStatusEnum.PENDING.dbKey());
+            paymentInstructionRepository.saveAndRefresh(savedPaymentInstruction);
+            savePaymentInstructionStatus(savedPaymentInstruction,barUser.getId());
+        }
         auditRepository.trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT", paymentInstruction, barUser);
         return savedPaymentInstruction;
     }
