@@ -173,6 +173,11 @@ public class PaymentInstructionService {
 
         updateValidatorService.validateAll(existingPaymentInstruction, paymentInstructionUpdateRequest);
 
+        // Assign post clerk payments to fee clerk
+        if (paymentInstructionUpdateRequest.getStatus().equals(PaymentStatusEnum.DRAFT.dbKey())){
+            paymentInstructionUpdateRequest.setStatus(PaymentStatusEnum.PENDING.dbKey());
+        }
+
         updatePaymentInstructionsProps(existingPaymentInstruction, paymentInstructionUpdateRequest);
 		if (PaymentStatusEnum.PENDING.dbKey().equals(paymentInstructionUpdateRequest.getStatus())) {
 			existingPaymentInstruction.setAction(null);

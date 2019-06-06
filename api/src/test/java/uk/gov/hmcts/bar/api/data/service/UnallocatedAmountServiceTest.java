@@ -69,11 +69,23 @@ public class UnallocatedAmountServiceTest {
     }
 
     @Test
+    public void testCalculateUnallocatedAmount_whenPostClerkReAssignmentToFeeClerk(){
+        PaymentInstruction pi = TestUtils.createCardPaymentInstructionForReAssignment(10000);
+        pi.setPaymentType(pt);
+        List<CaseFeeDetail> cfdList = new ArrayList<>();
+        when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
+
+        Assert.assertEquals(0, unallocatedAmountService.calculateUnallocatedAmount(1));
+
+    }
+
+
+    @Test
     public void testCalculateUnallocatedAmount_whenNoCase(){
         PaymentInstruction pi = TestUtils.createPaymentInstructions("CASH", 10000);
         pi.setPaymentType(pt);
         when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
-        
+
         pi.setCaseFeeDetails(new ArrayList<>());
 
         Assert.assertEquals(10000, unallocatedAmountService.calculateUnallocatedAmount(1));
