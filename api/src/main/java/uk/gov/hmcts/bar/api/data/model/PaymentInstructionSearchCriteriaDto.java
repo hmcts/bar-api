@@ -36,5 +36,6 @@ public class PaymentInstructionSearchCriteriaDto {
     private Boolean transferredToPayhub;
     private String authorizationCode;
     private String oldStatus;
+    private String payhubReference;
 
 }

@@ -31,6 +31,7 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
     protected Specification<T> transferredToPayhubSpec = null;
     protected Specification<T> authorizationCodeSpec = null;
     protected Specification<T> statusJoinSpec = null;
+    protected Specification<T> payhubReferenceSpec = null;
 
     public PaymentInstructionsSpecifications(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto, PaymentTypeService paymentTypeService) {
         this.paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDto;
@@ -54,6 +55,7 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
         transferredToPayhubSpec = new TransferredToPayhubSpec();
         authorizationCodeSpec = new ReferenceIdSpec("authorizationCode", paymentInstructionSearchCriteriaDto.getAuthorizationCode());
         statusJoinSpec = new StatusJoinSpec();
+        payhubReferenceSpec = new PayhubReferenceSpec();
     }
 
     public Specification<T> getPaymentInstructionsSpecification() {
@@ -62,7 +64,7 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
             .and(endDateSpec).and(siteIdSpec).and(userIdSpec).and(paymentTypeSpec).and(transferredToPayhubSpec);
 		Specification<T> orSpecs = Specification.where(payerNameSpec).or(allPayTransactionIdSpec)
 				.or(chequeNumberSpec).or(postalOrderNumerSpec).or(dailySequenceIdSpec)
-				.or(caseReferenceSpec).or(authorizationCodeSpec);
+				.or(caseReferenceSpec).or(authorizationCodeSpec).or(payhubReferenceSpec);
         return Specification.where(statusJoinSpec).and(andSpecs).and(orSpecs);
     }
 
@@ -325,6 +327,20 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
             return predicate;
         }
 
+    }
+
+    private class PayhubReferenceSpec implements Specification<T> {
+
+        @Override
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+            Predicate predicate = null;
+            query.distinct(true);
+            ListJoin<T, PaymentInstructionPayhubReference> payhubReferences = root.joinList("payhubReferences", JoinType.LEFT);
+            if (paymentInstructionSearchCriteriaDto.getPayhubReference() != null) {
+                predicate = criteriaBuilder.like(payhubReferences.get("reference"), "%" + paymentInstructionSearchCriteriaDto.getPayhubReference() + "%");
+            }
+            return predicate;
+        }
     }
 
     private class ReferenceIdSpec implements Specification<T> {

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uk.gov.hmcts.bar.api.data.model.BaseCaseFeeDetail;
 import uk.gov.hmcts.bar.api.data.model.BasePaymentInstruction;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionPayhubReference;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -19,7 +20,7 @@ import java.util.Optional;
 @JsonIgnoreProperties({"bgc_number", "id", "payer_name", "status", "action", "payment_date", "daily_sequence_id",
     "authorization_code", "transferred_to_payhub", "payment_type", "authorization_code", "cheque_number",
     "postal_order_number", "all_pay_transaction_id", "transfer_date", "payhub_error", "report_date", "remission_reference",
-    "amount", "currency"})
+    "amount", "currency","payhub_references"})
 public class PayhubFullRemission extends BasePaymentInstruction {
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -28,6 +29,14 @@ public class PayhubFullRemission extends BasePaymentInstruction {
     @Getter
     @Setter
     private List<PayhubCaseFeeDetail> caseFeeDetails;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "payment_instruction_id", referencedColumnName = "id")
+    @JsonIgnore
+    @Getter
+    @Setter
+    private List<PaymentInstructionPayhubReference> payhubReferences;
+
 
     public PayhubFullRemission(String payerName, String currency, String status) {
         super(payerName, null, currency, status);

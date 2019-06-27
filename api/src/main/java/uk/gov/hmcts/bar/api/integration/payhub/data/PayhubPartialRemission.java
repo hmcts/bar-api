@@ -1,27 +1,27 @@
 package uk.gov.hmcts.bar.api.integration.payhub.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.bar.api.data.model.BaseCaseFeeDetail;
 import uk.gov.hmcts.bar.api.data.model.BasePaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.CaseFeeDetail;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionPayhubReference;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Data
 @NoArgsConstructor
 @JsonIgnoreProperties({"bgc_number", "id", "payer_name", "status", "action", "payment_date", "daily_sequence_id",
     "authorization_code", "transferred_to_payhub", "payment_type", "authorization_code", "cheque_number",
     "postal_order_number", "all_pay_transaction_id", "transfer_date", "payhub_error", "report_date", "remission_reference",
-    "amount", "currency", "case_fee_details"})
+    "amount", "currency", "case_fee_details","payhub_references"})
 public class PayhubPartialRemission extends BasePaymentInstruction {
 
     private final List<CaseFeeDetail> caseFeeDetails = new ArrayList<>();
+    private final List<PaymentInstructionPayhubReference> payhubReferences = new ArrayList<>();
     private String caseReference;
     private PayhubCaseFeeDetail fee;
     private String groupReference;

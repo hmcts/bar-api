@@ -874,3 +874,24 @@ databaseChangeLog:
       changes:
       - sql: >
           INSERT into site (id, description) values ('Y608', 'MEDWAY COUNTY COURT'), ('Y610', 'MILTON KEYNES COUNTY COURT'), ('Y431', 'BROMLEY COUNTY COURT');
+
+
+  - changeSet:
+      id: 38
+      author: sachi
+      preConditions:
+        - onFail: MARK_RAN
+        - dbms:
+            type: hsqldb
+      changes:
+        - sql: >
+            SET DATABASE SQL SYNTAX PGS TRUE;
+
+  -  changeSet:
+      id: 39
+      author: sachi
+      changes:
+        - dropPrimaryKey:
+            tableName: payment_instruction_payhub_reference
+        - sql: >
+            ALTER TABLE payment_instruction_payhub_reference ADD COLUMN id SERIAL PRIMARY KEY;

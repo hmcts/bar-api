@@ -280,7 +280,7 @@ public class PaymentInstructionService {
         return linkTo(methodOn(PaymentInstructionController.class)
             .getPaymentInstructionsByIdamId(null, userId, status,
                 null, null, null, null, null,
-                null, null, null, paymentType, action, null, bgcNumber, oldStatus)
+                null, null, null, paymentType, action, null, bgcNumber, oldStatus,null)
         ).withRel(rel);
     }
 
