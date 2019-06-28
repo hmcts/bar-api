@@ -89,7 +89,7 @@ public class PaymentInstructionController {
         @RequestParam(name = "action", required = false) String action,
         @RequestParam(name = "authorizationCode", required = false) String authorizationCode,
         @RequestParam(name = "oldStatus", required = false) String oldStatus,
-        @RequestParam(name = "payHubReference", required = false) String payHubReference) {
+        @RequestParam(name = "payhubReference", required = false) String payhubReference) {
 
         List<PaymentInstruction> paymentInstructionList = null;
 
@@ -99,7 +99,7 @@ public class PaymentInstructionController {
             PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto =
                 createPaymentInstructionCriteria(status, startDate, endDate, payerName, chequeNumber, postalOrderNumber,
                     dailySequenceId, allPayInstructionId, paymentType, action, caseReference, null, null,
-                    authorizationCode, oldStatus, payHubReference);
+                    authorizationCode, oldStatus, payhubReference);
 
             paymentInstructionList = paymentInstructionService
                 .getAllPaymentInstructions(request.getBarUser(), paymentInstructionSearchCriteriaDto);
