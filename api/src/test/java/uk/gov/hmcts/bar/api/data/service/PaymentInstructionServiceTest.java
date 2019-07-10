@@ -17,6 +17,7 @@ import uk.gov.hmcts.bar.api.audit.AuditRepository;
 import uk.gov.hmcts.bar.api.data.TestUtils;
 import uk.gov.hmcts.bar.api.data.enums.BarUserRoleEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
+import uk.gov.hmcts.bar.api.data.exceptions.ActionUnauthorizedException;
 import uk.gov.hmcts.bar.api.data.exceptions.MissingSiteIdException;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentProcessException;
@@ -127,7 +128,7 @@ public class PaymentInstructionServiceTest {
     private PaymentTypeService paymentTypeService;
     private static final String BAR_POST_CLERK_ROLE = BarUserRoleEnum.BAR_POST_CLERK.getIdamRole();
     private static final String BAR_FEE_CLERK_ROLE = BarUserRoleEnum.BAR_FEE_CLERK.getIdamRole();
-
+    private static final String BAR_SR_FEE_CLERK_ROLE = BarUserRoleEnum.BAR_SENIOR_CLERK.getIdamRole();
 
     @Mock
     private UnallocatedAmountService unallocatedAmountService;
@@ -595,6 +596,7 @@ public class PaymentInstructionServiceTest {
             .amount(200)
             .payerName("Payer Name")
             .currency("GBP").build();
+        when(barUserMock.getRoles()).thenReturn(BAR_POST_CLERK_ROLE);
         when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), anyString())).thenReturn(Optional.of(paymentInstructionMock));
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
             .thenReturn(paymentInstructionMock);
@@ -609,11 +611,15 @@ public class PaymentInstructionServiceTest {
     @Test
     public void shouldReturn200andBgcUpdated_whenUpdatePostalInstructionWithBGCForGivenPaymentInstructionIsCalled() throws Exception{
         PaymentInstruction pi = new PostalOrderPaymentInstruction();
+        pi.setStatus("PA");
+        pi.setStatuses(new ArrayList<>());
         PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
             .amount(200)
             .payerName("Payer Name")
             .currency("GBP")
+            .status("A")
             .bgcNumber("12345").build();
+        when(barUserMock.getRoles()).thenReturn(BAR_SR_FEE_CLERK_ROLE);
         when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), eq("Y431"))).thenReturn(Optional.of(pi));
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
             .thenAnswer(i -> i.getArguments()[0]);
@@ -635,6 +641,7 @@ public class PaymentInstructionServiceTest {
             .payerName("Payer Name")
             .currency("GBP")
             .bgcNumber("12345").build();
+        when(barUserMock.getRoles()).thenReturn(BAR_FEE_CLERK_ROLE);
         when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), eq("Y431"))).thenReturn(Optional.of(pi));
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
             .thenAnswer(i -> i.getArguments()[0]);
@@ -890,6 +897,13 @@ public class PaymentInstructionServiceTest {
         verify(paymentInstructionRepository, times(0)).saveAndRefresh(paymentInstructionMock);
         verify(auditRepository,times(0)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",paymentInstructionMock,barUserMock);
 
+    }
+
+    @Test(expected = ActionUnauthorizedException.class)
+    public void shouldThrowActionUnauthorizedException_whenUpdatePaymentInstructionIsCalled() {
+        PaymentInstructionService service = mock(PaymentInstructionService.class);
+        doThrow(ActionUnauthorizedException.class).when(service).updatePaymentInstruction(barUserMock,1,null);
+        service.updatePaymentInstruction(barUserMock, 1, null);
     }
 
 }

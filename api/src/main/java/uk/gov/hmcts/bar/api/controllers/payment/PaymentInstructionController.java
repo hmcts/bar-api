@@ -18,6 +18,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.bar.api.auth.BarWrappedHttpRequest;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
+import uk.gov.hmcts.bar.api.data.exceptions.ActionUnauthorizedException;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentProcessException;
 import uk.gov.hmcts.bar.api.data.model.*;
 import uk.gov.hmcts.bar.api.data.service.*;
@@ -195,10 +196,14 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/cards/{id}")
-    public ResponseEntity<Void> updateCardInstruction(@PathVariable("id") Integer id,
+    public ResponseEntity<?> updateCardInstruction(@PathVariable("id") Integer id,
                                                       @ApiParam(value="Card request", required=true) @Valid @RequestBody Card card,
                                                       BarWrappedHttpRequest request) {
-        paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id,card);
+        try {
+            paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id,card);
+        } catch (ActionUnauthorizedException aue) {
+            return new ResponseEntity<>(aue,HttpStatus.FORBIDDEN);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -227,10 +232,14 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/cheques/{id}")
-    public ResponseEntity<Void> updateChequeInstruction(@PathVariable("id") Integer id,
+    public ResponseEntity<Object> updateChequeInstruction(@PathVariable("id") Integer id,
                                                         @ApiParam(value="Cheque request",required=true) @Valid @RequestBody Cheque cheque,
                                                         BarWrappedHttpRequest request) {
-        paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id,cheque);
+        try {
+            paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id,cheque);
+        } catch (ActionUnauthorizedException aue) {
+            return new ResponseEntity<>(aue.getMessage(),HttpStatus.FORBIDDEN);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -240,7 +249,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/payment-instructions/{id}/reject")
-	public ResponseEntity<Void> rejectPaymentInstruction(@PathVariable("id") Integer id,
+	public ResponseEntity<Object> rejectPaymentInstruction(@PathVariable("id") Integer id,
                                                          BarWrappedHttpRequest request) {
 		Optional<BarUser> userOptional = barUserService.getBarUser();
 		BarUser user = null;
@@ -257,8 +266,12 @@ public class PaymentInstructionController {
 		}
 		PaymentInstructionRequest paymentInstructionRequest = PaymentInstructionRequest.paymentInstructionRequestWith()
 				.status(status).build();
-		paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id, paymentInstructionRequest);
-		return new ResponseEntity<>(HttpStatus.OK);
+        try {
+            paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id, paymentInstructionRequest);
+        } catch (ActionUnauthorizedException aue) {
+            return new ResponseEntity<>(aue.getMessage(),HttpStatus.FORBIDDEN);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 
@@ -310,9 +323,13 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/cash/{id}")
-    public ResponseEntity<Void> updateCashInstruction(BarWrappedHttpRequest request,
+    public ResponseEntity<Object> updateCashInstruction(BarWrappedHttpRequest request,
                                                       @PathVariable("id") Integer id , @ApiParam(value="Cash request",required=true) @Valid @RequestBody Cash cash) {
-        paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id,cash);
+        try {
+            paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id,cash);
+        } catch (ActionUnauthorizedException aue) {
+            return new ResponseEntity<>(aue.getMessage(),HttpStatus.FORBIDDEN);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -343,9 +360,14 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/postal-orders/{id}")
-    public ResponseEntity<Void> updatePostalOrderInstruction(BarWrappedHttpRequest request,
+    public ResponseEntity<Object> updatePostalOrderInstruction(BarWrappedHttpRequest request,
                                                              @PathVariable("id") Integer id , @ApiParam(value="Postal order request",required=true) @Valid @RequestBody PostalOrder postalOrder) {
-        paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id,postalOrder);
+       try {
+           paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id, postalOrder);
+       }
+       catch(ActionUnauthorizedException aue){
+           return new ResponseEntity<>(aue.getMessage(),HttpStatus.FORBIDDEN);
+       }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -375,9 +397,13 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/allpay/{id}")
-    public ResponseEntity<Void> updateAllPayInstruction(BarWrappedHttpRequest request,
+    public ResponseEntity<Object> updateAllPayInstruction(BarWrappedHttpRequest request,
                                                         @PathVariable("id") Integer id , @ApiParam(value="Allpay request",required=true) @Valid @RequestBody AllPay allpay) {
-        paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id, allpay);
+        try {
+            paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id, allpay);
+        } catch (ActionUnauthorizedException aue) {
+            return new ResponseEntity<>(aue.getMessage(),HttpStatus.FORBIDDEN);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -21,6 +21,7 @@ import uk.gov.hmcts.bar.api.controllers.payment.PaymentInstructionController;
 import uk.gov.hmcts.bar.api.data.enums.BarUserRoleEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
+import uk.gov.hmcts.bar.api.data.exceptions.ActionUnauthorizedException;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentProcessException;
 import uk.gov.hmcts.bar.api.data.model.*;
@@ -44,10 +45,11 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @Transactional
 public class PaymentInstructionService {
 
-    private static final String[] ALWAYS_UPDATE = new String[]{ "actionComment", "actionReason" };
+    private static final String[] ALWAYS_UPDATE = new String[]{"actionComment", "actionReason"};
 
     public static final String STAT_GROUP_DETAILS = "stat-group-details";
     public static final String STAT_DETAILS = "stat-details";
+    public static final String ACTION_UNAUTHORIZED_EXCEPTION = "A user cannot approve their own work.";
 
     private static final Logger LOG = getLogger(PaymentInstructionService.class);
 
@@ -90,7 +92,7 @@ public class PaymentInstructionService {
         this.payhubFullRemissionRepository = payhubFullRemissionRepository;
     }
 
-    public PaymentInstruction createPaymentInstruction(BarUser barUser, PaymentInstruction paymentInstruction)  {
+    public PaymentInstruction createPaymentInstruction(BarUser barUser, PaymentInstruction paymentInstruction) {
         PaymentReference nextPaymentReference = paymentReferenceService.getNextPaymentReference(barUser.getSelectedSiteId());
         paymentInstruction.setSiteId(barUser.getSelectedSiteId());
         paymentInstruction.setDailySequenceId(getDailySequentialPaymentId(nextPaymentReference));
@@ -101,15 +103,15 @@ public class PaymentInstructionService {
         if ((barUser.getRoles().contains(BarUserRoleEnum.BAR_FEE_CLERK.getIdamRole()))) {
             savedPaymentInstruction.setStatus(PaymentStatusEnum.PENDING.dbKey());
             paymentInstructionRepository.saveAndRefresh(savedPaymentInstruction);
-            savePaymentInstructionStatus(savedPaymentInstruction,barUser.getId());
+            savePaymentInstructionStatus(savedPaymentInstruction, barUser.getId());
         }
         auditRepository.trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT", paymentInstruction, barUser);
         return savedPaymentInstruction;
     }
 
-    public List<PaymentInstruction> getAllPaymentInstructions(BarUser barUser,  PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto)  {
+    public List<PaymentInstruction> getAllPaymentInstructions(BarUser barUser, PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto) {
         paymentInstructionSearchCriteriaDto.setSiteId(barUser.getSelectedSiteId());
-        PaymentInstructionsSpecifications<PaymentInstruction> paymentInstructionsSpecification = new PaymentInstructionsSpecifications<>(paymentInstructionSearchCriteriaDto,paymentTypeService);
+        PaymentInstructionsSpecifications<PaymentInstruction> paymentInstructionsSpecification = new PaymentInstructionsSpecifications<>(paymentInstructionSearchCriteriaDto, paymentTypeService);
         Sort sort = new Sort(Sort.Direction.DESC, "paymentDate");
         Pageable pageDetails = PageRequest.of(PAGE_NUMBER, MAX_RECORDS_PER_PAGE, sort);
 
@@ -125,7 +127,7 @@ public class PaymentInstructionService {
 
     public long getPaymentInstructionsCount(PaymentInstructionStatusCriteriaDto paymentInstructionStatusCriteriaDto) {
         PaymentInstructionStatusSpecifications<PaymentInstructionStatus> paymentInstructionStatusSpecification = new PaymentInstructionStatusSpecifications(paymentInstructionStatusCriteriaDto);
-        Specification<PaymentInstructionStatus>  pisSpecification = paymentInstructionStatusSpecification.getPaymentInstructionStatusSpecification();
+        Specification<PaymentInstructionStatus> pisSpecification = paymentInstructionStatusSpecification.getPaymentInstructionStatusSpecification();
         return paymentInstructionStatusRepository.count(pisSpecification);
 
     }
@@ -137,7 +139,7 @@ public class PaymentInstructionService {
     public List<PayhubPaymentInstruction> getAllPaymentInstructionsForPayhub(
         BarUser barUser,
         PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto
-    )  {
+    ) {
         paymentInstructionSearchCriteriaDto.setSiteId(barUser.getSelectedSiteId());
         PaymentInstructionsSpecifications<PayhubPaymentInstruction> paymentInstructionsSpecification =
             new PaymentInstructionsSpecifications<>(paymentInstructionSearchCriteriaDto, paymentTypeService);
@@ -147,7 +149,7 @@ public class PaymentInstructionService {
     }
 
     public List<PayhubFullRemission> getAllRemissionsForPayhub(BarUser barUser,
-                                                                    PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto)  {
+                                                               PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto) {
         paymentInstructionSearchCriteriaDto.setSiteId(barUser.getSelectedSiteId());
         PaymentInstructionsSpecifications<PayhubFullRemission> paymentInstructionsSpecification =
             new PaymentInstructionsSpecifications<>(paymentInstructionSearchCriteriaDto, paymentTypeService);
@@ -164,7 +166,7 @@ public class PaymentInstructionService {
     public void deletePaymentInstruction(Integer id, String siteId) {
         paymentInstructionStatusRepository.deleteByPaymentInstructionId(id, siteId);
         int deletedPayment = paymentInstructionRepository.deleteByIdAndSiteId(id, siteId);
-        if (deletedPayment <= 0){
+        if (deletedPayment <= 0) {
             throw new PaymentInstructionNotFoundException(id);
         }
     }
@@ -180,21 +182,21 @@ public class PaymentInstructionService {
         updateValidatorService.validateAll(existingPaymentInstruction, paymentInstructionUpdateRequest);
 
         // Assign post clerk payments to fee clerk
-        if (paymentInstructionUpdateRequest.getStatus().equals(PaymentStatusEnum.DRAFT.dbKey())){
+        if (paymentInstructionUpdateRequest.getStatus().equals(PaymentStatusEnum.DRAFT.dbKey())) {
             paymentInstructionUpdateRequest.setStatus(PaymentStatusEnum.PENDING.dbKey());
         }
 
         updatePaymentInstructionsProps(existingPaymentInstruction, paymentInstructionUpdateRequest);
-		if (PaymentStatusEnum.PENDING.dbKey().equals(paymentInstructionUpdateRequest.getStatus())) {
-			existingPaymentInstruction.setAction(null);
-			existingPaymentInstruction.setActionReason(null);
-			existingPaymentInstruction.setActionComment(null);
-		}
+        if (PaymentStatusEnum.PENDING.dbKey().equals(paymentInstructionUpdateRequest.getStatus())) {
+            existingPaymentInstruction.setAction(null);
+            existingPaymentInstruction.setActionReason(null);
+            existingPaymentInstruction.setActionComment(null);
+        }
         existingPaymentInstruction.setUserId(barUser.getId());
         savePaymentInstructionStatus(existingPaymentInstruction, barUser.getId());
         PaymentInstruction paymentInstruction = paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
 
-        auditRepository.trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction, barUser);
+        auditRepository.trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT", existingPaymentInstruction, barUser);
 
         return paymentInstruction;
     }
@@ -204,6 +206,7 @@ public class PaymentInstructionService {
         PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
             .orElseThrow(() -> new PaymentInstructionNotFoundException(id, barUser.getSelectedSiteId()));
 
+        checkIfSrFeeClerkCanApproveOwnWork(barUser,existingPaymentInstruction,paymentInstructionRequest);
         // handle bgc number
         if (paymentInstructionRequest.getBgcNumber() != null) {
             BankGiroCredit bgc = bankGiroCreditRepository.findByBgcNumber(paymentInstructionRequest.getBgcNumber())
@@ -215,7 +218,7 @@ public class PaymentInstructionService {
         existingPaymentInstruction.setUserId(barUser.getId());
         savePaymentInstructionStatus(existingPaymentInstruction, barUser.getId());
         PaymentInstruction paymentInstruction = paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
-        auditRepository.trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUser);
+        auditRepository.trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT", existingPaymentInstruction, barUser);
         return paymentInstruction;
     }
 
@@ -224,9 +227,9 @@ public class PaymentInstructionService {
     }
 
 
-    public MultiMap getPaymentInstructionStats(String status,boolean sentToPayhub, String siteId) {
+    public MultiMap getPaymentInstructionStats(String status, boolean sentToPayhub, String siteId) {
         List<PaymentInstructionUserStats> paymentInstructionInStatusList = paymentInstructionStatusRepository
-            .getPaymentInstructionsByStatusGroupedByUser(status,sentToPayhub, siteId);
+            .getPaymentInstructionsByStatusGroupedByUser(status, sentToPayhub, siteId);
 
         return Util.createMultimapFromList(paymentInstructionInStatusList);
     }
@@ -249,7 +252,7 @@ public class PaymentInstructionService {
 
     public MultiMap getPaymentInstructionsByUserGroupByActionAndType(String userId, String status, Optional<String> oldStatus, boolean sentToPayhub, String siteId) {
         String oldPaymentStatus = oldStatus.orElse(status);
-        List<PaymentInstructionStats> results =  paymentInstructionStatusRepository.getStatsByUserGroupByActionAndType(userId, status, oldPaymentStatus, sentToPayhub, siteId);
+        List<PaymentInstructionStats> results = paymentInstructionStatusRepository.getStatsByUserGroupByActionAndType(userId, status, oldPaymentStatus, sentToPayhub, siteId);
 
         return createHateoasResponse(results, userId, status, oldStatus.orElse(null));
     }
@@ -280,7 +283,7 @@ public class PaymentInstructionService {
         return linkTo(methodOn(PaymentInstructionController.class)
             .getPaymentInstructionsByIdamId(null, userId, status,
                 null, null, null, null, null,
-                null, null, null, paymentType, action, null, bgcNumber, oldStatus,null)
+                null, null, null, paymentType, action, null, bgcNumber, oldStatus, null)
         ).withRel(rel);
     }
 
@@ -289,7 +292,7 @@ public class PaymentInstructionService {
         paymentInstructionStatusRepository.save(pis);
     }
 
-    public Map<Integer, List<PaymentInstructionStatusHistory>> getStatusHistoryMapForTTB(LocalDate startDate,  LocalDate endDate, String siteId) {
+    public Map<Integer, List<PaymentInstructionStatusHistory>> getStatusHistoryMapForTTB(LocalDate startDate, LocalDate endDate, String siteId) {
 
         if (null != endDate && startDate.isAfter(endDate)) {
             LOG.error("PaymentInstructionService - Error while generating daily fees csv file. Incorrect start and end dates ");
@@ -304,7 +307,7 @@ public class PaymentInstructionService {
         }
 
         List<PaymentInstructionStatusHistory> statusHistoryList = paymentInstructionStatusRepository.getPaymentInstructionStatusHistoryForTTB
-            (startDate.atStartOfDay(), searchEndDate.atStartOfDay(),siteId);
+            (startDate.atStartOfDay(), searchEndDate.atStartOfDay(), siteId);
 
         final Map<Integer, List<PaymentInstructionStatusHistory>> statusHistoryMapByPaymentInstructionId = new HashMap<>();
         for (final PaymentInstructionStatusHistory statusHistory : statusHistoryList) {
@@ -321,7 +324,7 @@ public class PaymentInstructionService {
     }
 
     public List<PaymentInstruction> getAllPaymentInstructionsByTTB(LocalDate startDate, LocalDate endDate, String siteId) {
-        Map<Integer, List<PaymentInstructionStatusHistory>> statusHistortMapForTTB = getStatusHistoryMapForTTB(startDate, endDate,siteId);
+        Map<Integer, List<PaymentInstructionStatusHistory>> statusHistortMapForTTB = getStatusHistoryMapForTTB(startDate, endDate, siteId);
         Iterator<Map.Entry<Integer, List<PaymentInstructionStatusHistory>>> iterator = statusHistortMapForTTB.entrySet().iterator();
         List<PaymentInstruction> paymentInstructionsList = new ArrayList<>();
         while (iterator.hasNext()) {
@@ -334,8 +337,8 @@ public class PaymentInstructionService {
         return paymentInstructionsList;
     }
 
-    private boolean checkIfActionEnabled(PaymentInstructionUpdateRequest paymentInstructionUpdateRequest){
-        boolean[] ret = { true };
+    private boolean checkIfActionEnabled(PaymentInstructionUpdateRequest paymentInstructionUpdateRequest) {
+        boolean[] ret = {true};
         String action = paymentInstructionUpdateRequest.getAction();
         PaymentActionEnum.findByDisplayValue(action).ifPresent(paymentActionEnum ->
             ret[0] = ff4j.check(paymentActionEnum.featureKey()));
@@ -350,14 +353,47 @@ public class PaymentInstructionService {
         BeanUtils.copyProperties(updateRequest, existingPi, propNamesToIgnore);
     }
 
-    private String getDailySequentialPaymentId(PaymentReference paymentReference){
+    private String getDailySequentialPaymentId(PaymentReference paymentReference) {
 
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("%02d", LocalDate.now().getDayOfMonth()))
             .append(paymentReference.getSequenceCharacter())
-            .append(String.format("%04d",paymentReference.getSequenceId()));
+            .append(String.format("%04d", paymentReference.getSequenceId()));
 
         return sb.toString();
+    }
+
+    private boolean checkIfSrFeeClerkCanApproveOwnWork(BarUser barUser,PaymentInstruction existingPaymentInstruction, PaymentInstructionRequest paymentInstructionRequest) {
+
+        if (barUser.getRoles().contains((BarUserRoleEnum.BAR_SENIOR_CLERK).getIdamRole())) {
+            if (existingPaymentInstruction.getStatus().equals(PaymentStatusEnum.PENDING_APPROVAL.dbKey())
+                && paymentInstructionRequest.getStatus().equals(PaymentStatusEnum.APPROVED.dbKey())) {
+                List<PaymentInstructionStatus> statuses = existingPaymentInstruction.getStatuses();
+                Collections.sort(statuses, new PaymentInstructionStatusComparator());
+                for (PaymentInstructionStatus status : statuses) {
+                    if (status.getPaymentInstructionStatusReferenceKey().getStatus().equals(PaymentStatusEnum.DRAFT.dbKey())
+                        || status.getPaymentInstructionStatusReferenceKey().getStatus().equals(PaymentStatusEnum.PENDING.dbKey())
+                        || status.getPaymentInstructionStatusReferenceKey().getStatus().equals(PaymentStatusEnum.VALIDATED.dbKey())
+                        || status.getPaymentInstructionStatusReferenceKey().getStatus().equals(PaymentStatusEnum.PENDING_APPROVAL.dbKey())) {
+                        if (barUser.getId().equals(status.getBarUserId())) {
+                            throw new ActionUnauthorizedException(ACTION_UNAUTHORIZED_EXCEPTION);
+                        }
+                    }
+                }
+            }
+
+        }
+        return true;
+    }
+
+
+
+    private class PaymentInstructionStatusComparator implements Comparator<PaymentInstructionStatus> {
+        @Override
+        public int compare(PaymentInstructionStatus status1, PaymentInstructionStatus status2) {
+            return status1.getPaymentInstructionStatusReferenceKey().getUpdateTime().compareTo(status2.getPaymentInstructionStatusReferenceKey().getUpdateTime());
+        }
+
     }
 
 }
