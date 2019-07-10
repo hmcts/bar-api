@@ -900,13 +900,6 @@ public class PaymentInstructionServiceTest {
     }
 
     @Test(expected = ActionUnauthorizedException.class)
-    public void shouldThrowActionUnauthorizedException_whenUpdatePaymentInstructionIsCalled() {
-        PaymentInstructionService service = mock(PaymentInstructionService.class);
-        doThrow(ActionUnauthorizedException.class).when(service).updatePaymentInstruction(barUserMock,1,null);
-        service.updatePaymentInstruction(barUserMock, 1, null);
-    }
-
-    @Test(expected = ActionUnauthorizedException.class)
     public void shouldThrowActionUnauthorizedException_whenUpdatePaymentInstructionIsCalled1() {
 
         PaymentInstruction pi = new PostalOrderPaymentInstruction();

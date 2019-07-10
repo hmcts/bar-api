@@ -29,7 +29,9 @@ import uk.gov.hmcts.reform.auth.checker.core.user.UserRequestAuthorizer;
 
 import javax.validation.Valid;
 import java.time.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -202,7 +204,9 @@ public class PaymentInstructionController {
         try {
             paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id,card);
         } catch (ActionUnauthorizedException aue) {
-            return new ResponseEntity<>(aue,HttpStatus.FORBIDDEN);
+           Map exception = new HashMap();
+           exception.put("message",aue.getMessage());
+            return new ResponseEntity<>(exception,HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -238,7 +242,9 @@ public class PaymentInstructionController {
         try {
             paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id,cheque);
         } catch (ActionUnauthorizedException aue) {
-            return new ResponseEntity<>(aue.getMessage(),HttpStatus.FORBIDDEN);
+            Map exception = new HashMap();
+            exception.put("message",aue.getMessage());
+            return new ResponseEntity<>(exception,HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -266,11 +272,7 @@ public class PaymentInstructionController {
 		}
 		PaymentInstructionRequest paymentInstructionRequest = PaymentInstructionRequest.paymentInstructionRequestWith()
 				.status(status).build();
-        try {
             paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id, paymentInstructionRequest);
-        } catch (ActionUnauthorizedException aue) {
-            return new ResponseEntity<>(aue.getMessage(),HttpStatus.FORBIDDEN);
-        }
         return new ResponseEntity<>(HttpStatus.OK);
 	}
 
@@ -328,7 +330,9 @@ public class PaymentInstructionController {
         try {
             paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id,cash);
         } catch (ActionUnauthorizedException aue) {
-            return new ResponseEntity<>(aue.getMessage(),HttpStatus.FORBIDDEN);
+            Map exception = new HashMap();
+            exception.put("message",aue.getMessage());
+            return new ResponseEntity<>(exception,HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -366,7 +370,9 @@ public class PaymentInstructionController {
            paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id, postalOrder);
        }
        catch(ActionUnauthorizedException aue){
-           return new ResponseEntity<>(aue.getMessage(),HttpStatus.FORBIDDEN);
+           Map exception = new HashMap();
+           exception.put("message",aue.getMessage());
+           return new ResponseEntity<>(exception,HttpStatus.FORBIDDEN);
        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -402,7 +408,9 @@ public class PaymentInstructionController {
         try {
             paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id, allpay);
         } catch (ActionUnauthorizedException aue) {
-            return new ResponseEntity<>(aue.getMessage(),HttpStatus.FORBIDDEN);
+            Map exception = new HashMap();
+            exception.put("message",aue.getMessage());
+            return new ResponseEntity<>(exception,HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
