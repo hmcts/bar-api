@@ -906,4 +906,40 @@ public class PaymentInstructionServiceTest {
         service.updatePaymentInstruction(barUserMock, 1, null);
     }
 
+    @Test(expected = ActionUnauthorizedException.class)
+    public void shouldThrowActionUnauthorizedException_whenUpdatePaymentInstructionIsCalled1() {
+
+        PaymentInstruction pi = new PostalOrderPaymentInstruction();
+        pi.setStatus("P");
+        pi.setUserId("123456");
+        PaymentInstructionStatus status = new PaymentInstructionStatus(pi.getUserId(),pi);
+
+        List<PaymentInstructionStatus> statuses = new ArrayList<>();
+        statuses.add(status);
+
+        pi.setStatus("V");
+        status = new PaymentInstructionStatus(pi.getUserId(),pi);
+        statuses.add(status);
+
+        pi.setStatus("PA");
+        status = new PaymentInstructionStatus(pi.getUserId(),pi);
+        statuses.add(status);
+
+        pi.setStatuses(statuses);
+
+        PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
+            .amount(200)
+            .payerName("Payer Name")
+            .currency("GBP")
+            .status("A")
+            .bgcNumber("12345").build();
+        when(barUserMock.getRoles()).thenReturn(BAR_SR_FEE_CLERK_ROLE);
+        when(barUserMock.getId()).thenReturn("123456");
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), eq("Y431"))).thenReturn(Optional.of(pi));
+        when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
+            .thenAnswer(i -> i.getArguments()[0]);
+        when(bankGiroCreditRepositoryMock.save(any(BankGiroCredit.class))).thenAnswer(i -> i.getArguments()[0]);
+        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(barUserMock, 1, pir);
+    }
+
 }
