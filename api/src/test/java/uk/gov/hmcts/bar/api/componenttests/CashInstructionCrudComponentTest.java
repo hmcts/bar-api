@@ -411,7 +411,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 		Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
 				.amount(550).currency("GBP").status("D").build();
 
-		restActions.post("/allpay", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
+		restActions.post("/cash", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
 
 		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
 				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
@@ -426,7 +426,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 		Cash modifiedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
 				.amount(550).currency("GBP").status("PA").build();
 
-		restActionsForFeeClerk.put("/allpay/1", modifiedCashPaymentInstructionRequest).andExpect(status().isOk());
+		restActionsForFeeClerk.put("/cash/1", modifiedCashPaymentInstructionRequest).andExpect(status().isOk());
 
 		String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk())
 				.andExpect(content().contentType("application/json;charset=UTF-8")).andReturn().getResponse()
@@ -442,7 +442,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 		Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
 				.amount(550).currency("GBP").status("D").build();
 
-		restActions.post("/allpay", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
+		restActions.post("/cash", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
 
 		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
 				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
@@ -457,7 +457,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 		Cash pendingApprovedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
 				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").build();
 
-		restActionsForFeeClerk.put("/allpay/1", pendingApprovedCashPaymentInstructionRequest)
+		restActionsForFeeClerk.put("/cash/1", pendingApprovedCashPaymentInstructionRequest)
 				.andExpect(status().isOk());
 
 		restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
@@ -465,7 +465,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 		Cash approvedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
 				.amount(550).currency("GBP").status("A").build();
 
-		restActionsForSrFeeClerk.put("/allpay/1", approvedCashPaymentInstructionRequest).andExpect(status().isOk());
+		restActionsForSrFeeClerk.put("/cash/1", approvedCashPaymentInstructionRequest).andExpect(status().isOk());
 
 		String jsonResponse = restActionsForDM.get("/users/pi-stats?status=A").andExpect(status().isOk())
 				.andExpect(content().contentType("application/json;charset=UTF-8")).andReturn().getResponse()
@@ -482,7 +482,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 		Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
 				.amount(550).currency("GBP").status("D").build();
 
-		restActions.post("/allpay", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
+		restActions.post("/cash", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
 
 		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
 				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
@@ -497,7 +497,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 		Cash pendingApprovedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
 				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").build();
 
-		restActionsForFeeClerk.put("/allpay/1", pendingApprovedCashPaymentInstructionRequest)
+		restActionsForFeeClerk.put("/cash/1", pendingApprovedCashPaymentInstructionRequest)
 				.andExpect(status().isOk());
 
 		restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
@@ -505,7 +505,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 		Cash approvedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
 				.amount(550).currency("GBP").status("A").build();
 
-		restActionsForSrFeeClerk.put("/allpay/1", approvedCashPaymentInstructionRequest).andExpect(status().isOk());
+		restActionsForSrFeeClerk.put("/cash/1", approvedCashPaymentInstructionRequest).andExpect(status().isOk());
 
 		Cash rejectedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
 				.amount(550).currency("GBP").status("RDM").build();
@@ -525,7 +525,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 		Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
 				.amount(550).currency("GBP").status("D").build();
 
-		restActions.post("/allpay", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
+		restActions.post("/cash", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
 
 		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
 				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
@@ -540,7 +540,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 		Cash pendingApprovedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
 				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").build();
 
-		restActionsForFeeClerk.put("/allpay/1", pendingApprovedCashPaymentInstructionRequest)
+		restActionsForFeeClerk.put("/cash/1", pendingApprovedCashPaymentInstructionRequest)
 				.andExpect(status().isOk());
 
 		restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
@@ -548,7 +548,7 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
 		Cash approvedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
 				.amount(550).currency("GBP").status("A").build();
 
-		restActionsForSrFeeClerk.put("/allpay/1", approvedCashPaymentInstructionRequest).andExpect(status().isOk());
+		restActionsForSrFeeClerk.put("/cash/1", approvedCashPaymentInstructionRequest).andExpect(status().isOk());
 
 		Cash rejectedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer")
 				.amount(550).currency("GBP").status("RDM").build();
@@ -657,5 +657,40 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
                 assertThat(count.equals(1));
             }));
     }
+
+    @Test
+    public void whenOwnWorkReviewedBySrFeeClerk_expect403() throws Exception {
+        Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP").status("D").build();
+
+        restActions.post("/cash", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
+
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(500).feeVersion("1").build();
+
+        restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+
+        PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+            .build();
+
+        restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+        request = paymentInstructionUpdateRequestWith().status("PA").action("Process")
+            .build();
+
+        restActionsForSrFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+
+        Cash approvedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer").amount(500)
+            .currency("GBP").status("A").build();
+
+
+        restActionsForSrFeeClerk.put("/cash/1", approvedCashPaymentInstructionRequest)
+            .andExpect(status().isForbidden());
+
+    }
+
 
 }

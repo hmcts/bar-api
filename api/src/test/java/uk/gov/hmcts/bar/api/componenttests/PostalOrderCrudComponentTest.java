@@ -407,7 +407,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").postalOrderNumber("000000")
             .build();
 
-        restActions.post("/allpay", proposedPostalOrderPaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/postal-orders", proposedPostalOrderPaymentInstructionRequest).andExpect(status().isCreated());
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
         		.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
@@ -423,7 +423,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").postalOrderNumber("000000")
             .build();
 
-        restActionsForFeeClerk.put("/allpay/1", modifiedPostalOrderPaymentInstructionRequest)
+        restActionsForFeeClerk.put("/postal-orders/1", modifiedPostalOrderPaymentInstructionRequest)
             .andExpect(status().isOk());
 
         String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk())
@@ -442,7 +442,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").postalOrderNumber("000000")
             .build();
 
-        restActions.post("/allpay", proposedPostalOrderPaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/postal-orders", proposedPostalOrderPaymentInstructionRequest).andExpect(status().isCreated());
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
         		.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
@@ -458,7 +458,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").postalOrderNumber("000000")
             .build();
 
-        restActionsForFeeClerk.put("/allpay/1", pendingApprovedPostalOrderPaymentInstructionRequest)
+        restActionsForFeeClerk.put("/postal-orders/1", pendingApprovedPostalOrderPaymentInstructionRequest)
             .andExpect(status().isOk());
 
         restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
@@ -467,7 +467,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer").amount(550).currency("GBP").status("A").postalOrderNumber("000000")
             .build();
 
-        restActionsForSrFeeClerk.put("/allpay/1", approvedPostalOrderPaymentInstructionRequest)
+        restActionsForSrFeeClerk.put("/postal-orders/1", approvedPostalOrderPaymentInstructionRequest)
             .andExpect(status().isOk());
 
         String jsonResponse = restActionsForDM.get("/users/pi-stats?status=A").andExpect(status().isOk())
@@ -486,7 +486,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").postalOrderNumber("000000")
             .build();
 
-        restActions.post("/allpay", proposedPostalOrderPaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/postal-orders", proposedPostalOrderPaymentInstructionRequest).andExpect(status().isCreated());
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
         		.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
@@ -502,7 +502,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").postalOrderNumber("000000")
             .build();
 
-        restActionsForFeeClerk.put("/allpay/1", pendingApprovedPostalOrderPaymentInstructionRequest)
+        restActionsForFeeClerk.put("/postal-orders/1", pendingApprovedPostalOrderPaymentInstructionRequest)
             .andExpect(status().isOk());
 
         restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
@@ -511,7 +511,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer").amount(550).currency("GBP").status("A").postalOrderNumber("000000")
             .build();
 
-        restActionsForSrFeeClerk.put("/allpay/1", approvedPostalOrderPaymentInstructionRequest)
+        restActionsForSrFeeClerk.put("/postal-orders/1", approvedPostalOrderPaymentInstructionRequest)
             .andExpect(status().isOk());
 
         PostalOrder rejectedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
@@ -534,7 +534,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").postalOrderNumber("000000")
             .build();
 
-        restActions.post("/allpay", proposedPostalOrderPaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/postal-orders", proposedPostalOrderPaymentInstructionRequest).andExpect(status().isCreated());
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
         		.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
@@ -550,7 +550,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").postalOrderNumber("000000")
             .build();
 
-        restActionsForFeeClerk.put("/allpay/1", pendingApprovedPostalOrderPaymentInstructionRequest)
+        restActionsForFeeClerk.put("/postal-orders/1", pendingApprovedPostalOrderPaymentInstructionRequest)
             .andExpect(status().isOk());
 
         restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
@@ -559,7 +559,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer").amount(550).currency("GBP").status("A").postalOrderNumber("000000")
             .build();
 
-        restActionsForSrFeeClerk.put("/allpay/1", approvedPostalOrderPaymentInstructionRequest)
+        restActionsForSrFeeClerk.put("/postal-orders/1", approvedPostalOrderPaymentInstructionRequest)
             .andExpect(status().isOk());
 
         PostalOrder rejectedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
@@ -707,6 +707,40 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             }));
     }
 
+
+    @Test
+    public void whenOwnWorkReviewedBySrFeeClerk_expect403() throws Exception {
+        PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP").status("D")
+            .postalOrderNumber("000000").build();
+        restActions.post("/cash", proposedPostalOrderPaymentInstructionRequest).andExpect(status().isCreated());
+
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(500).feeVersion("1").build();
+
+        restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+
+        PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+            .build();
+
+        restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+        request = paymentInstructionUpdateRequestWith().status("PA").action("Process")
+            .build();
+
+        restActionsForSrFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+
+        PostalOrder approvedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith().payerName("Mr Payer Payer").amount(500)
+            .currency("GBP").status("A").build();
+
+
+        restActionsForSrFeeClerk.put("/cash/1", approvedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isForbidden());
+
+    }
 }
 
 
