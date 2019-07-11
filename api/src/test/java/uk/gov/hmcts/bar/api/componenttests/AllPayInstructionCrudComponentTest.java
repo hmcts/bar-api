@@ -778,4 +778,39 @@ public class AllPayInstructionCrudComponentTest extends ComponentTestBase {
 
     }
 
+    @Test
+    public void whenOwnWorkReviewedBySrFeeClerk_expect403() throws Exception {
+        AllPay proposedAllPayPaymentInstructionRequest = allPayPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP")
+            .status("D")
+            .allPayTransactionId("12345").build();
+        restActions.post("/allpay", proposedAllPayPaymentInstructionRequest).andExpect(status().isCreated());
+
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(500).feeVersion("1").build();
+
+        restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+
+        PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+            .build();
+
+        restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+        request = paymentInstructionUpdateRequestWith().status("PA").action("Process")
+            .build();
+
+        restActionsForSrFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+
+        AllPay approvedAllpayPaymentInstructionRequest = allPayPaymentInstructionRequestWith().payerName("Mr Payer Payer").amount(500)
+            .currency("GBP").status("A").allPayTransactionId("12345").build();
+
+
+        restActionsForSrFeeClerk.put("/allpay/1", approvedAllpayPaymentInstructionRequest)
+            .andExpect(status().isForbidden());
+
+    }
+
 }

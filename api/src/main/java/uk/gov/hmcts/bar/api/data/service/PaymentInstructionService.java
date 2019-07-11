@@ -21,6 +21,7 @@ import uk.gov.hmcts.bar.api.controllers.payment.PaymentInstructionController;
 import uk.gov.hmcts.bar.api.data.enums.BarUserRoleEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentActionEnum;
 import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
+import uk.gov.hmcts.bar.api.data.exceptions.ActionUnauthorizedException;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentInstructionNotFoundException;
 import uk.gov.hmcts.bar.api.data.exceptions.PaymentProcessException;
 import uk.gov.hmcts.bar.api.data.model.*;
@@ -48,7 +49,7 @@ public class PaymentInstructionService {
 
     public static final String STAT_GROUP_DETAILS = "stat-group-details";
     public static final String STAT_DETAILS = "stat-details";
-
+    public static final String ACTION_UNAUTHORIZED_EXCEPTION_MESSAGE = "A user cannot review their own work.";
     private static final Logger LOG = getLogger(PaymentInstructionService.class);
 
     private static final List<String> GROUPED_TYPES = Arrays.asList("CHEQUE", "POSTAL_ORDER");
@@ -204,6 +205,7 @@ public class PaymentInstructionService {
         PaymentInstruction existingPaymentInstruction = optionalPaymentInstruction
             .orElseThrow(() -> new PaymentInstructionNotFoundException(id, barUser.getSelectedSiteId()));
 
+        checkIfSrFeeClerkCanApproveOwnWork(barUser,existingPaymentInstruction,paymentInstructionRequest);
         // handle bgc number
         if (paymentInstructionRequest.getBgcNumber() != null) {
             BankGiroCredit bgc = bankGiroCreditRepository.findByBgcNumber(paymentInstructionRequest.getBgcNumber())
@@ -360,4 +362,37 @@ public class PaymentInstructionService {
         return sb.toString();
     }
 
+
+    private boolean checkIfSrFeeClerkCanApproveOwnWork(BarUser barUser,PaymentInstruction existingPaymentInstruction, PaymentInstructionRequest paymentInstructionRequest) {
+
+        if (barUser.getRoles().contains((BarUserRoleEnum.BAR_SENIOR_CLERK).getIdamRole())) {
+            if (existingPaymentInstruction.getStatus().equals(PaymentStatusEnum.PENDING_APPROVAL.dbKey())
+                && paymentInstructionRequest.getStatus().equals(PaymentStatusEnum.APPROVED.dbKey())) {
+                List<PaymentInstructionStatus> statuses = existingPaymentInstruction.getStatuses();
+                Collections.sort(statuses, new PaymentInstructionStatusComparator());
+                for (PaymentInstructionStatus status : statuses) {
+                    if (status.getPaymentInstructionStatusReferenceKey().getStatus().equals(PaymentStatusEnum.DRAFT.dbKey())
+                        || status.getPaymentInstructionStatusReferenceKey().getStatus().equals(PaymentStatusEnum.PENDING.dbKey())
+                        || status.getPaymentInstructionStatusReferenceKey().getStatus().equals(PaymentStatusEnum.VALIDATED.dbKey())
+                        || status.getPaymentInstructionStatusReferenceKey().getStatus().equals(PaymentStatusEnum.PENDING_APPROVAL.dbKey())) {
+                        if (barUser.getId().equals(status.getBarUserId())) {
+                            throw new ActionUnauthorizedException(ACTION_UNAUTHORIZED_EXCEPTION_MESSAGE);
+                        }
+                    }
+                }
+            }
+
+        }
+        return true;
+    }
+
+
+
+    private class PaymentInstructionStatusComparator implements Comparator<PaymentInstructionStatus> {
+        @Override
+        public int compare(PaymentInstructionStatus status1, PaymentInstructionStatus status2) {
+            return status1.getPaymentInstructionStatusReferenceKey().getUpdateTime().compareTo(status2.getPaymentInstructionStatusReferenceKey().getUpdateTime());
+        }
+
+    }
 }

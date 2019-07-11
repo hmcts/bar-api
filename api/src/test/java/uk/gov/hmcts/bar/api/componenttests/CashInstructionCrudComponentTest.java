@@ -658,4 +658,38 @@ public class CashInstructionCrudComponentTest extends ComponentTestBase {
             }));
     }
 
+    @Test
+    public void whenOwnWorkReviewedBySrFeeClerk_expect403() throws Exception {
+        Cash proposedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP").status("D").build();
+
+        restActions.post("/cash", proposedCashPaymentInstructionRequest).andExpect(status().isCreated());
+
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(500).feeVersion("1").build();
+
+        restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+
+        PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+            .build();
+
+        restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+        request = paymentInstructionUpdateRequestWith().status("PA").action("Process")
+            .build();
+
+        restActionsForSrFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+
+        Cash approvedCashPaymentInstructionRequest = cashPaymentInstructionRequestWith().payerName("Mr Payer Payer").amount(500)
+            .currency("GBP").status("A").build();
+
+
+        restActionsForSrFeeClerk.put("/cash/1", approvedCashPaymentInstructionRequest)
+            .andExpect(status().isForbidden());
+
+    }
+
 }
