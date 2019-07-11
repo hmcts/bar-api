@@ -49,7 +49,7 @@ public class PaymentInstructionService {
 
     public static final String STAT_GROUP_DETAILS = "stat-group-details";
     public static final String STAT_DETAILS = "stat-details";
-    public static final String ACTION_UNAUTHORIZED_EXCEPTION = "A user cannot approve their own work.";
+    public static final String ACTION_UNAUTHORIZED_EXCEPTION_MESSAGE = "A user cannot review their own work.";
 
     private static final Logger LOG = getLogger(PaymentInstructionService.class);
 
@@ -376,7 +376,7 @@ public class PaymentInstructionService {
                         || status.getPaymentInstructionStatusReferenceKey().getStatus().equals(PaymentStatusEnum.VALIDATED.dbKey())
                         || status.getPaymentInstructionStatusReferenceKey().getStatus().equals(PaymentStatusEnum.PENDING_APPROVAL.dbKey())) {
                         if (barUser.getId().equals(status.getBarUserId())) {
-                            throw new ActionUnauthorizedException(ACTION_UNAUTHORIZED_EXCEPTION);
+                            throw new ActionUnauthorizedException(ACTION_UNAUTHORIZED_EXCEPTION_MESSAGE);
                         }
                     }
                 }
