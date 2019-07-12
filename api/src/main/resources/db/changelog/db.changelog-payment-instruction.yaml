@@ -895,3 +895,9 @@ databaseChangeLog:
             tableName: payment_instruction_payhub_reference
         - sql: >
             ALTER TABLE payment_instruction_payhub_reference ADD COLUMN id SERIAL PRIMARY KEY;
+  - changeSet:
+      id: 40
+      author: akiss
+      changes:
+        - sql: >
+            insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('register-user-idam', 0, 'Create user in idam');
