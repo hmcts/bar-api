@@ -1,200 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress>
-        <notes>Does not apply as tomcat is not installed as a service</notes>
-        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
-        <cve>CVE-2016-6325</cve>
+        <notes>Latest liquibase issues hopefully it will be solved in the future release</notes>
+        <cve>CVE-2018-14040</cve>
+        <cve>CVE-2018-14041</cve>
+        <cve>CVE-2018-14042</cve>
+        <cve>CVE-2019-8331</cve>
+        <cve>CVE-2015-9251</cve>
+        <cve>CVE-2019-11358</cve>
     </suppress>
     <suppress>
-        <notes>Does not apply as tomcat is not installed as a service</notes>
-        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
-        <cve>CVE-2016-5425</cve>
-    </suppress>
-    <suppress>
-        <notes>Does not apply as tomcat is configured to run as HTTP only</notes>
-        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
-        <cve>CVE-2017-6056</cve>
-    </suppress>
-    <suppress>
-        <notes>Does not apply as we don't use Jackson XmlMapper</notes>
-        <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-.*:.*$</gav>
-        <cve>CVE-2016-7051</cve>
-    </suppress>
-    <suppress>
-        <notes>Does not apply as we don't use Jackson XmlMapper</notes>
-        <gav regex="true">^com\.fasterxml\.jackson\.datatype:jackson-.*:.*$</gav>
-        <cve>CVE-2016-7051</cve>
-    </suppress>
-    <suppress>
-        <notes>Suppress spring-boot-starter-data-jpa being matched as spring-data-jpa</notes>
-        <gav regex="true">^org\.springframework\.boot:spring-boot-starter-data-jpa:.*$</gav>
-        <cpe>cpe:/a:pivotal_software:spring_data_jpa</cpe>
-    </suppress>
-    <suppress>
-        <notes>Incorrect library matched</notes>
-        <gav regex="true">^io\.jsonwebtoken:jjwt:.*$</gav>
-        <cpe>cpe:/a:sonatype:nexus</cpe>
-    </suppress>
-    <suppress>
-        <notes>We are not using JSP's so, this is not impacting us</notes>
-        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
-        <cve>CVE-2017-12617</cve>
-    </suppress>
-    <suppress>
-        <notes>We are not using JSP's so, this is not impacting us</notes>
-        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
-        <cve>CVE-2017-6056</cve>
-    </suppress>
-
-
-    <suppress>
-        <notes>Access to prod boxes is controlled. We can trust local users to not use this vulnerability. if they are
-            on box they can do lot worse anyway.
-        </notes>
-        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
-        <cve>CVE-2016-6325</cve>
-    </suppress>
-
-    <suppress>
-        <notes>Access to prod boxes is controlled. We can trust local users to not use this vulnerability. if they are
-            on box they can do lot worse anyway.
-        </notes>
-        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
-        <cve>CVE-2016-5425</cve>
-    </suppress>
-    <suppress>
-        <notes>We don't receive a direct traffic to API node. Hence we can suppress this warning.
-        </notes>
-        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
-        <cve>CVE-2017-6056</cve>
-    </suppress>
-    <suppress>
-        <notes>We are not using Red Hat linux, we are using CentOS</notes>
-        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
-        <cve>CVE-2016-6325</cve>
-    </suppress>
-    <suppress>
-        <notes>Access to prod boxes is controlled. We can trust local users to not use this vulnerability. if they are
-            on box they can do lot worse anyway.
-        </notes>
-        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
-        <cve>CVE-2016-5425</cve>
-    </suppress>
-
- <suppress>
-        <notes>we are not using Jsps</notes>
-
-
-        <cve>CVE-2017-6056</cve>
-    </suppress>
-    <suppress>
-        <notes>We are not using RedHat</notes>
-
-        <cve>CVE-2016-6325</cve>
-    </suppress>
-    <suppress>
-        <notes>Access to prod boxes is controlled. We can trust local users to not use this vulnerability. if they are
-            on box they can do lot worse anyway.
-        </notes>
-
-        <cve>CVE-2016-5425</cve>
-    </suppress>
-    <suppress>
-        <notes>We are not using RedHat</notes>
-
-        <cve>CVE-2017-8806</cve>
-    </suppress>
-    <suppress>
-        <notes>Will be fixed later because of time constraints</notes>
-
-        <cve>CVE-2017-17485</cve>
-    </suppress>
-     <suppress>
-	             <notes>We are not impacted by it as we control the client who use these endpoints</notes>
-		     <cve>CVE-2018-5968</cve>
-     </suppress>
-    <!-- FIXME by https://tools.hmcts.net/jira/browse/PAY-696 -->
-    <suppress>
-        <notes><![CDATA[
-			FasterXML jackson-databind before 2.8.11.1 and 2.9.x before 2.9.5 allows unauthenticated remote code execution because of an incomplete fix for the CVE-2017-7525 deserialization flaw
-			]]></notes>
-        <gav regex="true">.*$</gav>
-        <cve>CVE-2018-7489</cve>
-    </suppress>
-    <!-- FIXME by https://tools.hmcts.net/jira/browse/PAY-703 -->
-    <suppress>
-        <notes><![CDATA[
-			A race condition in the postgresql init script could be used by attackers able to access the postgresql account to escalate their privileges to root.
-			]]></notes>
-        <gav regex="true">.*$</gav>
-        <cve>CVE-2017-14798</cve>
-    </suppress>
-    <suppress>
-        <notes>Postgres needs to be upgraded. Ticket BAR-359 has been created for this task</notes>
-        <cve>CVE-2018-1115</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: service-token-parser-1.0.5.jar
-   ]]></notes>
-        <gav regex="true">^uk\.gov\.hmcts\.auth\.provider\.service:service-token-parser.*:.*$</gav>
-        <cpe>cpe:/a:pivotal_software:spring_framework</cpe>
-        <cpe>cpe:/a:pivotal:spring_framework</cpe>
-        <cpe>cpe:/a:pivotal_software:spring_boot</cpe>
-    </suppress>
-
-
-    <suppress>
-        <notes><![CDATA[
-   file name: user-token-parser-1.0.1.2.jar
-   ]]></notes>
-        <gav regex="true">^uk\.gov\.hmcts\.auth\.idam:user-token-parser.*:.*$</gav>
-        <cpe>cpe:/a:pivotal_software:spring_framework</cpe>
-        <cpe>cpe:/a:pivotal:spring_framework</cpe>
-        <cpe>cpe:/a:pivotal_software:spring_boot</cpe>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: rxnetty-0.4.9.jar,
-   service-auth-provider-client-1.0.1.jar has dependency to it
-   ]]></notes>
-        <gav regex="true">^io\.reactivex:rxnetty.*:.*$</gav>
-        <cpe>cpe:/a:netty_project:netty</cpe>
-    </suppress>
-    <suppress>
-       <notes>This security vulnerability is for interactive installer in PostgreSQL only</notes>
-       <cve>CVE-2016-7048</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        Shadowed dependency from AppInsights-Core. Unfortunately, not propagating and applying an override for transitive dependencies.
-        Anyway, this is specific to deserialisation of AtomicDoubleArray and CompoundOrdering classes: https://github.com/google/guava/wiki/CVE-2018-10237
-       ]]></notes>
-        <gav regex="true">^com\.google\.guava:guava:.*$</gav>
-        <cve>CVE-2018-10237</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-    file name: slf4j-api-1.7.25.jar
-    ]]></notes>
-        <gav regex="true">^org\.slf4j:slf4j-api:.*$</gav>
-        <cve>CVE-2018-8088</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-    file name: jul-to-slf4j-1.7.25.jar
-    ]]></notes>
-        <gav regex="true">^org\.slf4j:jul-to-slf4j:.*$</gav>
-        <cve>CVE-2018-8088</cve>
-    </suppress>
-    <suppress>
-        <notes>CVE-2018-1258: we do not use Spring Method Security, so this does not affect us. see https://pivotal.io/security/cve-2018-1258</notes>        
+        <notes>Latest spring security issues (5.1.5.RELEASE)</notes>
         <cve>CVE-2018-1258</cve>
     </suppress>
     <suppress>
-        <notes>CVE-2019-0232: Not a real threat for us currently. see https://community.pivotal.io/s/question/0D50e00005dK5Xz/hellowhen-your-team-will-be-released-new-security-patch-update-to-fix-your-tomcat-httpsbitly2xbmakuversions-affected900m1-to-9017-850-to-8539-700-to-7093cheers</notes>
-        <cve>CVE-2019-0232</cve>
+        <notes>jackson-databind-2.9.9 issues although there is a newer one (2.9.9.1) none of the libraries using the currently </notes>
+        <cve>CVE-2019-12814</cve>
     </suppress>
-
 </suppressions>
 

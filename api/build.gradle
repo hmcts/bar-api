@@ -41,14 +41,14 @@ sonarqube {
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     }
 }
-def javaLoggingVersion = '3.0.4'
+def javaLoggingVersion = '5.0.1'
 
 dependencies {
 
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: javaLoggingVersion
   	compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: javaLoggingVersion
   	compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: javaLoggingVersion
-    compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '1.0.1'
+    compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.0.0'
 
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -95,6 +95,8 @@ dependencies {
     testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'com.github.tomakehurst:wiremock:2.6.0'
+    testCompile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.1.1'
+
 
     // smoke
     smokeTestCompile sourceSets.test.runtimeClasspath
