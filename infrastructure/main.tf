@@ -39,7 +39,7 @@ module "bar-api" {
     # db
     SPRING_DATASOURCE_USERNAME = "${module.bar-database.user_name}"
     SPRING_DATASOURCE_PASSWORD = "${module.bar-database.postgresql_password}"
-    SPRING_DATASOURCE_URL = "jdbc:postgresql://${module.bar-database.host_name}:${module.bar-database.postgresql_listen_port}/${module.bar-database.postgresql_database}?ssl=true"
+    SPRING_DATASOURCE_URL = "jdbc:postgresql://${module.bar-database.host_name}:${module.bar-database.postgresql_listen_port}/${module.bar-database.postgresql_database}?sslmode=require"
     # idam
     IDAM_CLIENT_BASE_URL = "${var.idam_api_url}"
     S2S_SECRET = "${data.azurerm_key_vault_secret.s2s_secret.value}"
@@ -49,6 +49,7 @@ module "bar-api" {
     # enable/disables liquibase run
     SPRING_LIQUIBASE_ENABLED = "${var.liquibase_enabled}"
     SITE_API_URL = "http://bar-api-${local.local_env}.service.core-compute-${local.local_env}.internal"
+    fake1 = fake1
   }
 }
 
