@@ -49,7 +49,6 @@ module "bar-api" {
     # enable/disables liquibase run
     SPRING_LIQUIBASE_ENABLED = "${var.liquibase_enabled}"
     SITE_API_URL = "http://bar-api-${local.local_env}.service.core-compute-${local.local_env}.internal"
-    fake2 = "fake2"
   }
 }
 
