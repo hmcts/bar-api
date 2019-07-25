@@ -707,6 +707,40 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             }));
     }
 
+
+    @Test
+    public void whenOwnWorkReviewedBySrFeeClerk_expect403() throws Exception {
+        PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(500)
+            .currency("GBP").status("D")
+            .postalOrderNumber("000000").build();
+        restActions.post("/cash", proposedPostalOrderPaymentInstructionRequest).andExpect(status().isCreated());
+
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(500).feeVersion("1").build();
+
+        restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+
+        PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+            .build();
+
+        restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+        request = paymentInstructionUpdateRequestWith().status("PA").action("Process")
+            .build();
+
+        restActionsForSrFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+
+        PostalOrder approvedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith().payerName("Mr Payer Payer").amount(500)
+            .currency("GBP").status("A").build();
+
+
+        restActionsForSrFeeClerk.put("/cash/1", approvedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isForbidden());
+
+    }
 }
 
 

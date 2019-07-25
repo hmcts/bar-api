@@ -629,5 +629,38 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 					assertThat(chequePayList.get(1).equals(retrievedChequePaymentInstruction2));
 				}));
 	}
+    @Test
+    public void whenOwnWorkReviewedBySrFeeClerk_expect403() throws Exception {
+        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer").amount(500).currency("GBP").chequeNumber("000000").status("D").build();
+
+        restActions.post("/cheques", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
+
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+            .paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(500).feeVersion("1").build();
+
+        restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+
+        PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+            .build();
+
+        restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+        request = paymentInstructionUpdateRequestWith().status("PA").action("Process")
+            .build();
+
+        restActionsForSrFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+
+
+        Cheque approvedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith().payerName("Mr Payer Payer").amount(500)
+            .currency("GBP").status("A").build();
+
+
+        restActionsForSrFeeClerk.put("/cheques/1", approvedChequePaymentInstructionRequest)
+            .andExpect(status().isForbidden());
+
+    }
+
+
 
 }
