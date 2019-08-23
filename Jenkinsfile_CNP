@@ -15,7 +15,7 @@ def app = "api"
 
 withPipeline(type, product, app) {
     setVaultName('bar')
-    enableDockerBuild('bar')
+    enableDockerBuild()
     installCharts()
     enableSlackNotifications('#bar-tech')
 }
