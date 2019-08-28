@@ -9,7 +9,7 @@ postgresql:
 
 java:
   # Don't modify below here
-  image: ${IMAGE_NAME}
+  image: 'hmctspublic.azurecr.io/hmcts/bar-api:latest'
   ingressHost: ${SERVICE_FQDN}
 
   applicationPort: 8080
