@@ -13,14 +13,7 @@ def product = "bar"
 
 def app = "api"
 
-def vaultOverrides = [
-    'preview': 'aat',
-    'hmctsdemo': 'aat',
-
-]
-
 withPipeline(type, product, app) {
-    overrideVaultEnvironments(vaultOverrides)
     enableDockerBuild()
     installCharts()
     enableSlackNotifications('#bar-tech')
