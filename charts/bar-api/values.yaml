@@ -9,6 +9,8 @@ postgresql:
 
 java:
   # Don't modify below here
+  image: 'hmctspublic.azurecr.io/bar/api:latest'
+  ingressHost: ${SERVICE_FQDN}
   applicationPort: 8080
   keyVaults:
     "s2s":
