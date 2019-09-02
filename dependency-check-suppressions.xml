@@ -19,6 +19,8 @@
     <suppress>
         <notes>jackson-databind-2.9.9 issues although there is a newer one (2.9.9.1) none of the libraries using the currently </notes>
         <cve>CVE-2019-12814</cve>
+        <cve>CVE-2019-10086</cve>
+        <cve>CVE-2019-15052</cve>
     </suppress>
 </suppressions>
 
