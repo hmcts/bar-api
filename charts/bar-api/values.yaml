@@ -9,9 +9,8 @@ postgresql:
 
 java:
   # Don't modify below here
-  image: ${IMAGE_NAME}
+  image: 'hmctspublic.azurecr.io/bar/api:latest'
   ingressHost: ${SERVICE_FQDN}
-
   applicationPort: 8080
   keyVaults:
     "s2s":
@@ -19,7 +18,7 @@ java:
       secrets:
         - microservicekey-bar-api
   environment:
-    SPRING_DATASOURCE_URL: jdbc:postgresql://${SERVICE_NAME}-bar-db:5432/bar
+    SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ .Release.Name }}-bar-db:5432/bar"
     SPRING_DATASOURCE_USERNAME: bar
     SPRING_DATASOURCE_PASSWORD: bar
 
