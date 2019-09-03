@@ -45,7 +45,7 @@ module "bar-api" {
     S2S_SECRET = "${data.azurerm_key_vault_secret.s2s_secret.value}"
     S2S_AUTH_URL = "http://${var.idam_s2s_url_prefix}-${local.local_env}.service.${local.local_ase}.internal"
     # payhub
-    PAYMENT_API_URL = "https://payment-api-${var.env}.service.core-compute-${var.env}.internal/"
+    PAYMENT_API_URL = "https://payment-api-${local.local_env}.service.core-compute-${local.local_env}.internal/"
     # enable/disables liquibase run
     SPRING_LIQUIBASE_ENABLED = "${var.liquibase_enabled}"
     SITE_API_URL = "http://bar-api-${local.local_env}.service.core-compute-${local.local_env}.internal"
