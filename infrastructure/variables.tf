@@ -62,5 +62,5 @@ variable "liquibase_enabled" {
 }
 variable "pay_api_url" {
   type = "string"
-  default = ""
+  default = "http://payment-api-aat.service.core-compute-aat.internal/"
 }
