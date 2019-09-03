@@ -60,3 +60,7 @@ variable "common_tags" {
 variable "liquibase_enabled" {
   default = "true"
 }
+variable "pay_api_url" {
+  type = "string"
+  default = ""
+}
