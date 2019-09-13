@@ -1,5 +1,11 @@
 java:
   # Don't modify below here
+  postgresql:
+    nameOverride: bar-db
+    postgresqlUsername: bar
+    postgresqlPassword: bar
+    postgresqlDatabase: bar
+
   image: 'hmctspublic.azurecr.io/bar/api:latest'
    applicationPort: 8080
   keyVaults:
@@ -14,9 +20,5 @@ java:
     SPRING_LIQUIBASE_ENABLED: true
     IDAM_CLIENT_BASE_URL: https://preprod-idamapi.reform.hmcts.net:3511
     APPINSIGHTS_INSTRUMENTATIONKEY: fake-key
-    postgresql:
-      nameOverride: bar-db
-      postgresqlUsername: bar
-      postgresqlPassword: bar
-      postgresqlDatabase: bar
+
 
