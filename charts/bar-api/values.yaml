@@ -1,5 +1,6 @@
 java:
   # Don't modify below here
+  image: 'hmctspublic.azurecr.io/bar/api:latest'
    applicationPort: 8080
   keyVaults:
     "s2s":
@@ -7,6 +8,7 @@ java:
       secrets:
         - microservicekey-bar-api
   environment:
+    SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ .Release.Name }}-bar-db:5432/bar"
     SPRING_DATASOURCE_USERNAME: bar
     SPRING_DATASOURCE_PASSWORD: bar
     SPRING_LIQUIBASE_ENABLED: true
@@ -14,9 +16,4 @@ java:
     APPINSIGHTS_INSTRUMENTATIONKEY: fake-key
     postgresql:
       nameOverride: bar-db
-      postgresqlUsername: bar
-      postgresqlPassword: bar
-      postgresqlDatabase: bar
-      extraEnv:
-        - name: POSTGRESQL_DATABASE
-          value: bar
+

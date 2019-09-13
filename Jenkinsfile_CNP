@@ -16,7 +16,7 @@ def app = "api"
 withPipeline(type, product, app) {
     enableDockerBuild()
     installCharts()
-    enableAksStagingDeployment()
+    //enableAksStagingDeployment()
     enableSlackNotifications('#bar-tech')
 
 }
