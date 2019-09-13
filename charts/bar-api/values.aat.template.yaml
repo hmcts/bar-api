@@ -1,3 +1,5 @@
+postgresql:
+  enabled: true
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
@@ -5,3 +7,4 @@ java:
     S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     IDAM_CLIENT_BASE_URL: https://idam-api.aat.platform.hmcts.net
     PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
+
