@@ -16,4 +16,7 @@ java:
     APPINSIGHTS_INSTRUMENTATIONKEY: fake-key
     postgresql:
       nameOverride: bar-db
+      postgresqlUsername: bar
+      postgresqlPassword: bar
+      postgresqlDatabase: bar
 
