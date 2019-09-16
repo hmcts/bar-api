@@ -23,12 +23,12 @@ java:
     PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
     APPINSIGHTS_INSTRUMENTATIONKEY: fake-key
     keyVaults:
-      "bar":
-        resourceGroup: bar
-        secrets:
-          - bar-S2S-SECRET
-          - bar-api-POSTGRES-PASS
-          - AppInsightsInstrumentationKey
+          "bar":
+            resourceGroup: bar
+            secrets:
+              - bar-S2S-SECRET
+              - bar-api-POSTGRES-PASS
+              - AppInsightsInstrumentationKey
 
   postgresql:
     postgresqlUsername: bar
