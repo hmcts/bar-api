@@ -2,9 +2,9 @@ java:
   # Don't modify below here
   postgresql:
     nameOverride: bar-db
-    postgresqlUsername: bar
-    postgresqlPassword: bar
-    postgresqlDatabase: bar
+    postgresqlUsername: "{{ .Values.postgresql.postgresqlUsername}}"
+    postgresqlPassword: "{{ .Values.postgresql.postgresqlPassword}}"
+    postgresqlDatabase: "{{ .Values.postgresql.postgresqlDatabase}}"
 
   image: 'hmctspublic.azurecr.io/bar/api:latest'
    applicationPort: 8080
@@ -15,8 +15,8 @@ java:
         - microservicekey-bar-api
   environment:
     SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ .Release.Name }}-bar-db:5432/bar"
-    SPRING_DATASOURCE_USERNAME: bar
-    SPRING_DATASOURCE_PASSWORD: bar
+    SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.datasourceUsername}}"
+    SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.datasourcePassword}}"
     SPRING_LIQUIBASE_ENABLED: true
     IDAM_CLIENT_BASE_URL: https://preprod-idamapi.reform.hmcts.net:3511
     APPINSIGHTS_INSTRUMENTATIONKEY: fake-key
