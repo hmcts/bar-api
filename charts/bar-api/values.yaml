@@ -8,24 +8,37 @@ postgresql:
     enabled: false
 
 java:
-  # Don't modify below here
   image: 'hmctspublic.azurecr.io/bar/api:latest'
   ingressHost: ${SERVICE_FQDN}
   applicationPort: 8080
-  keyVaults:
-    "s2s":
-      resourceGroup: rpe-service-auth-provider
-      secrets:
-        - microservicekey-bar-api
   environment:
     SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ .Release.Name }}-bar-db:5432/bar"
-    SPRING_DATASOURCE_USERNAME: bar
-    SPRING_DATASOURCE_PASSWORD: bar
-
+    POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
+    POSTGRES_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
+    POSTGRES_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
+    POSTGRES_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    POSTGRES_PORT: 5432
     SPRING_LIQUIBASE_ENABLED: true
-
     S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     IDAM_CLIENT_BASE_URL: https://preprod-idamapi.reform.hmcts.net:3511
     PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
-
     APPINSIGHTS_INSTRUMENTATIONKEY: fake-key
+
+   keyVaults:
+      "s2s":
+        resourceGroup: rpe-service-auth-provider
+        secrets:
+          - microservicekey-bar-api
+      "bar":
+        resourceGroup: bar
+        secrets:
+          - bar-S2S-SECRET
+          - bar-api-POSTGRES-PASS
+          - AppInsightsInstrumentationKey
+
+  postgresql:
+    postgresqlUsername: bar
+    postgresqlPassword: bar
+    postgresqlDatabase: bar
+    service:
+      port: 5432

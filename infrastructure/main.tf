@@ -64,3 +64,14 @@ module "bar-database" {
   common_tags     = "${var.common_tags}"
   subscription = "${var.subscription}"
 }
+
+resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
+  name      = "${var.component}-POSTGRES-PASS"
+  value     = "${module.bar-database.postgresql_password}"
+  key_vault_id = "${data.azurerm_key_vault.bar_key_vault.id}"
+}
+
+data "azurerm_key_vault_secret" "appinsights_instrumentation_key" {
+  name = "AppInsightsInstrumentationKey"
+  vault_uri = "${data.azurerm_key_vault.bar_key_vault.vault_uri}"
+}

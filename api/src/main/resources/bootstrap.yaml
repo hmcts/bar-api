@@ -1,6 +1,8 @@
 spring:
   cloud:
     propertiesvolume:
-      paths: /mnt/secrets/s2s
+      paths: /mnt/secrets/s2s,/mnt/secrets/bar
       aliases:
         s2s.microservicekey-bar-api: S2S_SECRET
+        bar.bar-api-POSTGRES-PASS: POSTGRES_PASSWORD
+        bar.AppInsightsInstrumentationKey: azure.app_insights_key

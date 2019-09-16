@@ -8,6 +8,12 @@ variable "location" {
   default = "UK South"
 }
 
+variable "component" {
+  type    = "string"
+  default = "bar-api"
+
+}
+
 variable "env" {
   type = "string"
 }
