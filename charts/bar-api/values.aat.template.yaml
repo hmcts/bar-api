@@ -6,10 +6,6 @@ java:
     IDAM_CLIENT_BASE_URL: https://idam-api.aat.platform.hmcts.net
     PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
   keyVaults:
-   "s2s":
-     resourceGroup: rpe-service-auth-provider
-     secrets:
-      - microservicekey-bar-api
    "bar":
     resourceGroup: bar
     secrets:

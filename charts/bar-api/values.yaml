@@ -23,12 +23,7 @@ java:
     IDAM_CLIENT_BASE_URL: https://preprod-idamapi.reform.hmcts.net:3511
     PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
     APPINSIGHTS_INSTRUMENTATIONKEY: fake-key
-
    keyVaults:
-      "s2s":
-        resourceGroup: rpe-service-auth-provider
-        secrets:
-          - microservicekey-bar-api
       "bar":
         resourceGroup: bar
         secrets:
