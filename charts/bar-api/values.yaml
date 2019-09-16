@@ -12,7 +12,7 @@ java:
     "s2s":
       resourceGroup: rpe-service-auth-provider
       secrets:
-        - microservicekey-bar-api
+        - s2s.microservicekey-bar-api
   environment:
     SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ .Release.Name }}-bar-db:5432/bar"
     SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.datasourceUsername}}"
