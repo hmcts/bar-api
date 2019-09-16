@@ -18,7 +18,7 @@ data "azurerm_key_vault" "bar_key_vault" {
   resource_group_name = "${local.vault_rg_name}"
 }
 
-data "azurerm_key_vault_secret" "S2S-SECRET" {
+data "azurerm_key_vault_secret" "s2s_secret" {
   name      = "bar-S2S-SECRET"
   vault_uri = "${data.azurerm_key_vault.bar_key_vault.vault_uri}"
 }

@@ -5,4 +5,4 @@ spring:
       aliases:
         bar.bar-S2S-SECRET: S2S_SECRET
         bar.bar-api-POSTGRES-PASS: POSTGRES_PASSWORD
-        bar.AppInsightsInstrumentationKey: azure.app_insights_key
+        bar.AppInsightsInstrumentationKey: APPINSIGHTS_INSTRUMENTATIONKEY
