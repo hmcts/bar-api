@@ -24,7 +24,7 @@ java:
     APPINSIGHTS_INSTRUMENTATIONKEY: fake-key
   keyVaults:
      "bar":
-       resourceGroup: bar
+       resourceGroup: barapps
        secrets:
         - bar-S2S-SECRET
         - bar-api-POSTGRES-PASS
