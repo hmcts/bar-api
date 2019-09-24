@@ -24,7 +24,7 @@ data "azurerm_key_vault_secret" "s2s_secret" {
 }
 
 module "bar-api" {
-  source   = "git@github.com:hmcts/moj-module-webapp?ref=master"
+  source   = "git@github.com:hmcts/cnp-module-webapp?ref=master"
   product  = "${var.product}-api"
   location = "${var.location}"
   env      = "${var.env}"
@@ -53,7 +53,7 @@ module "bar-api" {
 }
 
 module "bar-database" {
-  source = "git@github.com:hmcts/moj-module-postgres?ref=master"
+  source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product = "${var.product}-postgres-db"
   location = "${var.location}"
   env = "${var.env}"
