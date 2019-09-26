@@ -7,7 +7,6 @@ java:
     POSTGRES_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
     POSTGRES_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
     POSTGRES_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
-    POSTGRES_CONNECTION_OPTIONS: ?sslmode=require
     POSTGRES_PORT: 5432
     SPRING_LIQUIBASE_ENABLED: true
     S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal

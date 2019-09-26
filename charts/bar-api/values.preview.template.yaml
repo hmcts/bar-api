@@ -2,8 +2,13 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   environment:
+    POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
+    POSTGRES_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
+    POSTGRES_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
+    POSTGRES_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    POSTGRES_CONNECTION_OPTIONS: ""
     S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     IDAM_CLIENT_BASE_URL: https://idam-api.aat.platform.hmcts.net
     PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
-  postgresql:
-      enabled: true
+postgresql:
+    enabled: true
