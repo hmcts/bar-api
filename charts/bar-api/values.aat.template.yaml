@@ -2,6 +2,18 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   environment:
+    POSTGRES_HOST: bar-postgres-db-aat.postgres.database.azure.com
+    POSTGRES_NAME: bar
+    POSTGRES_USERNAME: bar@bar-postgres-db-aat
+    POSTGRES_CONNECTION_OPTIONS: ?sslmode=require
+    SPRING_LIQUIBASE_ENABLED: false
     S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     IDAM_CLIENT_BASE_URL: https://idam-api.aat.platform.hmcts.net
     PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
+  keyVaults:
+   "bar":
+     resourceGroup: bar
+     secrets:
+      - bar-S2S-SECRET
+      - bar-api-POSTGRES-PASS
+      - AppInsightsInstrumentationKey
