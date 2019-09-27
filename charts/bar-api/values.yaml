@@ -14,6 +14,8 @@ java:
     PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
     APPINSIGHTS_INSTRUMENTATIONKEY: fake-key
   postgresql:
+    image:
+      tag: 10.7.0-r68
     postgresqlUsername: bar
     postgresqlPassword: bar
     postgresqlDatabase: bar
