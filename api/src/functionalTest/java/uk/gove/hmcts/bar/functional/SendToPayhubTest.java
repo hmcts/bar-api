@@ -1,23 +1,13 @@
-package uk.gove.hmcts.bar.functional;
+//package uk.gove.hmcts.bar.functional;
 
-import io.restassured.response.Response;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
+//import org.junit.runner.RunWith;
+//import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.HashMap;
-import java.util.Map;
+//@RunWith(SpringRunner.class)/
+//public class SendToPayhubTest extends FunctionalTest {
 
-import static io.restassured.RestAssured.given;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
-@RunWith(SpringRunner.class)
-public class SendToPayhubTest extends FunctionalTest {
-
-    @Test
+    /*@Test
     public void testSendPaymentToPayhub() throws JSONException {
         String token = authenticatorClient.authenticate(users.get(Roles.DELIVERY_MANAGER_Y431), password);
 
@@ -41,9 +31,9 @@ public class SendToPayhubTest extends FunctionalTest {
         response.then().statusCode(200);
         Map resp = response.as(HashMap.class);
         Assert.assertEquals(1, resp.get("success"));
-    }
+    }*/
 
-    @Test
+   /* @Test
     public void testSendFullRemissionToPayhub() throws JSONException {
         String token = authenticatorClient.authenticate(users.get(Roles.DELIVERY_MANAGER_Y431), password);
         // create full-remission
@@ -66,9 +56,9 @@ public class SendToPayhubTest extends FunctionalTest {
         response.then().statusCode(200);
         Map resp = response.as(HashMap.class);
         Assert.assertEquals(1, resp.get("success"));
-    }
+    }*/
 
-    private Map createPayment(String token) throws JSONException {
+    /*private Map createPayment(String token) throws JSONException {
         JSONObject payload = new JSONObject()
             .put("payer_name", "John Doe")
             .put("amount", 55000)
@@ -122,5 +112,5 @@ public class SendToPayhubTest extends FunctionalTest {
             .body(payload.toString())
             .when()
             .put(endpoint + createdPayment.get("id"));
-    }
-}
+    }*/
+//}
