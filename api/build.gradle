@@ -41,13 +41,13 @@ sonarqube {
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     }
 }
-def javaLoggingVersion = '5.0.1'
+def javaLoggingVersion = '5.1.0'
 
 dependencies {
 
-    compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: javaLoggingVersion
-  	compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: javaLoggingVersion
-  	compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: javaLoggingVersion
+    compile group: 'uk.gov.hmcts.reform', name: 'logging', version: javaLoggingVersion
+  	compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: javaLoggingVersion
+  	compile group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: javaLoggingVersion
     compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.0.0'
 
     compile 'org.springframework.boot:spring-boot-starter-web'
