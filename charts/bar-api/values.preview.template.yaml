@@ -8,6 +8,7 @@ java:
     POSTGRES_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
     POSTGRES_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
     POSTGRES_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    POSTGRES_CONNECTION_OPTIONS: "?sslmode=allow"
     SPRING_LIQUIBASE_ENABLED: true
     SPRING_CLOUD_PROPERTIESVOLUME_ENABLED: false
   postgresql:
