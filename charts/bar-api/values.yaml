@@ -1,31 +1,22 @@
-postgresql:
-  initdbScripts:
-    init.sql: |-
-      CREATE USER bar WITH PASSWORD 'bar';
-      CREATE DATABASE bar WITH OWNER = bar ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-  nameOverride: bar-db
-  persistence:
-    enabled: false
-
 java:
-  # Don't modify below here
   image: 'hmctspublic.azurecr.io/bar/api:latest'
-  ingressHost: ${SERVICE_FQDN}
   applicationPort: 8080
-  keyVaults:
-    "s2s":
-      resourceGroup: rpe-service-auth-provider
-      secrets:
-        - microservicekey-bar-api
+  ingressHost: bar-app-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+  aadIdentityName: bar
   environment:
-    SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ .Release.Name }}-bar-db:5432/bar"
-    SPRING_DATASOURCE_USERNAME: bar
-    SPRING_DATASOURCE_PASSWORD: bar
+    POSTGRES_PORT: 5432
+    POSTGRES_HOST: bar-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com
+    POSTGRES_NAME: bar
+    POSTGRES_USERNAME: bar@bar-postgres-db-{{ .Values.global.environment }}
+    POSTGRES_CONNECTION_OPTIONS: ?sslmode=require
+    SPRING_LIQUIBASE_ENABLED: false
+    S2S_AUTH_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    IDAM_CLIENT_BASE_URL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
+    PAYMENT_API_URL: http://payment-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+  keyVaults:
+    "bar":
+      secrets:
+        - bar-S2S-SECRET
+        - bar-api-POSTGRES-PASS
+        - AppInsightsInstrumentationKey
 
-    SPRING_LIQUIBASE_ENABLED: true
-
-    S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-    IDAM_CLIENT_BASE_URL: https://preprod-idamapi.reform.hmcts.net:3511
-    PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
-
-    APPINSIGHTS_INSTRUMENTATIONKEY: fake-key

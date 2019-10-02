@@ -1,7 +1,22 @@
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  aadIdentityName:
   environment:
-    S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-    IDAM_CLIENT_BASE_URL: https://idam-api.aat.platform.hmcts.net
-    PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
+    #SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ .Release.Name }}-bar-db:5432/bar"
+    POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
+    POSTGRES_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
+    POSTGRES_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
+    POSTGRES_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    POSTGRES_CONNECTION_OPTIONS: "?sslmode=allow"
+    SPRING_LIQUIBASE_ENABLED: true
+  postgresql:
+    postgresqlUsername: bar
+    postgresqlPassword: bar
+    postgresqlDatabase: bar
+  keyVaults:
+    "bar":
+      secrets:
+        - bar-S2S-SECRET
+postgresql:
+    enabled: true

@@ -24,7 +24,7 @@ data "azurerm_key_vault_secret" "s2s_secret" {
 }
 
 module "bar-api" {
-  source   = "git@github.com:hmcts/moj-module-webapp?ref=master"
+  source   = "git@github.com:hmcts/cnp-module-webapp?ref=master"
   product  = "${var.product}-api"
   location = "${var.location}"
   env      = "${var.env}"
@@ -53,7 +53,7 @@ module "bar-api" {
 }
 
 module "bar-database" {
-  source = "git@github.com:hmcts/moj-module-postgres?ref=master"
+  source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product = "${var.product}-postgres-db"
   location = "${var.location}"
   env = "${var.env}"
@@ -63,4 +63,15 @@ module "bar-database" {
   sku_tier = "GeneralPurpose"
   common_tags     = "${var.common_tags}"
   subscription = "${var.subscription}"
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
+  name      = "${var.component}-POSTGRES-PASS"
+  value     = "${module.bar-database.postgresql_password}"
+  key_vault_id = "${data.azurerm_key_vault.bar_key_vault.id}"
+}
+
+data "azurerm_key_vault_secret" "appinsights_instrumentation_key" {
+  name = "AppInsightsInstrumentationKey"
+  vault_uri = "${data.azurerm_key_vault.bar_key_vault.vault_uri}"
 }

@@ -35,14 +35,14 @@ allprojects {
         imports {
             mavenBom 'org.springframework.boot:spring-boot-starter:2.1.6.RELEASE'
         }
-        
-        
+
+
 
         dependencies {
 
             // solves CVE-2019-12086
             // remove once spring manager incorporates this changes
-            dependencySet(group: 'com.fasterxml.jackson.core', version: '2.9.9') {
+            dependencySet(group: 'com.fasterxml.jackson.core', version: '2.9.10') {
                 entry 'jackson-core'
                 entry 'jackson-databind'
             }
