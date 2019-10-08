@@ -4,5 +4,5 @@ spring:
       paths: /mnt/secrets/bar
       aliases:
         bar.bar-S2S-SECRET: S2S_SECRET
-        bar.bar-api-POSTGRES-PASS: POSTGRES_PASSWORD
+        bar.api-POSTGRES-PASS: POSTGRES_PASSWORD
         bar.AppInsightsInstrumentationKey: APPINSIGHTS_INSTRUMENTATIONKEY
