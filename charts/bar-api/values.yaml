@@ -17,6 +17,6 @@ java:
     "bar":
       secrets:
         - bar-S2S-SECRET
-        - bar-api-POSTGRES-PASS
+        - api-POSTGRES-PASS
         - AppInsightsInstrumentationKey
 
