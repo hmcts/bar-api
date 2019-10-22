@@ -24,7 +24,7 @@ data "azurerm_key_vault_secret" "s2s_secret" {
 }
 
 module "bar-api" {
-  source   = "git@github.com:hmcts/moj-module-webapp?ref=master"
+  source   = "git@github.com:hmcts/cnp-module-webapp?ref=master"
   product  = "${var.product}-api"
   location = "${var.location}"
   env      = "${var.env}"
@@ -39,13 +39,13 @@ module "bar-api" {
     # db
     SPRING_DATASOURCE_USERNAME = "${module.bar-database.user_name}"
     SPRING_DATASOURCE_PASSWORD = "${module.bar-database.postgresql_password}"
-    SPRING_DATASOURCE_URL = "jdbc:postgresql://${module.bar-database.host_name}:${module.bar-database.postgresql_listen_port}/${module.bar-database.postgresql_database}?ssl=true"
+    SPRING_DATASOURCE_URL = "jdbc:postgresql://${module.bar-database.host_name}:${module.bar-database.postgresql_listen_port}/${module.bar-database.postgresql_database}?sslmode=require"
     # idam
     IDAM_CLIENT_BASE_URL = "${var.idam_api_url}"
     S2S_SECRET = "${data.azurerm_key_vault_secret.s2s_secret.value}"
     S2S_AUTH_URL = "http://${var.idam_s2s_url_prefix}-${local.local_env}.service.${local.local_ase}.internal"
     # payhub
-    PAYMENT_API_URL = "http://${var.payment_api_url_prefix}-${local.local_env}.service.${local.local_ase}.internal"
+    PAYMENT_API_URL = "${var.pay_api_url}"
     # enable/disables liquibase run
     SPRING_LIQUIBASE_ENABLED = "${var.liquibase_enabled}"
     SITE_API_URL = "http://bar-api-${local.local_env}.service.core-compute-${local.local_env}.internal"
@@ -53,7 +53,7 @@ module "bar-api" {
 }
 
 module "bar-database" {
-  source = "git@github.com:hmcts/moj-module-postgres?ref=master"
+  source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product = "${var.product}-postgres-db"
   location = "${var.location}"
   env = "${var.env}"
@@ -62,4 +62,16 @@ module "bar-database" {
   sku_name = "GP_Gen5_2"
   sku_tier = "GeneralPurpose"
   common_tags     = "${var.common_tags}"
+  subscription = "${var.subscription}"
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
+  name      = "${var.component}-POSTGRES-PASS"
+  value     = "${module.bar-database.postgresql_password}"
+  key_vault_id = "${data.azurerm_key_vault.bar_key_vault.id}"
+}
+
+data "azurerm_key_vault_secret" "appinsights_instrumentation_key" {
+  name = "AppInsightsInstrumentationKey"
+  vault_uri = "${data.azurerm_key_vault.bar_key_vault.vault_uri}"
 }

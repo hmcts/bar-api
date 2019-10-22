@@ -8,6 +8,12 @@ variable "location" {
   default = "UK South"
 }
 
+variable "component" {
+  type    = "string"
+  default = "bar-api"
+
+}
+
 variable "env" {
   type = "string"
 }
@@ -59,4 +65,8 @@ variable "common_tags" {
 }
 variable "liquibase_enabled" {
   default = "true"
+}
+variable "pay_api_url" {
+  type = "string"
+  default = "http://payment-api-aat.service.core-compute-aat.internal/"
 }
