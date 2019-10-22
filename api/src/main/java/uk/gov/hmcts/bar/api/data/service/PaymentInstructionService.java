@@ -206,6 +206,7 @@ public class PaymentInstructionService {
             .orElseThrow(() -> new PaymentInstructionNotFoundException(id, barUser.getSelectedSiteId()));
 
         checkIfSrFeeClerkCanApproveOwnWork(barUser,existingPaymentInstruction,paymentInstructionRequest);
+        checkIfDeliveryManagerCanApproveOwnWork(barUser,existingPaymentInstruction,paymentInstructionRequest);
         // handle bgc number
         if (paymentInstructionRequest.getBgcNumber() != null) {
             BankGiroCredit bgc = bankGiroCreditRepository.findByBgcNumber(paymentInstructionRequest.getBgcNumber())
@@ -371,13 +372,8 @@ public class PaymentInstructionService {
                 List<PaymentInstructionStatus> statuses = existingPaymentInstruction.getStatuses();
                 Collections.sort(statuses, new PaymentInstructionStatusComparator());
                 for (PaymentInstructionStatus status : statuses) {
-                    if (status.getPaymentInstructionStatusReferenceKey().getStatus().equals(PaymentStatusEnum.DRAFT.dbKey())
-                        || status.getPaymentInstructionStatusReferenceKey().getStatus().equals(PaymentStatusEnum.PENDING.dbKey())
-                        || status.getPaymentInstructionStatusReferenceKey().getStatus().equals(PaymentStatusEnum.VALIDATED.dbKey())
-                        || status.getPaymentInstructionStatusReferenceKey().getStatus().equals(PaymentStatusEnum.PENDING_APPROVAL.dbKey())) {
-                        if (barUser.getId().equals(status.getBarUserId())) {
+                    if (status.getPaymentInstructionStatusReferenceKey().getStatus().equals(PaymentStatusEnum.PENDING_APPROVAL.dbKey()) && barUser.getId().equals(status.getBarUserId())) {
                             throw new ActionUnauthorizedException(ACTION_UNAUTHORIZED_EXCEPTION_MESSAGE);
-                        }
                     }
                 }
             }
@@ -386,6 +382,24 @@ public class PaymentInstructionService {
         return true;
     }
 
+    private boolean checkIfDeliveryManagerCanApproveOwnWork(BarUser barUser,PaymentInstruction existingPaymentInstruction, PaymentInstructionRequest paymentInstructionRequest) {
+
+        if (barUser.getRoles().contains((BarUserRoleEnum.BAR_DELIVERY_MANAGER).getIdamRole())) {
+            if (existingPaymentInstruction.getStatus().equals(PaymentStatusEnum.APPROVED.dbKey())
+                && paymentInstructionRequest.getStatus().equals(PaymentStatusEnum.TRANSFERREDTOBAR.dbKey())) {
+                List<PaymentInstructionStatus> statuses = existingPaymentInstruction.getStatuses();
+                Collections.sort(statuses, new PaymentInstructionStatusComparator());
+                for (PaymentInstructionStatus status : statuses) {
+                    if (status.getPaymentInstructionStatusReferenceKey().getStatus().equals(PaymentStatusEnum.APPROVED.dbKey()) && barUser.getId().equals(status.getBarUserId())) {
+                        throw new ActionUnauthorizedException(ACTION_UNAUTHORIZED_EXCEPTION_MESSAGE);
+
+                    }
+                }
+            }
+
+        }
+        return true;
+    }
 
 
     private class PaymentInstructionStatusComparator implements Comparator<PaymentInstructionStatus> {
