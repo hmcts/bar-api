@@ -110,6 +110,7 @@ public class PaymentInstructionServiceTest {
     @Mock
     private AuditRepository auditRepository;
 
+
     @Mock
     private List<CaseFeeDetail> cfdList;
 
@@ -129,6 +130,7 @@ public class PaymentInstructionServiceTest {
     private static final String BAR_POST_CLERK_ROLE = BarUserRoleEnum.BAR_POST_CLERK.getIdamRole();
     private static final String BAR_FEE_CLERK_ROLE = BarUserRoleEnum.BAR_FEE_CLERK.getIdamRole();
     private static final String BAR_SR_FEE_CLERK_ROLE = BarUserRoleEnum.BAR_SENIOR_CLERK.getIdamRole();
+    private static final String BAR_DM_ROLE = BarUserRoleEnum.BAR_DELIVERY_MANAGER.getIdamRole();
 
     @Mock
     private UnallocatedAmountService unallocatedAmountService;
@@ -625,6 +627,254 @@ public class PaymentInstructionServiceTest {
             .thenAnswer(i -> i.getArguments()[0]);
         when(bankGiroCreditRepositoryMock.save(any(BankGiroCredit.class))).thenAnswer(i -> i.getArguments()[0]);
         // when(paymentInstructionMock.getStatus()).thenReturn("status");
+        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(barUserMock, 1, pir);
+        assertEquals(pir.getBgcNumber(), updatedPaymentInstruction.getBgcNumber());
+        verify(paymentInstructionRepository, times(1)).findByIdAndSiteId(anyInt(), eq("Y431"));
+        verify(paymentInstructionRepository, times(1)).saveAndRefresh(pi);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",pi,barUserMock);
+
+    }
+
+    @Test(expected = ActionUnauthorizedException.class)
+    public void shouldReturn403WhenSrFeeClerkCannotApproveTheirWork() throws Exception{
+        List<PaymentInstructionStatus> statuses = new ArrayList<>();
+        PaymentInstructionStatus status = new PaymentInstructionStatus();
+        PaymentInstructionStatusReferenceKey referenceKey = new PaymentInstructionStatusReferenceKey();
+        referenceKey.setStatus("PA");
+        status.setPaymentInstructionStatusReferenceKey(referenceKey);
+        status.setBarUserId("261077");
+        statuses.add(status);
+        PaymentInstruction pi = new PostalOrderPaymentInstruction();
+        pi.setStatus("PA");
+        pi.setStatuses(statuses);
+        PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
+            .amount(200)
+            .payerName("Payer Name")
+            .currency("GBP")
+            .status("A")
+            .bgcNumber("12345").build();
+        when(barUserMock.getRoles()).thenReturn(BAR_SR_FEE_CLERK_ROLE);
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), eq("Y431"))).thenReturn(Optional.of(pi));
+        when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
+            .thenAnswer(i -> i.getArguments()[0]);
+        when(bankGiroCreditRepositoryMock.save(any(BankGiroCredit.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(barUserMock.getId()).thenReturn("261077");
+        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(barUserMock, 1, pir);
+
+    }
+
+    @Test
+    public void shouldReturn200WhenSrFeeClerkCanApproveTheirWork() throws Exception{
+        List<PaymentInstructionStatus> statuses = new ArrayList<>();
+        PaymentInstructionStatus status = new PaymentInstructionStatus();
+        PaymentInstructionStatusReferenceKey referenceKey = new PaymentInstructionStatusReferenceKey();
+        referenceKey.setStatus("PA");
+        status.setPaymentInstructionStatusReferenceKey(referenceKey);
+        status.setBarUserId("261077");
+        statuses.add(status);
+        PaymentInstruction pi = new PostalOrderPaymentInstruction();
+        pi.setStatus("D");
+        pi.setStatuses(statuses);
+        PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
+            .amount(200)
+            .payerName("Payer Name")
+            .currency("GBP")
+            .status("A")
+            .bgcNumber("12345").build();
+        when(barUserMock.getRoles()).thenReturn(BAR_SR_FEE_CLERK_ROLE);
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), eq("Y431"))).thenReturn(Optional.of(pi));
+        when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
+            .thenAnswer(i -> i.getArguments()[0]);
+        when(bankGiroCreditRepositoryMock.save(any(BankGiroCredit.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(barUserMock.getId()).thenReturn("261077");
+        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(barUserMock, 1, pir);
+        assertEquals(pir.getBgcNumber(), updatedPaymentInstruction.getBgcNumber());
+        verify(paymentInstructionRepository, times(1)).findByIdAndSiteId(anyInt(), eq("Y431"));
+        verify(paymentInstructionRepository, times(1)).saveAndRefresh(pi);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",pi,barUserMock);
+
+    }
+
+    @Test
+    public void shouldReturn200WhenSrFeeClerkCanApprove() throws Exception{
+        List<PaymentInstructionStatus> statuses = new ArrayList<>();
+        PaymentInstructionStatus status = new PaymentInstructionStatus();
+        PaymentInstructionStatusReferenceKey referenceKey = new PaymentInstructionStatusReferenceKey();
+        referenceKey.setStatus("PA");
+        status.setPaymentInstructionStatusReferenceKey(referenceKey);
+        status.setBarUserId("261077");
+        statuses.add(status);
+        PaymentInstruction pi = new PostalOrderPaymentInstruction();
+        pi.setStatus("PA");
+        pi.setStatuses(statuses);
+        PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
+            .amount(200)
+            .payerName("Payer Name")
+            .currency("GBP")
+            .status("A")
+            .bgcNumber("12345").build();
+        when(barUserMock.getRoles()).thenReturn(BAR_SR_FEE_CLERK_ROLE);
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), eq("Y431"))).thenReturn(Optional.of(pi));
+        when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
+            .thenAnswer(i -> i.getArguments()[0]);
+        when(bankGiroCreditRepositoryMock.save(any(BankGiroCredit.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(barUserMock.getId()).thenReturn("123456");
+        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(barUserMock, 1, pir);
+        assertEquals(pir.getBgcNumber(), updatedPaymentInstruction.getBgcNumber());
+        verify(paymentInstructionRepository, times(1)).findByIdAndSiteId(anyInt(), eq("Y431"));
+        verify(paymentInstructionRepository, times(1)).saveAndRefresh(pi);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",pi,barUserMock);
+
+    }
+
+    @Test
+    public void shouldReturn200WhenSrFeeClerkCanApproveWithDifferentStatus() throws Exception{
+        List<PaymentInstructionStatus> statuses = new ArrayList<>();
+        PaymentInstructionStatus status = new PaymentInstructionStatus();
+        PaymentInstructionStatusReferenceKey referenceKey = new PaymentInstructionStatusReferenceKey();
+        referenceKey.setStatus("A");
+        status.setPaymentInstructionStatusReferenceKey(referenceKey);
+        status.setBarUserId("261077");
+        statuses.add(status);
+        PaymentInstruction pi = new PostalOrderPaymentInstruction();
+        pi.setStatus("PA");
+        pi.setStatuses(statuses);
+        PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
+            .amount(200)
+            .payerName("Payer Name")
+            .currency("GBP")
+            .status("A")
+            .bgcNumber("12345").build();
+        when(barUserMock.getRoles()).thenReturn(BAR_SR_FEE_CLERK_ROLE);
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), eq("Y431"))).thenReturn(Optional.of(pi));
+        when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
+            .thenAnswer(i -> i.getArguments()[0]);
+        when(bankGiroCreditRepositoryMock.save(any(BankGiroCredit.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(barUserMock.getId()).thenReturn("261077");
+        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(barUserMock, 1, pir);
+        assertEquals(pir.getBgcNumber(), updatedPaymentInstruction.getBgcNumber());
+        verify(paymentInstructionRepository, times(1)).findByIdAndSiteId(anyInt(), eq("Y431"));
+        verify(paymentInstructionRepository, times(1)).saveAndRefresh(pi);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",pi,barUserMock);
+
+    }
+
+    @Test(expected = ActionUnauthorizedException.class)
+    public void shouldReturn403WhenDMCannotApproveTheirWork() throws Exception{
+        List<PaymentInstructionStatus> statuses = new ArrayList<>();
+        PaymentInstructionStatus status = new PaymentInstructionStatus();
+        PaymentInstructionStatusReferenceKey referenceKey = new PaymentInstructionStatusReferenceKey();
+        referenceKey.setStatus("A");
+        status.setPaymentInstructionStatusReferenceKey(referenceKey);
+        status.setBarUserId("261077");
+        statuses.add(status);
+        PaymentInstruction pi = new PostalOrderPaymentInstruction();
+        pi.setStatus("A");
+        pi.setStatuses(statuses);
+        PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
+            .amount(200)
+            .payerName("Payer Name")
+            .currency("GBP")
+            .status("TTB")
+            .bgcNumber("12345").build();
+        when(barUserMock.getRoles()).thenReturn(BAR_DM_ROLE);
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), eq("Y431"))).thenReturn(Optional.of(pi));
+        when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
+            .thenAnswer(i -> i.getArguments()[0]);
+        when(bankGiroCreditRepositoryMock.save(any(BankGiroCredit.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(barUserMock.getId()).thenReturn("261077");
+        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(barUserMock, 1, pir);
+
+    }
+
+    @Test
+    public void shouldReturn200WhenDMCanApproveTheirWork() throws Exception{
+        List<PaymentInstructionStatus> statuses = new ArrayList<>();
+        PaymentInstructionStatus status = new PaymentInstructionStatus();
+        PaymentInstructionStatusReferenceKey referenceKey = new PaymentInstructionStatusReferenceKey();
+        referenceKey.setStatus("A");
+        status.setPaymentInstructionStatusReferenceKey(referenceKey);
+        status.setBarUserId("261077");
+        statuses.add(status);
+        PaymentInstruction pi = new PostalOrderPaymentInstruction();
+        pi.setStatus("PA");
+        pi.setStatuses(statuses);
+        PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
+            .amount(200)
+            .payerName("Payer Name")
+            .currency("GBP")
+            .status("TTB")
+            .bgcNumber("12345").build();
+        when(barUserMock.getRoles()).thenReturn(BAR_DM_ROLE);
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), eq("Y431"))).thenReturn(Optional.of(pi));
+        when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
+            .thenAnswer(i -> i.getArguments()[0]);
+        when(bankGiroCreditRepositoryMock.save(any(BankGiroCredit.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(barUserMock.getId()).thenReturn("261077");
+        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(barUserMock, 1, pir);
+        assertEquals(pir.getBgcNumber(), updatedPaymentInstruction.getBgcNumber());
+        verify(paymentInstructionRepository, times(1)).findByIdAndSiteId(anyInt(), eq("Y431"));
+        verify(paymentInstructionRepository, times(1)).saveAndRefresh(pi);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",pi,barUserMock);
+
+    }
+
+    @Test
+    public void shouldReturn200WhenDMCanApproveTheirWorkWithDifferentId() throws Exception{
+        List<PaymentInstructionStatus> statuses = new ArrayList<>();
+        PaymentInstructionStatus status = new PaymentInstructionStatus();
+        PaymentInstructionStatusReferenceKey referenceKey = new PaymentInstructionStatusReferenceKey();
+        referenceKey.setStatus("A");
+        status.setPaymentInstructionStatusReferenceKey(referenceKey);
+        status.setBarUserId("261077");
+        statuses.add(status);
+        PaymentInstruction pi = new PostalOrderPaymentInstruction();
+        pi.setStatus("A");
+        pi.setStatuses(statuses);
+        PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
+            .amount(200)
+            .payerName("Payer Name")
+            .currency("GBP")
+            .status("TTB")
+            .bgcNumber("12345").build();
+        when(barUserMock.getRoles()).thenReturn(BAR_DM_ROLE);
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), eq("Y431"))).thenReturn(Optional.of(pi));
+        when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
+            .thenAnswer(i -> i.getArguments()[0]);
+        when(bankGiroCreditRepositoryMock.save(any(BankGiroCredit.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(barUserMock.getId()).thenReturn("12345");
+        PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(barUserMock, 1, pir);
+        assertEquals(pir.getBgcNumber(), updatedPaymentInstruction.getBgcNumber());
+        verify(paymentInstructionRepository, times(1)).findByIdAndSiteId(anyInt(), eq("Y431"));
+        verify(paymentInstructionRepository, times(1)).saveAndRefresh(pi);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",pi,barUserMock);
+
+    }
+
+    @Test
+    public void shouldReturn200WhenDMCanApproveTheirWorkWithDifferentStatus() throws Exception{
+        List<PaymentInstructionStatus> statuses = new ArrayList<>();
+        PaymentInstructionStatus status = new PaymentInstructionStatus();
+        PaymentInstructionStatusReferenceKey referenceKey = new PaymentInstructionStatusReferenceKey();
+        referenceKey.setStatus("PA");
+        status.setPaymentInstructionStatusReferenceKey(referenceKey);
+        status.setBarUserId("261077");
+        statuses.add(status);
+        PaymentInstruction pi = new PostalOrderPaymentInstruction();
+        pi.setStatus("A");
+        pi.setStatuses(statuses);
+        PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
+            .amount(200)
+            .payerName("Payer Name")
+            .currency("GBP")
+            .status("TTB")
+            .bgcNumber("12345").build();
+        when(barUserMock.getRoles()).thenReturn(BAR_DM_ROLE);
+        when(paymentInstructionRepository.findByIdAndSiteId(anyInt(), eq("Y431"))).thenReturn(Optional.of(pi));
+        when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
+            .thenAnswer(i -> i.getArguments()[0]);
+        when(bankGiroCreditRepositoryMock.save(any(BankGiroCredit.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(barUserMock.getId()).thenReturn("261077");
         PaymentInstruction updatedPaymentInstruction = paymentInstructionService.updatePaymentInstruction(barUserMock, 1, pir);
         assertEquals(pir.getBgcNumber(), updatedPaymentInstruction.getBgcNumber());
         verify(paymentInstructionRepository, times(1)).findByIdAndSiteId(anyInt(), eq("Y431"));
