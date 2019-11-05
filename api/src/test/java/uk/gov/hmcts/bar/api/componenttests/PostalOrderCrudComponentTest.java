@@ -628,6 +628,36 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
     }
 
+    @Test
+    public void givenPostalOrderPaymentInstructionDetails_retrievePIStatsCountForDeliveryManagers() throws Exception {
+
+        DbTestUtil.insertBGCNumber(getWebApplicationContext());
+        DbTestUtil.insertPaymentInstructionForPIStats(getWebApplicationContext());
+        PostalOrder proposedPostalOrderPaymentInstructionRequest = postalOrderPaymentInstructionRequestWith()
+            .payerName("Mr Payer Payer")
+            .amount(533)
+            .currency("GBP").status("D")
+            .postalOrderNumber("000000").build();
+
+
+        restActions
+            .post("/postal-orders", proposedPostalOrderPaymentInstructionRequest)
+            .andExpect(status().isCreated());
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("ddMMyyyy");
+        String startDate = LocalDate.now().format(dtf);
+        String endDate = LocalDate.now().format(dtf);
+        String jsonResponse = restActions
+            .get("/users/pi-stats/count?startDate=" + startDate + "&endDate=" + endDate + "&status=D")
+            .andExpect(status().isOk()).andExpect(content().contentType("application/json;charset=UTF-8"))
+            .andReturn().getResponse().getContentAsString();
+        System.out.println(jsonResponse);
+        JSONObject seniorFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
+            .get("1234")).get(0);
+
+        assertEquals(1,seniorFeeClerk.get("count_of_payment_instruction_in_specified_status"));
+
+    }
 
     @Test
     public void givenPostalOrderPIsSubmitted_getTheirCount() throws Exception {

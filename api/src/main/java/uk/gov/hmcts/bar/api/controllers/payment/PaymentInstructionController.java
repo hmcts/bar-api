@@ -478,8 +478,8 @@ public class PaymentInstructionController {
     @GetMapping("/users/pi-stats/count")
     public MultiMap getPIStatsCount(BarWrappedHttpRequest request,
                                     @RequestParam(name = "status", required = true) PaymentStatusEnum status,
-                                    @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
-                                    @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate) {
+                                    @RequestParam(name = "startDate", required = true) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
+                                    @RequestParam(name = "endDate", required = true) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate) {
         MultiMap resultMap = null;
         String siteId = request.getBarUser().getSelectedSiteId();
 
