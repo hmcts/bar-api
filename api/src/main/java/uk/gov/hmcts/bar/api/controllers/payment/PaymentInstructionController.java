@@ -471,6 +471,23 @@ public class PaymentInstructionController {
         return resultMap;
     }
 
+    @ApiOperation(value = "Get the payments stats along with count", notes = "Get the payment instruction's stats showing each User's activities along with count.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Return payment overview stats with count"),
+        @ApiResponse(code = 500, message = "Internal server error") })
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/users/pi-stats/count")
+    public MultiMap getPIStatsCount(BarWrappedHttpRequest request,
+                                    @RequestParam(name = "status", required = true) PaymentStatusEnum status,
+                                    @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate startDate,
+                                    @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate) {
+        MultiMap resultMap = null;
+        String siteId = request.getBarUser().getSelectedSiteId();
+
+            resultMap = paymentInstructionService.getPaymentInstructionStatsWithCount(status.dbKey(), siteId,startDate.atStartOfDay(),endDate.atTime(LocalTime.MAX));
+
+        return resultMap;
+    }
+
     @ApiOperation(value = "collect payment instructions count", notes = "Collect  payment instruction count  ")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return count"),
         @ApiResponse(code = 400, message = "Bad request"),

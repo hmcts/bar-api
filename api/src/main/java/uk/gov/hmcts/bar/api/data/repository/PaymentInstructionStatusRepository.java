@@ -29,6 +29,15 @@ public interface PaymentInstructionStatusRepository
                                                                                   @Param("sentToPayhub") boolean sentToPayhub,
                                                                                   @Param("siteId") String siteId);
 
+    @Query(name = "PIByUserGroupWithCount", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats"
+        + "(bu.id, CONCAT(bu.forename,' ',bu.surname), COUNT(pis.paymentInstructionStatusReferenceKey.paymentInstructionId)) FROM BarUser bu, PaymentInstructionStatus pis, PaymentInstruction pi WHERE "
+        + "pis.paymentInstructionStatusReferenceKey.status = :status AND pi.status = :status AND pi.siteId = :siteId AND "
+        + "pi.userId = bu.id AND pis.barUserId = bu.id AND "
+        + "pis.paymentInstructionStatusReferenceKey.updateTime >= :startDate AND "
+        + "pis.paymentInstructionStatusReferenceKey.updateTime <= :endDate GROUP BY bu.id")
+    List<PaymentInstructionUserStats> getPaymentInstructionsByStatusGroupedByUserWithCount(@Param("status") String status,
+                                                                                           @Param("siteId") String siteId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
     @Query(name = "PIRejectedByDM", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionStaticsByUser "
         + "(bu.id, CONCAT(bu.forename,' ',bu.surname), pis.paymentInstructionStatusReferenceKey.paymentInstructionId, pis.paymentInstructionStatusReferenceKey.updateTime) "
         + "FROM PaymentInstructionStatus pis, PaymentInstruction pi, BarUser bu WHERE "
