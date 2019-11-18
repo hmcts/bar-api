@@ -29,14 +29,17 @@ public interface PaymentInstructionStatusRepository
                                                                                   @Param("sentToPayhub") boolean sentToPayhub,
                                                                                   @Param("siteId") String siteId);
 
-    @Query(name = "PIByUserGroupWithCount", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats"
-        + "(bu.id, CONCAT(bu.forename,' ',bu.surname), COUNT(pis.paymentInstructionStatusReferenceKey.paymentInstructionId)) FROM BarUser bu, PaymentInstructionStatus pis, PaymentInstruction pi WHERE "
-        + "pis.paymentInstructionStatusReferenceKey.status = :status AND pi.status = :status AND pi.siteId = :siteId AND "
-        + "pi.userId = bu.id AND pis.barUserId = bu.id AND "
+    @Query(name = "PIByUserGroupWithCount", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStatsWithRole"
+        + "(bu.id, bu.roles, CONCAT(bu.forename,' ',bu.surname), COUNT(bu.id)) FROM BarUser bu, PaymentInstruction pi, PaymentInstructionStatus pis WHERE "
+        + "bu.id = pi.userId  AND "
+        + "pis.paymentInstructionStatusReferenceKey.status= :status AND "
+        + "pi.id = pis.paymentInstructionStatusReferenceKey.paymentInstructionId AND "
+        + "pi.siteId = :siteId AND "
         + "pis.paymentInstructionStatusReferenceKey.updateTime >= :startDate AND "
-        + "pis.paymentInstructionStatusReferenceKey.updateTime <= :endDate GROUP BY bu.id")
-    List<PaymentInstructionUserStats> getPaymentInstructionsByStatusGroupedByUserWithCount(@Param("status") String status,
+        + "pis.paymentInstructionStatusReferenceKey.updateTime <= :endDate GROUP BY bu.forename,bu.surname,bu.id")
+    List<PaymentInstructionUserStatsWithRole> getPaymentInstructionsByStatusGroupedByUserWithCount(@Param("status") String status,
                                                                                            @Param("siteId") String siteId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
 
     @Query(name = "PIRejectedByDM", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionStaticsByUser "
         + "(bu.id, CONCAT(bu.forename,' ',bu.surname), pis.paymentInstructionStatusReferenceKey.paymentInstructionId, pis.paymentInstructionStatusReferenceKey.updateTime) "

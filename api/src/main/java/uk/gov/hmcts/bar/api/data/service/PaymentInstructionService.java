@@ -232,10 +232,10 @@ public class PaymentInstructionService {
         return Util.createMultimapFromList(paymentInstructionInStatusList);
     }
     public MultiMap getPaymentInstructionStatsWithCount(String status, String siteId, LocalDateTime startDate, LocalDateTime endDate) {
-        List<PaymentInstructionUserStats> paymentInstructionInStatusList = paymentInstructionStatusRepository
+        List<PaymentInstructionUserStatsWithRole> paymentInstructionInStatusWithRoleList = paymentInstructionStatusRepository
             .getPaymentInstructionsByStatusGroupedByUserWithCount(status, siteId,startDate,endDate);
 
-        return Util.createMultimapFromList(paymentInstructionInStatusList);
+        return Util.createMultimapFromListWithRole(paymentInstructionInStatusWithRoleList);
     }
     public MultiMap getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(String currentStatus,
                                                                                 String oldStatus,

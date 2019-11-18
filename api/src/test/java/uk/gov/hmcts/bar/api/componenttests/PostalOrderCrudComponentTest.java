@@ -651,12 +651,11 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .get("/users/pi-stats/count?startDate=" + startDate + "&endDate=" + endDate + "&status=D")
             .andExpect(status().isOk()).andExpect(content().contentType("application/json;charset=UTF-8"))
             .andReturn().getResponse().getContentAsString();
-        System.out.println(jsonResponse);
         JSONObject seniorFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
             .get("1234")).get(0);
 
         assertEquals(1,seniorFeeClerk.get("count_of_payment_instruction_in_specified_status"));
-
+        assertEquals("bar_post_clerk",seniorFeeClerk.get("bar_user_role"));
     }
 
     @Test
