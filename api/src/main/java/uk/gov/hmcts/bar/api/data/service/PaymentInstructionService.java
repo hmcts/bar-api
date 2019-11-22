@@ -33,6 +33,7 @@ import uk.gov.hmcts.bar.api.integration.payhub.repository.PayhubFullRemissionRep
 import uk.gov.hmcts.bar.api.integration.payhub.repository.PayhubPaymentInstructionRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -233,7 +234,12 @@ public class PaymentInstructionService {
 
         return Util.createMultimapFromList(paymentInstructionInStatusList);
     }
+    public MultiMap getPaymentInstructionStatsWithCount(String status, String siteId, LocalDateTime startDate, LocalDateTime endDate) {
+        List<PaymentInstructionUserStatsWithRole> paymentInstructionInStatusWithRoleList = paymentInstructionStatusRepository
+            .getPaymentInstructionsByStatusGroupedByUserWithCount(status, siteId,startDate,endDate);
 
+        return Util.createMultimapFromListWithRole(paymentInstructionInStatusWithRoleList);
+    }
     public MultiMap getPaymentInstructionStatsByCurrentStatusGroupedByOldStatus(String currentStatus,
                                                                                 String oldStatus,
                                                                                 String siteId) {
