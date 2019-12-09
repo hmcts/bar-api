@@ -51,7 +51,7 @@ allprojects {
             dependency 'com.google.guava:guava:27.0-jre'
 
             dependency 'org.liquibase:liquibase-core:3.7.0'
-            dependency 'org.postgresql:postgresql:42.2.6'
+            dependency 'org.postgresql:postgresql:42.2.9'
 
             dependency 'io.springfox:springfox-swagger2:2.9.2'
             dependency 'io.springfox:springfox-swagger-ui:2.9.2'
