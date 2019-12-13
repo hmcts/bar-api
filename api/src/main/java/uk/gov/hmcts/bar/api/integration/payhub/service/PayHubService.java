@@ -262,6 +262,12 @@ public class PayHubService {
         pi.setTransferredToPayhub(status);
         pi.setPayhubError(status ? null : errorMessage);
         pi.setReportDate(reportDate);
+
+
+        PaymentInstruction paymentInstruction = paymentInstructionService.getPaymentInstruction(pi.getId(),pi.getSiteId());
+        paymentInstruction.setStatus("STP");
+        paymentInstructionService.savePaymentInstructionStatus(paymentInstruction,pi.getUserId());
+
     }
 
     private void validateReportDate(LocalDateTime reportDate) {

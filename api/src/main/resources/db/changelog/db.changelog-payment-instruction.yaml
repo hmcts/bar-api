@@ -901,3 +901,10 @@ databaseChangeLog:
       changes:
         - sql: >
             insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('register-user-idam', 0, 'Create user in idam');
+
+  - changeSet:
+      id: 41
+      author: Anil
+      changes:
+        - sql: >
+            INSERT into status (status_id,status_description) values ('STP', 'Sent to Payhub');
