@@ -10,13 +10,13 @@ java:
     POSTGRES_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
     POSTGRES_CONNECTION_OPTIONS: "?sslmode=allow"
     SPRING_LIQUIBASE_ENABLED: true
-  postgresql:
-    postgresqlUsername: bar
-    postgresqlPassword: bar
-    postgresqlDatabase: bar
+    postgresql:
+      postgresqlUsername: bar
+      postgresqlPassword: bar
+      postgresqlDatabase: bar
   keyVaults:
     "bar":
       secrets:
         - bar-S2S-SECRET
-postgresql:
+  postgresql:
     enabled: true

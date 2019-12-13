@@ -28,6 +28,8 @@ import uk.gov.hmcts.reform.auth.checker.core.user.UserRequestAuthorizer;
 
 import javax.validation.Valid;
 import java.time.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,6 +95,11 @@ public class PaymentInstructionController {
 
         List<PaymentInstruction> paymentInstructionList = null;
 
+
+        //headers.setAccept(new MediaType("text","csv"));
+        //headers.setAccept(Collections.singletonList(new MediaType("text","csv")));
+
+        //headers.getAccept().contains(new MediaType("text","csv"));
         if (checkAcceptHeaderForCsv(headers)){
             paymentInstructionList =  paymentInstructionService.getAllPaymentInstructionsByTTB(startDate,endDate,request.getBarUser().getSelectedSiteId());
         } else {
@@ -105,6 +112,9 @@ public class PaymentInstructionController {
                 .getAllPaymentInstructions(request.getBarUser(), paymentInstructionSearchCriteriaDto);
         }
         return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
+       //List<PaymentInstruction> abc = Util.updateStatusAndActionDisplayValue(paymentInstructionList);;
+       // return abc;
+
     }
 
     @ApiOperation(value = "Get all current payment instructions", notes = "Get all current payment instructions for a given site.",
@@ -611,6 +621,7 @@ public class PaymentInstructionController {
 
     private boolean checkAcceptHeaderForCsv(HttpHeaders headers){
         return headers.getAccept().contains(new MediaType("text","csv"));
+        //return true;
     }
 
     @InitBinder

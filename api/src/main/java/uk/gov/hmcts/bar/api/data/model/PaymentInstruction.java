@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -83,8 +84,30 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
         setUserActivity(paymentLines);
         paymentLines.get(0).setSentToPayhub(this.getSentToPayhub());
 
+        //List<PaymentInstructionStatusHistory> lstPis = this.getPaymentInstructionStatusHistory();
+
+        paymentLines.get(0).setDmUser(returnDMUser(this.getPaymentInstructionStatusHistory()));
+        paymentLines.get(0).setDtSentToPayhub(returnSentDtToPayhub(this.getPaymentInstructionStatusHistory()));
+
+        //getPaymentInstructionStatusHistory()
+        //PaymentInstructionStatus
+        //paymentLines.get(0).setDmUser(returnDMUser(this.statuses));
+        //paymentLines.get(0).setDtSentToPayhub();
+        //this.getPaymentInstructionStatusHistory().size()
+
         return paymentLines;
     }
+
+    private String returnDMUser(List<PaymentInstructionStatusHistory> lstPisHistry) {
+
+
+        return lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName();
+   }
+
+    private LocalDateTime returnSentDtToPayhub(List<PaymentInstructionStatusHistory> lstPisHistry) {
+        return lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime();
+
+   }
 
     private void setUserActivity(List<PaymentInstructionReportLine> paymentLines){
 
