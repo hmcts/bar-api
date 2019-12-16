@@ -905,6 +905,10 @@ databaseChangeLog:
   - changeSet:
       id: 41
       author: Anil
+      preConditions:
+        - onFail: MARK_RAN
+        - dbms:
+            type: hsqldb
       changes:
         - sql: >
-            INSERT into status (status_id,status_description) values ('STP', 'Sent to Payhub');
+            INSERT INTO status (status_id, status_description) VALUES ('STP', 'Sent to Payhub');
