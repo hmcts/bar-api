@@ -99,14 +99,25 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
     }
 
     private String returnDMUser(List<PaymentInstructionStatusHistory> lstPisHistry) {
-
-
         return lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName();
+
+        /*if (lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName() != null){
+            return lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName();
+        } else{
+            return "TestData";
+        }*/
+
    }
 
     private LocalDateTime returnSentDtToPayhub(List<PaymentInstructionStatusHistory> lstPisHistry) {
         return lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime();
 
+        /*if(lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime() !=null){
+            return lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime();
+
+        }else{
+            return  LocalDateTime.now();
+        }*/
    }
 
     private void setUserActivity(List<PaymentInstructionReportLine> paymentLines){
