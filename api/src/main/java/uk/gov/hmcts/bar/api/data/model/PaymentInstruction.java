@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
+import sun.jvm.hotspot.memory.LoaderConstraintEntry;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -100,13 +101,22 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
 
     private String returnDMUser(List<PaymentInstructionStatusHistory> lstPisHistry) {
 
+        if (lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName() != null){
+            return lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName();
+        } else{
+            return "TestData";
+        }
 
-        return lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName();
    }
 
     private LocalDateTime returnSentDtToPayhub(List<PaymentInstructionStatusHistory> lstPisHistry) {
-        return lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime();
 
+        if(lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime() !=null){
+            return lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime();
+
+        }else{
+            return  LocalDateTime.now();
+        }
    }
 
     private void setUserActivity(List<PaymentInstructionReportLine> paymentLines){
