@@ -901,14 +901,9 @@ databaseChangeLog:
       changes:
         - sql: >
             insert into FF4J_FEATURES (FEAT_UID, ENABLE, DESCRIPTION) values ('register-user-idam', 0, 'Create user in idam');
-
   - changeSet:
       id: 41
       author: Anil
-      preConditions:
-        - onFail: MARK_RAN
-        - dbms:
-            type: hsqldb
       changes:
         - sql: >
             INSERT INTO status (status_id, status_description) VALUES ('STP', 'Sent to Payhub');
