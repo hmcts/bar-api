@@ -95,8 +95,8 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
         csvRow[22] = line.getTransferredToBarUser();
         csvRow[23] = Util.getFormattedDateTime(line.getTransferredToBarTime(),dateTimeFormatter);
         csvRow[24] = (line.getSentToPayhub());
-        csvRow[25] = line.getDmUser();
-        csvRow[26] = Util.getFormattedDateTime(line.getDtSentToPayhub(),dateFormatter);
+            //csvRow[25] = line.getDmUser();
+            //csvRow[26] = Util.getFormattedDateTime(line.getDtSentToPayhub(),dateFormatter);
         return csvRow;
     }
 

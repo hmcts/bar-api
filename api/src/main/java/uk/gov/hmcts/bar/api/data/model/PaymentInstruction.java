@@ -86,8 +86,8 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
 
         //List<PaymentInstructionStatusHistory> lstPis = this.getPaymentInstructionStatusHistory();
 
-        paymentLines.get(0).setDmUser(returnDMUser(this.getPaymentInstructionStatusHistory()));
-        paymentLines.get(0).setDtSentToPayhub(returnSentDtToPayhub(this.getPaymentInstructionStatusHistory()));
+                           // paymentLines.get(0).setDmUser(returnDMUser(this.getPaymentInstructionStatusHistory()));
+                            // paymentLines.get(0).setDtSentToPayhub(returnSentDtToPayhub(this.getPaymentInstructionStatusHistory()));
 
         //getPaymentInstructionStatusHistory()
         //PaymentInstructionStatus

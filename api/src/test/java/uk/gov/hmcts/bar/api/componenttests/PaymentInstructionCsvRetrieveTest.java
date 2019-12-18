@@ -19,7 +19,7 @@ import static uk.gov.hmcts.bar.api.data.model.PostalOrder.postalOrderPaymentInst
 
 public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
     public static final String SEPARATOR = ",";
-    /*@Test
+    @Test
     public void givenPostalOrderPaymentInstructionDetails_retrieveAsCsv() throws Exception {
 
         DbTestUtil.insertBGCNumber(getWebApplicationContext());
@@ -91,7 +91,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
             });
 
     }
-*/
+
     /*@Test
     public void givenCardPaymentInstructionDetails_retrieveAsCsv() throws Exception {
 

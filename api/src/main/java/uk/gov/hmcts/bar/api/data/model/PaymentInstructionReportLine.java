@@ -38,7 +38,7 @@ public class PaymentInstructionReportLine {
     private String          transferredToBarUser;
     private LocalDateTime   transferredToBarTime;
     private String          sentToPayhub;
-    private String          dmUser;
-    private LocalDateTime   dtSentToPayhub;
+    //private String          dmUser;
+    //private LocalDateTime   dtSentToPayhub;
 }
 
