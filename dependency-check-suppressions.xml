@@ -9,7 +9,7 @@
         <cve>CVE-2015-9251</cve>
         <cve>CVE-2019-11358</cve>
         <cve>CVE-2019-12384</cve>
-        <cve>CVE-2019-14439</cve>
+        <!--<cve>CVE-2019-14439</cve>-->
         <cve>CVE-2019-14379</cve>
     </suppress>
     <suppress>
@@ -24,9 +24,6 @@
     </suppress>
     <suppress>
         <cve>CVE-2019-16370</cve>
-        <!--cve>CVE-2019-16942</cve>
-        <cve>CVE-2019-16943</cve>
-        <cve>CVE-2019-17531</cve-->
     </suppress>
 </suppressions>
 
