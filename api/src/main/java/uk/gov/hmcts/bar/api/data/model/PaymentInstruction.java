@@ -83,21 +83,9 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
         fillAmount(paymentLines.get(0));
         setUserActivity(paymentLines);
         paymentLines.get(0).setSentToPayhub(this.getSentToPayhub());
-        //paymentLines.get(0).setDmUser(returnDMUser(this.getPaymentInstructionStatusHistory()));
-        //paymentLines.get(0).setDtSentToPayhub(returnSentDtToPayhub(this.getPaymentInstructionStatusHistory()));
 
         return paymentLines;
     }
-
-    /*private String returnDMUser(List<PaymentInstructionStatusHistory> lstPisHistry) {
-        System.out.println("lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName()---->"+ lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName());
-        return lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName();
-   }
-
-    private LocalDateTime returnSentDtToPayhub(List<PaymentInstructionStatusHistory> lstPisHistry) {
-        System.out.println("lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime()---->"+ lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime());
-        return lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime();
-   }*/
 
     private void setUserActivity(List<PaymentInstructionReportLine> paymentLines){
 
