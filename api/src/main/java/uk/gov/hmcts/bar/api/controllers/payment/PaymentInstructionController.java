@@ -95,11 +95,6 @@ public class PaymentInstructionController {
 
         List<PaymentInstruction> paymentInstructionList = null;
 
-
-        //headers.setAccept(new MediaType("text","csv"));
-        //headers.setAccept(Collections.singletonList(new MediaType("text","csv")));
-
-        //headers.getAccept().contains(new MediaType("text","csv"));
         if (checkAcceptHeaderForCsv(headers)){
             paymentInstructionList =  paymentInstructionService.getAllPaymentInstructionsByTTB(startDate,endDate,request.getBarUser().getSelectedSiteId());
         } else {
@@ -112,9 +107,6 @@ public class PaymentInstructionController {
                 .getAllPaymentInstructions(request.getBarUser(), paymentInstructionSearchCriteriaDto);
         }
         return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
-       //List<PaymentInstruction> abc = Util.updateStatusAndActionDisplayValue(paymentInstructionList);;
-       // return abc;
-
     }
 
     @ApiOperation(value = "Get all current payment instructions", notes = "Get all current payment instructions for a given site.",
