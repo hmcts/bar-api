@@ -83,19 +83,13 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
         fillAmount(paymentLines.get(0));
         setUserActivity(paymentLines);
         paymentLines.get(0).setSentToPayhub(this.getSentToPayhub());
-        paymentLines.get(0).setDmUser(returnDMUser(this.getPaymentInstructionStatusHistory()));
-        paymentLines.get(0).setDtSentToPayhub(returnSentDtToPayhub(this.getPaymentInstructionStatusHistory()));
-
-        //getPaymentInstructionStatusHistory()
-        //PaymentInstructionStatus
-        //paymentLines.get(0).setDmUser(returnDMUser(this.statuses));
-        //paymentLines.get(0).setDtSentToPayhub();
-        //this.getPaymentInstructionStatusHistory().size()
+        //paymentLines.get(0).setDmUser(returnDMUser(this.getPaymentInstructionStatusHistory()));
+        //paymentLines.get(0).setDtSentToPayhub(returnSentDtToPayhub(this.getPaymentInstructionStatusHistory()));
 
         return paymentLines;
     }
 
-    private String returnDMUser(List<PaymentInstructionStatusHistory> lstPisHistry) {
+    /*private String returnDMUser(List<PaymentInstructionStatusHistory> lstPisHistry) {
         System.out.println("lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName()---->"+ lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName());
         return lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName();
    }
@@ -103,7 +97,7 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
     private LocalDateTime returnSentDtToPayhub(List<PaymentInstructionStatusHistory> lstPisHistry) {
         System.out.println("lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime()---->"+ lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime());
         return lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime();
-   }
+   }*/
 
     private void setUserActivity(List<PaymentInstructionReportLine> paymentLines){
 
@@ -122,11 +116,19 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
                 paymentLines.get(0).setApprovedUser(statusHistory.getBarUserFullName());
                 paymentLines.get(0).setApprovedTime(statusHistory.getStatusUpdateTime());
             }
-            if(statusHistory.getStatus().equals("TTB") || statusHistory.getStatus().equals("C")){
+            if(statusHistory.getStatus().equals("TTB") || statusHistory.getStatus().equals("C") || statusHistory.getStatus().equals("STP") ){
                 paymentLines.get(0).setTransferredToBarUser(statusHistory.getBarUserFullName());
                 paymentLines.get(0).setTransferredToBarTime(statusHistory.getStatusUpdateTime());
+                paymentLines.get(0).setDmUser(statusHistory.getBarUserFullName());
+                paymentLines.get(0).setDtSentToPayhub(statusHistory.getStatusUpdateTime());
+            }
+
+            if(statusHistory.getStatus().equals("STP") ){
+                paymentLines.get(0).setDmUser(statusHistory.getBarUserFullName());
+                paymentLines.get(0).setDtSentToPayhub(statusHistory.getStatusUpdateTime());
             }
         }
+
 
     }
 
