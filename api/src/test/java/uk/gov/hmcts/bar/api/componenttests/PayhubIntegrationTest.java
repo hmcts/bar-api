@@ -53,8 +53,8 @@ public class PayhubIntegrationTest extends ComponentTestBase {
             .get("/payment-instructions/send-to-payhub/")
             .andExpect(status().isOk())
             .andExpect(body().as(Map.class, map -> {
-                Assert.assertEquals(2, map.get("total"));//Anil update it 2 from 4
-                Assert.assertEquals(2, map.get("success"));//Anil update it 2 from 4
+                Assert.assertEquals(4, map.get("total"));
+                Assert.assertEquals(4, map.get("success"));
             }));
     }
 
@@ -67,8 +67,8 @@ public class PayhubIntegrationTest extends ComponentTestBase {
             .get("/payment-instructions/send-to-payhub/" + reportDate)
             .andExpect(status().isOk())
             .andExpect(body().as(Map.class, map -> {
-                Assert.assertEquals(2, map.get("total"));// Anil update it 2 from 4
-                Assert.assertEquals(2, map.get("success"));// Anil update it 2 from 4
+                Assert.assertEquals(4, map.get("total"));
+                Assert.assertEquals(4, map.get("success"));
             }));
     }
 

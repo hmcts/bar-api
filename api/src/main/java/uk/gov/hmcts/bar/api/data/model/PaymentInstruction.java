@@ -83,11 +83,8 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
         fillAmount(paymentLines.get(0));
         setUserActivity(paymentLines);
         paymentLines.get(0).setSentToPayhub(this.getSentToPayhub());
-
-        //List<PaymentInstructionStatusHistory> lstPis = this.getPaymentInstructionStatusHistory();
-
-                           // paymentLines.get(0).setDmUser(returnDMUser(this.getPaymentInstructionStatusHistory()));
-                            // paymentLines.get(0).setDtSentToPayhub(returnSentDtToPayhub(this.getPaymentInstructionStatusHistory()));
+        paymentLines.get(0).setDmUser(returnDMUser(this.getPaymentInstructionStatusHistory()));
+        paymentLines.get(0).setDtSentToPayhub(returnSentDtToPayhub(this.getPaymentInstructionStatusHistory()));
 
         //getPaymentInstructionStatusHistory()
         //PaymentInstructionStatus
@@ -99,6 +96,7 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
     }
 
     private String returnDMUser(List<PaymentInstructionStatusHistory> lstPisHistry) {
+        System.out.println("lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName()---->"+ lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName());
         return lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName();
 
         /*if (lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName() != null){
@@ -110,6 +108,7 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
    }
 
     private LocalDateTime returnSentDtToPayhub(List<PaymentInstructionStatusHistory> lstPisHistry) {
+        System.out.println("lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime()---->"+ lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime());
         return lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime();
 
         /*if(lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime() !=null){

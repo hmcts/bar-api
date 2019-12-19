@@ -30,12 +30,9 @@ public abstract class BasePaymentInstruction {
     public static final String SENT_TO_PAYHUB_NO = "No";
     public static final String SENT_TO_PAYHUB_FAIL = "Fail";
 
-    /*public static final String[] CSV_TABLE_HEADER = {"Daily sequential payment ID", "Date", "Payee name", "Cheque Amount",
+    public static final String[] CSV_TABLE_HEADER = {"Daily sequential payment ID", "Date", "Payee name", "Cheque Amount",
         "Postal Order Amount", "Cash Amount", "Card Amount", "AllPay Amount", "Action Taken", "Case ref no.","BGC Slip No.",
-        "Fee Amount", "Fee code", "Fee description","Remission amount","Remission reference","Recorded user","Recorded time","Validated user","Validated time","Reviewed user","Reviewed time","Approved User","Approved time","Sent to PayHub","DM User","Sent to PayHub Date"};*/
-      public static final String[] CSV_TABLE_HEADER = {"Daily sequential payment ID", "Date", "Payee name", "Cheque Amount",
-        "Postal Order Amount", "Cash Amount", "Card Amount", "AllPay Amount", "Action Taken", "Case ref no.","BGC Slip No.",
-        "Fee Amount", "Fee code", "Fee description","Remission amount","Remission reference","Recorded user","Recorded time","Validated user","Validated time","Reviewed user","Reviewed time","Approved User","Approved time","Sent to PayHub"};
+        "Fee Amount", "Fee code", "Fee description","Remission amount","Remission reference","Recorded user","Recorded time","Validated user","Validated time","Reviewed user","Reviewed time","Approved User","Approved time","Sent to PayHub","DM User","Sent to PayHub Date"};
 
     public abstract List<? extends BaseCaseFeeDetail> getCaseFeeDetails();
 
