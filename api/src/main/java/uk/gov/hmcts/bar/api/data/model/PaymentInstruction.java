@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -84,9 +83,6 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
         fillAmount(paymentLines.get(0));
         setUserActivity(paymentLines);
         paymentLines.get(0).setSentToPayhub(this.getSentToPayhub());
-
-        //List<PaymentInstructionStatusHistory> lstPis = this.getPaymentInstructionStatusHistory();
-
         paymentLines.get(0).setDmUser(returnDMUser(this.getPaymentInstructionStatusHistory()));
         paymentLines.get(0).setDtSentToPayhub(returnSentDtToPayhub(this.getPaymentInstructionStatusHistory()));
 
@@ -100,25 +96,13 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
     }
 
     private String returnDMUser(List<PaymentInstructionStatusHistory> lstPisHistry) {
+        System.out.println("lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName()---->"+ lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName());
         return lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName();
-
-        /*if (lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName() != null){
-            return lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName();
-        } else{
-            return "TestData";
-        }*/
-
    }
 
     private LocalDateTime returnSentDtToPayhub(List<PaymentInstructionStatusHistory> lstPisHistry) {
+        System.out.println("lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime()---->"+ lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime());
         return lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime();
-
-        /*if(lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime() !=null){
-            return lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime();
-
-        }else{
-            return  LocalDateTime.now();
-        }*/
    }
 
     private void setUserActivity(List<PaymentInstructionReportLine> paymentLines){
