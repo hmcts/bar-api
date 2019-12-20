@@ -32,7 +32,7 @@ public abstract class BasePaymentInstruction {
 
     public static final String[] CSV_TABLE_HEADER = {"Daily sequential payment ID", "Date", "Payee name", "Cheque Amount",
         "Postal Order Amount", "Cash Amount", "Card Amount", "AllPay Amount", "Action Taken", "Case ref no.","BGC Slip No.",
-        "Fee Amount", "Fee code", "Fee description","Remission amount","Remission reference","Recorded user","Recorded time","Validated user","Validated time","Reviewed user","Reviewed time","Approved User","Approved time","Sent to PayHub","DM User","Sent to PayHub Date"};
+        "Fee Amount", "Fee code", "Fee description","Remission amount","Remission reference","Recorded user","Recorded time","Validated user","Validated time","Reviewed user","Reviewed time","Approved User","Approved time","Sent to PayHub","Sent to PayHub by","Date Sent to PayHub"};
 
     public abstract List<? extends BaseCaseFeeDetail> getCaseFeeDetails();
 
