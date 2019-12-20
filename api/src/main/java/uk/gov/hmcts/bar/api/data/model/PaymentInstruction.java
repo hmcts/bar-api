@@ -83,27 +83,9 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
         fillAmount(paymentLines.get(0));
         setUserActivity(paymentLines);
         paymentLines.get(0).setSentToPayhub(this.getSentToPayhub());
-        paymentLines.get(0).setDmUser(returnDMUser(this.getPaymentInstructionStatusHistory()));
-        paymentLines.get(0).setDtSentToPayhub(returnSentDtToPayhub(this.getPaymentInstructionStatusHistory()));
-
-        //getPaymentInstructionStatusHistory()
-        //PaymentInstructionStatus
-        //paymentLines.get(0).setDmUser(returnDMUser(this.statuses));
-        //paymentLines.get(0).setDtSentToPayhub();
-        //this.getPaymentInstructionStatusHistory().size()
 
         return paymentLines;
     }
-
-    private String returnDMUser(List<PaymentInstructionStatusHistory> lstPisHistry) {
-        System.out.println("lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName()---->"+ lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName());
-        return lstPisHistry.get(lstPisHistry.size()-1).getBarUserFullName();
-   }
-
-    private LocalDateTime returnSentDtToPayhub(List<PaymentInstructionStatusHistory> lstPisHistry) {
-        System.out.println("lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime()---->"+ lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime());
-        return lstPisHistry.get(lstPisHistry.size()-1).getStatusUpdateTime();
-   }
 
     private void setUserActivity(List<PaymentInstructionReportLine> paymentLines){
 
@@ -126,7 +108,13 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
                 paymentLines.get(0).setTransferredToBarUser(statusHistory.getBarUserFullName());
                 paymentLines.get(0).setTransferredToBarTime(statusHistory.getStatusUpdateTime());
             }
+
+            if(statusHistory.getStatus().equals("STP") ){
+                paymentLines.get(0).setDmUser(statusHistory.getBarUserFullName());
+                paymentLines.get(0).setDtSentToPayhub(statusHistory.getStatusUpdateTime());
+            }
         }
+
 
     }
 

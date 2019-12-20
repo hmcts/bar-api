@@ -28,8 +28,6 @@ import uk.gov.hmcts.reform.auth.checker.core.user.UserRequestAuthorizer;
 
 import javax.validation.Valid;
 import java.time.*;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -613,7 +611,6 @@ public class PaymentInstructionController {
 
     private boolean checkAcceptHeaderForCsv(HttpHeaders headers){
         return headers.getAccept().contains(new MediaType("text","csv"));
-        //return true;
     }
 
     @InitBinder
