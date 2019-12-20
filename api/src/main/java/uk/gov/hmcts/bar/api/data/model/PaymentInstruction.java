@@ -104,11 +104,9 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
                 paymentLines.get(0).setApprovedUser(statusHistory.getBarUserFullName());
                 paymentLines.get(0).setApprovedTime(statusHistory.getStatusUpdateTime());
             }
-            if(statusHistory.getStatus().equals("TTB") || statusHistory.getStatus().equals("C") || statusHistory.getStatus().equals("STP") ){
+            if(statusHistory.getStatus().equals("TTB") || statusHistory.getStatus().equals("C")){
                 paymentLines.get(0).setTransferredToBarUser(statusHistory.getBarUserFullName());
                 paymentLines.get(0).setTransferredToBarTime(statusHistory.getStatusUpdateTime());
-                paymentLines.get(0).setDmUser(statusHistory.getBarUserFullName());
-                paymentLines.get(0).setDtSentToPayhub(statusHistory.getStatusUpdateTime());
             }
 
             if(statusHistory.getStatus().equals("STP") ){
