@@ -248,7 +248,7 @@ public class PayHubService {
         return reference;
     }
 
-    private Map<String, String> parsePayhubResponse(String rawMessage, ObjectMapper objectMapper) throws IOException {
+    private Map parsePayhubResponse(String rawMessage, ObjectMapper objectMapper) throws IOException {
         if (rawMessage.startsWith("RM-")){
             Map<String, String> resp = new HashMap<>();
             resp.put(REFERENCE_KEY, rawMessage);
