@@ -5,7 +5,6 @@
         <cve>CVE-2018-14040</cve>
         <cve>CVE-2018-14041</cve>
         <cve>CVE-2018-14042</cve>
-        <cve>CVE-2019-8331</cve>
     </suppress>
     <suppress>
         <!-- The info available on this over the internet is not sufficient. -->
