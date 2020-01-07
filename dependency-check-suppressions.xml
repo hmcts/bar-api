@@ -9,15 +9,16 @@
         <cve>CVE-2015-9251</cve>
         <cve>CVE-2019-11358</cve>
     </suppress>
+<!--    <suppress>-->
+<!--        <notes>Latest spring security issues (5.1.5.RELEASE)</notes>-->
+<!--        <cve>CVE-2018-1258</cve>-->
+<!--    </suppress>-->
     <suppress>
-        <notes>Latest spring security issues (5.1.5.RELEASE)</notes>
-        <cve>CVE-2018-1258</cve>
-    </suppress>
-    <suppress>
+        <!--  This one needs a gradle upgrade. Hence it cannot be removed at the moment. We need a version above 5.6 -->
         <cve>CVE-2019-15052</cve>
     </suppress>
     <suppress>
-        <!--  This one needs a gradle upgrade. Hence it cannot be removed at the moment. -->
+        <!--  This one needs a gradle upgrade. Hence it cannot be removed at the moment. We need a version above 6.0 -->
         <cve>CVE-2019-16370</cve>
     </suppress>
 
