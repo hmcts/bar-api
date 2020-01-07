@@ -17,6 +17,10 @@
         <cve>CVE-2019-10086</cve>
         <cve>CVE-2019-15052</cve>
     </suppress>
+    <suppress>
+        <!--  This one needs a gradle upgrade. Hence it cannot be removed at the moment. -->
+        <cve>CVE-2019-16370</cve>
+    </suppress>
 </suppressions>
 <!-- Do remember to merge this branch with master before commit and push so that there is not conflict -->
 
