@@ -21,6 +21,15 @@
         <!--  This one needs a gradle upgrade. Hence it cannot be removed at the moment. -->
         <cve>CVE-2019-16370</cve>
     </suppress>
+
+
+    <!-- Added after December 2019 -->
+    <suppress>
+        <cpe>cpe:/a:apache_tomcat:apache_tomcat:9.0.21</cpe>
+        <cve>CVE-2019-12418</cve>
+        <cve>CVE-2019-17563</cve>
+    </suppress>
+    <!-- Added after December 2019 -->
 </suppressions>
 <!-- Do remember to merge this branch with master before commit and push so that there is not conflict -->
 
