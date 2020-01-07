@@ -8,21 +8,15 @@
         <cve>CVE-2019-8331</cve>
         <cve>CVE-2015-9251</cve>
         <cve>CVE-2019-11358</cve>
-<!--        <cve>CVE-2019-12384</cve>-->
-<!--        <cve>CVE-2019-14379</cve>-->
     </suppress>
     <suppress>
         <notes>Latest spring security issues (5.1.5.RELEASE)</notes>
         <cve>CVE-2018-1258</cve>
     </suppress>
     <suppress>
-<!--        <notes>jackson-databind-2.9.9 issues although there is a newer one (2.9.9.1) none of the libraries using the currently </notes>-->
-<!--        <cve>CVE-2019-12814</cve>-->
         <cve>CVE-2019-10086</cve>
         <cve>CVE-2019-15052</cve>
     </suppress>
-    <suppress>
-        <cve>CVE-2019-16370</cve>
-    </suppress>
 </suppressions>
+<!-- Do remember to merge this branch with master before commit and push so that there is not conflict -->
 
