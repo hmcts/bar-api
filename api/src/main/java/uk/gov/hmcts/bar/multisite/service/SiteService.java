@@ -46,22 +46,22 @@ public class SiteService {
                 if (lstSiteUserDto.get(i).getRoles() != null) {
 
                     if (!isUpdated && lstSiteUserDto.get(i).getRoles().indexOf("bar-delivery-manager") >= 0) {
-                        users.add(createUser(lstSiteUserDto.get(i).getEmail(), lstSiteUserDto.get(i).getForename(), lstSiteUserDto.get(i).getSurname(), "bar-delivery-manager"));
+                        users.add(createUser(lstSiteUserDto.get(i).getEmail(), lstSiteUserDto.get(i).getForename(), lstSiteUserDto.get(i).getSurname(), "delivery-manager"));
                         isUpdated=true;
                     }
 
                     if (!isUpdated && lstSiteUserDto.get(i).getRoles().indexOf("bar-senior-clerk") >= 0) {
-                        users.add(createUser(lstSiteUserDto.get(i).getEmail(), lstSiteUserDto.get(i).getForename(), lstSiteUserDto.get(i).getSurname(), "bar-senior-clerk"));
+                        users.add(createUser(lstSiteUserDto.get(i).getEmail(), lstSiteUserDto.get(i).getForename(), lstSiteUserDto.get(i).getSurname(), "senior-clerk"));
                         isUpdated=true;
                     }
 
                     if (!isUpdated && lstSiteUserDto.get(i).getRoles().indexOf("bar-fee-clerk") >= 0) {
-                        users.add(createUser(lstSiteUserDto.get(i).getEmail(), lstSiteUserDto.get(i).getForename(), lstSiteUserDto.get(i).getSurname(), "bar-fee-clerk"));
+                        users.add(createUser(lstSiteUserDto.get(i).getEmail(), lstSiteUserDto.get(i).getForename(), lstSiteUserDto.get(i).getSurname(), "fee-clerk"));
                         isUpdated=true;
                     }
 
                     if (!isUpdated && lstSiteUserDto.get(i).getRoles().indexOf("bar-post-clerk") >= 0) {
-                        users.add(createUser(lstSiteUserDto.get(i).getEmail(), lstSiteUserDto.get(i).getForename(), lstSiteUserDto.get(i).getSurname(), "bar-post-clerk"));
+                        users.add(createUser(lstSiteUserDto.get(i).getEmail(), lstSiteUserDto.get(i).getForename(), lstSiteUserDto.get(i).getSurname(), "post-clerk"));
                         isUpdated=true;
                     }
                 } else
