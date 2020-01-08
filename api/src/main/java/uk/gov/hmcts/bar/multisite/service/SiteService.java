@@ -36,40 +36,37 @@ public class SiteService {
     }
 
 
+
     private List<SiteUserDto> getlstSiteUserDtoWithOneRole(List<SiteUserDto> lstSiteUserDto) {
-
         List<SiteUserDto> users = new ArrayList<>();
-
-
-        for (int i = 0; i < lstSiteUserDto.size(); i++) {
+        lstSiteUserDto.stream().forEach(roles->{
             boolean isUpdated = false;
-                if (lstSiteUserDto.get(i).getRoles() != null) {
-
-                    if (!isUpdated && lstSiteUserDto.get(i).getRoles().indexOf("bar-delivery-manager") >= 0) {
-                        users.add(createUser(lstSiteUserDto.get(i).getEmail(), lstSiteUserDto.get(i).getForename(), lstSiteUserDto.get(i).getSurname(), "delivery-manager"));
-                        isUpdated=true;
-                    }
-
-                    if (!isUpdated && lstSiteUserDto.get(i).getRoles().indexOf("bar-senior-clerk") >= 0) {
-                        users.add(createUser(lstSiteUserDto.get(i).getEmail(), lstSiteUserDto.get(i).getForename(), lstSiteUserDto.get(i).getSurname(), "senior-clerk"));
-                        isUpdated=true;
-                    }
-
-                    if (!isUpdated && lstSiteUserDto.get(i).getRoles().indexOf("bar-fee-clerk") >= 0) {
-                        users.add(createUser(lstSiteUserDto.get(i).getEmail(), lstSiteUserDto.get(i).getForename(), lstSiteUserDto.get(i).getSurname(), "fee-clerk"));
-                        isUpdated=true;
-                    }
-
-                    if (!isUpdated && lstSiteUserDto.get(i).getRoles().indexOf("bar-post-clerk") >= 0) {
-                        users.add(createUser(lstSiteUserDto.get(i).getEmail(), lstSiteUserDto.get(i).getForename(), lstSiteUserDto.get(i).getSurname(), "post-clerk"));
-                        isUpdated=true;
-                    }
-                } else
-                    users.add(createUser(lstSiteUserDto.get(i).getEmail(), lstSiteUserDto.get(i).getForename(), lstSiteUserDto.get(i).getSurname(), lstSiteUserDto.get(i).getRoles()));
+            if (roles.getRoles() != null) {
+                if (!isUpdated && roles.getRoles().indexOf("bar-delivery-manager") >= 0) {
+                    users.add(createUser(roles.getEmail(), roles.getForename(), roles.getSurname(), "delivery-manager"));
+                    isUpdated = true;
                 }
+                if (!isUpdated && roles.getRoles().indexOf("bar-senior-clerk") >= 0) {
+                    users.add(createUser(roles.getEmail(), roles.getForename(), roles.getSurname(), "senior-clerk"));
+                    isUpdated = true;
+                }
+
+                if (!isUpdated && roles.getRoles().indexOf("bar-fee-clerk") >= 0) {
+                    users.add(createUser(roles.getEmail(), roles.getForename(), roles.getSurname(), "fee-clerk"));
+                    isUpdated = true;
+                }
+
+                if (!isUpdated && roles.getRoles().indexOf("bar-post-clerk") >= 0) {
+                    users.add(createUser(roles.getEmail(), roles.getForename(), roles.getSurname(), "post-clerk"));
+                    isUpdated = true;
+                }
+            } else {
+                        users.add(createUser(roles.getEmail(), roles.getForename(), roles.getSurname(), roles.getRoles()));
+                   }
+        });
+
         return users;
     }
-
 
 private SiteUserDto createUser(String email, String forname, String surname, String roles) {
 
