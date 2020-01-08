@@ -42,6 +42,9 @@ public class SiteServiceTest {
         assertEquals("A", fullSite.getSiteUsers().get(0).getForename());
         assertEquals("User", fullSite.getSiteUsers().get(0).getSurname());
         assertEquals("b@b.com", fullSite.getSiteUsers().get(1).getEmail());
+        assertEquals("bar-delivery-manager",fullSite.getSiteUsers().get(0).getRoles());
+        assertEquals("bar-senior-clerk",fullSite.getSiteUsers().get(1).getRoles());
+        assertEquals("bar-fee-clerk",fullSite.getSiteUsers().get(2).getRoles());
         assertEquals("one", fullSite.getDescription());
     }
 
