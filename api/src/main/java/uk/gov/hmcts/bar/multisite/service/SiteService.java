@@ -9,7 +9,6 @@ import uk.gov.hmcts.bar.multisite.repository.SiteRepository;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
