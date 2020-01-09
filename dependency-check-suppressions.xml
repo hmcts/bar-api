@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-    <suppress>
-        <notes>Latest liquibase issues hopefully it will be solved in the future release</notes>
-        <cve>CVE-2018-14040</cve>
-        <cve>CVE-2018-14041</cve>
-        <cve>CVE-2018-14042</cve>
-    </suppress>
+<!--    <suppress>-->
+<!--        <notes>Latest liquibase issues hopefully it will be solved in the future release</notes>-->
+<!--        <cve>CVE-2018-14040</cve>-->
+<!--        <cve>CVE-2018-14041</cve>-->
+<!--        <cve>CVE-2018-14042</cve>-->
+<!--    </suppress>-->
     <suppress>
         <!-- The info available on this over the internet is not sufficient. -->
         <!-- However it is evident that we need a higher version of spring boot to resolve this one  -->
