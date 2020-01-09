@@ -6,7 +6,6 @@ import uk.gov.hmcts.bar.api.data.exceptions.BadRequestException;
 import uk.gov.hmcts.bar.multisite.model.Site;
 import uk.gov.hmcts.bar.multisite.model.SiteUserDto;
 import uk.gov.hmcts.bar.multisite.repository.SiteRepository;
-
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;

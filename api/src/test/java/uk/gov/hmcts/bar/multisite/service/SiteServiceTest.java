@@ -38,14 +38,17 @@ public class SiteServiceTest {
         when(siteRepository.findById(siteId)).thenReturn(Optional.of(site));
         when(siteRepository.findAllEmailsToSite(siteId)).thenReturn(SiteUtils.createUsers());
         Site fullSite = service.getSitesWithUsers("1");
-        assertEquals(3, fullSite.getSiteUsers().size());
+        assertEquals(5, fullSite.getSiteUsers().size());
         assertEquals("A", fullSite.getSiteUsers().get(0).getForename());
         assertEquals("User", fullSite.getSiteUsers().get(0).getSurname());
         assertEquals("b@b.com", fullSite.getSiteUsers().get(1).getEmail());
         assertEquals("delivery-manager",fullSite.getSiteUsers().get(0).getRoles());
         assertEquals("senior-clerk",fullSite.getSiteUsers().get(1).getRoles());
         assertEquals("fee-clerk",fullSite.getSiteUsers().get(2).getRoles());
+        assertEquals("post-clerk",fullSite.getSiteUsers().get(3).getRoles());
+        assertEquals(null,fullSite.getSiteUsers().get(4).getRoles());
         assertEquals("one", fullSite.getDescription());
+
     }
 
     @Test

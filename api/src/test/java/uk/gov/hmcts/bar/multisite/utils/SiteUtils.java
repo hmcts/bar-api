@@ -70,6 +70,46 @@ public class SiteUtils {
             public String getRoles() { return "bar-fee-clerk"; }
         });
 
+        users.add(new SiteUserDto() {
+            @Override
+            public String getEmail() {
+                return "c@c.com";
+            }
+
+            @Override
+            public String getForename() {
+                return "C";
+            }
+
+            @Override
+            public String getSurname() {
+                return "User";
+            }
+
+            @Override
+            public String getRoles() { return "bar-post-clerk"; }
+        });
+
+        users.add(new SiteUserDto() {
+            @Override
+            public String getEmail() {
+                return "c@c.com";
+            }
+
+            @Override
+            public String getForename() {
+                return "C";
+            }
+
+            @Override
+            public String getSurname() {
+                return "User";
+            }
+
+            @Override
+            public String getRoles() { return null; }
+        });
+
         return users;
     }
 }
