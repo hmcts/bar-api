@@ -24,6 +24,7 @@
     </suppress>
     <suppress>
         <cve>CVE-2019-16370</cve>
+        <cve>CVE-2020-5398</cve>
     </suppress>
 </suppressions>
 
