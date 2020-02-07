@@ -40,5 +40,6 @@ public class PaymentInstructionReportLine {
     private String          sentToPayhub;
     private String          dmUser;
     private LocalDateTime   dtSentToPayhub;
+    private LocalDateTime   dtTrxReportReporting;
 }
 
