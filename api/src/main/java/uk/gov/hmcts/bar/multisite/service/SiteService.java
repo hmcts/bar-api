@@ -4,9 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.bar.api.data.exceptions.BadRequestException;
 import uk.gov.hmcts.bar.multisite.model.Site;
+import uk.gov.hmcts.bar.multisite.model.SiteUserDto;
 import uk.gov.hmcts.bar.multisite.repository.SiteRepository;
-
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,9 +28,69 @@ public class SiteService {
 
     public Site getSitesWithUsers(String id) {
         Site site = siteRepository.findById(id).orElseThrow(() -> new BadRequestException("This site id does not exist: " + id));
-        site.setSiteUsers(siteRepository.findAllEmailsToSite(id));
+        List<SiteUserDto> lstSiteUserDto = siteRepository.findAllEmailsToSite(id);
+        site.setSiteUsers(getlstSiteUserDtoWithOneRole(lstSiteUserDto));
         return site;
     }
+
+
+
+    private List<SiteUserDto> getlstSiteUserDtoWithOneRole(List<SiteUserDto> lstSiteUserDto) {
+        List<SiteUserDto> users = new ArrayList<>();
+        lstSiteUserDto.stream().forEach(roles->{
+            boolean isUpdated = false;
+            if (roles.getRoles() != null) {
+                if (!isUpdated && roles.getRoles().indexOf("bar-delivery-manager") >= 0) {
+                    users.add(createUser(roles.getEmail(), roles.getForename(), roles.getSurname(), "delivery-manager"));
+                    isUpdated = true;
+                }
+                if (!isUpdated && roles.getRoles().indexOf("bar-senior-clerk") >= 0) {
+                    users.add(createUser(roles.getEmail(), roles.getForename(), roles.getSurname(), "senior-clerk"));
+                    isUpdated = true;
+                }
+
+                if (!isUpdated && roles.getRoles().indexOf("bar-fee-clerk") >= 0) {
+                    users.add(createUser(roles.getEmail(), roles.getForename(), roles.getSurname(), "fee-clerk"));
+                    isUpdated = true;
+                }
+
+                if (!isUpdated && roles.getRoles().indexOf("bar-post-clerk") >= 0) {
+                    users.add(createUser(roles.getEmail(), roles.getForename(), roles.getSurname(), "post-clerk"));
+                    isUpdated = true;
+                }
+            } else {
+                        users.add(createUser(roles.getEmail(), roles.getForename(), roles.getSurname(), roles.getRoles()));
+                   }
+        });
+
+        return users;
+    }
+
+private SiteUserDto createUser(String email, String forname, String surname, String roles) {
+
+    return new SiteUserDto() {
+        @Override
+        public String getEmail() {
+            return email;
+        }
+
+        @Override
+        public String getForename() {
+            return forname;
+        }
+
+        @Override
+        public String getSurname() {
+            return surname;
+        }
+
+        @Override
+        public String getRoles() {
+            return roles;
+        }
+    };
+
+}
 
     public Site saveSite(Site site) {
         return siteRepository.save(site);
