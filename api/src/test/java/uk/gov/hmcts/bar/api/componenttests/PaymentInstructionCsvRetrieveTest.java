@@ -282,7 +282,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         String sentToPayhub="Yes";
         String sentToPayhubBy="1234-fn 1234-ln";
         String dtSendToPayhub = currentDateTime.format(actualFormatter);
-        String reportingDt="25 Mar 2018 23:32:23";
+        String reportingDt=currentDateTime.format(actualFormatter);
 
 
 
