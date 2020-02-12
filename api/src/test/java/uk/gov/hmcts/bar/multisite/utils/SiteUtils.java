@@ -24,6 +24,10 @@ public class SiteUtils {
             public String getSurname() {
                 return "User";
             }
+
+            @Override
+            public String getRoles() { return "bar-delivery-manager,bar-senior-clerk,IDAM_ADMIN_USER";};
+
         });
 
         users.add(new SiteUserDto() {
@@ -41,6 +45,9 @@ public class SiteUtils {
             public String getSurname() {
                 return "User";
             }
+
+            @Override
+            public String getRoles() { return "bar-senior-clerk,bar-post-clerk"; }
         });
 
         users.add(new SiteUserDto() {
@@ -58,6 +65,49 @@ public class SiteUtils {
             public String getSurname() {
                 return "User";
             }
+
+            @Override
+            public String getRoles() { return "bar-fee-clerk"; }
+        });
+
+        users.add(new SiteUserDto() {
+            @Override
+            public String getEmail() {
+                return "c@c.com";
+            }
+
+            @Override
+            public String getForename() {
+                return "C";
+            }
+
+            @Override
+            public String getSurname() {
+                return "User";
+            }
+
+            @Override
+            public String getRoles() { return "bar-post-clerk"; }
+        });
+
+        users.add(new SiteUserDto() {
+            @Override
+            public String getEmail() {
+                return "c@c.com";
+            }
+
+            @Override
+            public String getForename() {
+                return "C";
+            }
+
+            @Override
+            public String getSurname() {
+                return "User";
+            }
+
+            @Override
+            public String getRoles() { return null; }
         });
 
         return users;
