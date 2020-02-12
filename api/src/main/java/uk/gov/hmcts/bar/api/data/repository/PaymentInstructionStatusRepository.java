@@ -31,7 +31,7 @@ public interface PaymentInstructionStatusRepository
 
     @Query(name = "PIByUserGroupWithCount", value = "SELECT new uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStatsWithRole"
         + "(bu.id, bu.roles, CONCAT(bu.forename,' ',bu.surname), COUNT(bu.id)) FROM BarUser bu, PaymentInstruction pi, PaymentInstructionStatus pis WHERE "
-        + "bu.id = pi.userId  AND "
+        + "bu.id = pis.barUserId  AND "
         + "pis.paymentInstructionStatusReferenceKey.status= :status AND "
         + "pi.id = pis.paymentInstructionStatusReferenceKey.paymentInstructionId AND "
         + "pi.siteId = :siteId AND "
