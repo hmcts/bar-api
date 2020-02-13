@@ -130,6 +130,7 @@ public class PaymentInstructionService {
 
     }
 
+
     public long getNonResetPaymentInstructionsCount(String status, String siteId) {
         return paymentInstructionStatusRepository.getNonResetCountByStatus(status, siteId);
     }
@@ -284,7 +285,7 @@ public class PaymentInstructionService {
         ).withRel(rel);
     }
 
-    private void savePaymentInstructionStatus(PaymentInstruction pi, String userId) {
+    public void savePaymentInstructionStatus(PaymentInstruction pi, String userId) {
         PaymentInstructionStatus pis = new PaymentInstructionStatus(userId, pi);
         paymentInstructionStatusRepository.save(pis);
     }

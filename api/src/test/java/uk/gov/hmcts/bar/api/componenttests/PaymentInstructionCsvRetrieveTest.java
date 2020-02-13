@@ -280,6 +280,11 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         String amount = "6.00";
         String bgcNumber = "123456";
         String sentToPayhub="Yes";
+        String sentToPayhubBy="1234-fn 1234-ln";
+        String dtSendToPayhub = currentDateTime.format(actualFormatter);
+        String reportingDt=currentDateTime.format(actualFormatter);
+
+
 
         restActions
             .getCsv("/payment-instructions?startDate=" + paramStartDate,"Y431")
@@ -297,6 +302,9 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
                 Assert.assertTrue(csv.contains(recordedUser));
                 Assert.assertTrue(csv.contains(recordedDateTime));
                 Assert.assertTrue(csv.contains(sentToPayhub));
+                Assert.assertTrue(csv.contains(sentToPayhubBy));
+                Assert.assertTrue(csv.contains(dtSendToPayhub));
+                Assert.assertTrue(csv.contains(reportingDt));
             });
     }
 

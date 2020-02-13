@@ -33,7 +33,7 @@ public class PaymentInstructionUserFilterTest extends ComponentTestBase {
             .get("/users/1234/payment-instructions")
             .andExpect(status().isOk())
             .andExpect(body().asListOf(CardPaymentInstruction.class, paymentInstructions -> {
-                assertTrue(paymentInstructions.size() == 1);
+                assertTrue(paymentInstructions.size() == 3);
             }));
     }
 
@@ -46,14 +46,14 @@ public class PaymentInstructionUserFilterTest extends ComponentTestBase {
             .get("/users/1234/payment-instructions?action=Process")
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, item -> {
-                assertTrue(item.size() == 1);
+                assertTrue(item.size() == 3);
             }));
 
         restActions
             .get("/users/4321/payment-instructions?action=Process")
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, item -> {
-                assertTrue(item.size() == 2);
+                assertTrue(item.size() == 0);
             }));
     }
 
@@ -66,14 +66,14 @@ public class PaymentInstructionUserFilterTest extends ComponentTestBase {
             .get("/users/4321/payment-instructions?action=Process&bgcNumber=isNull")
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, item -> {
-                assertTrue(item.size() == 1);
+                assertTrue(item.size() == 0);
             }));
 
         restActions
             .get("/users/4321/payment-instructions?action=Process&bgcNumber=123456")
             .andExpect(status().isOk())
             .andExpect(body().as(List.class, item -> {
-                assertTrue(item.size() == 1);
+                assertTrue(item.size() == 0);
             }));
     }
 }

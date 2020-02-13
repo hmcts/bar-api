@@ -45,7 +45,7 @@ public class PayhubIntegrationTest extends ComponentTestBase {
         );
     }
 
-    @Test
+   @Test
     public void testSendPaymentInstrucitonToPayhub() throws Exception {
         DbTestUtil.insertBGCNumber(getWebApplicationContext());
         DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
@@ -72,36 +72,36 @@ public class PayhubIntegrationTest extends ComponentTestBase {
             }));
     }
 
-    @Test
-    public void testSendPaymentInstrucitonToPayhubWithInvalidReportDate() throws Exception {
-        Long reportDate = LocalDateTime.now().plusDays(1).toInstant(ZoneOffset.UTC).toEpochMilli();
-        DbTestUtil.insertBGCNumber(getWebApplicationContext());
-        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
-        restActionsForDM
-            .get("/payment-instructions/send-to-payhub/" + reportDate)
-            .andExpect(status().isBadRequest());
-    }
+        @Test
+        public void testSendPaymentInstrucitonToPayhubWithInvalidReportDate() throws Exception {
+            Long reportDate = LocalDateTime.now().plusDays(1).toInstant(ZoneOffset.UTC).toEpochMilli();
+            DbTestUtil.insertBGCNumber(getWebApplicationContext());
+            DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
+            restActionsForDM
+                .get("/payment-instructions/send-to-payhub/" + reportDate)
+                .andExpect(status().isBadRequest());
+        }
 
-    @Test
-    public void testSendPaymentInstrucitonToPayhub_withWrongUser() throws Exception {
-        DbTestUtil.insertBGCNumber(getWebApplicationContext());
-        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
-        restActions
-            .get("/payment-instructions/send-to-payhub/")
-            .andExpect(status().isForbidden());
-    }
+        @Test
+        public void testSendPaymentInstrucitonToPayhub_withWrongUser() throws Exception {
+            DbTestUtil.insertBGCNumber(getWebApplicationContext());
+            DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
+            restActions
+                .get("/payment-instructions/send-to-payhub/")
+                .andExpect(status().isForbidden());
+        }
 
-    @Test
-    public void testSendPaymentInstrucitonWhenFeatureIsOff() throws Exception {
-        DbTestUtil.insertBGCNumber(getWebApplicationContext());
-        DbTestUtil.toggleSendToPayhub(getWebApplicationContext(), false);
-        DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
-        restActionsForDM
-            .get("/payment-instructions/send-to-payhub/")
-            .andExpect(status().isBadRequest())
-            .andExpect(body().as(Map.class, resp -> {
-                Assert.assertEquals("This function is temporarily unavailable.\n" +
-                    "Please contact support.", resp.get("message"));
-            }));
-    }
+        @Test
+        public void testSendPaymentInstrucitonWhenFeatureIsOff() throws Exception {
+            DbTestUtil.insertBGCNumber(getWebApplicationContext());
+            DbTestUtil.toggleSendToPayhub(getWebApplicationContext(), false);
+            DbTestUtil.insertPaymentInstructions(getWebApplicationContext());
+            restActionsForDM
+                .get("/payment-instructions/send-to-payhub/")
+                .andExpect(status().isBadRequest())
+                .andExpect(body().as(Map.class, resp -> {
+                    Assert.assertEquals("This function is temporarily unavailable.\n" +
+                        "Please contact support.", resp.get("message"));
+                }));
+        }
 }

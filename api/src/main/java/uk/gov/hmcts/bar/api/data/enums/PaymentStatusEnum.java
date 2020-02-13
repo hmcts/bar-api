@@ -7,7 +7,8 @@ public enum PaymentStatusEnum {
 
 	DRAFT("D", "Draft"), PENDING("P", "Pending"), VALIDATED("V", "Validated"), PENDING_APPROVAL("PA",
 			"Pending Approval"), APPROVED("A", "Approved"), TRANSFERREDTOBAR("TTB",
-					"Transferred to bar"), REJECTED("REJ", "Rejected"), REJECTEDBYDM("RDM", "Rejected by DM"), COMPLETED("C","Completed");
+					"Transferred to bar"), REJECTED("REJ", "Rejected"), REJECTEDBYDM("RDM",
+        "Rejected by DM"), COMPLETED("C","Completed"),SENTTOPAYHUB("STP","Sent to payhub");
 
 	private static final Map<String, PaymentStatusEnum> paymentStatusEnumMap = new HashMap<>();
 
@@ -49,7 +50,7 @@ public enum PaymentStatusEnum {
 
         return false;
     }
-    
+
     /*
      * Overridden the default toString() method for the sake of Swagger
      * @see java.lang.Enum#toString()
