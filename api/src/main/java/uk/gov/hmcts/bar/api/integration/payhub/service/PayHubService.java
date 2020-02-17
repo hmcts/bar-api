@@ -143,7 +143,7 @@ public class PayHubService {
                 }
             }
             if (shouldUpdate) {
-                updatePaymentInstruction(
+                updatePaymentInstruction(barUser,
                     payHubPayload,
                     payHubStatus,
                     payHubErrorMessage.substring(0, payHubErrorMessage.length() > 1024 ? 1024 : payHubErrorMessage.length()),
@@ -258,10 +258,16 @@ public class PayHubService {
         return objectMapper.readValue(rawMessage, typeRef);
     }
 
-    private void updatePaymentInstruction(BasePaymentInstruction pi, boolean status, String errorMessage, LocalDateTime reportDate) {
+    private void updatePaymentInstruction(BarUser barUser,BasePaymentInstruction pi, boolean status, String errorMessage, LocalDateTime reportDate) {
         pi.setTransferredToPayhub(status);
         pi.setPayhubError(status ? null : errorMessage);
         pi.setReportDate(reportDate);
+
+
+        PaymentInstruction paymentInstruction = paymentInstructionService.getPaymentInstruction(pi.getId(),pi.getSiteId());
+        paymentInstruction.setStatus("STP");
+        paymentInstructionService.savePaymentInstructionStatus(paymentInstruction,barUser.getId());
+
     }
 
     private void validateReportDate(LocalDateTime reportDate) {

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.bar.api.integration.payhub.service;
 
+import ch.qos.logback.core.db.dialect.DBUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.*;
@@ -105,10 +106,29 @@ public class PayHubServiceTest {
             .roles(new HashSet<>(Arrays.asList("dummy_role1, dummy_role2"))).id("54321").build();
     }
 
-    @Test
+    private PaymentInstruction getPaymentInstruction(int id, String siteId){
+
+        PaymentInstruction pi = new PaymentInstruction() {
+            @Override
+            public void fillAmount(PaymentInstructionReportLine reportRow) {
+            }
+            @Override
+            public void setBgcNumber(String bgcNumber) {
+            }
+        };
+        pi.setId(id);
+        pi.setSiteId(siteId);
+        return pi;
+    }
+
+   @Test
     public void testSendValidRequestToPayHub() throws Exception {
+
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
+        when(paymentInstructionService.getPaymentInstruction(eq(1),eq("Y431"))).thenReturn(getPaymentInstruction(1,"Y431"));
+        when(paymentInstructionService.getPaymentInstruction(eq(2),eq("Y431"))).thenReturn(getPaymentInstruction(2,"Y431"));
+
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> {
             HttpPost httpPost = invocation.getArgument(0);
             Collection<String> requestBody = IOUtil.readLines(httpPost.getEntity().getContent());
@@ -136,6 +156,11 @@ public class PayHubServiceTest {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(paymentInstructionService.getAllRemissionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.fullRemissions);
+
+        when(paymentInstructionService.getPaymentInstruction(eq(1),eq("Y431"))).thenReturn(getPaymentInstruction(1,"Y431"));
+        when(paymentInstructionService.getPaymentInstruction(eq(2),eq("Y431"))).thenReturn(getPaymentInstruction(2,"Y431"));
+        when(paymentInstructionService.getPaymentInstruction(eq(3),eq("Y431"))).thenReturn(getPaymentInstruction(3,"Y431"));
+
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> {
             HttpPost httpPost = invocation.getArgument(0);
             Collection<String> requestBody = IOUtil.readLines(httpPost.getEntity().getContent());
@@ -158,7 +183,7 @@ public class PayHubServiceTest {
         });
     }
 
-    @Test
+   @Test
     public void testSendValidRequestToPayHubWithFullAndPartialRemission() throws Exception {
         // replace one PI with another which contains remission
         this.paymentInstructions.remove(1);
@@ -173,6 +198,11 @@ public class PayHubServiceTest {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(paymentInstructionService.getAllRemissionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.fullRemissions);
+
+        when(paymentInstructionService.getPaymentInstruction(eq(1),eq("Y431"))).thenReturn(getPaymentInstruction(1,"Y431"));
+        when(paymentInstructionService.getPaymentInstruction(eq(2),eq("Y431"))).thenReturn(getPaymentInstruction(2,"Y431"));
+        when(paymentInstructionService.getPaymentInstruction(eq(3),eq("Y431"))).thenReturn(getPaymentInstruction(3,"Y431"));
+
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> {
             HttpPost httpPost = invocation.getArgument(0);
             Collection<String> requestBody = IOUtil.readLines(httpPost.getEntity().getContent());
@@ -204,7 +234,9 @@ public class PayHubServiceTest {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(403, "{\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}"));
-        PayHubResponseReport stat = payHubService.sendPaymentInstructionToPayHub(barUser, "1234ABCD", TRANSFER_DATE);
+        when(paymentInstructionService.getPaymentInstruction(eq(1),eq("Y431"))).thenReturn(getPaymentInstruction(1,"Y431"));
+        when(paymentInstructionService.getPaymentInstruction(eq(2),eq("Y431"))).thenReturn(getPaymentInstruction(2,"Y431"));
+       PayHubResponseReport stat = payHubService.sendPaymentInstructionToPayHub(barUser, "1234ABCD", TRANSFER_DATE);
         this.paymentInstructions.forEach(it -> {
             assertThat(it.getReportDate(), is(TRANSFER_DATE));
             assertThat(it.isTransferredToPayhub(), is(false));
@@ -220,6 +252,8 @@ public class PayHubServiceTest {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenThrow(new RuntimeException("something went wrong"));
+        when(paymentInstructionService.getPaymentInstruction(eq(1),eq("Y431"))).thenReturn(getPaymentInstruction(1,"Y431"));
+        when(paymentInstructionService.getPaymentInstruction(eq(2),eq("Y431"))).thenReturn(getPaymentInstruction(2,"Y431"));
         payHubService.sendPaymentInstructionToPayHub(barUser, "1234ABCD", TRANSFER_DATE);
         this.paymentInstructions.forEach(it -> {
             assertThat(it.getReportDate(), is(TRANSFER_DATE));
@@ -233,6 +267,8 @@ public class PayHubServiceTest {
     public void testWhenReceivedInvalidResponseFromPayhub() throws Exception {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
+        when(paymentInstructionService.getPaymentInstruction(eq(1),eq("Y431"))).thenReturn(getPaymentInstruction(1,"Y431"));
+        when(paymentInstructionService.getPaymentInstruction(eq(2),eq("Y431"))).thenReturn(getPaymentInstruction(2,"Y431"));
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(200, "{ \"somekey\" : \"somevalue\" }"));
         payHubService.sendPaymentInstructionToPayHub(barUser, "1234ABCD", TRANSFER_DATE);
         this.paymentInstructions.forEach(it -> {
@@ -243,10 +279,12 @@ public class PayHubServiceTest {
         verify(entityManager, times(0)).merge(any(PaymentInstructionPayhubReference.class));
     }
 
-    @Test
+   @Test
     public void testWhenReceivedUnParsableResponseFromPayhub() throws Exception {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
+        when(paymentInstructionService.getPaymentInstruction(eq(1),eq("Y431"))).thenReturn(getPaymentInstruction(1,"Y431"));
+        when(paymentInstructionService.getPaymentInstruction(eq(2),eq("Y431"))).thenReturn(getPaymentInstruction(2,"Y431"));
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(200, "some unparsable message"));
         payHubService.sendPaymentInstructionToPayHub(barUser, "1234ABCD", TRANSFER_DATE);
         this.paymentInstructions.forEach(it -> {
@@ -285,6 +323,8 @@ public class PayHubServiceTest {
 
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
         when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
+        when(paymentInstructionService.getPaymentInstruction(eq(1),eq("Y431"))).thenReturn(getPaymentInstruction(1,"Y431"));
+        when(paymentInstructionService.getPaymentInstruction(eq(2),eq("Y431"))).thenReturn(getPaymentInstruction(2,"Y431"));
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(500, tooLongErrorMessage));
         payHubService.sendPaymentInstructionToPayHub(barUser, "1234ABCD", TRANSFER_DATE);
         this.paymentInstructions.forEach(it -> {

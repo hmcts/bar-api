@@ -56,7 +56,7 @@ public interface PaymentInstructionStatusRepository
         + "FROM PaymentInstructionStatus pis, BarUser bu  WHERE "
         + "bu.id = pis.barUserId AND pis.paymentInstructionStatusReferenceKey.paymentInstructionId in "
         + "(SELECT pis1.paymentInstructionStatusReferenceKey.paymentInstructionId "
-        + " FROM PaymentInstructionStatus pis1 join PaymentInstruction pi on pi.id = pis1.paymentInstructionStatusReferenceKey.paymentInstructionId where pi.siteId= :siteId and  pis1.paymentInstructionStatusReferenceKey.status in ('TTB','C') "
+        + " FROM PaymentInstructionStatus pis1 join PaymentInstruction pi on pi.id = pis1.paymentInstructionStatusReferenceKey.paymentInstructionId where pi.siteId= :siteId and  pis1.paymentInstructionStatusReferenceKey.status in ('TTB','STP','C') "
         + " AND pis1.paymentInstructionStatusReferenceKey.updateTime >= :historyStartDate "
         + " AND pis1.paymentInstructionStatusReferenceKey.updateTime <= :historyEndDate ) ORDER BY "
         + " pis.paymentInstructionStatusReferenceKey.paymentInstructionId,pis.paymentInstructionStatusReferenceKey.updateTime")

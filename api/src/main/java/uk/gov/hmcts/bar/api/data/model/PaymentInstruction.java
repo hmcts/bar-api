@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -82,6 +83,7 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
         fillAmount(paymentLines.get(0));
         setUserActivity(paymentLines);
         paymentLines.get(0).setSentToPayhub(this.getSentToPayhub());
+        paymentLines.get(0).setDtTrxReportReporting(this.getReportDate());
 
         return paymentLines;
     }
@@ -107,7 +109,14 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
                 paymentLines.get(0).setTransferredToBarUser(statusHistory.getBarUserFullName());
                 paymentLines.get(0).setTransferredToBarTime(statusHistory.getStatusUpdateTime());
             }
+
+            if(statusHistory.getStatus().equals("STP") ){
+                paymentLines.get(0).setDmUser(statusHistory.getBarUserFullName());
+                paymentLines.get(0).setDtSentToPayhub(statusHistory.getStatusUpdateTime());
+
+            }
         }
+
 
     }
 
