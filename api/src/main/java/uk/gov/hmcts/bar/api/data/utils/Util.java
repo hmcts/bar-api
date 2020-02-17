@@ -9,6 +9,7 @@ import uk.gov.hmcts.bar.api.data.enums.PaymentStatusEnum;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionStaticsByUser;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStats;
+import uk.gov.hmcts.bar.api.data.model.PaymentInstructionUserStatsWithRole;
 
 import javax.persistence.criteria.CriteriaBuilder.In;
 import java.beans.FeatureDescriptor;
@@ -101,6 +102,12 @@ public interface Util {
     }
 
     static MultiMap createMultimapFromList(List<PaymentInstructionUserStats> piStatsList) {
+        MultiMap paymentInstructionStatsUserMap = new MultiValueMap();
+        piStatsList.forEach(pius -> paymentInstructionStatsUserMap.put(pius.getBarUserId(), pius));
+        return paymentInstructionStatsUserMap;
+    }
+
+    static MultiMap createMultimapFromListWithRole(List<PaymentInstructionUserStatsWithRole> piStatsList) {
         MultiMap paymentInstructionStatsUserMap = new MultiValueMap();
         piStatsList.forEach(pius -> paymentInstructionStatsUserMap.put(pius.getBarUserId(), pius));
         return paymentInstructionStatsUserMap;
