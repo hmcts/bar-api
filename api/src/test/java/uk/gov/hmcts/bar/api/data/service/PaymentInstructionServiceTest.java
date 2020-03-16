@@ -11,8 +11,7 @@ import org.mockito.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.domain.Specifications;
-import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.EntityModel;
 import uk.gov.hmcts.bar.api.audit.AuditRepository;
 import uk.gov.hmcts.bar.api.data.TestUtils;
 import uk.gov.hmcts.bar.api.data.enums.BarUserRoleEnum;
@@ -699,9 +698,9 @@ public class PaymentInstructionServiceTest {
         List<PaymentInstructionStats> rawStats = createStats();
         when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString(), anyString(), anyBoolean(), anyString())).thenReturn(rawStats);
         MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType("1234", "PA", Optional.empty(), false, "Y431");
-        Resource<PaymentInstructionStats> resource = (Resource<PaymentInstructionStats>)((List)stats.get("bgc123")).get(0);
-        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE&action=Process&bgcNumber=bgc123", resource.getLink(STAT_DETAILS).getHref());
-        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE,POSTAL_ORDER&action=Process&bgcNumber=bgc123", resource.getLink(STAT_GROUP_DETAILS).getHref());
+        EntityModel<PaymentInstructionStats> entityModel = (EntityModel<PaymentInstructionStats>)((List)stats.get("bgc123")).get(0);
+        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE&action=Process&bgcNumber=bgc123", entityModel.getLink(STAT_DETAILS).get().getHref());
+        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE,POSTAL_ORDER&action=Process&bgcNumber=bgc123", entityModel.getLink(STAT_GROUP_DETAILS).get().getHref());
     }
 
     @Test
@@ -709,14 +708,14 @@ public class PaymentInstructionServiceTest {
         List<PaymentInstructionStats> rawStats = createStats();
         when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByActionAndType(anyString(), anyString(), anyString(), anyBoolean(), anyString())).thenReturn(rawStats);
         MultiMap stats = paymentInstructionService.getPaymentInstructionsByUserGroupByActionAndType("1234", "PA", Optional.empty(), false, "Y431");
-        Resource<PaymentInstructionStats> resource = (Resource<PaymentInstructionStats>)((List)stats.get("bgc123")).get(0);
-        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE&action=Process&bgcNumber=bgc123", resource.getLink(STAT_DETAILS).getHref());
-        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE,POSTAL_ORDER&action=Process&bgcNumber=bgc123", resource.getLink(STAT_GROUP_DETAILS).getHref());
+        EntityModel<PaymentInstructionStats> entityModel = (EntityModel<PaymentInstructionStats>)((List)stats.get("bgc123")).get(0);
+        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE&action=Process&bgcNumber=bgc123", entityModel.getLink(STAT_DETAILS).get().getHref());
+        assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE,POSTAL_ORDER&action=Process&bgcNumber=bgc123", entityModel.getLink(STAT_GROUP_DETAILS).get().getHref());
     }
 
     @Test
     public void testGetAllPaymentInstructionsForPayhub() {
-        when(payhubPaymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
+        when(payhubPaymentInstructionRepository.findAll(Mockito.any(Specification.class), Mockito.any(Pageable.class)))
             .thenReturn(payhubPiPageMock);
         when(payhubPiPageMock.iterator()).thenReturn(payhubPiIteratorMock);
 
@@ -732,7 +731,7 @@ public class PaymentInstructionServiceTest {
     public void testGetAllPaymentInstructionsForPayhubWhenSiteIdNotProvided() {
 
         BarUser userWithMissingSite = BarUser.builder().email("nosite@mail.com").forename("no").surname("site").id("1").build();
-        when(payhubPaymentInstructionRepository.findAll(Mockito.any(Specifications.class), Mockito.any(Pageable.class)))
+        when(payhubPaymentInstructionRepository.findAll(Mockito.any(Specification.class), Mockito.any(Pageable.class)))
             .thenReturn(payhubPiPageMock);
         when(payhubPiPageMock.iterator()).thenReturn(payhubPiIteratorMock);
 

@@ -7,8 +7,8 @@ import io.swagger.annotations.ApiResponses;
 import org.apache.commons.collections.MultiMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,8 +31,8 @@ import java.time.*;
 import java.util.List;
 import java.util.Optional;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 
@@ -523,7 +523,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/users/{id}/payment-instructions/stats")
-    public Resource<MultiMap> getPaymentInstructionStatsByUser(
+    public EntityModel<MultiMap> getPaymentInstructionStatsByUser(
         BarWrappedHttpRequest request,
         @PathVariable("id") String id,
         @RequestParam(name = "status", required = false) String status,
@@ -532,7 +532,7 @@ public class PaymentInstructionController {
 
         MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType(id, status, oldStatus, sentToPayhub, request.getBarUser().getSelectedSiteId());
         Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUser(request, id, status, oldStatus, sentToPayhub)).withSelfRel();
-        return new Resource<>(stats, link);
+        return new EntityModel<>(stats, link);
     }
 
     @ApiOperation(value = "collect stats for a user", notes = "Collect all payment instruction stats for a user grouped by action and type")
@@ -541,7 +541,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/users/{id}/payment-instructions/action-stats")
-    public Resource<MultiMap> getPaymentInstructionStatsByUserGroupByAction(
+    public EntityModel<MultiMap> getPaymentInstructionStatsByUserGroupByAction(
         BarWrappedHttpRequest request,
         @PathVariable("id") String id,
         @RequestParam(name = "status", required = false) String status,
@@ -550,7 +550,7 @@ public class PaymentInstructionController {
 
         MultiMap stats = paymentInstructionService.getPaymentInstructionsByUserGroupByActionAndType(id, status, oldStatus, sentToPayhub, request.getBarUser().getSelectedSiteId());
         Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUserGroupByAction(request, id, status, oldStatus, sentToPayhub)).withSelfRel();
-        return new Resource<>(stats, link);
+        return new EntityModel<>(stats, link);
     }
 
 

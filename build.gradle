@@ -1,6 +1,6 @@
 plugins {
     id 'application'
-    id 'org.springframework.boot' version '2.1.6.RELEASE'
+    id 'org.springframework.boot' version '2.2.5.RELEASE'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'org.owasp.dependencycheck' version '5.1.1'
     id "com.gorylenko.gradle-git-properties" version "1.4.21"
@@ -33,7 +33,7 @@ allprojects {
 
     dependencyManagement {
         imports {
-            mavenBom 'org.springframework.boot:spring-boot-starter:2.1.6.RELEASE'
+            mavenBom 'org.springframework.boot:spring-boot-starter:2.2.5.RELEASE'
         }
 
 
@@ -57,6 +57,8 @@ allprojects {
             dependency 'io.springfox:springfox-swagger-ui:2.9.2'
             dependency 'commons-beanutils:commons-beanutils:1.9.3'
             dependency 'org.hibernate:hibernate-validator:6.0.9.Final'
+
+
         }
     }
 }
