@@ -13,6 +13,11 @@ locals {
 
 }
 
+provider "azurerm" {
+  version = "=1.44.0"
+}
+
+
 data "azurerm_key_vault" "bar_key_vault" {
   name = "${local.vaultName}"
   resource_group_name = "${local.vault_rg_name}"
@@ -20,7 +25,7 @@ data "azurerm_key_vault" "bar_key_vault" {
 
 data "azurerm_key_vault_secret" "s2s_secret" {
   name      = "bar-S2S-SECRET"
-  vault_uri = "${data.azurerm_key_vault.bar_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.bar_key_vault.id}"
 }
 
 module "bar-api" {
@@ -73,5 +78,5 @@ resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
 
 data "azurerm_key_vault_secret" "appinsights_instrumentation_key" {
   name = "AppInsightsInstrumentationKey"
-  vault_uri = "${data.azurerm_key_vault.bar_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.bar_key_vault.id}"
 }
