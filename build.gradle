@@ -20,23 +20,13 @@ allprojects {
 
     repositories {
         mavenLocal()
-
-        maven { url "https://dl.bintray.com/hmcts/hmcts-maven" }
-
-        maven {
-            url 'https://repo.spring.io/libs-milestone'
-        }
-        maven { url "http://artifactory.reform.hmcts.net/artifactory/libs-release" }
         jcenter()
-
     }
 
     dependencyManagement {
         imports {
             mavenBom 'org.springframework.boot:spring-boot-starter:2.1.6.RELEASE'
         }
-
-
 
         dependencies {
 

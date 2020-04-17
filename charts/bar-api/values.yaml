@@ -14,7 +14,7 @@ java:
     IDAM_CLIENT_BASE_URL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
     PAYMENT_API_URL: http://payment-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   keyVaults:
-    "bar":
+    bar:
       secrets:
         - bar-S2S-SECRET
         - api-POSTGRES-PASS

@@ -14,7 +14,7 @@ java:
       postgresqlPassword: bar
       postgresqlDatabase: bar
   keyVaults:
-    "bar":
+    bar:
       secrets:
         - bar-S2S-SECRET
   postgresql:

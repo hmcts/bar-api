@@ -41,7 +41,7 @@ sonarqube {
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     }
 }
-def javaLoggingVersion = '5.1.0'
+def javaLoggingVersion = '5.1.1'
 def appInsightsVersion = '2.4.1'
 
 dependencies {
