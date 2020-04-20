@@ -1,6 +1,4 @@
 locals {
-  aseName = "core-compute-${var.env}"
-
   vaultName = "bar-${var.env}"
   rg_name = "bar-${var.env}-rg"
   asp_name = "bar-asp-${var.env}"
@@ -40,12 +38,12 @@ module "bar-api" {
     # idam
     IDAM_CLIENT_BASE_URL = "${var.idam_api_url}"
     S2S_SECRET = "${data.azurerm_key_vault_secret.s2s_secret.value}"
-    S2S_AUTH_URL = "http://${var.idam_s2s_url_prefix}-${local.aseName}.service.${var.env}.internal"
+    S2S_AUTH_URL = "http://${var.idam_s2s_url_prefix}-${var.env}.service.core-compute-${var.env}.internal"
     # payhub
     PAYMENT_API_URL = "${var.pay_api_url}"
     # enable/disables liquibase run
     SPRING_LIQUIBASE_ENABLED = "${var.liquibase_enabled}"
-    SITE_API_URL = "http://bar-api-${local.aseName}.service.core-compute-${var.env}.internal"
+    SITE_API_URL = "http://bar-api-${var.env}.service.core-compute-${var.env}.internal"
   }
 }
 
