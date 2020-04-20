@@ -1,7 +1,7 @@
 java:
   image: 'hmctspublic.azurecr.io/bar/api:latest'
   applicationPort: 8080
-  ingressHost: bar-app-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+  ingressHost: bar-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   aadIdentityName: bar
   environment:
     POSTGRES_PORT: 5432
