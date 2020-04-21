@@ -1,7 +1,6 @@
 locals {
   vaultName = "bar-${var.env}"
   rg_name = "bar-${var.env}-rg"
-  asp_name = "bar-asp-${var.env}"
 }
 
 provider "azurerm" {
@@ -11,40 +10,6 @@ provider "azurerm" {
 data "azurerm_key_vault" "bar_key_vault" {
   name = "${local.vaultName}"
   resource_group_name = "${local.rg_name}"
-}
-
-data "azurerm_key_vault_secret" "s2s_secret" {
-  name      = "bar-S2S-SECRET"
-  key_vault_id = "${data.azurerm_key_vault.bar_key_vault.id}"
-}
-
-module "bar-api" {
-  source   = "git@github.com:hmcts/cnp-module-webapp?ref=master"
-  product  = "${var.product}-api"
-  location = "${var.location}"
-  env      = "${var.env}"
-  ilbIp = "${var.ilbIp}"
-  subscription = "${var.subscription}"
-  is_frontend  = false
-  common_tags     = "${var.common_tags}"
-  asp_name = "${local.asp_name}"
-  asp_rg = "${local.rg_name}"
-
-  app_settings = {
-    # db
-    SPRING_DATASOURCE_USERNAME = "${module.bar-database.user_name}"
-    SPRING_DATASOURCE_PASSWORD = "${module.bar-database.postgresql_password}"
-    SPRING_DATASOURCE_URL = "jdbc:postgresql://${module.bar-database.host_name}:${module.bar-database.postgresql_listen_port}/${module.bar-database.postgresql_database}?sslmode=require"
-    # idam
-    IDAM_CLIENT_BASE_URL = "${var.idam_api_url}"
-    S2S_SECRET = "${data.azurerm_key_vault_secret.s2s_secret.value}"
-    S2S_AUTH_URL = "http://${var.idam_s2s_url_prefix}-${var.env}.service.core-compute-${var.env}.internal"
-    # payhub
-    PAYMENT_API_URL = "${var.pay_api_url}"
-    # enable/disables liquibase run
-    SPRING_LIQUIBASE_ENABLED = "${var.liquibase_enabled}"
-    SITE_API_URL = "http://bar-api-${var.env}.service.core-compute-${var.env}.internal"
-  }
 }
 
 module "bar-database" {
