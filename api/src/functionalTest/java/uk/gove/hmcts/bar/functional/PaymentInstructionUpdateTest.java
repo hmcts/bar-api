@@ -91,7 +91,7 @@ public class PaymentInstructionUpdateTest extends FunctionalTest {
             .when()
             .put("/cards/" + createdPayment.get("id"));
         response.then().statusCode(404);
-        Assert.assertEquals("{\"message\":\"payment instruction on site " + Sites.Y431.name() + " for id=" +
+        Assert.assertEquals("{\"message\":\"payment instruction on site " + Sites.Y431.name() + " for id =" +
             createdPayment.get("id") + " was not found\"}", response.getBody().print());
     }
 
