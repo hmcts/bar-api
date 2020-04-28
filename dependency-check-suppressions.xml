@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress>
+        <notes>Latest spring security issues (5.1.5.RELEASE)</notes>
+        <cve>CVE-2018-1258</cve>
+    </suppress>
+    <suppress>
         <notes>jackson-databind-2.9.9 issues although there is a newer one (2.9.9.1) none of the libraries using the currently </notes>
-        <cve>CVE-2019-12814</cve>
         <cve>CVE-2019-10086</cve>
         <cve>CVE-2019-15052</cve>
     </suppress>
