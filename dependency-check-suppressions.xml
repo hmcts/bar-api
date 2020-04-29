@@ -8,19 +8,24 @@
         <notes>We are bound by the gradle version in the CNP environments. Currently all gradle versions upto 5.6 are
             impacted. As this is a third party related issue,
             we are awaiting a fix from Gradle dev team. As soon as the fix is available from the gradle, we will provide
-            the impact analysis and
-            the feasibility of upgrading to a higher version of gradle.
+            the impact analysis and the feasibility of upgrading to a higher version of gradle.
         </notes>
         <cve>CVE-2019-15052</cve>
         <cve>CVE-2019-10086</cve>
     </suppress>
     <suppress>
+        <cpe>cpe:/a:apache_tomcat:apache_tomcat:9.0.21</cpe>
         <cve>CVE-2019-12418</cve>
         <cve>CVE-2019-17563</cve>
+    </suppress>
+    <suppress>
+        <notes>tomcat-embed-websocket @9.0.21</notes>
+        <cve>CVE-2020-1938</cve>
+        <cve>CVE-2020-1935</cve>
+    </suppress>
+    <suppress>
         <cve>CVE-2019-16370</cve>
         <cve>CVE-2020-5398</cve>
-        <cve>CVE-2020-1935</cve>
-        <cve>CVE-2020-1938</cve>
     </suppress>
     <suppress>
        <notes>spring-webmvc-5.1.8.RELEASE.jar</notes>
