@@ -92,8 +92,8 @@ public class AuthenticatorClient {
             response = client.execute(post, context);
             String returnUrl = getFinalUrl(context, post).toString();
 
-           // log.info("idam response: " + response.getStatusLine());
-           // log.info("last redirection url: " + returnUrl);
+            log.info("idam response: " + response.getStatusLine());
+            log.info("last redirection url: " + returnUrl);
 
             Optional<String> authToken = context.getCookieStore().getCookies().stream()
                 .filter(cookie -> cookie.getName().equals("__auth-token"))
@@ -106,7 +106,7 @@ public class AuthenticatorClient {
                 throw new RuntimeException("Failed to retrieve auth token");
             }
         } catch (Exception e) {
-          //  log.error("Failed to get auth token: ", e);
+            log.error("Failed to get auth token: ", e);
             throw new RuntimeException(e);
         }
     }

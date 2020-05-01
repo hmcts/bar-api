@@ -66,7 +66,7 @@ public abstract class FunctionalTest {
         if (proxyEnabled) {
             RestAssured.proxy(proxyUrl, proxyPort);
         }
-        //log.info("Bar-Api base url is :{}", testUrl);
+        log.info("Bar-Api base url is :{}", testUrl);
         authenticatorClient = new AuthenticatorClient(barWebUrl, proxyEnabled, proxyUrl, proxyPort);
         // assign users to sites
         users.keySet().stream().filter(key -> key.name().contains(Sites.Y431.name()))

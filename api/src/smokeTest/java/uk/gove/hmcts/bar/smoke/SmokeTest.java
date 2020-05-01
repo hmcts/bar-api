@@ -21,7 +21,7 @@ public class SmokeTest {
     @Before
     public void setup() {
         RestAssured.baseURI = testUrl;
-        //log.info("Bar-Api base url is :{}", testUrl);
+        log.info("Bar-Api base url is :{}", testUrl);
     }
 
     @Test
