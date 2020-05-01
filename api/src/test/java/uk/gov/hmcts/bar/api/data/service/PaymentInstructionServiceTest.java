@@ -694,7 +694,7 @@ public class PaymentInstructionServiceTest {
         assertEquals(2, ((List)stats.get("bgc123")).size());
     }
 
-   /* @Test
+    @Test
     public void testCreatingLinksInTheStatResource() {
         List<PaymentInstructionStats> rawStats = createStats();
         when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString(), anyString(), anyBoolean(), anyString())).thenReturn(rawStats);
@@ -702,9 +702,9 @@ public class PaymentInstructionServiceTest {
         Resource<PaymentInstructionStats> resource = (Resource<PaymentInstructionStats>)((List)stats.get("bgc123")).get(0);
         assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE&action=Process&bgcNumber=bgc123", resource.getLink(STAT_DETAILS).getHref());
         assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE,POSTAL_ORDER&action=Process&bgcNumber=bgc123", resource.getLink(STAT_GROUP_DETAILS).getHref());
-    }*/
+    }
 
-    /*@Test
+    @Test
     public void testGetPaymentInstructionsByUserGroupByActionAndType() {
         List<PaymentInstructionStats> rawStats = createStats();
         when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByActionAndType(anyString(), anyString(), anyString(), anyBoolean(), anyString())).thenReturn(rawStats);
@@ -712,7 +712,7 @@ public class PaymentInstructionServiceTest {
         Resource<PaymentInstructionStats> resource = (Resource<PaymentInstructionStats>)((List)stats.get("bgc123")).get(0);
         assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE&action=Process&bgcNumber=bgc123", resource.getLink(STAT_DETAILS).getHref());
         assertEquals("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE,POSTAL_ORDER&action=Process&bgcNumber=bgc123", resource.getLink(STAT_GROUP_DETAILS).getHref());
-    }*/
+    }
 
     @Test
     public void testGetAllPaymentInstructionsForPayhub() {
