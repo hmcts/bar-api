@@ -97,7 +97,7 @@ subprojects {
         compileOnly 'com.google.code.findbugs:annotations:3.0.1'
 
         annotationProcessor 'org.projectlombok:lombok:1.18.10'
-        testAnnotationProcessor 'org.projectlombok:lombok:1.18.10'
+        //testAnnotationProcessor 'org.projectlombok:lombok:1.18.10'
 
         testCompile 'junit:junit:4.12'
         testCompile 'org.assertj:assertj-core:3.8.0'
