@@ -24,6 +24,7 @@
        <notes>spring-webmvc-5.1.8.RELEASE.jar</notes>
         <cve>CVE-2020-5398</cve>
         <cve>CVE-2020-9488</cve>
+        <cve>CVE-2018-1258</cve>
     </suppress>
 </suppressions>
 
