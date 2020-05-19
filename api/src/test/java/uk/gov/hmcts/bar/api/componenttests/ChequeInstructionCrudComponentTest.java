@@ -469,7 +469,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 		restActionsForFeeClerk.put("/allpay/1", modifiedChequePaymentInstructionRequest).andExpect(status().isOk());
 
 		String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk())
-				.andExpect(content().contentType("application/json;charset=UTF-8")).andReturn().getResponse()
+				.andExpect(content().contentType("application/json")).andReturn().getResponse()
 				.getContentAsString();
 		JSONObject feeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
 				.get("fee-clerk")).get(0);
@@ -508,7 +508,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 		restActionsForSrFeeClerk.put("/allpay/1", approvedChequePaymentInstructionRequest).andExpect(status().isOk());
 
 		String jsonResponse = restActionsForDM.get("/users/pi-stats?status=A").andExpect(status().isOk())
-				.andExpect(content().contentType("application/json;charset=UTF-8")).andReturn().getResponse()
+				.andExpect(content().contentType("application/json")).andReturn().getResponse()
 				.getContentAsString();
 		JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
 				.get("sr-fee-clerk")).get(0);
@@ -597,7 +597,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 				.andExpect(status().isOk());
 
 		String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-stats?status=RDM&oldStatus=A")
-				.andExpect(status().isOk()).andExpect(content().contentType("application/json;charset=UTF-8"))
+				.andExpect(status().isOk()).andExpect(content().contentType("application/json"))
 				.andReturn().getResponse().getContentAsString();
 		System.out.println(jsonResponse);
 		JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
