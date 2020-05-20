@@ -77,6 +77,8 @@
         <cve>CVE-2020-1745</cve>
         <cve>CVE-2020-10683</cve>
         <cve>CVE-2018-9116</cve>
+        <cve>CVE-2020-9488</cve>
+        <cve>CVE-2018-9117</cve>
     </suppress>
 
 
