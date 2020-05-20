@@ -79,6 +79,7 @@
         <cve>CVE-2018-9116</cve>
         <cve>CVE-2020-9488</cve>
         <cve>CVE-2018-9117</cve>
+        <cwe>476</cwe>
     </suppress>
 
 
