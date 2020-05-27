@@ -17,7 +17,9 @@
         <cve>CVE-2018-1258</cve>
     </suppress>
     <suppress>
-        <notes>jackson-databind-2.9.9 issues although there is a newer one (2.9.9.1) none of the libraries using the currently </notes>
+        <notes>jackson-databind-2.9.9 issues although there is a newer one (2.9.9.1) none of the libraries using the
+            currently
+        </notes>
         <cve>CVE-2019-12814</cve>
         <cve>CVE-2019-10086</cve>
         <cve>CVE-2019-15052</cve>
@@ -32,7 +34,7 @@
         <cve>CVE-2020-1938</cve>
     </suppress>
     <suppress>
-       <notes>spring-webmvc-5.1.8.RELEASE.jar</notes>
+        <notes>spring-webmvc-5.1.8.RELEASE.jar</notes>
         <cve>CVE-2020-5398</cve>
     </suppress>
     <suppress>
@@ -44,6 +46,9 @@
         <cve>CVE-2018-9117</cve>
         <cve>CVE-2016-6497</cve>
         <cwe>476</cwe>
+    </suppress>
+    <suppress>
+        <cve>CVE-2020-9484</cve>
     </suppress>
 </suppressions>
 
