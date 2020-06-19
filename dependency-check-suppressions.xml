@@ -30,6 +30,17 @@
         <cve>CVE-2019-17569</cve>
         <cve>CVE-2020-1935</cve>
         <cve>CVE-2020-1938</cve>
+
+        <!--cve>CVE-2020-9488</cve>
+        <cve>CVE-2020-13692</cve>
+        <cve>CVE-2020-1745</cve>
+        <cve>CVE-2020-9484</cve>
+        <cve>CVE-2020-10683</cve>
+        <cve>CVE-2018-9116</cve>
+        <cve>CVE-2018-9117</cve>
+        <cve>CVE-2020-5408</cve>
+        <cve>CVE-2012-6708</cve>
+        <cwe>476</cwe-->
     </suppress>
     <suppress>
        <notes>spring-webmvc-5.1.8.RELEASE.jar</notes>
