@@ -40,7 +40,7 @@ allprojects {
             dependency 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.8'
             dependency 'com.google.guava:guava:27.0-jre'
 
-            dependency 'org.liquibase:liquibase-core:3.7.0'
+            dependency 'org.liquibase:liquibase-core:4.0.0'
             dependency 'org.postgresql:postgresql:42.2.6'
 
             dependency 'io.springfox:springfox-swagger2:2.9.2'
