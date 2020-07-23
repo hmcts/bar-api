@@ -14,8 +14,9 @@ def product = "bar"
 def app = "api"
 
 withPipeline(type, product, app) {
-    installCharts()
+    //installCharts()
     enableSlackNotifications('#bar-tech')
     enableAksStagingDeployment()
     disableLegacyDeployment()
 }
+
