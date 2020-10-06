@@ -94,8 +94,8 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'jacoco'
 
-    sourceCompatibility = versions.javaVersion
-    targetCompatibility = versions.javaVersion
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
