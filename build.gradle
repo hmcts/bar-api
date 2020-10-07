@@ -26,6 +26,9 @@ allprojects {
     }
     version = rootProject.file('version.txt').text.trim() + ".${buildNumber}"
 
+    sourceCompatibility = versions.javaVersion
+    targetCompatibility = versions.javaVersion
+
     repositories {
         mavenLocal()
         jcenter()
