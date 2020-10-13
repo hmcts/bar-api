@@ -1,5 +1,5 @@
 locals {
-  vaultName = join("-", [var.core_product, var.env])
+  vaultName = join("-", ["bar", var.env])
   rg_name = "bar-${var.env}-rg"
 }
 
