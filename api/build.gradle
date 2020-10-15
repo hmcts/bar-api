@@ -97,12 +97,12 @@ dependencies {
 
 
 
-    compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '7.9'
+    /*compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '7.9'
     implementation "io.github.openfeign:feign-httpclient:10.7.0"
     compile "org.springframework.security:spring-security-web"
     compile "org.springframework.security:spring-security-config"
     compile "org.springframework.boot:spring-boot-starter-oauth2-client"
-    compile "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
+    compile "org.springframework.boot:spring-boot-starter-oauth2-resource-server"*/
     compile group: 'io.github.openfeign', name: 'feign-core', version: '10.7.0'
     compile group: 'org.springframework.cloud', name: 'spring-cloud-openfeign-core', version: '2.2.1.RELEASE'
 
