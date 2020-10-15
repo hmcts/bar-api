@@ -80,8 +80,6 @@ dependencies {
     compile ('uk.gov.hmcts.reform.auth:auth-checker-lib') {
         exclude(module: 'java-logging-spring')
     }
-
-
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'com.fasterxml.jackson.core:jackson-annotations'
     compile 'com.google.guava:guava'
@@ -91,27 +89,11 @@ dependencies {
 
     compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.4'
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
-
-
-    compile group: 'org.springframework.boot', name: 'spring-boot-autoconfigure'
-
-
-
-    compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '7.9'
-    implementation "io.github.openfeign:feign-httpclient:10.7.0"
-    compile "org.springframework.security:spring-security-web"
-    compile "org.springframework.security:spring-security-config"
-    compile "org.springframework.boot:spring-boot-starter-oauth2-client"
-    compile "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
-    compile group: 'io.github.openfeign', name: 'feign-core', version: '10.7.0'
-    compile group: 'org.springframework.cloud', name: 'spring-cloud-openfeign-core', version: '2.2.1.RELEASE'
-
     //Added this for spring boot upgrade as swagger was not working with the latest version.
     compile group: 'org.springframework.plugin', name: 'spring-plugin-core', version: '1.2.0.RELEASE'
     compile(group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '1.0.4.RELEASE') {
         exclude(module: 'spring-plugin-core')
     }
-    //`End of open id
 
     testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
         exclude(module: 'commons-logging')
