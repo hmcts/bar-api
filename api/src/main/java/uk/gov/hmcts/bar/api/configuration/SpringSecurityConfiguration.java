@@ -26,7 +26,7 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
        http
            .addFilter(authCheckerFilter)
-           .sessionManagement().sessionCreationPolicy(STATELESS).and()
+           .sessionManagement().sessionCreationPolicy(STATELESS).and().anonymous().disable()
            .csrf().disable()
            .formLogin().disable()
            .logout().disable()
