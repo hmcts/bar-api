@@ -77,6 +77,9 @@ public class BarUserService {
 
     public Optional<BarUser> getBarUser() {
         String id = getCurrentUserId();
+        System.out.println("id:::---->" + id);
+
+        System.out.println("getBarUser(id)---->" + getBarUser(id));
         return Optional.ofNullable(getBarUser(id));
     }
 
