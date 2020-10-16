@@ -56,7 +56,6 @@ public class BarUserService {
 
     public String getCurrentUserId() {
         Optional<String> userId = Optional.empty();
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
