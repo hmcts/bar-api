@@ -56,16 +56,13 @@ public class BarUserService {
 
     public String getCurrentUserId() {
         Optional<String> userId = Optional.empty();
-        System.out.println("userId----->" + userId.toString());
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        System.out.println("authentication----->" + authentication);
-
-        UserDetails userDetails1 = (UserDetails) authentication.getPrincipal();
-        System.out.println("userDetails1----->" + userDetails1.toString());
-        Optional<String> userId1 = Optional.empty();
-        userId1 = Optional.ofNullable(userDetails1.getUsername());
-        System.out.println("userId1----->" + userId1);
+        //UserDetails userDetails1 = (UserDetails) authentication.getPrincipal();
+        //System.out.println("userDetails1----->" + userDetails1.toString());
+        //Optional<String> userId1 = Optional.empty();
+        //userId1 = Optional.ofNullable(userDetails1.getUsername());
+        //System.out.println("userId1----->" + userId1);
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             System.out.println("userDetails----->" + userDetails.toString());
@@ -77,9 +74,6 @@ public class BarUserService {
 
     public Optional<BarUser> getBarUser() {
         String id = getCurrentUserId();
-        System.out.println("id:::---->" + id);
-
-        System.out.println("getBarUser(id)---->" + getBarUser(id));
         return Optional.ofNullable(getBarUser(id));
     }
 
