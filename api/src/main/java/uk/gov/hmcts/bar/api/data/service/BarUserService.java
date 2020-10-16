@@ -70,6 +70,7 @@ public class BarUserService {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             System.out.println("userDetails----->" + userDetails.toString());
             userId = Optional.ofNullable(userDetails.getUsername());
+            System.out.println("userId----->" + userId);
         }
         return userId.orElseThrow(() -> new AccessDeniedException("failed to identify user"));
 	}
