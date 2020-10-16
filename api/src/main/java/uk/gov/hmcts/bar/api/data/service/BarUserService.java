@@ -56,9 +56,12 @@ public class BarUserService {
 
     public String getCurrentUserId() {
         Optional<String> userId = Optional.empty();
+        System.out.println("userId----->" + userId.toString());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("authentication----->" + authentication.toString());
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            System.out.println("userDetails----->" + userDetails.toString());
             userId = Optional.ofNullable(userDetails.getUsername());
         }
         return userId.orElseThrow(() -> new AccessDeniedException("failed to identify user"));
