@@ -58,7 +58,14 @@ public class BarUserService {
         Optional<String> userId = Optional.empty();
         System.out.println("userId----->" + userId.toString());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("authentication----->" + authentication.toString());
+
+        System.out.println("authentication----->" + authentication);
+
+        UserDetails userDetails1 = (UserDetails) authentication.getPrincipal();
+        System.out.println("userDetails1----->" + userDetails1.toString());
+        Optional<String> userId1 = Optional.empty();
+        userId1 = Optional.ofNullable(userDetails1.getUsername());
+        System.out.println("userId1----->" + userId1);
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             System.out.println("userDetails----->" + userDetails.toString());
