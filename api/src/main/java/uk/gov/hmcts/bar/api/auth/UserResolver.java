@@ -18,6 +18,9 @@ public class UserResolver implements SubjectResolver<User> {
 
     @Override
     public User getTokenDetails(String bearerToken) {
+        TestUserTokenParser testUserTokenParser = new TestUserTokenParser(UserTokenDetails.class);
+        Object obj = testUserTokenParser.parse(bearerToken);
+
         UserTokenDetails details = userTokenParser.parse(bearerToken);
         BarUser barUser = new BarUser(
             details.getId(),
