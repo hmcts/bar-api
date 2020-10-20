@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import uk.gov.hmcts.reform.auth.checker.spring.useronly.AuthCheckerUserOnlyFilter;
@@ -22,34 +21,19 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private AuthCheckerUserOnlyFilter authCheckerFilter;
 
     @Override
-    public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/swagger-ui.html",
-            "/webjars/springfox-swagger-ui/**",
-            "/swagger-resources/**",
-            "/v2/**",
-            "/refdata/**",
-            "/health",
-            "/health/liveness",
-            "/info",
-            "/favicon.ico",
-            "/mock-api/**",
-            "/payment-types",
-            "/");
-    }
-
-    @Override
     @SuppressFBWarnings(value = "SPRING_CSRF_PROTECTION_DISABLED", justification = "It's safe to disable CSRF protection as application is not being hit directly from the browser")
     protected void configure(HttpSecurity http) throws Exception {
 
        http
            .addFilter(authCheckerFilter)
-           .sessionManagement().sessionCreationPolicy(STATELESS).and().anonymous().disable()
+           .sessionManagement().sessionCreationPolicy(STATELESS).and()
            .csrf().disable()
            .formLogin().disable()
-           .logout().disable();
-           /*authorizeRequests()
+           .logout().disable()
+           .authorizeRequests()
            .antMatchers("/swagger-ui.html", "/webjars/springfox-swagger-ui/**", "/swagger-resources/**",
-               "/v2/**", "/health","/health/liveness", "/payment-types", "/info").permitAll();*/
+               "/v2/**", "/health","/health/liveness", "/payment-types", "/info").permitAll()
+           .anyRequest().authenticated();
     }
 
 }
