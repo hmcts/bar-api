@@ -90,8 +90,6 @@ public class CaseFeeDetailTest extends FunctionalTest {
             .put("currency", "GBP")
             .put("authorization_code", "123456");
         String token = authenticatorClient.authenticate(users.get(Roles.FEE_CLERK_Y431), password);
-        System.out.println("token:------>" + token);
-
         HashMap createdPayment = createCardPaymentInstruction(paymentInstructionPayload.toString(), token, Sites.Y431.name()).getBody().as(HashMap.class);
 
         JSONObject caseFeeDetailPayLoad = new JSONObject()

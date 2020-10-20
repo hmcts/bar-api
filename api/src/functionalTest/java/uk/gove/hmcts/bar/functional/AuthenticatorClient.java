@@ -95,20 +95,9 @@ public class AuthenticatorClient {
             log.info("idam response: " + response.getStatusLine());
             log.info("last redirection url: " + returnUrl);
 
-
-
             Optional<String> authToken = context.getCookieStore().getCookies().stream()
                 .filter(cookie -> cookie.getName().equals("__auth-token"))
                 .findFirst().map(Cookie::getValue);
-
-            log.info("authToken.toString():" + authToken.toString());
-            log.info("authToken.isPresent():" + authToken.isPresent());
-            log.info("returnUrl:"+ returnUrl);
-            log.info("barWebUrl:"+ barWebUrl);
-
-
-
-
             if (response.getStatusLine().getStatusCode() == 200
                 && compareUrl(returnUrl, barWebUrl) && authToken.isPresent()) {
                 tokens.put(username, authToken.get());
