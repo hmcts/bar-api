@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.auth.checker.spring.useronly.AuthCheckerUserOnlyFilte
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
