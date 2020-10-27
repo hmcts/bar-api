@@ -62,6 +62,7 @@
         <cve>CVE-2020-11022</cve>
         <cve>CVE-2020-11023</cve>
         <cve>CVE-2020-5421</cve>
+        <cve>CVE-2020-13943</cve>
     </suppress>
     <suppress>
         <notes> False positive reported at https://github.com/jeremylong/DependencyCheck/issues/1658 </notes>
