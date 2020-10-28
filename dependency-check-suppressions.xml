@@ -34,6 +34,40 @@
     <suppress>
        <notes>spring-webmvc-5.1.8.RELEASE.jar</notes>
         <cve>CVE-2020-5398</cve>
+        <cve>CVE-2020-5407</cve>
+        <cve>CVE-2020-10683</cve>
+        <cve>CVE-2020-9488</cve>
+    </suppress>
+    <suppress>
+        <cve>CVE-2012-6708</cve>
+        <cve>CVE-2016-5394</cve>
+        <cve>CVE-2016-6497</cve>
+        <cve>CVE-2016-6798</cve>
+        <cve>CVE-2020-5408</cve>
+        <cve>CVE-2018-9116</cve>
+        <cve>CVE-2018-9117</cve>
+        <cwe>476</cwe>
+    </suppress>
+    <suppress>
+        <notes>New CVE's</notes>
+        <cve>CVE-2020-13692</cve>
+        <cve>CVE-2019-14900</cve>
+        <cve>CVE-2017-18640</cve>
+        <cve>CVE-2020-11996</cve>
+        <cve>CVE-2020-13934</cve>
+        <cve>CVE-2020-13935</cve>
+        <cve>CVE-2020-8022</cve>
+        <cve>CVE-2020-9484</cve>
+        <cve>CVE-2019-17638</cve>
+        <cve>CVE-2020-11022</cve>
+        <cve>CVE-2020-11023</cve>
+        <cve>CVE-2020-5421</cve>
+        <cve>CVE-2020-13943</cve>
+    </suppress>
+    <suppress>
+        <notes> False positive reported at https://github.com/jeremylong/DependencyCheck/issues/1658 </notes>
+        <cve>CVE-2007-1651</cve>
+        <cve>CVE-2007-1652</cve>
     </suppress>
 </suppressions>
 

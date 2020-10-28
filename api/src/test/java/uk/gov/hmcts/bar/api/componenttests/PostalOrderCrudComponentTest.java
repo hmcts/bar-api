@@ -427,7 +427,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isOk());
 
         String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk())
-            .andExpect(content().contentType("application/json;charset=UTF-8")).andReturn().getResponse()
+            .andExpect(content().contentType("application/json")).andReturn().getResponse()
             .getContentAsString();
         JSONObject feeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
             .get("fee-clerk")).get(0);
@@ -471,7 +471,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isOk());
 
         String jsonResponse = restActionsForDM.get("/users/pi-stats?status=A").andExpect(status().isOk())
-            .andExpect(content().contentType("application/json;charset=UTF-8")).andReturn().getResponse()
+            .andExpect(content().contentType("application/json")).andReturn().getResponse()
             .getContentAsString();
         JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
             .get("sr-fee-clerk")).get(0);
@@ -570,7 +570,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .andExpect(status().isOk());
 
         String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-stats?status=RDM&oldStatus=A")
-            .andExpect(status().isOk()).andExpect(content().contentType("application/json;charset=UTF-8"))
+            .andExpect(status().isOk()).andExpect(content().contentType("application/json"))
             .andReturn().getResponse().getContentAsString();
         System.out.println(jsonResponse);
         JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
@@ -618,7 +618,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
 
         String jsonResponse = restActions
             .get("/users/pi-stats?status=TTB")
-            .andExpect(status().isOk()).andExpect(content().contentType("application/json;charset=UTF-8"))
+            .andExpect(status().isOk()).andExpect(content().contentType("application/json"))
             .andReturn().getResponse().getContentAsString();
         System.out.println(jsonResponse);
         JSONObject deliveryManager = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
@@ -649,7 +649,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
         String endDate = LocalDate.now().format(dtf);
         String jsonResponse = restActions
             .get("/users/pi-stats/count?startDate=" + startDate + "&endDate=" + endDate + "&status=D")
-            .andExpect(status().isOk()).andExpect(content().contentType("application/json;charset=UTF-8"))
+            .andExpect(status().isOk()).andExpect(content().contentType("application/json"))
             .andReturn().getResponse().getContentAsString();
         JSONObject seniorFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
             .get("1234")).get(0);

@@ -1,5 +1,5 @@
 plugins{
-    id "info.solidsoft.pitest" version '1.3.0'
+    id "info.solidsoft.pitest" version '1.5.1'
 }
 sourceSets {
 
@@ -32,7 +32,8 @@ idea {
 def versions = [
         pitest: '1.3.2',
         gradlePitest: '1.3.0',
-        sonarPitest: '0.5'
+        sonarPitest: '0.5',
+        lombok: '1.18.12'
 ]
 
 sonarqube {
@@ -63,7 +64,6 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-aop'
     compile group: 'org.ff4j', name: 'ff4j-spring-boot-web-api', version: '1.7.3'
     compile group: 'org.ff4j', name: 'ff4j-store-springjdbc', version: '1.7.3'
-    compile group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.25.0.RELEASE'
     compile group: 'com.google.guava', name: 'guava', version:'27.0-jre'
     compile group: 'io.github.resilience4j', name: 'resilience4j-circuitbreaker', version: '0.14.1'
     compile group: 'io.github.resilience4j', name: 'resilience4j-retry', version: '0.14.1'
@@ -80,8 +80,6 @@ dependencies {
     compile ('uk.gov.hmcts.reform.auth:auth-checker-lib') {
         exclude(module: 'java-logging-spring')
     }
-
-
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'com.fasterxml.jackson.core:jackson-annotations'
     compile 'com.google.guava:guava'
@@ -91,6 +89,10 @@ dependencies {
 
     compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.4'
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
+    compile group: 'org.springframework.plugin', name: 'spring-plugin-core', version: '1.2.0.RELEASE'
+    compile(group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '1.0.4.RELEASE') {
+        exclude(module: 'spring-plugin-core')
+    }
 
     testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
         exclude(module: 'commons-logging')
@@ -110,9 +112,15 @@ dependencies {
     // functional
     functionalTestCompile sourceSets.test.runtimeClasspath
 
-    compile group: 'org.pitest', name: 'pitest', version: '1.3.2'
-    compile 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.3.0'
+    compile group: 'org.pitest', name: 'pitest', version: '1.5.1'
+    compile 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.6'
     compile 'org.codehaus.sonar-plugins:sonar-pitest-plugin:0.5'
+
+
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+    functionalTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+    smokeTestCompileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+    smokeTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
 }
 

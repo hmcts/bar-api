@@ -12,8 +12,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.bar.api.audit.AuditRepository;
@@ -37,8 +37,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 
 @Service
@@ -111,7 +111,7 @@ public class PaymentInstructionService {
     public List<PaymentInstruction> getAllPaymentInstructions(BarUser barUser,  PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto)  {
         paymentInstructionSearchCriteriaDto.setSiteId(barUser.getSelectedSiteId());
         PaymentInstructionsSpecifications<PaymentInstruction> paymentInstructionsSpecification = new PaymentInstructionsSpecifications<>(paymentInstructionSearchCriteriaDto,paymentTypeService);
-        Sort sort = new Sort(Sort.Direction.DESC, "paymentDate");
+        Sort sort = Sort.by(Sort.Direction.DESC, "paymentDate");
         Pageable pageDetails = PageRequest.of(PAGE_NUMBER, MAX_RECORDS_PER_PAGE, sort);
 
         Specification<PaymentInstruction> piSpecification = null;
@@ -267,7 +267,7 @@ public class PaymentInstructionService {
             String bgcNumber = stat.getBgc() == null ? PaymentInstructionsSpecifications.IS_NULL : stat.getBgc();
             Link detailslink = createHateoasLink(userId, status, stat.getPaymentType(), stat.getAction(), bgcNumber, STAT_DETAILS, oldStatus);
 
-            Resource<PaymentInstructionStats> resource = new Resource<>(stat, detailslink.expand());
+            EntityModel<PaymentInstructionStats> resource = new EntityModel<>(stat, detailslink.expand());
 
             // TODO: this is just a temp solution we have to clarify with PO if we really need to group cheques and postal-orders
             if (GROUPED_TYPES.contains(stat.getPaymentType())) {
