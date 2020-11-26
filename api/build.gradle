@@ -124,7 +124,6 @@ dependencies {
     smokeTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.3.0.RELEASE'
-
 }
 
 test {

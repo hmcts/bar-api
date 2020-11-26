@@ -127,7 +127,6 @@ subprojects {
         testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
         implementation 'org.springframework.boot:spring-boot-starter-validation'
-
     }
 }
 
