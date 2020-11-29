@@ -15,17 +15,18 @@ services:
       - SPRING_DATASOURCE_USERNAME=bar
       - SPRING_DATASOURCE_PASSWORD=bar
       - auth.idam.client.baseUrl=http://idam-api:5000
-      - PAYMENT_API_URL=http://payment-api-aat.service.core-compute-aat.internal
+      - payment.api.url=http://payment-api-aat.service.core-compute-aat.internal
       - idam.s2s-auth.url=http://service-auth-provider-api:8489
       - idam.s2s-auth.microservice=bar_api
       - idam.s2s-auth.totp_secret=PKSFGXK7JA4UBTJV
+      - site.api.url=http://bar-api:8080
     ports:
-     - 8182:8080
+     - 8185:8080
     depends_on:
       - bar-database
       - service-auth-provider-api
       - idam-api
-
+        
   service-auth-provider-api:
     image: hmctspublic.azurecr.io/rpe/service-auth-provider
     environment:
@@ -55,6 +56,7 @@ services:
     ports:
       - 8080:8080
       - 1389:1389
+
   fr-idm:
     image: hmctsprivate.azurecr.io/idam/idam-fr-idm:latest
     hostname: localidm
