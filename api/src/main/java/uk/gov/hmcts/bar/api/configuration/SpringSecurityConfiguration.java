@@ -39,6 +39,6 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/health/readiness","/health/liveness");
+        web.ignoring().antMatchers("/health/readiness");
     }
 }
