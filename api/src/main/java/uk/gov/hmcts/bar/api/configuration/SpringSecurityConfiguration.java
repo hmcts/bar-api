@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import uk.gov.hmcts.reform.auth.checker.spring.useronly.AuthCheckerUserOnlyFilter;
@@ -36,4 +37,8 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
            .anyRequest().authenticated();
     }
 
+    @Override
+    public void configure(WebSecurity web) {
+        web.ignoring().antMatchers("/health/readiness","/health/liveness");
+    }
 }
