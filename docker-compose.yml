@@ -18,7 +18,7 @@ services:
       - payment.api.url=http://payments-api:8080
       - idam.s2s-auth.url=http://service-auth-provider-api:8489
       - idam.s2s-auth.microservice=bar_api
-      - idam.s2s-auth.totp_secret=PKSFGXK7JA4UBTJV
+      - idam.s2s-auth.totp_secret=DUMMYSECRET12345
       - site.api.url=http://bar-api:8080
     ports:
      - 8185:8080
@@ -64,9 +64,9 @@ services:
       - BAR_PAYMENTS_EMAIL_SUBJECT=Docker Env Bar Payments Reconciliation Report
       - FEATURE_PAYMENTS_SEARCH=true
       - FEES_REGISTER_URL=https://ccfr-fees-api:8080
-      - GOV_PAY_AUTH_KEY_CMC=la0ohpqa9er1bub2hddieeesc6sabbbqn4smkkve7s9ailn3n9d3hbnhc3
-      - GOV_PAY_AUTH_KEY_DIVORCE_FRONTEND=la0ohpqa9er1bub2hddieeesc6sabbbqn4smkkve7s9ailn3n9d3hbnhc3
-      - GOV_PAY_AUTH_KEY_PROBATE_FRONTEND=la0ohpqa9er1bub2hddieeesc6sabbbqn4smkkve7s9ailn3n9d3hbnhc3
+      - GOV_PAY_AUTH_KEY_CMC=dummy_value_1
+      - GOV_PAY_AUTH_KEY_DIVORCE_FRONTEND=dummy_value_2
+      - GOV_PAY_AUTH_KEY_PROBATE_FRONTEND=dummy_value_3
       - GOV_PAY_OPERATIONAL_SERVICES=ccd_gw
       - GOV_PAY_URL=https://publicapi.payments.service.gov.uk/v1/payments
       - payments.report.file.location=.
@@ -154,7 +154,7 @@ services:
     image: hmctspublic.azurecr.io/rpe/service-auth-provider
     environment:
       - microserviceKeys_payment_app=AAAAAAAAAAAAAAAB
-      - microserviceKeys_bar_api=PKSFGXK7JA4UBTJV
+      - microserviceKeys_bar_api=DUMMYSECRET12345
     ports:
       - 8085:8489
 
