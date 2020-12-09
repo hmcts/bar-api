@@ -90,4 +90,9 @@
         <cve>CVE-2020-17527</cve>
     </suppress>
 
+    <suppress>
+        <notes>HTTP Client 4.5.11 suppression, root cause and fix needs to be carried out separately</notes>
+        <cve>CVE-2020-13956</cve>
+    </suppress>
+
 </suppressions>
