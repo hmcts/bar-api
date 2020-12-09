@@ -45,14 +45,21 @@ sonarqube {
 def javaLoggingVersion = '5.1.1'
 def appInsightsVersion = '2.4.1'
 
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails det ->
+            if (det.requested.name == 'micrometer-core' && det.requested.group == 'io.micrometer') {
+                det.useVersion '1.6.1'
+            }
+        }
+    }
+}
 dependencies {
 
     compile group: 'uk.gov.hmcts.reform', name: 'logging', version: javaLoggingVersion
   	compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: javaLoggingVersion
   	compile group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: javaLoggingVersion
-    compile (group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'){
-        exclude(module: 'micrometer-core')
-    }
+    compile (group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1')
     // redefining with version 2.4.1 as applicationinsights-agent-2.5.0 has an open issue
     // https://github.com/glowroot/instrumentation/issues/1
     compile group: 'com.microsoft.azure', name: 'applicationinsights-logging-logback', version: appInsightsVersion
@@ -61,9 +68,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-security'
-    compile ('org.springframework.boot:spring-boot-starter-actuator'){
-        exclude(module: 'micrometer-core')
-    }
+    compile ('org.springframework.boot:spring-boot-starter-actuator')
     compile 'org.springframework.boot:spring-boot-starter-aop'
     compile group: 'org.ff4j', name: 'ff4j-spring-boot-web-api', version: '1.7.3'
     compile group: 'org.ff4j', name: 'ff4j-store-springjdbc', version: '1.7.3'
