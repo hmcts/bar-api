@@ -14,7 +14,24 @@ def versions = [
         javaVersion: '11',
         jacocoVersion: '0.8.5'
 ]
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails det ->
+            if (det.requested.name == 'tomcat-embed-core') {
+                det.useVersion '9.0.41'
+            }
 
+            if (det.requested.name == 'tomcat-embed-websocket') {
+                det.useVersion '9.0.41'
+            }
+
+            if (det.requested.group == 'com.fasterxml.jackson.core') {
+                det.useVersion '2.12.0'
+            }
+        }
+
+    }
+}
 
 allprojects {
     apply plugin: 'maven'
