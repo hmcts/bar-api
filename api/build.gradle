@@ -51,6 +51,9 @@ configurations.all {
             if (det.requested.name == 'micrometer-core' && det.requested.group == 'io.micrometer') {
                 det.useVersion '1.6.1'
             }
+            if (det.requested.name == 'bcprov-jdk15on') {
+                det.useVersion '1.64'
+            }
         }
     }
 }
@@ -72,7 +75,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-aop'
     compile group: 'org.ff4j', name: 'ff4j-spring-boot-web-api', version: '1.7.3'
     compile group: 'org.ff4j', name: 'ff4j-store-springjdbc', version: '1.7.3'
-    compile group: 'com.google.guava', name: 'guava', version:'27.0-jre'
+    compile group: 'com.google.guava', name: 'guava', version: '30.1-jre'
     compile group: 'io.github.resilience4j', name: 'resilience4j-circuitbreaker', version: '0.14.1'
     compile group: 'io.github.resilience4j', name: 'resilience4j-retry', version: '0.14.1'
 

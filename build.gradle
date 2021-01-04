@@ -20,6 +20,9 @@ configurations.all {
             if (det.requested.name == 'micrometer-core' && det.requested.group == 'io.micrometer') {
                 det.useVersion '1.6.1'
             }
+            if (det.requested.name == 'bcprov-jdk15on') {
+                det.useVersion '1.64'
+            }
         }
     }
 }
@@ -57,7 +60,7 @@ allprojects {
             }
 
             dependency 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.8'
-            dependency 'com.google.guava:guava:27.0-jre'
+            dependency 'com.google.guava:guava:30.1-jre'
 
             dependency 'org.liquibase:liquibase-core:3.7.0'
             dependency 'org.postgresql:postgresql:42.2.6'
