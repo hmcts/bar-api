@@ -28,6 +28,9 @@ configurations.all {
             if (det.requested.group == 'com.fasterxml.jackson.core') {
                 det.useVersion '2.12.0'
             }
+            if (det.requested.name == 'bcprov-jdk15on') {
+                det.useVersion '1.64'
+            }
         }
 
     }
