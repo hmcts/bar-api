@@ -15,7 +15,6 @@ def versions = [
         jacocoVersion: '0.8.5'
 ]
 
-
 allprojects {
     apply plugin: 'maven'
     apply plugin: 'io.spring.dependency-management'
@@ -34,6 +33,28 @@ allprojects {
         jcenter()
     }
 
+    configurations.all {
+        resolutionStrategy {
+            eachDependency { DependencyResolveDetails det ->
+                if (det.requested.name == 'tomcat-embed-core') {
+                    det.useVersion '9.0.41'
+                }
+
+                if (det.requested.name == 'tomcat-embed-websocket') {
+                    det.useVersion '9.0.41'
+                }
+
+                if (det.requested.group == 'com.fasterxml.jackson.core') {
+                    det.useVersion '2.12.0'
+                }
+                if (det.requested.name == 'bcprov-jdk15on') {
+                    det.useVersion '1.68'
+                }
+            }
+
+        }
+    }
+
     dependencyManagement {
         imports {
              mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
@@ -49,7 +70,7 @@ allprojects {
             }
 
             dependency 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.8'
-            dependency 'com.google.guava:guava:27.0-jre'
+            dependency 'com.google.guava:guava:30.1-jre'
 
             dependency 'org.liquibase:liquibase-core:3.7.0'
             dependency 'org.postgresql:postgresql:42.2.6'
