@@ -14,18 +14,6 @@ def versions = [
         javaVersion: '11',
         jacocoVersion: '0.8.5'
 ]
-configurations.all {
-    resolutionStrategy {
-        eachDependency { DependencyResolveDetails det ->
-            if (det.requested.name == 'micrometer-core' && det.requested.group == 'io.micrometer') {
-                det.useVersion '1.6.1'
-            }
-            if (det.requested.name == 'bcprov-jdk15on') {
-                det.useVersion '1.64'
-            }
-        }
-    }
-}
 
 allprojects {
     apply plugin: 'maven'
@@ -43,6 +31,28 @@ allprojects {
     repositories {
         mavenLocal()
         jcenter()
+    }
+
+    configurations.all {
+        resolutionStrategy {
+            eachDependency { DependencyResolveDetails det ->
+                if (det.requested.name == 'tomcat-embed-core') {
+                    det.useVersion '9.0.41'
+                }
+
+                if (det.requested.name == 'tomcat-embed-websocket') {
+                    det.useVersion '9.0.41'
+                }
+
+                if (det.requested.group == 'com.fasterxml.jackson.core') {
+                    det.useVersion '2.12.0'
+                }
+                if (det.requested.name == 'bcprov-jdk15on') {
+                    det.useVersion '1.68'
+                }
+            }
+
+        }
     }
 
     dependencyManagement {
@@ -123,10 +133,7 @@ subprojects {
             exclude(module: 'java-logging-spring')
         }
         compile group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.11'
-
-        //compile 'uk.gov.hmcts.reform:health-spring-boot-starter:0.0.4'
-        compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
-
+        compile 'uk.gov.hmcts.reform:health-spring-boot-starter:0.0.4'
         compileOnly 'org.projectlombok:lombok:1.16.16'
         compileOnly 'com.google.code.findbugs:annotations:3.0.1'
 

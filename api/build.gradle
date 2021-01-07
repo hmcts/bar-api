@@ -45,18 +45,6 @@ sonarqube {
 def javaLoggingVersion = '5.1.1'
 def appInsightsVersion = '2.4.1'
 
-configurations.all {
-    resolutionStrategy {
-        eachDependency { DependencyResolveDetails det ->
-            if (det.requested.name == 'micrometer-core' && det.requested.group == 'io.micrometer') {
-                det.useVersion '1.6.1'
-            }
-            if (det.requested.name == 'bcprov-jdk15on') {
-                det.useVersion '1.64'
-            }
-        }
-    }
-}
 dependencies {
 
     compile group: 'uk.gov.hmcts.reform', name: 'logging', version: javaLoggingVersion
@@ -75,7 +63,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-aop'
     compile group: 'org.ff4j', name: 'ff4j-spring-boot-web-api', version: '1.7.3'
     compile group: 'org.ff4j', name: 'ff4j-store-springjdbc', version: '1.7.3'
-    compile group: 'com.google.guava', name: 'guava', version: '30.1-jre'
+    compile group: 'com.google.guava', name: 'guava', version:'30.1-jre'
     compile group: 'io.github.resilience4j', name: 'resilience4j-circuitbreaker', version: '0.14.1'
     compile group: 'io.github.resilience4j', name: 'resilience4j-retry', version: '0.14.1'
 
@@ -93,11 +81,12 @@ dependencies {
     }
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'com.fasterxml.jackson.core:jackson-annotations'
-    compile 'com.google.guava:guava'
+    compile group: 'com.google.guava', name: 'guava', version: '30.1-jre'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     compile 'org.hibernate:hibernate-validator'
     compile 'commons-beanutils:commons-beanutils'
-    //compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.4'
+
+    compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.4'
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
     compile group: 'org.springframework.plugin', name: 'spring-plugin-core', version: '1.2.0.RELEASE'
     compile(group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '1.0.4.RELEASE') {
@@ -115,6 +104,7 @@ dependencies {
     testCompile 'com.github.tomakehurst:wiremock:2.6.0'
     testCompile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.1.1'
 
+
     // smoke
     smokeTestCompile sourceSets.test.runtimeClasspath
 
@@ -124,6 +114,7 @@ dependencies {
     compile group: 'org.pitest', name: 'pitest', version: '1.5.1'
     compile 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.6'
     compile 'org.codehaus.sonar-plugins:sonar-pitest-plugin:0.5'
+
 
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     functionalTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
