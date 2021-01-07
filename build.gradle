@@ -50,6 +50,9 @@ allprojects {
                 if (det.requested.name == 'bcprov-jdk15on') {
                     det.useVersion '1.68'
                 }
+                if (det.requested.name == 'micrometer-core' && det.requested.group == 'io.micrometer') {
+                    det.useVersion '1.6.1'
+                }
             }
 
         }
