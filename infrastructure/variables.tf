@@ -30,3 +30,8 @@ variable "common_tags" {
   type = map(string)
 }
 
+variable "postgresql_version" {
+  default = "11"
+}
+
+
