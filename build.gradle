@@ -50,6 +50,9 @@ allprojects {
                 if (det.requested.name == 'bcprov-jdk15on') {
                     det.useVersion '1.68'
                 }
+                if (det.requested.name == 'liquibase-core') {
+                    det.useVersion '4.2.2'
+                }
             }
 
         }
