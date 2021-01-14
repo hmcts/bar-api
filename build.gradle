@@ -33,7 +33,7 @@ allprojects {
         jcenter()
     }
 
-//    apply from: "${rootDir}/cve-resolution-strategy.gradle"
+    apply from: "${rootDir}/cve-resolution-strategy.gradle"
 
     dependencyManagement {
         imports {
