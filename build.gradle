@@ -135,7 +135,7 @@ subprojects {
         compile group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.11'
         compile 'uk.gov.hmcts.reform:health-spring-boot-starter:0.0.4'
         compileOnly 'org.projectlombok:lombok:1.16.16'
-        compileOnly 'com.google.code.findbugs:annotations:3.0.1'
+        compileOnly 'com.google.code.findbugs:annotations:3.0.1u2'
 
         testCompile 'junit:junit:4.12'
         testCompile 'org.assertj:assertj-core:3.8.0'
