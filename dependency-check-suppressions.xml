@@ -83,5 +83,7 @@
     <suppress>
         <notes>HTTP Client 4.5.11 suppression, root cause and fix needs to be carried out separately</notes>
         <cve>CVE-2020-13956</cve>
+        <cve>CVE-2018-1000873</cve>
     </suppress>
+
 </suppressions>
