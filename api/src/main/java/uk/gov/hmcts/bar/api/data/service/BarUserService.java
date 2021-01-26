@@ -17,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.bar.api.data.model.BarUser;
 import uk.gov.hmcts.bar.api.data.repository.BarUserRepository;
 import uk.gov.hmcts.bar.api.data.utils.Util;
-import uk.gov.hmcts.reform.auth.checker.spring.useronly.UserDetails;
+import uk.gov.hmcts.bar.api.security.utils.SecurityUtils;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
+/*import uk.gov.hmcts.reform.auth.checker.spring.useronly.UserDetails;*/
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -31,6 +33,9 @@ public class BarUserService {
     private final CloseableHttpClient httpClient;
     private final String siteApiUrl;
     private final Cache cache;
+
+    @Autowired
+    SecurityUtils securityUtils;
 
     @Autowired
     public BarUserService(BarUserRepository barUserRepository,
@@ -56,11 +61,14 @@ public class BarUserService {
 
     public String getCurrentUserId() {
         Optional<String> userId = Optional.empty();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+       /* Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             userId = Optional.ofNullable(userDetails.getUsername());
-        }
+        }*/
+
+        UserInfo userInfo = securityUtils.getUserInfo();
+        userId = Optional.ofNullable(userInfo.getUid());
         return userId.orElseThrow(() -> new AccessDeniedException("failed to identify user"));
 	}
 

@@ -1,3 +1,4 @@
+/*
 package uk.gov.hmcts.bar.api.auth;
 
 import uk.gov.hmcts.bar.api.data.model.BarUser;
@@ -30,3 +31,4 @@ public class UserResolver implements SubjectResolver<User> {
         return new User(details.getId(), details.getRoles());
     }
 }
+*/
