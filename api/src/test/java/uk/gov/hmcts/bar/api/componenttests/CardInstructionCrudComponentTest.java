@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONParser;
+import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.bar.api.data.model.*;
 
 import java.time.LocalDate;
@@ -20,8 +21,22 @@ import static uk.gov.hmcts.bar.api.data.model.CardPaymentInstruction.cardPayment
 import static uk.gov.hmcts.bar.api.data.model.PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith;
 
 public class CardInstructionCrudComponentTest extends ComponentTestBase  {
+
+   /* @MockBean
+    private SecurityUtils securityUtils;*/
+
+    /*@Before
+    public void setup() {
+        when(securityUtils.getUserInfo()).thenReturn(getUserInfoBasedOnUID_Roles(UUID.randomUUID().toString(),"bar-post-clerk"));
+    }*/
+
+
+
     @Test
+    @WithMockUser
     public void whenCardPaymentInstructionDetails_thenCreateCardPaymentInstruction() throws Exception {
+      /*  when(securityUtils.getUserInfo()).thenReturn(getUserInfoBasedOnUID_Roles("UID123","bar-post-clerk"));*/
+
         Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
             .amount(500)

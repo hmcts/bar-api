@@ -2,7 +2,7 @@ package uk.gov.hmcts.bar.api.componenttests.utils;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
-import uk.gov.hmcts.reform.auth.checker.spring.useronly.UserDetails;
+import uk.gov.hmcts.bar.api.data.model.UserDetails;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

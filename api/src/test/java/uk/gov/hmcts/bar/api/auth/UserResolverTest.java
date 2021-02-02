@@ -1,3 +1,4 @@
+/*
 package uk.gov.hmcts.bar.api.auth;
 
 import org.junit.Before;
@@ -54,3 +55,4 @@ public class UserResolverTest {
     }
 
 }
+*/
