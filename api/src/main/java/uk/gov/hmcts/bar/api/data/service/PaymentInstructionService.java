@@ -264,7 +264,7 @@ public class PaymentInstructionService {
     private MultiMap createHateoasResponse(List<PaymentInstructionStats> stats, String userId, String status, String oldStatus) {
         MultiMap paymentInstructionStatsGroupedByBgc = new MultiValueMap();
         stats.stream().forEach(stat -> {
-            String bgcNumber = stat.getBgc() == null ? PaymentInstructionsSpecifications.IS_NULL : stat.getBgc();
+            String bgcNumber = stat.getBgc() == null  ? PaymentInstructionsSpecifications.IS_NULL : stat.getBgc();
             Link detailslink = createHateoasLink(userId, status, stat.getPaymentType(), stat.getAction(), bgcNumber, STAT_DETAILS, oldStatus);
 
             EntityModel<PaymentInstructionStats> resource = new EntityModel<>(stat, detailslink.expand());
@@ -276,7 +276,7 @@ public class PaymentInstructionService {
                 resource.add(groupedLink.expand());
             }
 
-            paymentInstructionStatsGroupedByBgc.put(stat.getBgc() == null ? "0" : stat.getBgc(), resource);
+            paymentInstructionStatsGroupedByBgc.put(stat.getBgc() == null || stat.getBgc().equals("")  ? "0" : stat.getBgc(), resource);
         });
         return paymentInstructionStatsGroupedByBgc;
     }
