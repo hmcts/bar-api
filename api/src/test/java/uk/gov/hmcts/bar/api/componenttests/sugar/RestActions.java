@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.*;
 
@@ -29,12 +30,14 @@ public class RestActions {
     private final ObjectMapper objectMapper;
     private final UserDetails userDetails;
     private final JwtAuthenticationToken jwtAuthenticationToken;
+    private final UserInfo userInfo;
 
-    public RestActions(MockMvc mvc, ObjectMapper objectMapper, UserDetails userDetails, JwtAuthenticationToken jwtAuthenticationToken) {
+    public RestActions(MockMvc mvc, ObjectMapper objectMapper, UserDetails userDetails, JwtAuthenticationToken jwtAuthenticationToken, UserInfo userInfo) {
         this.mvc = mvc;
         this.objectMapper = objectMapper;
         this.userDetails = userDetails;
         this.jwtAuthenticationToken = jwtAuthenticationToken;
+        this.userInfo = userInfo;
         this.httpHeaders.add("Authorization", "DummyBearerToken");
     }
 
@@ -66,7 +69,7 @@ public class RestActions {
         try {
             return mvc.perform(MockMvcRequestBuilders
                 .get(urlTemplate)
-                .with(user(userDetails))
+                .with(authentication(jwtAuthenticationToken))
                 .contentType(APPLICATION_JSON)
                 .accept(TEXT_CSV)
                 .headers(httpHeaders));
@@ -164,6 +167,10 @@ public class RestActions {
     private void setSecurityContext() {
         Authentication auth = new UsernamePasswordAuthenticationToken(userDetails,null);
         SecurityContextHolder.getContext().setAuthentication(auth);
+    }
+
+    public UserInfo getUserInfoForRestAction() {
+        return this.userInfo;
     }
 }
 

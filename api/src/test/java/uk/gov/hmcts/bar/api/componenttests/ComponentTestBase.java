@@ -109,24 +109,25 @@ public class ComponentTestBase {
     @Before
     public void setUp() throws Exception {
         DefaultMockMvcBuilder mvc = webAppContextSetup(webApplicationContext).apply(springSecurity());
-        when(idamRepository.getUserInfo(contains(BAR_POST_CLERK_AUTHORITY))).thenReturn(getUserInfoBasedOnUID_Roles(UUID.randomUUID().toString(), BAR_POST_CLERK_AUTHORITY));
-        this.restActions = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, userDetails, getJWTAuthenticationTokenBasedOnRoles(BAR_POST_CLERK_AUTHORITY));
+        UserInfo userInfo;
+        when(idamRepository.getUserInfo(contains(BAR_POST_CLERK_AUTHORITY))).thenReturn(userInfo=getUserInfoBasedOnUID_Roles(UUID.randomUUID().toString(), BAR_POST_CLERK_AUTHORITY));
+        this.restActions = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, userDetails, getJWTAuthenticationTokenBasedOnRoles(BAR_POST_CLERK_AUTHORITY), userInfo);
 
-        when(idamRepository.getUserInfo(contains(BAR_FEE_CLERK_AUTHORITY))).thenReturn(getUserInfoBasedOnUID_Roles(UUID.randomUUID().toString(), BAR_FEE_CLERK_AUTHORITY));
-        this.restActionsForFeeClerk = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, feeClerkUserDetails, getJWTAuthenticationTokenBasedOnRoles(BAR_FEE_CLERK_AUTHORITY));
+        when(idamRepository.getUserInfo(contains(BAR_FEE_CLERK_AUTHORITY))).thenReturn(userInfo=getUserInfoBasedOnUID_Roles(UUID.randomUUID().toString(), BAR_FEE_CLERK_AUTHORITY));
+        this.restActionsForFeeClerk = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, feeClerkUserDetails, getJWTAuthenticationTokenBasedOnRoles(BAR_FEE_CLERK_AUTHORITY), userInfo);
 
-        when(idamRepository.getUserInfo(contains(BAR_SR_FEE_CLERK_AUTHORITY))).thenReturn(getUserInfoBasedOnUID_Roles(UUID.randomUUID().toString(), BAR_SR_FEE_CLERK_AUTHORITY));
-        this.restActionsForSrFeeClerk = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, srFeeClerkUserDetails, getJWTAuthenticationTokenBasedOnRoles(BAR_SR_FEE_CLERK_AUTHORITY));
+        when(idamRepository.getUserInfo(contains(BAR_SR_FEE_CLERK_AUTHORITY))).thenReturn(userInfo=getUserInfoBasedOnUID_Roles(UUID.randomUUID().toString(), BAR_SR_FEE_CLERK_AUTHORITY));
+        this.restActionsForSrFeeClerk = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, srFeeClerkUserDetails, getJWTAuthenticationTokenBasedOnRoles(BAR_SR_FEE_CLERK_AUTHORITY), userInfo);
 
-        when(idamRepository.getUserInfo(contains(BAR_DM_AUTHORITY))).thenReturn(getUserInfoBasedOnUID_Roles(UUID.randomUUID().toString(), BAR_DM_AUTHORITY));
-        this.restActionsForDM = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, dmUserDetails, getJWTAuthenticationTokenBasedOnRoles(BAR_DM_AUTHORITY));
+        when(idamRepository.getUserInfo(contains(BAR_DM_AUTHORITY))).thenReturn(userInfo=getUserInfoBasedOnUID_Roles(UUID.randomUUID().toString(), BAR_DM_AUTHORITY));
+        this.restActionsForDM = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, dmUserDetails, getJWTAuthenticationTokenBasedOnRoles(BAR_DM_AUTHORITY), userInfo);
 
-        this.restActionsForAdmin = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, adminUserDetails, null);
-        this.restActionsPostClerkSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, postClerkUserDetailsSite2, null);
-        this.restActionsForFeeClerkSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, feeClerkUserDetailsSite2, null);
-        this.restActionsForSrFeeClerkSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, srFeeClerkUserDetailsSite2, null);
-        this.restActionsForDMSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, dmUserUserDetailsSite2, null);
-        this.restActionsForAdminSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, adminUserDetailsSite2, null);
+        this.restActionsForAdmin = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, adminUserDetails, null, null);
+        this.restActionsPostClerkSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, postClerkUserDetailsSite2, null, null);
+        this.restActionsForFeeClerkSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, feeClerkUserDetailsSite2, null, null);
+        this.restActionsForSrFeeClerkSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, srFeeClerkUserDetailsSite2, null, null);
+        this.restActionsForDMSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, dmUserUserDetailsSite2, null, null);
+        this.restActionsForAdminSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, adminUserDetailsSite2, null, null);
 
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction_status");
         DbTestUtil.emptyTable(webApplicationContext, "case_fee_detail");
@@ -168,11 +169,12 @@ public class ComponentTestBase {
     }
 
     public static UserInfo getUserInfoBasedOnUID_Roles(String UID, String roles) {
+        String identifier = roles + getRandomNumber(0, 1000);
         return UserInfo.builder()
             .uid(UID)
-            .sub(roles + getRandomNumber(0, 1000)  + "@hmcts.net")
-            .givenName("testGivenName")
-            .familyName("testFamilyName")
+            .sub(identifier + "@hmcts.net")
+            .givenName(identifier + " GivenName")
+            .familyName(identifier + " FamilyName")
             .roles(Arrays.asList(roles))
             .build();
     }
