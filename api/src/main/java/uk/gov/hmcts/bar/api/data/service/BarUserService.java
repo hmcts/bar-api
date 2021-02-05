@@ -9,9 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.bar.api.data.model.BarUser;
@@ -35,17 +32,18 @@ public class BarUserService {
     private final Cache cache;
 
     @Autowired
-    SecurityUtils securityUtils;
+    private SecurityUtils securityUtils;
 
     @Autowired
     public BarUserService(BarUserRepository barUserRepository,
                           CloseableHttpClient httpClient,
                           @Value("${site.api.url}") String siteApiUrl,
-                          CacheManager cacheManager){
+                          CacheManager cacheManager, SecurityUtils securityUtils){
         this.barUserRepository = barUserRepository;
         this.httpClient = httpClient;
         this.siteApiUrl = siteApiUrl;
         this.cache = cacheManager.getCache("barusers");
+        this.securityUtils = securityUtils;
     }
 
     public BarUser saveUser(@NotNull BarUser barUser) {

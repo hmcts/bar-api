@@ -71,28 +71,33 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     @SuppressFBWarnings(value = "SPRING_CSRF_PROTECTION_DISABLED", justification = "It's safe to disable CSRF protection as application is not being hit directly from the browser")
-    protected void configure(HttpSecurity http) throws Exception {
+    protected void configure(HttpSecurity http) {
+       try {
+           http
+               .addFilterAfter(userAuthFilter, BearerTokenAuthenticationFilter.class)
+               .sessionManagement().sessionCreationPolicy(STATELESS).and()
+               .csrf().disable()
+               .formLogin().disable()
+               .logout().disable()
+               .authorizeRequests()
+               .antMatchers("/swagger-ui.html", "/webjars/springfox-swagger-ui/**", "/swagger-resources/**",
+                   "/v2/**", "/health","/health/liveness","/health/readiness", "/payment-types", "/info").permitAll()
+               .anyRequest().authenticated()
+               .and()
+               .oauth2ResourceServer()
+               .jwt()
+               .jwtAuthenticationConverter(jwtAuthenticationConverter)
+               .and()
+               .and()
+               .oauth2Client()
+               .and()
+               .exceptionHandling().accessDeniedHandler(bsAccessDeniedHandler)
+               .authenticationEntryPoint(bsAuthenticationEntryPoint);
+       } catch (Exception exception) {
+           LOG.info("Error in SpringSecurityConfiguration Configure: {}", exception);
+       }
 
-       http
-           .addFilterAfter(userAuthFilter, BearerTokenAuthenticationFilter.class)
-           .sessionManagement().sessionCreationPolicy(STATELESS).and()
-           .csrf().disable()
-           .formLogin().disable()
-           .logout().disable()
-           .authorizeRequests()
-           .antMatchers("/swagger-ui.html", "/webjars/springfox-swagger-ui/**", "/swagger-resources/**",
-               "/v2/**", "/health","/health/liveness","/health/readiness", "/payment-types", "/info").permitAll()
-           .anyRequest().authenticated()
-           .and()
-           .oauth2ResourceServer()
-           .jwt()
-           .jwtAuthenticationConverter(jwtAuthenticationConverter)
-           .and()
-           .and()
-           .oauth2Client()
-           .and()
-           .exceptionHandling().accessDeniedHandler(bsAccessDeniedHandler)
-           .authenticationEntryPoint(bsAuthenticationEntryPoint);
+
     }
 
     @Bean
