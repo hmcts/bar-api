@@ -19,5 +19,11 @@
         <notes>Transitive dependency of spring boot version</notes>
         <cve>CVE-2020-5421</cve>
     </suppress>
+
+    <suppress until="2021-03-14">
+        <notes>oauth2-oidc-sdk vulnerabilities appearing even for latest version</notes>
+        <cve>CVE-2007-1651</cve>
+        <cve>CVE-2007-1652</cve>
+    </suppress>
     <!-- Supression Group ends here -->
 </suppressions>
