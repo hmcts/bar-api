@@ -18,9 +18,9 @@ import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
 import uk.gov.hmcts.bar.api.data.service.BarUserService;
-import uk.gov.hmcts.bar.api.security.converter.BSJwtGrantedAuthoritiesConverter;
-import uk.gov.hmcts.bar.api.security.exception.BSAccessDeniedHandler;
-import uk.gov.hmcts.bar.api.security.exception.BSAuthenticationEntryPoint;
+import uk.gov.hmcts.bar.api.security.converter.BarJwtGrantedAuthoritiesConverter;
+import uk.gov.hmcts.bar.api.security.exception.BarAccessDeniedHandler;
+import uk.gov.hmcts.bar.api.security.exception.BarAuthenticationEntryPoint;
 import uk.gov.hmcts.bar.api.security.filters.UserAuthFilter;
 import uk.gov.hmcts.bar.api.security.utils.SecurityUtils;
 import uk.gov.hmcts.bar.api.security.validator.AudienceValidator;
@@ -51,22 +51,22 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final UserAuthFilter userAuthFilter;
     private final JwtAuthenticationConverter jwtAuthenticationConverter;
-    private final BSAuthenticationEntryPoint bsAuthenticationEntryPoint;
-    private final BSAccessDeniedHandler bsAccessDeniedHandler;
+    private final BarAuthenticationEntryPoint barAuthenticationEntryPoint;
+    private final BarAccessDeniedHandler barAccessDeniedHandler;
 
     @Autowired
-    public SpringSecurityConfiguration(final BSJwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter,
+    public SpringSecurityConfiguration(final BarJwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter,
                                        final Function<HttpServletRequest, Optional<String>> userIdExtractor,
                                        final Function<HttpServletRequest, Collection<String>> authorizedRolesExtractor,
-                                       final SecurityUtils securityUtils, final BSAuthenticationEntryPoint bsAuthenticationEntryPoint,
-                                       final BSAccessDeniedHandler bsAccessDeniedHandler, final BarUserService barUserService) {
+                                       final SecurityUtils securityUtils, final BarAuthenticationEntryPoint barAuthenticationEntryPoint,
+                                       final BarAccessDeniedHandler barAccessDeniedHandler, final BarUserService barUserService) {
         super();
         this.userAuthFilter = new UserAuthFilter(
             userIdExtractor, authorizedRolesExtractor, securityUtils, barUserService);
         jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
-        this.bsAuthenticationEntryPoint = bsAuthenticationEntryPoint;
-        this.bsAccessDeniedHandler = bsAccessDeniedHandler;
+        this.barAuthenticationEntryPoint = barAuthenticationEntryPoint;
+        this.barAccessDeniedHandler = barAccessDeniedHandler;
     }
 
     @Override
@@ -91,8 +91,8 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
                .and()
                .oauth2Client()
                .and()
-               .exceptionHandling().accessDeniedHandler(bsAccessDeniedHandler)
-               .authenticationEntryPoint(bsAuthenticationEntryPoint);
+               .exceptionHandling().accessDeniedHandler(barAccessDeniedHandler)
+               .authenticationEntryPoint(barAuthenticationEntryPoint);
        } catch (Exception exception) {
            LOG.info("Error in SpringSecurityConfiguration Configure: {}", exception);
        }

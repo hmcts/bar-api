@@ -8,32 +8,27 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.bar.api.componenttests.ComponentTestBase;
-import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IdamRepositoryTest {
 
-    @Autowired
+    @InjectMocks
     IdamRepository idamRepository;
 
-    @InjectMocks
-    IdamClient idamClient;
-
     @Mock
-    IdamApi idamApi;
+    IdamClient idamClient;
 
     @Before
     public void setup() {
-        Mockito.when(idamApi.retrieveUserInfo(Mockito.anyString())).thenReturn(ComponentTestBase.getUserInfoBasedOnUID_Roles("1111-2222-3333-4444", "bar"));
+        Mockito.when(idamClient.getUserInfo(Mockito.anyString())).thenReturn(ComponentTestBase.getUserInfoBasedOnUID_Roles("1111-2222-3333-4444", "bar"));
     }
 
     @Test
     public void testUserInfo() {
-        UserInfo userInfo = idamClient.getUserInfo("1111-2222-3333-4444");
+        UserInfo userInfo = idamRepository.getUserInfo("1111-2222-3333-4444");
         Assert.assertTrue(userInfo.getRoles().size() == 1);
         Assert.assertTrue(userInfo.getSub().contains("@hmcts.net"));
     }

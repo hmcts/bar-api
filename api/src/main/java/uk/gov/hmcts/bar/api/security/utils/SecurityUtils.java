@@ -72,26 +72,6 @@ public class SecurityUtils {
             .collect(Collectors.toList());
     }
 
-    /*Below methods will be refactored soon based on usages*/
-
-    public HttpHeaders authorizationHeaders() {
-        final HttpHeaders headers = new HttpHeaders();
-        headers.add("ServiceAuthorization", authTokenGenerator.generate());
-        headers.add("user-id", getUserId());
-        headers.add("user-roles", getUserRolesHeader());
-
-        if (SecurityContextHolder.getContext().getAuthentication() != null) {
-            headers.add(HttpHeaders.AUTHORIZATION, getUserBearerToken());
-        }
-        return headers;
-    }
-
-    public HttpHeaders userAuthorizationHeaders() {
-        final HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, getUserBearerToken());
-        return headers;
-    }
-
     public UserInfo getUserInfo() {
         return idamRepository.getUserInfo(getUserToken());
     }
@@ -103,16 +83,5 @@ public class SecurityUtils {
     public String getUserToken() {
         Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return jwt.getTokenValue();
-    }
-
-    private String getUserBearerToken() {
-        return "Bearer " + getUserToken();
-    }
-
-    public String getUserRolesHeader() {
-        Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-        return authorities.stream()
-                             .map(GrantedAuthority::getAuthority)
-                             .collect(Collectors.joining(","));
     }
 }

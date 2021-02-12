@@ -21,11 +21,11 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class BSJwtGrantedAuthoritiesConverterTest {
+public class BarJwtGrantedAuthoritiesConverterTest {
     @Mock
     private IdamRepository idamRepository;
     @InjectMocks
-    private BSJwtGrantedAuthoritiesConverter converter;
+    private BarJwtGrantedAuthoritiesConverter converter;
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);

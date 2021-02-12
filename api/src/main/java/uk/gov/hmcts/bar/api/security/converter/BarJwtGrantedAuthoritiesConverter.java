@@ -23,14 +23,14 @@ import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterN
  */
 
 @Component
-public class BSJwtGrantedAuthoritiesConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
+public class BarJwtGrantedAuthoritiesConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
 
     public static final String TOKEN_NAME = "tokenName";
 
     private final IdamRepository idamRepository;
 
     @Autowired
-    public BSJwtGrantedAuthoritiesConverter(IdamRepository idamRepository) {
+    public BarJwtGrantedAuthoritiesConverter(IdamRepository idamRepository) {
         this.idamRepository = idamRepository;
     }
 
