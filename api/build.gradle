@@ -117,6 +117,7 @@ dependencies {
 
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     functionalTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+    functionalTestCompileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     smokeTestCompileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     smokeTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
