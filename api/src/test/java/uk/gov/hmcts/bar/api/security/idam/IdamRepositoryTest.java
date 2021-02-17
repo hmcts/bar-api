@@ -29,7 +29,7 @@ public class IdamRepositoryTest {
     @Test
     public void testUserInfo() {
         UserInfo userInfo = idamRepository.getUserInfo("1111-2222-3333-4444");
-        Assert.assertTrue(userInfo.getRoles().size() == 1);
+        Assert.assertEquals(1, userInfo.getRoles().size());
         Assert.assertTrue(userInfo.getSub().contains("@hmcts.net"));
     }
 }
