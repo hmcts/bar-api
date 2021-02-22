@@ -35,6 +35,7 @@ allprojects {
 
     apply from: "${rootDir}/cve-resolution-strategy.gradle"
 
+
     dependencyManagement {
         imports {
              mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
@@ -49,7 +50,7 @@ allprojects {
                 entry 'jackson-databind'
             }
 
-            dependency 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.8'
+            dependency 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.0'
             dependency 'com.google.guava:guava:30.1-jre'
 
             dependency 'org.liquibase:liquibase-core:3.7.0'
@@ -113,6 +114,7 @@ subprojects {
             exclude(module: 'java-logging-spring')
         }
         compile group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.11'
+        compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
         compileOnly 'org.projectlombok:lombok:1.16.16'
         compileOnly 'com.google.code.findbugs:annotations:3.0.1'
 
@@ -123,7 +125,10 @@ subprojects {
         compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
         annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
         testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+        implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+        compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
+        implementation 'org.springframework.boot:spring-boot-starter-validation'
     }
 }
 
