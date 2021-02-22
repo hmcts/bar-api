@@ -19,5 +19,19 @@
         <notes>Transitive dependency of spring boot version</notes>
         <cve>CVE-2020-5421</cve>
     </suppress>
+
+    <suppress>
+        <notes>New CVE's</notes>
+        <cve>CVE-2008-1392</cve>
+        <cve>CVE-2009-0177</cve>
+        <cve>CVE-2009-0908</cve>
+        <cve>CVE-2009-1146</cve>
+        <cve>CVE-2009-1147</cve>
+        <cve>CVE-2009-1244</cve>
+        <cve>CVE-2009-1805</cve>
+     </suppress>
+
+
     <!-- Supression Group ends here -->
+
 </suppressions>
