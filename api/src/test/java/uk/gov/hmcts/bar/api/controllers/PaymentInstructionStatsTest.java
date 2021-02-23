@@ -23,7 +23,7 @@ public class PaymentInstructionStatsTest extends ComponentTestBase {
             .get("/users/1234/payment-instructions/stats?status=TTB")
             .andExpect(status().isOk())
             .andExpect(body().as(Map.class, item -> {
-                assertTrue(item.size() == 3);
+                assertEquals(3,item.size());
                 Map stats = (Map)((ArrayList)item.get("0")).get(0);
                 assertNull(stats.get("bgc"));
                 assertEquals(1, stats.get("count"));
@@ -40,7 +40,7 @@ public class PaymentInstructionStatsTest extends ComponentTestBase {
             .get("/users/1234/payment-instructions/action-stats?status=TTB")
             .andExpect(status().isOk())
             .andExpect(body().as(Map.class, item -> {
-                assertTrue(item.size() == 3);
+                assertEquals(3,item.size());
                 Map stats = (Map)((ArrayList)item.get("0")).get(0);
                 assertNull(stats.get("bgc"));
                 assertEquals(1, stats.get("count"));
@@ -57,7 +57,7 @@ public class PaymentInstructionStatsTest extends ComponentTestBase {
             .get("/users/1234/payment-instructions/action-stats?status=RDM&old_status=A")
             .andExpect(status().isOk())
             .andExpect(body().as(HashMap.class, item -> {
-                assertTrue(item.size() == 2);
+                assertEquals(2,item.size());
                 Map stats = (Map)((ArrayList)item.get("0")).get(0);
                 assertNull(stats.get("bgc"));
                 assertEquals(1, stats.get("count"));
