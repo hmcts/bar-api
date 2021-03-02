@@ -16,5 +16,28 @@ def app = "api"
 withPipeline(type, product, app) {
     enableSlackNotifications('#bar-tech')
     enableAksStagingDeployment()
+
+
+    after('functionalTest:aat') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        publishHTML target: [
+            reportDir            : "api/target/site/serenity/",
+            reportFiles          : "index.html",
+            reportName           : "AAT Functional Tests",
+            alwaysLinkToLastBuild: true
+        ]
+
+    }
+
+    after('functionalTest:preview') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        publishHTML target: [
+            reportDir            : "api/target/site/serenity/",
+            reportFiles          : "index.html",
+            reportName           : "Preview Functional Tests",
+            alwaysLinkToLastBuild: true
+        ]
+    }
+
     disableLegacyDeployment()
 }
