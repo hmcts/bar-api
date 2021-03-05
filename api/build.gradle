@@ -104,6 +104,8 @@ dependencies {
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'com.github.tomakehurst:wiremock:2.6.0'
     testCompile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.1.1'
+    testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.9'
+    testCompile 'org.powermock:powermock-api-mockito2:2.0.9'
 
 
     // smoke
