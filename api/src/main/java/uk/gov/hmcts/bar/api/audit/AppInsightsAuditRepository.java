@@ -40,15 +40,18 @@ public class AppInsightsAuditRepository implements AuditRepository{
         if (null != paymentInstruction.getAction()){
             properties.put("Action",paymentInstruction.getAction());
         }
+
         properties.put("Status",paymentInstruction.getStatus());
 
         if (null != paymentInstruction.getBgcNumber()){
             properties.put("BGC Number",paymentInstruction.getBgcNumber());
         }
+
         telemetry.trackEvent(name, ImmutableMap.copyOf(properties),null);
     }
 
     public void trackCaseEvent(String name, CaseFeeDetailRequest caseFeeDetailRequest, BarUser barUser){
+
         Map<String, String> properties = new ImmutableMap.Builder<String, String>()
             .put("User id ", barUser.getId())
             .put("Case reference", caseFeeDetailRequest.getCaseReference())
