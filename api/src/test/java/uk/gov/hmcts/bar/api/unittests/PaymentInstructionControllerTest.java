@@ -350,10 +350,29 @@ public class PaymentInstructionControllerTest {
             .andExpect(status().isOk())
             .andReturn();
     }
-//
+
+    @Test
+    public void testGetPaymentInstructionCount_WithNullStartAndEnddates() throws Exception {
+        when( paymentInstructionService.getNonResetPaymentInstructionsCount(anyString(),anyString())).thenReturn((long) 10);
+        MvcResult mvcResult = restActions.get("/payment-instructions/count?status=P")
+            .andExpect(status().isOk())
+            .andReturn();
+    }
+
+    @Test
+    public void testGetPaymentInstructionCount_WithStartAndEnddates() throws Exception {
+        when( paymentInstructionService.getPaymentInstructionsCount(any(PaymentInstructionStatusCriteriaDto.class))).thenReturn((long) 10);
+        MvcResult mvcResult = restActions.get("/payment-instructions/count?status=P&startDate=10102020&endDate=11102020")
+            .andExpect(status().isOk())
+            .andReturn();
+    }
+
 //    @Test
-//    public void testGetPaymentInstructionCount() throws Exception {
-//        MvcResult mvcResult = restActions.get("/payment-instructions/count")
+//    public void testGetPaymentInstructionStatsByUserGroupByAction() throws Exception {
+//        MultiMap multiMap = new MultiValueMap();
+//        multiMap.put("key","value");
+//        when(paymentInstructionService.getPaymentInstructionsByUserGroupByActionAndType(anyString(),anyString(),any(Optional.class),anyBoolean(),anyString())).thenReturn(multiMap);
+//        MvcResult mvcResult = restActions.get("/users/213123/payment-instructions/action-stats")
 //            .andExpect(status().isOk())
 //            .andReturn();
 //    }
