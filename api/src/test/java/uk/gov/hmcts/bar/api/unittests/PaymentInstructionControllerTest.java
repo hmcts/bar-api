@@ -359,14 +359,4 @@ public class PaymentInstructionControllerTest {
             .andReturn();
     }
 
-//    @Test
-//    public void testGetPaymentInstructionStatsByUserGroupByAction() throws Exception {
-//        MultiMap multiMap = new MultiValueMap();
-//        multiMap.put("key","value");
-//        when(paymentInstructionService.getPaymentInstructionsByUserGroupByActionAndType(anyString(),anyString(),any(Optional.class),anyBoolean(),anyString())).thenReturn(multiMap);
-//        MvcResult mvcResult = restActions.get("/users/213123/payment-instructions/action-stats")
-//            .andExpect(status().isOk())
-//            .andReturn();
-//    }
-
 }
