@@ -8,6 +8,7 @@ import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.bar.api.componenttests.utils.DbTestUtil;
 import uk.gov.hmcts.bar.api.data.service.BarUserService;
 import uk.gov.hmcts.bar.multisite.MultisiteConfiguration;
 import uk.gov.hmcts.reform.auth.checker.spring.useronly.UserDetails;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
 import javax.ws.rs.core.MediaType;
 import java.util.Collections;
@@ -37,6 +39,9 @@ public class ComponentTestBase {
 
     @ClassRule
     public static WireMockRule wireMockRule = new WireMockRule( options().port(23444).notifier(new ConsoleNotifier(true)));
+
+    @MockBean
+    private AuthTokenGenerator serviceAuthTokenGenerator;
 
     @Autowired
     private ObjectMapper objectMapper;
