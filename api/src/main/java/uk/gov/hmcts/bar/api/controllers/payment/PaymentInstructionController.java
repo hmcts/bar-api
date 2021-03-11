@@ -33,6 +33,7 @@ import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.hateoas.EntityModel.of;
 
 @RestController
 
@@ -532,7 +533,7 @@ public class PaymentInstructionController {
 
         MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType(id, status, oldStatus, sentToPayhub, request.getBarUser().getSelectedSiteId());
         Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUser(request, id, status, oldStatus, sentToPayhub)).withSelfRel();
-        return new EntityModel<>(stats, link);
+        return of(stats, link);
     }
 
     @ApiOperation(value = "collect stats for a user", notes = "Collect all payment instruction stats for a user grouped by action and type")
@@ -550,7 +551,7 @@ public class PaymentInstructionController {
 
         MultiMap stats = paymentInstructionService.getPaymentInstructionsByUserGroupByActionAndType(id, status, oldStatus, sentToPayhub, request.getBarUser().getSelectedSiteId());
         Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUserGroupByAction(request, id, status, oldStatus, sentToPayhub)).withSelfRel();
-        return new EntityModel<>(stats, link);
+        return of(stats, link);
     }
 
 
