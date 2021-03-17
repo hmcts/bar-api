@@ -14,12 +14,6 @@
         <notes>We are on latest version , these are coming form mvn:pkg </notes>
         <cve>CVE-2020-13692</cve>
     </suppress>
-
-    <suppress until="2021-03-02">
-        <notes>Transitive dependency of spring boot version</notes>
-        <cve>CVE-2020-5421</cve>
-    </suppress>
-
-    <!-- Supression Group ends here -->
+<!-- Supression Group ends here -->
 
 </suppressions>
