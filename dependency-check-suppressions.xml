@@ -8,5 +8,4 @@
         <cve>CVE-2018-1258</cve>
     </suppress>
     <!-- False Positive CVE Suppression ends here-->
-<!-- Suppression Group ends here -->
 </suppressions>
