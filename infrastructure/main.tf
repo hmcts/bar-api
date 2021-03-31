@@ -12,22 +12,6 @@ data "azurerm_key_vault" "bar_key_vault" {
   resource_group_name = "${local.rg_name}"
 }
 
-module "bar-database" {
-  source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product         = var.product
-  component       = var.component
-  name            = join("-", [var.product, "postgres-db"])
-  location = var.location
-  env = var.env
-  postgresql_user = var.postgresql_user
-  database_name = var.database_name
-  sku_name = "GP_Gen5_2"
-  sku_tier = "GeneralPurpose"
-  common_tags = var.common_tags
-  subscription = var.subscription
-}
-
-
 module "bar-database-v11" {
   source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product         = var.product
