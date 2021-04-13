@@ -1,6 +1,7 @@
 package uk.gove.hmcts.bar.functional;
 
 import io.restassured.response.Response;
+import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -13,7 +14,7 @@ import java.util.HashMap;
 import static io.restassured.RestAssured.given;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
-@RunWith(SpringRunner.class)
+@RunWith(SpringIntegrationSerenityRunner.class)
 public class PaymentInstructionUpdateTest extends FunctionalTest {
 
     @Test
