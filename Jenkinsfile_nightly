@@ -40,5 +40,6 @@ withNightlyPipeline("java", product, component) {
     env.TEST_URL = params.URL_TO_TEST
     enableSecurityScan()
     enableMutationTest()
+    enableFullFunctionalTest()
     enableSlackNotifications('#cc-payments-tech')
 }
