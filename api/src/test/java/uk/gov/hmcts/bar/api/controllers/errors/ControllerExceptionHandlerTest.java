@@ -79,7 +79,6 @@ public class ControllerExceptionHandlerTest {
 
 	@Test
 	public void whenMethodArgumentNotMatches_shouldReturn500() {
-		when(methodArgumentNotValidExceptionMock.getParameter()).thenReturn(methodParameterMock);
 		when(methodArgumentNotValidExceptionMock.getMessage()).thenReturn("Parameter does not match");
 		when(controllerExceptionHandlerMock.methodArgumentNotValidException(methodArgumentNotValidExceptionMock))
 				.thenReturn(new ResponseEntity<>(new Error("Parameter does not match"), BAD_REQUEST));

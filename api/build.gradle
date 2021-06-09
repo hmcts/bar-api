@@ -92,6 +92,7 @@ dependencies {
     compile ('uk.gov.hmcts.reform.auth:auth-checker-lib') {
         exclude(module: 'java-logging-spring')
     }
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'com.fasterxml.jackson.core:jackson-annotations'
     compile group: 'com.google.guava', name: 'guava', version: '30.1-jre'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
