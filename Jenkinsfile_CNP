@@ -13,6 +13,9 @@ def product = "bar"
 
 def app = "api"
 
+// Configure branches to sync with master branch
+def branchesToSync = ['demo', 'ithc', 'perftest']
+
 withPipeline(type, product, app) {
     enableSlackNotifications('#bar-tech')
     enableAksStagingDeployment()
@@ -40,4 +43,7 @@ withPipeline(type, product, app) {
     }
 
     disableLegacyDeployment()
+
+    //Sync demo,ithc and perftest with master branch
+    syncBranchesWithMaster(branchesToSync)
 }
