@@ -7,7 +7,6 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +43,6 @@ public class SendToPayhubTest extends FunctionalTest {
         Assert.assertEquals(1, resp.get("success"));
     }
 
-    @Test
     public void testSendFullRemissionToPayhub() throws JSONException {
         String token = authenticatorClient.authenticate(users.get(Roles.DELIVERY_MANAGER_Y431), password);
         // create full-remission
