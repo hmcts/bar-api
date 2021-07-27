@@ -16,6 +16,12 @@ def app = "api"
 // Configure branches to sync with master branch
 def branchesToSync = ['demo', 'ithc', 'perftest']
 
+def vaultOverrides = [
+    'preview': 'aat',
+    'hmctsdemo': 'aat',
+
+]
+
 def secrets = [
     'bar-${env}': [
         secret('AppInsightsInstrumentationKey', 'APPINSIGHTS_INSTRUMENTATIONKEY')
@@ -59,6 +65,7 @@ withPipeline(type, product, app) {
     }
 
     disableLegacyDeployment()
+    overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
     //Sync demo,ithc and perftest with master branch
     syncBranchesWithMaster(branchesToSync)
