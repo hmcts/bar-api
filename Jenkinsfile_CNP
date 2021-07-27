@@ -19,11 +19,10 @@ def branchesToSync = ['demo', 'ithc', 'perftest']
 def vaultOverrides = [
     'preview': 'aat',
     'hmctsdemo': 'aat',
-
 ]
 
 def secrets = [
-    'bar-${env}': [
+    'ccpay-${env}': [
         secret('AppInsightsInstrumentationKey', 'APPINSIGHTS_INSTRUMENTATIONKEY')
     ]
 ]
@@ -39,9 +38,9 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 
 
 withPipeline(type, product, app) {
-    enableSlackNotifications('#bar-tech')
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
+    enableSlackNotifications('#bar-tech')
     enableAksStagingDeployment()
 
 
