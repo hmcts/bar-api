@@ -44,18 +44,18 @@ withPipeline(type, product, app) {
 
     disableLegacyDeployment()
 
-    onMaster() {
-        enablePactAs([
-            AppPipelineDsl.PactRoles.PROVIDER,
-            AppPipelineDsl.PactRoles.CONSUMER
-        ])
-    }
-    onPR() {
-        enablePactAs([
-            AppPipelineDsl.PactRoles.PROVIDER,
-            AppPipelineDsl.PactRoles.CONSUMER
-        ])
-    }
+//    onMaster() {
+//        enablePactAs([
+//            AppPipelineDsl.PactRoles.PROVIDER,
+//            AppPipelineDsl.PactRoles.CONSUMER
+//        ])
+//    }
+//    onPR() {
+//        enablePactAs([
+//            AppPipelineDsl.PactRoles.PROVIDER,
+//            AppPipelineDsl.PactRoles.CONSUMER
+//        ])
+//    }
 
     //Sync demo,ithc and perftest with master branch
     syncBranchesWithMaster(branchesToSync)
