@@ -196,9 +196,9 @@ def pactBrokerUrl = System.getenv("PACT_BROKER_URL")
 
 pact {
     serviceProviders {
-        'feeRegister_lookUp' {
+        'barApp_lookUp' {
             protocol = 'http'
-            host = 'fees-register-api-aat.service.core-compute-aat.internal'
+            host = 'bar-app-api-aat.service.core-compute-aat.internal'
             port = 80
             if (pactBrokerUrl) hasPactsFromPactBroker(pactBrokerUrl)
             publish {
