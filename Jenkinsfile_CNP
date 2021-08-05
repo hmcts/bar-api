@@ -28,8 +28,8 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withPipeline(type, product, app) {
-    overrideVaultEnvironments(vaultOverrides)
-    loadVaultSecrets(secrets)
+//    overrideVaultEnvironments(vaultOverrides)
+//    loadVaultSecrets(secrets)
     enableSlackNotifications('#bar-tech')
     enableAksStagingDeployment()
 
