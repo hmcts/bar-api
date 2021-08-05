@@ -18,6 +18,15 @@ def branchesToSync = ['demo', 'ithc', 'perftest']
 
 env.PACT_BROKER_URL = 'https://pact-broker.platform.hmcts.net'
 
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+    [ $class: 'AzureKeyVaultSecret',
+      secretType: 'Secret',
+      name: secretName,
+      version: '',
+      envVariable: envVar
+    ]
+}
+
 withPipeline(type, product, app) {
     enableSlackNotifications('#bar-tech')
     enableAksStagingDeployment()
@@ -52,12 +61,12 @@ withPipeline(type, product, app) {
 //            AppPipelineDsl.PactRoles.CONSUMER
 //        ])
 //    }
-//    onPR() {
-//        enablePactAs([
-//            AppPipelineDsl.PactRoles.PROVIDER,
-//            AppPipelineDsl.PactRoles.CONSUMER
-//        ])
-//    }
+    onPR() {
+        enablePactAs([
+            AppPipelineDsl.PactRoles.PROVIDER,
+            AppPipelineDsl.PactRoles.CONSUMER
+        ])
+    }
 
     //Sync demo,ithc and perftest with master branch
     syncBranchesWithMaster(branchesToSync)
