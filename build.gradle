@@ -202,50 +202,50 @@ sonarqube {
 
 project.tasks['sonarqube'].dependsOn codeCoverageReport
 
-project.ext {
-    pactVersion = getCheckedOutGitCommitHash()
-}
-def getCheckedOutGitCommitHash() {
-    'git rev-parse --verify --short HEAD'.execute().text.trim()
-}
-
-def pactBrokerUrl = System.getenv("PACT_BROKER_URL")
-
-pact {
-    serviceProviders {
-        'bar_lookUp' {
-            protocol = 'http'
-            host = 'fees-register-api-aat.service.core-compute-aat.internal'
-            port = 80
-            if (pactBrokerUrl) hasPactsFromPactBroker(pactBrokerUrl)
-            publish {
-                if (pactBrokerUrl) pactBrokerUrl = pactBrokerUrl
-                pactBrokerUrl = System.getProperty("PACT_BROKER_URL") ?: 'http://localhost:80'
-                tags = ['master']
-            }
-            project.version = pactVersion.toString();
-        }
-    }
-    reports {
-        defaultReports()
-        markdown
-
-    }
-}
-
-task runAndPublishConsumerPactTests(type: Test){
-    logger.lifecycle("Running Pact consumer verification Tests")
-    systemProperty 'pact.verifier.publishResults',System.getProperty("pact.verifier.publishResults")
-}
-
-runAndPublishConsumerPactTests.finalizedBy pactVerify
-
-task runProviderPactVerification(type: Test){
-    logger.lifecycle("Running Pact provider verification Tests")
-    systemProperty 'pact.verifier.publishResults',System.getProperty("pact.verifier.publishResults")
-}
-
-runProviderPactVerification.finalizedBy pactVerify
+//project.ext {
+//    pactVersion = getCheckedOutGitCommitHash()
+//}
+//def getCheckedOutGitCommitHash() {
+//    'git rev-parse --verify --short HEAD'.execute().text.trim()
+//}
+//
+//def pactBrokerUrl = System.getenv("PACT_BROKER_URL")
+//
+//pact {
+//    serviceProviders {
+//        'bar_lookUp' {
+//            protocol = 'http'
+//            host = 'fees-register-api-aat.service.core-compute-aat.internal'
+//            port = 80
+//            if (pactBrokerUrl) hasPactsFromPactBroker(pactBrokerUrl)
+//            publish {
+//                if (pactBrokerUrl) pactBrokerUrl = pactBrokerUrl
+//                pactBrokerUrl = System.getProperty("PACT_BROKER_URL") ?: 'http://localhost:80'
+//                tags = ['master']
+//            }
+//            project.version = pactVersion.toString();
+//        }
+//    }
+//    reports {
+//        defaultReports()
+//        markdown
+//
+//    }
+//}
+//
+//task runAndPublishConsumerPactTests(type: Test){
+//    logger.lifecycle("Running Pact consumer verification Tests")
+//    systemProperty 'pact.verifier.publishResults',System.getProperty("pact.verifier.publishResults")
+//}
+//
+//runAndPublishConsumerPactTests.finalizedBy pactVerify
+//
+//task runProviderPactVerification(type: Test){
+//    logger.lifecycle("Running Pact provider verification Tests")
+//    systemProperty 'pact.verifier.publishResults',System.getProperty("pact.verifier.publishResults")
+//}
+//
+//runProviderPactVerification.finalizedBy pactVerify
 
 task smoke(type: GradleBuild, description: 'Runs smoke tests', group: 'Verification') {
     buildFile = './api/build.gradle'
