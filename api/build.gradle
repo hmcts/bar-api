@@ -165,6 +165,7 @@ task functionalTest(type: Test, description: 'Runs the smoke functional', group:
 functionalTest.finalizedBy(aggregate)
 
 pitest {
+    targetClasses = ['uk.gov.hmcts.bar.api.*']
     excludedClasses = ['uk.gov.hmcts.bar.api.configuration.*']
     threads = 10
     outputFormats = ['XML', 'HTML']
