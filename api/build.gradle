@@ -60,8 +60,8 @@ def appInsightsVersion = '2.4.1'
 dependencies {
 
     compile group: 'uk.gov.hmcts.reform', name: 'logging', version: javaLoggingVersion
-    compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: javaLoggingVersion
-    compile group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: javaLoggingVersion
+  	compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: javaLoggingVersion
+  	compile group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: javaLoggingVersion
     compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
 
     // redefining with version 2.4.1 as applicationinsights-agent-2.5.0 has an open issue
