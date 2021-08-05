@@ -149,36 +149,6 @@ artifacts {
     archives javadocJar
 }
 
-publishing {
-    publications {
-        Main(MavenPublication) {
-            from components.java
-            artifact sourcesJar
-            artifact javadocJar
-            groupId project.group
-            artifactId project.name
-            version project.version
-        }
-    }
-}
-
-bintray {
-    user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_KEY')
-    publications = ['Main']
-    publish = true
-    pkg {
-        repo = 'hmcts-maven'
-        name = project.name
-        userOrg = 'hmcts'
-        licenses = ['MIT']
-        vcsUrl = 'https://github.com/hmcts/ccfr-bar-app'
-        version {
-            name = project.version
-        }
-    }
-}
-
 dependencies {
     compile project(':bar-api')
 }
@@ -243,7 +213,7 @@ def pactBrokerUrl = System.getenv("PACT_BROKER_URL")
 
 pact {
     serviceProviders {
-        'feeRegister_lookUp' {
+        'bar_lookUp' {
             protocol = 'http'
             host = 'fees-register-api-aat.service.core-compute-aat.internal'
             port = 80
