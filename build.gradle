@@ -6,6 +6,8 @@ plugins {
     id "com.gorylenko.gradle-git-properties" version "1.4.21"
     id "org.sonarqube" version "2.6.2"
     id 'jacoco'
+    id 'maven-publish'
+    id 'com.jfrog.bintray' version '1.8.4'
     id "au.com.dius.pact" version "4.1.7"
 }
 def springBootVersion = '2.3.6.RELEASE'
@@ -147,6 +149,36 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts {
     archives sourcesJar
     archives javadocJar
+}
+
+publishing {
+    publications {
+        Main(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId project.group
+            artifactId project.name
+            version project.version
+        }
+    }
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    publications = ['Main']
+    publish = true
+    pkg {
+        repo = 'hmcts-maven'
+        name = project.name
+        userOrg = 'hmcts'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/hmcts/ccfr-fees-register-app'
+        version {
+            name = project.version
+        }
+    }
 }
 
 dependencies {
