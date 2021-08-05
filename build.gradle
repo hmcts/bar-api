@@ -174,7 +174,7 @@ bintray {
         name = project.name
         userOrg = 'hmcts'
         licenses = ['MIT']
-        vcsUrl = 'https://github.com/hmcts/ccfr-fees-register-app'
+        vcsUrl = 'https://github.com/hmcts/bar-app'
         version {
             name = project.version
         }
