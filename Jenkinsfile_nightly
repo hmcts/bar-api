@@ -40,6 +40,11 @@ withNightlyPipeline("java", product, component) {
     env.TEST_URL = params.URL_TO_TEST
     enableSecurityScan()
     enableMutationTest()
+    enableFortifyScan()
     enableFullFunctionalTest()
     enableSlackNotifications('#cc-payments-tech')
+}
+
+after('fortify-scan') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
 }
