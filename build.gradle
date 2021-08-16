@@ -60,6 +60,8 @@ allprojects {
             dependency 'io.springfox:springfox-swagger-ui:2.9.2'
             dependency 'commons-beanutils:commons-beanutils:1.9.3'
             dependency 'org.hibernate:hibernate-validator:6.0.9.Final'
+
+
         }
     }
 }
@@ -122,6 +124,7 @@ subprojects {
         testCompile 'org.assertj:assertj-core:3.8.0'
         testCompile 'com.tngtech.java:junit-dataprovider:1.13.1'
 
+
         compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
         annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
         testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
@@ -129,11 +132,19 @@ subprojects {
 
         compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
         implementation 'org.springframework.boot:spring-boot-starter-validation'
+
     }
 }
 
 dependencies {
     compile project(':bar-api')
+    testCompile 'com.github.hmcts:fortify-client:1.2.1:all'
+}
+
+task fortifyScan(type: JavaExec)  {
+    main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+    classpath += sourceSets.test.runtimeClasspath
+    jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
 
 jar {
