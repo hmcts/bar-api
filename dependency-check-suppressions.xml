@@ -7,5 +7,13 @@
         </notes>
         <cve>CVE-2018-1258</cve>
     </suppress>
+
+    <suppress>
+        <notes>The CVE-2021-28170 occurs from jakarta.el:3.0.3 libraries, despite the latest versions are used.
+            Failing test cases.
+        </notes>
+        <cve>CVE-2021-28170</cve>
+    </suppress>
+
     <!-- False Positive CVE Suppression ends here-->
 </suppressions>
