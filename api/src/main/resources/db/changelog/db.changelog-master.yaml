@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: db/changelog/db.changelog-payment-instruction.yaml
+  - include:
+      file: db/changelog/db.changelog-leeds-rollout.yaml
