@@ -129,13 +129,18 @@ subprojects {
 
         compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
         implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-        testCompile 'com.github.hmcts:fortify-client:1.2.1:all'
     }
 }
 
 dependencies {
     compile project(':bar-api')
+    testCompile 'com.github.hmcts:fortify-client:1.2.1:all'
+}
+
+task fortifyScan(type: JavaExec)  {
+    main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+    classpath += sourceSets.test.runtimeClasspath
+    jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
 
 jar {
@@ -195,12 +200,6 @@ task smoke(type: GradleBuild, description: 'Runs smoke tests', group: 'Verificat
 task functional(type: GradleBuild, description: 'Runs Functional tests', group: 'Verification') {
     buildFile = './api/build.gradle'
     tasks = ['functionalTest']
-}
-
-task fortifyScan(type: JavaExec)  {
-    main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
-    classpath += sourceSets.test.runtimeClasspath
-    jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
 
 task printVersion {
