@@ -91,9 +91,9 @@ tasks.register("codeCoverageReport", JacocoReport) {
     }
 }
 
-checkstyle {
-    toolVersion "7.8.1"
-}
+//checkstyle {
+//    toolVersion "7.8.1"
+//}
 
 codeCoverageReport.dependsOn {
     subprojects*.test
@@ -168,8 +168,8 @@ dependencyCheck {
     suppressionFile = 'dependency-check-suppressions.xml'
 }
 
-checkstyleMain.enabled(false)
-checkstyleTest.enabled(false)
+//checkstyleMain.enabled(false)
+//checkstyleTest.enabled(false)
 
 
 def sonarExclusions = [
