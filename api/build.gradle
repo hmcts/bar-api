@@ -28,7 +28,8 @@ sourceSets {
         }
     }
     checkstyle {
-        toolVersion "7.8.1"
+        toolVersion "8.2"
+        sourceSets = [sourceSets.main, sourceSets.test]
     }
 }
 
@@ -145,6 +146,9 @@ dependencies {
 
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.3.0.RELEASE'
 }
+
+checkstyleMain.enabled(true)
+checkstyleTest.enabled(true)
 
 test {
     exclude '**/ComponentTestBase*'
