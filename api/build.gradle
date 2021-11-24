@@ -7,6 +7,7 @@ buildscript {
 
 plugins{
     id "info.solidsoft.pitest" version '1.5.1'
+    id "checkstyle"
 }
 apply plugin: 'net.serenity-bdd.aggregator'
 
@@ -25,6 +26,9 @@ sourceSets {
             runtimeClasspath += main.output
             srcDir file('src/functionalTest/java')
         }
+    }
+    checkstyle {
+        toolVersion "7.8.1"
     }
 }
 
