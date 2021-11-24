@@ -38,7 +38,7 @@ public class CaseFeeDetailServiceTest {
 
 
     @Before
-    public void setUp(){
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         caseFeeDetailService = new CaseFeeDetailService(paymentInstructionRepository,caseFeeDetailRepository, auditRepository);
         when(barUserMock.getSelectedSiteId()).thenReturn("Y431");

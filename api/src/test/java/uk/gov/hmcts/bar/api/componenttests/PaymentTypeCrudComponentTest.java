@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class PaymentTypeCrudComponentTest extends ComponentTestBase{
+public class PaymentTypeCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void retrieveAllPaymentTypes() throws Exception {
@@ -23,7 +23,8 @@ public class PaymentTypeCrudComponentTest extends ComponentTestBase{
                         add(new PaymentType("POSTAL_ORDER","Postal Order"));
                         add(new PaymentType("CASH","Cash"));
                         add(new PaymentType("ALLPAY","AllPay"));
-                    }});
+                    }
+                    });
             }));
     }
 

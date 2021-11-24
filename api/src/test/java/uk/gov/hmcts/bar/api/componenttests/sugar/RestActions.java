@@ -51,7 +51,7 @@ public class RestActions {
             throw new RuntimeException(e);
         }
     }
-  
+
     public ResultActions get(String urlTemplate) {
         return get(urlTemplate, DEFAULT_SITE_ID);
     }
@@ -73,7 +73,7 @@ public class RestActions {
             throw new RuntimeException(e);
         }
     }
-  
+
     public ResultActions put(String urlTemplate, Object dto, String siteId) {
         setSecurityContext();
         addSiteIdHeader(siteId);
@@ -89,12 +89,12 @@ public class RestActions {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    } 
-  
+    }
+
     public ResultActions put(String urlTemplate, Object dto) {
         return put(urlTemplate, dto, DEFAULT_SITE_ID);
     }
-  
+
     public ResultActions post(String urlTemplate, Object dto, String siteId) {
         setSecurityContext();
         addSiteIdHeader(siteId);
@@ -111,7 +111,7 @@ public class RestActions {
             throw new RuntimeException(e);
         }
     }
-  
+
     public ResultActions post(String urlTemplate, Object dto) {
         return post(urlTemplate, dto, DEFAULT_SITE_ID);
     }
@@ -130,12 +130,12 @@ public class RestActions {
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .headers(httpHeaders)
-            	    .content(objectMapper.writeValueAsString(uriVars)));
+                    .content(objectMapper.writeValueAsString(uriVars)));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-  
+
     public ResultActions patch(String urlTemplate, Object dto) {
         return patch(urlTemplate, dto, DEFAULT_SITE_ID);
     }

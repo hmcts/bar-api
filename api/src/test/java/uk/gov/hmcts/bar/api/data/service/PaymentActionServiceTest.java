@@ -19,30 +19,30 @@ import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionActionRepository;
 
 public class PaymentActionServiceTest {
 
-	private PaymentActionService paymentActionService;
+    private PaymentActionService paymentActionService;
 
-	@Mock
-	private PaymentInstructionActionRepository paymentInstructionActionRepository;
+    @Mock
+    private PaymentInstructionActionRepository paymentInstructionActionRepository;
 
-	@Mock
-	private FF4j ff4j;
-	
-	private PaymentInstructionAction pia = new PaymentInstructionAction("Process");
-	private List<PaymentInstructionAction> piaList = new ArrayList<>(Arrays.asList(pia));
+    @Mock
+    private FF4j ff4j;
 
-	@Before
-	public void setupMock() {
-		MockitoAnnotations.initMocks(this);
-		paymentActionService = new PaymentActionService(paymentInstructionActionRepository, ff4j);
+    private PaymentInstructionAction pia = new PaymentInstructionAction("Process");
+    private List<PaymentInstructionAction> piaList = new ArrayList<>(Arrays.asList(pia));
 
-	}
-	
-	@Test
-	public void whenGetAllPaymentInstructionMethodCalled_thenItShouldReturnActionList() {
-		when(paymentInstructionActionRepository.findAll()).thenReturn(piaList);
-		when(ff4j.check(Mockito.anyString())).thenReturn(true);
-		List<PaymentInstructionAction> resultList = paymentActionService.getAllPaymentInstructionAction();
-		Assertions.assertThat(resultList).isEqualTo (piaList);
-	}
+    @Before
+    public void setupMock() {
+        MockitoAnnotations.initMocks(this);
+        paymentActionService = new PaymentActionService(paymentInstructionActionRepository, ff4j);
+
+    }
+
+    @Test
+    public void whenGetAllPaymentInstructionMethodCalled_thenItShouldReturnActionList() {
+        when(paymentInstructionActionRepository.findAll()).thenReturn(piaList);
+        when(ff4j.check(Mockito.anyString())).thenReturn(true);
+        List<PaymentInstructionAction> resultList = paymentActionService.getAllPaymentInstructionAction();
+        Assertions.assertThat(resultList).isEqualTo(piaList);
+    }
 
 }

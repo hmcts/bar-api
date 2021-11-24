@@ -38,7 +38,8 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 public class ComponentTestBase {
 
     @ClassRule
-    public static WireMockRule wireMockRule = new WireMockRule( options().port(23444).notifier(new ConsoleNotifier(true)));
+    public static WireMockRule wireMockRule = new WireMockRule(options().port(23444).notifier(
+        new ConsoleNotifier(true)));
 
     @MockBean
     private AuthTokenGenerator serviceAuthTokenGenerator;
@@ -88,16 +89,26 @@ public class ComponentTestBase {
     @Before
     public void setUp() throws Exception {
         DefaultMockMvcBuilder mvc = webAppContextSetup(webApplicationContext).apply(springSecurity());
-        this.restActions = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, userDetails);
-        this.restActionsForFeeClerk = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, feeClerkUserDetails);
-        this.restActionsForSrFeeClerk = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, srFeeClerkUserDetails);
-        this.restActionsForDM = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, dmUserDetails);
-        this.restActionsForAdmin = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, adminUserDetails);
-        this.restActionsPostClerkSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, postClerkUserDetailsSite2);
-        this.restActionsForFeeClerkSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, feeClerkUserDetailsSite2);
-        this.restActionsForSrFeeClerkSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, srFeeClerkUserDetailsSite2);
-        this.restActionsForDMSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, dmUserUserDetailsSite2);
-        this.restActionsForAdminSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(), objectMapper, adminUserDetailsSite2);
+        this.restActions = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(),
+            objectMapper, userDetails);
+        this.restActionsForFeeClerk = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(),
+            objectMapper, feeClerkUserDetails);
+        this.restActionsForSrFeeClerk = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(),
+            objectMapper, srFeeClerkUserDetails);
+        this.restActionsForDM = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(),
+            objectMapper, dmUserDetails);
+        this.restActionsForAdmin = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(),
+            objectMapper, adminUserDetails);
+        this.restActionsPostClerkSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(),
+            objectMapper, postClerkUserDetailsSite2);
+        this.restActionsForFeeClerkSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(),
+            objectMapper, feeClerkUserDetailsSite2);
+        this.restActionsForSrFeeClerkSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(),
+            objectMapper, srFeeClerkUserDetailsSite2);
+        this.restActionsForDMSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(),
+            objectMapper, dmUserUserDetailsSite2);
+        this.restActionsForAdminSite2 = new RestActions(mvc.addFilter(new SiteValidationFilter(barUserService)).build(),
+            objectMapper, adminUserDetailsSite2);
 
         DbTestUtil.emptyTable(webApplicationContext, "payment_instruction_status");
         DbTestUtil.emptyTable(webApplicationContext, "case_fee_detail");
@@ -134,7 +145,7 @@ public class ComponentTestBase {
         return webApplicationContext;
     }
 
-    public ObjectMapper getObjectMapper(){
+    public ObjectMapper getObjectMapper() {
         return objectMapper;
     }
 

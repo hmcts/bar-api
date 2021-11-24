@@ -72,7 +72,7 @@ public class PaymentInstructionControllerTest {
         new UserDetails("1234", "abc123", Collections.singletonList("bar-post-clerk"));
 
     @ClassRule
-    public static WireMockRule wireMockRule = new WireMockRule( options().port(23444).notifier(new ConsoleNotifier(true)));
+    public static WireMockRule wireMockRule = new WireMockRule(options().port(23444).notifier(new ConsoleNotifier(true)));
 
     List<PaymentInstruction> paymentInstructionList = Arrays.asList(mock(PaymentInstruction.class));
     PaymentInstruction paymentInstruction = new AllPayPaymentInstruction();
@@ -106,7 +106,8 @@ public class PaymentInstructionControllerTest {
     @Test
     public void testGettingPaymentInstructionStats() throws Exception {
 
-        when(paymentInstructionService.getAllPaymentInstructionsByTTB(any(LocalDate.class),any(LocalDate.class),anyString())).thenReturn(paymentInstructionList);
+        when(paymentInstructionService.getAllPaymentInstructionsByTTB(any(LocalDate.class),any(LocalDate.class),anyString()))
+            .thenReturn(paymentInstructionList);
         restActions.getCsv("/payment-instructions?status=RDM","AA09")
             .andExpect(status().isOk())
             .andReturn();
@@ -114,7 +115,8 @@ public class PaymentInstructionControllerTest {
 
     @Test
     public void testGettingPaymentInstructionStats_WithoutCsvHeaders() throws Exception {
-        when(paymentInstructionService.getAllPaymentInstructionsByTTB(any(LocalDate.class),any(LocalDate.class),anyString())).thenReturn(paymentInstructionList);
+        when(paymentInstructionService.getAllPaymentInstructionsByTTB(any(LocalDate.class),any(LocalDate.class),anyString()))
+            .thenReturn(paymentInstructionList);
         restActions.get("/payment-instructions?status=RDM","AA09")
             .andExpect(status().isOk())
             .andReturn();
@@ -125,7 +127,8 @@ public class PaymentInstructionControllerTest {
     public void testGetPaymentInstructionsByIdamId() throws Exception {
         paymentInstruction.setStatus("P");
         when(paymentInstructionService.getAllPaymentInstructions(any(BarUser.class),any())).thenReturn(Arrays.asList(paymentInstruction));
-        MvcResult mvcResult = restActions.get("/users/12345/payment-instructions?status=RDM&startDate=17012020&endDate=18012020","AA09")
+        MvcResult mvcResult = restActions.get("/users/12345/payment-instructions?" +
+            "status=RDM&startDate=17012020&endDate=18012020","AA09")
                                 .andExpect(status().isOk())
                                 .andReturn();
         System.out.println(mvcResult.getResponse().getContentAsString());
@@ -154,7 +157,8 @@ public class PaymentInstructionControllerTest {
     public void  testSaveCardInstruction() throws Exception {
         paymentInstruction.setStatus("P");
         Card card = Card.cardWith().payerName("name").amount(10).currency("GBP").status("status").build();
-        when(paymentInstructionService.createPaymentInstruction(any(BarUser.class),any(CardPaymentInstruction.class))).thenReturn(paymentInstruction);
+        when(paymentInstructionService.createPaymentInstruction(any(BarUser.class),any(CardPaymentInstruction.class)))
+            .thenReturn(paymentInstruction);
         MvcResult mvcResult = restActions.post("/cards",card)
             .andExpect(status().isCreated())
             .andReturn();
@@ -163,7 +167,8 @@ public class PaymentInstructionControllerTest {
     @Test
     public void testUpdateCardInstruction() throws Exception {
         Card card = Card.cardWith().payerName("name").amount(10).currency("GBP").status("status").build();
-        when(paymentInstructionService.updatePaymentInstruction(any(BarUser.class),anyInt(),any(PaymentInstructionRequest.class))).thenReturn(paymentInstruction);
+        when(paymentInstructionService.updatePaymentInstruction(any(BarUser.class),anyInt(),any(PaymentInstructionRequest.class)))
+            .thenReturn(paymentInstruction);
         MvcResult mvcResult = restActions.put("/cards/123412",card)
             .andExpect(status().isOk())
             .andReturn();
@@ -172,7 +177,8 @@ public class PaymentInstructionControllerTest {
     @Test
     public void testSaveCheckInstruction() throws Exception {
         Cheque cheque = Cheque.chequePaymentInstructionRequestWith().payerName("name").amount(10).currency("GBP").status("status").build();
-        when(paymentInstructionService.createPaymentInstruction(any(BarUser.class),any(ChequePaymentInstruction.class))).thenReturn(paymentInstruction);
+        when(paymentInstructionService.createPaymentInstruction(any(BarUser.class),any(ChequePaymentInstruction.class)))
+            .thenReturn(paymentInstruction);
         MvcResult mvcResult = restActions.post("/cheques",cheque)
             .andExpect(status().isCreated())
             .andReturn();
@@ -181,7 +187,8 @@ public class PaymentInstructionControllerTest {
     @Test
     public void testUpdateChequeInstruction() throws Exception {
         Cheque cheque = Cheque.chequePaymentInstructionRequestWith().payerName("name").amount(10).currency("GBP").status("status").build();
-        when(paymentInstructionService.updatePaymentInstruction(any(BarUser.class), anyInt(),any(Cheque.class))).thenReturn(paymentInstruction);
+        when(paymentInstructionService.updatePaymentInstruction(any(BarUser.class), anyInt(),any(Cheque.class)))
+            .thenReturn(paymentInstruction);
         MvcResult mvcResult = restActions.put("/cheques/1234",cheque)
             .andExpect(status().isOk())
             .andReturn();
@@ -191,7 +198,8 @@ public class PaymentInstructionControllerTest {
     public void testRejectPaymentInstruction() throws Exception {
         BarUserService barUserService = mock(BarUserService.class);
         when(barUserService.getCurrentUserId()).thenReturn("user123");
-        when(paymentInstructionService.updatePaymentInstruction(any(BarUser.class),anyInt(),any(PaymentInstructionRequest.class))).thenReturn(paymentInstruction);
+        when(paymentInstructionService.updatePaymentInstruction(any(BarUser.class),anyInt(),any(PaymentInstructionRequest.class)))
+            .thenReturn(paymentInstruction);
         MvcResult mvcResult = restActions.patch("/payment-instructions/123421/reject",null)
             .andExpect(status().isOk())
             .andReturn();
@@ -201,7 +209,8 @@ public class PaymentInstructionControllerTest {
     @Test
     public void testSaveCashInstruction() throws Exception {
         Cash cash = Cash.cashPaymentInstructionRequestWith().payerName("name").amount(10).currency("GBP").status("status").build();
-        when(paymentInstructionService.createPaymentInstruction(any(BarUser.class),any(CashPaymentInstruction.class))).thenReturn(paymentInstruction);
+        when(paymentInstructionService.createPaymentInstruction(any(BarUser.class),any(CashPaymentInstruction.class)))
+            .thenReturn(paymentInstruction);
         MvcResult mvcResult = restActions.post("/cash",cash)
             .andExpect(status().isCreated())
             .andReturn();
@@ -210,7 +219,8 @@ public class PaymentInstructionControllerTest {
     @Test
     public void testSaveRemission() throws Exception {
         FullRemission fullRemission = FullRemission.fullRemissionWith().payerName("name").remissionReference("reference").build();
-        when(paymentInstructionService.createPaymentInstruction(any(BarUser.class), any(PaymentInstruction.class))).thenReturn(paymentInstruction);
+        when(paymentInstructionService.createPaymentInstruction(any(BarUser.class), any(PaymentInstruction.class)))
+            .thenReturn(paymentInstruction);
         MvcResult mvcResult = restActions.post("/remissions",fullRemission)
             .andExpect(status().isCreated())
             .andReturn();
@@ -238,7 +248,8 @@ public class PaymentInstructionControllerTest {
     public void tesSsavePostalOrderInstruction() throws Exception {
         PostalOrder postalOrder =  PostalOrder.postalOrderPaymentInstructionRequestWith().postalOrderNumber("1234")
                                         .payerName("name").amount(10).currency("GBP").status("status").build();
-        when(paymentInstructionService.createPaymentInstruction(any(BarUser.class), any(PostalOrderPaymentInstruction.class))).thenReturn(paymentInstruction);
+        when(paymentInstructionService.createPaymentInstruction(any(BarUser.class), any(PostalOrderPaymentInstruction.class)))
+            .thenReturn(paymentInstruction);
         MvcResult mvcResult = restActions.post("/postal-orders",postalOrder)
             .andExpect(status().isCreated())
             .andReturn();
@@ -248,7 +259,8 @@ public class PaymentInstructionControllerTest {
     public void testUpdatePostalOrderInstruction() throws Exception {
         PostalOrder postalOrder =  PostalOrder.postalOrderPaymentInstructionRequestWith().postalOrderNumber("1234")
             .payerName("name").amount(10).currency("GBP").status("status").build();
-        when(paymentInstructionService.updatePaymentInstruction(any(BarUser.class), anyInt(),any(PostalOrder.class))).thenReturn(paymentInstruction);
+        when(paymentInstructionService.updatePaymentInstruction(any(BarUser.class), anyInt(),any(PostalOrder.class)))
+            .thenReturn(paymentInstruction);
         MvcResult mvcResult = restActions.put("/postal-orders/12334",postalOrder)
             .andExpect(status().isOk())
             .andReturn();
@@ -258,7 +270,8 @@ public class PaymentInstructionControllerTest {
     public void testSaveAllPayInstruction() throws Exception {
         AllPay allPay = AllPay.allPayPaymentInstructionRequestWith()
                         .payerName("name").amount(10).currency("GBP").status("status").allPayTransactionId("213213").build();
-        when(paymentInstructionService.createPaymentInstruction(any(BarUser.class), any(AllPayPaymentInstruction.class))).thenReturn(paymentInstruction);
+        when(paymentInstructionService.createPaymentInstruction(any(BarUser.class), any(AllPayPaymentInstruction.class)))
+            .thenReturn(paymentInstruction);
         MvcResult mvcResult = restActions.post("/allpay",allPay)
             .andExpect(status().isCreated())
             .andReturn();
@@ -268,15 +281,17 @@ public class PaymentInstructionControllerTest {
     public void testUpdateAllPayInstruction() throws Exception {
         AllPay allPay = AllPay.allPayPaymentInstructionRequestWith()
             .payerName("name").amount(10).currency("GBP").status("status").allPayTransactionId("213213").build();
-        when(paymentInstructionService.updatePaymentInstruction(any(BarUser.class), anyInt(), any(AllPay.class))).thenReturn(paymentInstruction);
+        when(paymentInstructionService.updatePaymentInstruction(any(BarUser.class), anyInt(), any(AllPay.class)))
+            .thenReturn(paymentInstruction);
         MvcResult mvcResult = restActions.put("/allpay/12321",allPay)
             .andExpect(status().isOk())
             .andReturn();
     }
 
     @Test
-    public void  testSubmitPaymentInstructionsByPostClerk() throws Exception{
-        PaymentInstructionUpdateRequest paymentInstructionUpdateRequest = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
+    public void  testSubmitPaymentInstructionsByPostClerk() throws Exception {
+        PaymentInstructionUpdateRequest paymentInstructionUpdateRequest = PaymentInstructionUpdateRequest
+            .paymentInstructionUpdateRequestWith()
                                                                             .status("status")
                                                                             .build();
         when(paymentInstructionService.submitPaymentInstruction(any(BarUser.class), anyInt(), any())).thenReturn(paymentInstruction);
@@ -286,7 +301,7 @@ public class PaymentInstructionControllerTest {
     }
 
     @Test
-    public void testSaveCaseFeeDetail() throws Exception{
+    public void testSaveCaseFeeDetail() throws Exception {
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
                                                         .paymentInstructionId(123).feeCode("FEE123").build();
         CaseFeeDetail caseFeeDetail = CaseFeeDetail.caseFeeDetailWith().feeCode("FEE123").build();
@@ -297,11 +312,12 @@ public class PaymentInstructionControllerTest {
     }
 
     @Test
-    public void testUpdateCaseFeeDetail() throws Exception{
+    public void testUpdateCaseFeeDetail() throws Exception {
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
             .paymentInstructionId(123).feeCode("FEE123").build();
         CaseFeeDetail caseFeeDetail = CaseFeeDetail.caseFeeDetailWith().feeCode("FEE123").build();
-        when(caseFeeDetailService.updateCaseFeeDetail(any(BarUser.class),anyInt(),any(CaseFeeDetailRequest.class))).thenReturn(caseFeeDetail);
+        when(caseFeeDetailService.updateCaseFeeDetail(any(BarUser.class),anyInt(),any(CaseFeeDetailRequest.class)))
+            .thenReturn(caseFeeDetail);
         MvcResult mvcResult = restActions.put("/fees/1234123",caseFeeDetailRequest)
             .andExpect(status().isOk())
             .andReturn();
@@ -345,7 +361,7 @@ public class PaymentInstructionControllerTest {
 
     @Test
     public void testGetPaymentInstructionCount_WithNullStartAndEnddates() throws Exception {
-        when( paymentInstructionService.getNonResetPaymentInstructionsCount(anyString(),anyString())).thenReturn((long) 10);
+        when(paymentInstructionService.getNonResetPaymentInstructionsCount(anyString(),anyString())).thenReturn((long) 10);
         MvcResult mvcResult = restActions.get("/payment-instructions/count?status=P")
             .andExpect(status().isOk())
             .andReturn();
@@ -353,7 +369,8 @@ public class PaymentInstructionControllerTest {
 
     @Test
     public void testGetPaymentInstructionCount_WithStartAndEnddates() throws Exception {
-        when( paymentInstructionService.getPaymentInstructionsCount(any(PaymentInstructionStatusCriteriaDto.class))).thenReturn((long) 10);
+        when(paymentInstructionService.getPaymentInstructionsCount(any(PaymentInstructionStatusCriteriaDto.class)))
+            .thenReturn((long) 10);
         MvcResult mvcResult = restActions.get("/payment-instructions/count?status=P&startDate=10102020&endDate=11102020")
             .andExpect(status().isOk())
             .andReturn();

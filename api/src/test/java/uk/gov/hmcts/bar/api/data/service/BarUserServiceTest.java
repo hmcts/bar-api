@@ -123,7 +123,7 @@ public class BarUserServiceTest {
     }
 
     @Test
-    public void whenSecurityContextIsValid_shouldGetUserId(){
+    public void whenSecurityContextIsValid_shouldGetUserId() {
         SecurityContextHolder.setContext(securityContext);
 
         assertEquals("username", barUserService.getCurrentUserId());
@@ -212,7 +212,7 @@ public class BarUserServiceTest {
         private String message;
         private int responseCode;
 
-        SiteHttpResponse(int responseCode, String message){
+        SiteHttpResponse(int responseCode, String message) {
             this.responseCode = responseCode;
             this.message = message;
         }

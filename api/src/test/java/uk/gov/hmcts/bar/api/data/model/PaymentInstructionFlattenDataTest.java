@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 public class PaymentInstructionFlattenDataTest {
 
     @Test
-    public void testFlatteningCardPayment(){
+    public void testFlatteningCardPayment() {
         PaymentInstruction paymentInstruction = TestUtils.createSamplePaymentInstruction("CARD",10050, new int [][] {{5000, 0, 0}, {5000, 0, 0}});
         List<PaymentInstructionReportLine> flattenData = paymentInstruction.flattenPaymentInstruction();
         assertEquals(null, flattenData.get(0).getDailyId());
@@ -23,7 +23,7 @@ public class PaymentInstructionFlattenDataTest {
     }
 
     @Test
-    public void testFlatteningCashPayment(){
+    public void testFlatteningCashPayment() {
         PaymentInstruction paymentInstruction = TestUtils.createSamplePaymentInstruction("CASH",10063, new int [][] {{5000, 0, 0}, {5000, 0, 0}});
         List<PaymentInstructionReportLine> flattenData = paymentInstruction.flattenPaymentInstruction();
 
@@ -36,7 +36,7 @@ public class PaymentInstructionFlattenDataTest {
     }
 
     @Test
-    public void testTypedEmptyPaymentInstructionWithoutCaseRef(){
+    public void testTypedEmptyPaymentInstructionWithoutCaseRef() {
         CashPaymentInstruction paymentInstruction = new CashPaymentInstruction();
         List<PaymentInstructionReportLine> flattenData = paymentInstruction.flattenPaymentInstruction();
         assertEquals(null, flattenData.get(0).getCashAmount());
@@ -44,7 +44,7 @@ public class PaymentInstructionFlattenDataTest {
     }
 
     @Test
-    public void testTypedEmptyPaymentInstruction(){
+    public void testTypedEmptyPaymentInstruction() {
         CashPaymentInstruction paymentInstruction = CashPaymentInstruction.cashPaymentInstructionWith()
             .payerName("John Doe")
             .amount(10000)

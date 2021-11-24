@@ -11,7 +11,7 @@ import static org.mockito.Mockito.*;
 public class PaymentStatusEnumConverterTest {
 
     @Test
-    public void testSetAsText(){
+    public void testSetAsText() {
         PaymentStatusEnumConverter converter = mock(PaymentStatusEnumConverter.class);
         doCallRealMethod().when(converter).setAsText(anyString());
         converter.setAsText("P");

@@ -42,55 +42,55 @@ public class PaymentReferenceServiceTest {
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
         paymentReferenceService = new PaymentReferenceService(paymentReferenceRepository);
-        paymentReference1 = new PaymentReference("Y431",1, 'A' );
-        paymentReference2 = new PaymentReference("Y431",2, 'A' );
-        paymentReference3 = new PaymentReference("Y431",9999, 'A' );
-        paymentReference4 = new PaymentReference("Y431",1, 'B' );
-        paymentReference5 = new PaymentReference("Y431",9999, 'Z' );
+        paymentReference1 = new PaymentReference("Y431",1, 'A');
+        paymentReference2 = new PaymentReference("Y431",2, 'A');
+        paymentReference3 = new PaymentReference("Y431",9999, 'A');
+        paymentReference4 = new PaymentReference("Y431",1, 'B');
+        paymentReference5 = new PaymentReference("Y431",9999, 'Z');
     }
 
     @Test
-    public void shouldReturnPaymentReference_whenGetNextPaymentReferenceIsCalled()  {
+    public void shouldReturnPaymentReference_whenGetNextPaymentReferenceIsCalled() {
 
         when(paymentReferenceRepository.findOneForUpdate(anyString())).thenReturn(Optional.empty());
 
         PaymentReference retrievedPaymentReference = paymentReferenceService.getNextPaymentReference("Y431");
 
-        assertThat(retrievedPaymentReference).isEqualTo (paymentReference1);
+        assertThat(retrievedPaymentReference).isEqualTo(paymentReference1);
 
     }
 
     @Test
-    public void shouldReturnPaymentReference_whenSequenceIdIs_1()  {
+    public void shouldReturnPaymentReference_whenSequenceIdIs_1() {
 
         when(paymentReferenceRepository.findOneForUpdate(anyString())).thenReturn(Optional.of(paymentReference1));
 
         PaymentReference retrievedPaymentReference = paymentReferenceService.getNextPaymentReference("Y431");
 
-        assertThat(retrievedPaymentReference).isEqualTo (paymentReference2);
+        assertThat(retrievedPaymentReference).isEqualTo(paymentReference2);
 
     }
 
 
     @Test
-    public void shouldReturnPaymentReference_whenSequenceIdIs_9999()  {
+    public void shouldReturnPaymentReference_whenSequenceIdIs_9999() {
 
         when(paymentReferenceRepository.findOneForUpdate(anyString())).thenReturn(Optional.of(paymentReference3));
 
         PaymentReference retrievedPaymentReference = paymentReferenceService.getNextPaymentReference("Y431");
 
-        assertThat(retrievedPaymentReference).isEqualTo (paymentReference4);
+        assertThat(retrievedPaymentReference).isEqualTo(paymentReference4);
 
     }
 
     @Test
-    public void shouldReturnPaymentReference_whenSequenceIdIs9999_And_Z()  {
+    public void shouldReturnPaymentReference_whenSequenceIdIs9999_And_Z() {
 
         when(paymentReferenceRepository.findOneForUpdate(anyString())).thenReturn(Optional.of(paymentReference5));
 
         PaymentReference retrievedPaymentReference = paymentReferenceService.getNextPaymentReference("Y431");
 
-        assertThat(retrievedPaymentReference).isEqualTo (paymentReference1);
+        assertThat(retrievedPaymentReference).isEqualTo(paymentReference1);
 
     }
 

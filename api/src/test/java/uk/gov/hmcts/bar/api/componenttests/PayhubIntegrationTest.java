@@ -24,7 +24,8 @@ public class PayhubIntegrationTest extends ComponentTestBase {
             .willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", MediaType.APPLICATION_JSON)
-                .withBody("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjbWMiLCJleHAiOjE1MzMyMzc3NjN9.3iwg2cCa1_G9-TAMupqsQsIVBMWg9ORGir5xZyPhDabk09Ldk0-oQgDQq735TjDQzPI8AxL1PgjtOPDKeKyxfg[akiss@reformMgmtDevBastion02")
+                .withBody("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjbWMiLCJleHAiOjE1MzMyMzc3NjN9.3iwg2cCa1_G9-TAMupqsQsIVBMWg9" +
+                    "ORGir5xZyPhDabk09Ldk0-oQgDQq735TjDQzPI8AxL1PgjtOPDKeKyxfg[akiss@reformMgmtDevBastion02")
             )
         );
 
@@ -32,7 +33,8 @@ public class PayhubIntegrationTest extends ComponentTestBase {
             .willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", MediaType.APPLICATION_JSON)
-                .withBody("{\"reference\": \"RC-1534-8634-8352-6509\", \"date_created\": \"2018-08-21T14:58:03.630+0000\", \"status\": \"Initiated\", \"payment_group_reference\": \"2018-15348634835\"}")
+                .withBody("{\"reference\": \"RC-1534-8634-8352-6509\", \"date_created\": \"2018-08-21T14:58:03.630+0000\"," +
+                    " \"status\": \"Initiated\", \"payment_group_reference\": \"2018-15348634835\"}")
             )
         );
 

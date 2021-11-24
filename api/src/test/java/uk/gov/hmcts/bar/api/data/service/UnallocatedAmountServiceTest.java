@@ -36,7 +36,7 @@ public class UnallocatedAmountServiceTest {
 
 
     /**
-     * The data structure is the following:
+     * The data structure is the following.
      * [{payment-amount}, [{case-fee}, {refund}, {remission}], {expected-amount}]
      * @return dataset for test
      */
@@ -51,13 +51,13 @@ public class UnallocatedAmountServiceTest {
     }
 
     @Before
-    public void setup(){
+    public void setup() {
         MockitoAnnotations.initMocks(this);
         unallocatedAmountService = new UnallocatedAmountService(paymentInstructionRepository);
     }
 
     @Test
-    public void testCalculateUnallocatedAmount_whenOneEmptyCase(){
+    public void testCalculateUnallocatedAmount_whenOneEmptyCase() {
         PaymentInstruction pi = TestUtils.createPaymentInstructions("CASH",10000);
         pi.setPaymentType(pt);
         List<CaseFeeDetail> cfdList = new ArrayList<>();
@@ -69,7 +69,7 @@ public class UnallocatedAmountServiceTest {
     }
 
     @Test
-    public void testCalculateUnallocatedAmount_whenPostClerkReAssignmentToFeeClerk(){
+    public void testCalculateUnallocatedAmount_whenPostClerkReAssignmentToFeeClerk() {
         PaymentInstruction pi = TestUtils.createCardPaymentInstructionForReAssignment(10000);
         pi.setPaymentType(pt);
         List<CaseFeeDetail> cfdList = new ArrayList<>();
@@ -81,7 +81,7 @@ public class UnallocatedAmountServiceTest {
 
 
     @Test
-    public void testCalculateUnallocatedAmount_whenNoCase(){
+    public void testCalculateUnallocatedAmount_whenNoCase() {
         PaymentInstruction pi = TestUtils.createPaymentInstructions("CASH", 10000);
         pi.setPaymentType(pt);
         when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
@@ -94,7 +94,7 @@ public class UnallocatedAmountServiceTest {
 
     @Test
     @UseDataProvider("dataProvider")
-    public void testCalculateUnallocatedAmount_whenOneCase(int paymentAmount, int[][] caseDetails, int expected){
+    public void testCalculateUnallocatedAmount_whenOneCase(int paymentAmount, int[][] caseDetails, int expected) {
         PaymentInstruction pi = TestUtils.createPaymentInstructions("CASH", paymentAmount);
         pi.setPaymentType(pt);
         when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);
@@ -107,7 +107,7 @@ public class UnallocatedAmountServiceTest {
 
     @Test
     @UseDataProvider("dataProviderMultipleCase")
-    public void testCalculateUnallocatedAmount_whenMultipleCase(int paymentAmount, int[][] caseDetails, int expected){
+    public void testCalculateUnallocatedAmount_whenMultipleCase(int paymentAmount, int[][] caseDetails, int expected) {
         PaymentInstruction pi = TestUtils.createPaymentInstructions("CASH", paymentAmount);
         pi.setPaymentType(pt);
         when(paymentInstructionRepository.getOne(any(Integer.class))).thenReturn(pi);

@@ -8,7 +8,7 @@ import java.util.Optional;
 public class PaymentActionEnumTest {
 
     @Test
-    public void testFindPaymentActionByDisplayValue(){
+    public void testFindPaymentActionByDisplayValue() {
         Optional<PaymentActionEnum> actionEnum = PaymentActionEnum.findByDisplayValue("Process");
         Assert.assertEquals(PaymentActionEnum.PROCESS, actionEnum.get());
 

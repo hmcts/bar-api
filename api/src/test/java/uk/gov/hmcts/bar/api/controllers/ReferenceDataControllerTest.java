@@ -63,15 +63,15 @@ public class ReferenceDataControllerTest {
 
     @Test
     public void testGetPaymentInstructionActions() throws Exception {
-    	when(paymentActionService.getAllPaymentInstructionAction()).thenReturn(getPaymentInstructionActions());
-    	this.mockMvc.perform(get("/payment-action"))
+        when(paymentActionService.getAllPaymentInstructionAction()).thenReturn(getPaymentInstructionActions());
+        this.mockMvc.perform(get("/payment-action"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(3)))
         .andExpect(jsonPath("$[0].action", is("Process")))
         .andExpect(jsonPath("$[1].action", is("Return")))
         .andExpect(jsonPath("$[2].action", is("Suspense")));
 
-    	verify(paymentActionService, times(1)).getAllPaymentInstructionAction();
+        verify(paymentActionService, times(1)).getAllPaymentInstructionAction();
         verifyNoMoreInteractions(paymentActionService);
     }
 
@@ -83,7 +83,8 @@ public class ReferenceDataControllerTest {
             add(new PaymentType("CASH","Cash"));
             add(new PaymentType("ALLPAY","AllPay"));
             add(new PaymentType("FULL_REMISSION","Full Remission"));
-        }};
+        }
+        };
     }
 
     public List<PaymentInstructionAction> getPaymentInstructionActions() {
@@ -91,7 +92,8 @@ public class ReferenceDataControllerTest {
             add(new PaymentInstructionAction("Process"));
             add(new PaymentInstructionAction("Return"));
             add(new PaymentInstructionAction("Suspense"));
-        }};
+        }
+        };
     }
 
 }

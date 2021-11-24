@@ -46,7 +46,7 @@ public class FullRemissionServiceTest {
     @Before
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
-        fullRemissionService = new FullRemissionService( paymentInstructionRepository,
+        fullRemissionService = new FullRemissionService(paymentInstructionRepository,
             barUserServiceMock,paymentInstructionStatusRepositoryMock,auditRepository);
     }
 
