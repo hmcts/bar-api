@@ -30,16 +30,18 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Error> entityNotFoundException(ResourceNotFoundException e) {
-        if(LOG.isDebugEnabled()){
-        LOG.error(String.format("Resource not found: %s" , e.getResourceName()));}
+        if (LOG.isDebugEnabled()) {
+        LOG.error(String.format("Resource not found: %s", e.getResourceName()));
+        }
         String message = String.format("%s for %s=%s was not found", e.getResourceName(), e.getIdName(), e.getIdValue());
         return new ResponseEntity<>(new Error(message), NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Error> methodArgumentNotValidException(MethodArgumentNotValidException e) {
-        if(LOG.isDebugEnabled()){
-        LOG.error(String.format("Method argument not valid: %s,%s" , e.getParameter() , e.getMessage()));}
+        if (LOG.isDebugEnabled()) {
+        LOG.error(String.format("Method argument not valid: %s,%s", e.getParameter(), e.getMessage()));
+        }
         FieldError firstFieldError = e.getBindingResult().getFieldErrors().get(0);
         String message = firstFieldError.getField() + ": " + messageSource.getMessage(firstFieldError, Locale.getDefault());
         return new ResponseEntity<>(new Error(message), BAD_REQUEST);
@@ -47,8 +49,9 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Error> handleResourceNotFoundException(ConstraintViolationException e) {
-        if(LOG.isDebugEnabled()) {
-        LOG.debug(String.format("Constraint violated: %s" , e.getConstraintViolations()));}
+        if (LOG.isDebugEnabled()) {
+        LOG.debug(String.format("Constraint violated: %s", e.getConstraintViolations()));
+        }
         ConstraintViolation<?> violation = e.getConstraintViolations().iterator().next();
         String parameterName = Iterators.getLast(violation.getPropertyPath().iterator()).getName();
         return new ResponseEntity<>(new Error(parameterName + ": " + violation.getMessage()), BAD_REQUEST);
@@ -56,8 +59,9 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(FeatureAccessException.class)
     public ResponseEntity<Error> handleFeatureAccessException(FeatureAccessException e) {
-        if(LOG.isDebugEnabled()){
-        LOG.debug(String.format("Feature is not accessible: %s" , e.getMessage()));}
+        if (LOG.isDebugEnabled()) {
+        LOG.debug(String.format("Feature is not accessible: %s", e.getMessage()));
+        }
         return new ResponseEntity<>(new Error(e.getMessage()), BAD_REQUEST);
     }
 

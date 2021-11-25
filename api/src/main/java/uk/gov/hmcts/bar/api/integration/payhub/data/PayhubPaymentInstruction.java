@@ -70,7 +70,7 @@ public class PayhubPaymentInstruction extends BasePaymentInstruction {
 
     @JsonProperty("external_provider")
     public String getExternalProvider() {
-        if (this.getPaymentType().getId().equals("CARD")){
+        if (this.getPaymentType().getId().equals("CARD")) {
             return EXTERNAL_PROVIDER;
         } else {
             return null;

@@ -16,7 +16,7 @@ public class ToUpperCaseAspect {
 
         Object[] arguments = joinPoint.getArgs();
         Object[] convertedArgs = Arrays.stream(arguments).map(o -> {
-            if(o instanceof String) {
+            if (o instanceof String) {
                 return ((String) o).trim().toUpperCase();
             } else {
                 return o;

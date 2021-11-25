@@ -16,9 +16,9 @@ import javax.validation.constraints.Pattern;
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class PostalOrder extends PaymentInstructionRequest{
+public class PostalOrder extends PaymentInstructionRequest {
 
-    @Pattern(regexp ="^\\d{1,20}$",message = "invalid all pay transaction id")
+    @Pattern(regexp = "^\\d{1,20}$",message = "invalid all pay transaction id")
     private String postalOrderNumber;
 
     @JsonCreator

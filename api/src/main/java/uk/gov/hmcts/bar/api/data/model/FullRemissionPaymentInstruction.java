@@ -19,8 +19,7 @@ public class FullRemissionPaymentInstruction extends PaymentInstruction {
     @Builder(builderMethodName = "fullRemissionPaymentInstructionWith")
     public FullRemissionPaymentInstruction(@JsonProperty("payer_name") String payerName,
                                   @JsonProperty("status") String status,
-                                  @JsonProperty("remission_reference") String remissionReference)
-    {
+                                  @JsonProperty("remission_reference") String remissionReference) {
         super(payerName,0,"GBP",status);
         this.setRemissionReference(remissionReference);
 

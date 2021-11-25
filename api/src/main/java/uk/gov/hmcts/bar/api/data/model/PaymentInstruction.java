@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -57,13 +56,10 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
                 line.setFeeAmount(caseFeeDetail.getAmount());
                 line.setFeeCode(caseFeeDetail.getFeeCode());
                 line.setFeeDescription(caseFeeDetail.getFeeDescription());
-                if (this.getPaymentType().getId().equals(FULL_REMISSION_ID))
-                {
+                if (this.getPaymentType().getId().equals(FULL_REMISSION_ID)) {
                     line.setRemissionAmount(caseFeeDetail.getAmount());
                     line.setRemissionReference(this.remissionReference);
-                }
-                else
-                {
+                } else {
                     line.setRemissionAmount(caseFeeDetail.getRemissionAmount());
                     line.setRemissionReference(caseFeeDetail.getRemissionAuthorisation());
                 }
@@ -88,29 +84,29 @@ public abstract class PaymentInstruction extends BasePaymentInstruction {
         return paymentLines;
     }
 
-    private void setUserActivity(List<PaymentInstructionReportLine> paymentLines){
+    private void setUserActivity(List<PaymentInstructionReportLine> paymentLines) {
 
         Iterator<PaymentInstructionStatusHistory> iterator = this.getPaymentInstructionStatusHistory().iterator();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             PaymentInstructionStatusHistory statusHistory = iterator.next();
-            if(statusHistory.getStatus().equals("D")){
+            if (statusHistory.getStatus().equals("D")) {
                 paymentLines.get(0).setRecordedUser(statusHistory.getBarUserFullName());
                 paymentLines.get(0).setRecordedTime(statusHistory.getStatusUpdateTime());
             }
-            if(statusHistory.getStatus().equals("V")){
+            if (statusHistory.getStatus().equals("V")) {
                 paymentLines.get(0).setValidatedUser(statusHistory.getBarUserFullName());
                 paymentLines.get(0).setValidatedTime(statusHistory.getStatusUpdateTime());
             }
-            if(statusHistory.getStatus().equals("A")){
+            if (statusHistory.getStatus().equals("A")) {
                 paymentLines.get(0).setApprovedUser(statusHistory.getBarUserFullName());
                 paymentLines.get(0).setApprovedTime(statusHistory.getStatusUpdateTime());
             }
-            if(statusHistory.getStatus().equals("TTB") || statusHistory.getStatus().equals("C")){
+            if (statusHistory.getStatus().equals("TTB") || statusHistory.getStatus().equals("C")) {
                 paymentLines.get(0).setTransferredToBarUser(statusHistory.getBarUserFullName());
                 paymentLines.get(0).setTransferredToBarTime(statusHistory.getStatusUpdateTime());
             }
 
-            if(statusHistory.getStatus().equals("STP") ){
+            if (statusHistory.getStatus().equals("STP")) {
                 paymentLines.get(0).setDmUser(statusHistory.getBarUserFullName());
                 paymentLines.get(0).setDtSentToPayhub(statusHistory.getStatusUpdateTime());
 

@@ -11,7 +11,7 @@ import javax.persistence.Id;
 @NoArgsConstructor
 @Builder(builderMethodName = "paymentTypeWith")
 @EqualsAndHashCode
-public class PaymentType{
+public class PaymentType {
 
     @Id
     private String id;

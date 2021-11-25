@@ -16,6 +16,6 @@ import lombok.NoArgsConstructor;
 @Builder(builderMethodName = "paymentInstructionActionWith")
 @EqualsAndHashCode
 public class PaymentInstructionAction {
-	@Id
+    @Id
     private String action;
 }

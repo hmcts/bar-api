@@ -21,27 +21,27 @@ import lombok.NonNull;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class PaymentInstructionStaticsByUser {
-	
-	private String barUserId;
-	
-	private String barUserFullName;
 
-	private Integer paymentInstructionId;
-	
-	@NonNull
+    private String barUserId;
+
+    private String barUserFullName;
+
+    private Integer paymentInstructionId;
+
+    @NonNull
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime updateTime;
 
-	@JsonCreator
-	public PaymentInstructionStaticsByUser(@JsonProperty("bar_user_id") String barUserId,
-			@JsonProperty("bar_user_full_name") String barUserFullName,
-			@JsonProperty("payment_instruction_id") Integer paymentInstructionId,
-			@JsonProperty("update_time") LocalDateTime updateTime) {
-		this.barUserId = barUserId;
-		this.paymentInstructionId = paymentInstructionId;
-		this.barUserFullName = barUserFullName;
-		this.updateTime = updateTime;
-	}
+    @JsonCreator
+    public PaymentInstructionStaticsByUser(@JsonProperty("bar_user_id") String barUserId,
+            @JsonProperty("bar_user_full_name") String barUserFullName,
+            @JsonProperty("payment_instruction_id") Integer paymentInstructionId,
+            @JsonProperty("update_time") LocalDateTime updateTime) {
+        this.barUserId = barUserId;
+        this.paymentInstructionId = paymentInstructionId;
+        this.barUserFullName = barUserFullName;
+        this.updateTime = updateTime;
+    }
 
 }

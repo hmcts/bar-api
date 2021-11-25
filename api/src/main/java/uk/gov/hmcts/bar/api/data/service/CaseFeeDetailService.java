@@ -25,7 +25,8 @@ public class CaseFeeDetailService {
     private final AuditRepository auditRepository;
 
     @Autowired
-    public CaseFeeDetailService(PaymentInstructionRepository paymentInstructionRepository,CaseFeeDetailRepository caseFeeDetailRepository,AuditRepository auditRepository) {
+    public CaseFeeDetailService(PaymentInstructionRepository paymentInstructionRepository,
+                                CaseFeeDetailRepository caseFeeDetailRepository,AuditRepository auditRepository) {
         super();
         this.paymentInstructionRepository = paymentInstructionRepository;
         this.caseFeeDetailRepository = caseFeeDetailRepository;
@@ -33,8 +34,9 @@ public class CaseFeeDetailService {
     }
 
     public CaseFeeDetail saveCaseFeeDetail(BarUser barUser,CaseFeeDetailRequest caseFeeDetailRequest) {
-        Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findByIdAndSiteId(caseFeeDetailRequest.getPaymentInstructionId(), barUser.getSelectedSiteId());
-        if(!(optionalPaymentInstruction.isPresent()))
+        Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findByIdAndSiteId(
+            caseFeeDetailRequest.getPaymentInstructionId(), barUser.getSelectedSiteId());
+        if (!(optionalPaymentInstruction.isPresent()))
             throw new PaymentInstructionNotFoundException(caseFeeDetailRequest.getPaymentInstructionId(), barUser.getSelectedSiteId());;
         CaseFeeDetail caseFeeDetail = caseFeeDetailRepository.saveAndRefresh(CaseFeeDetail.caseFeeDetailWith()
             .amount(caseFeeDetailRequest.getAmount()).feeCode(caseFeeDetailRequest.getFeeCode())
@@ -54,8 +56,9 @@ public class CaseFeeDetailService {
 
     public CaseFeeDetail updateCaseFeeDetail(BarUser barUser,Integer feeId, CaseFeeDetailRequest caseFeeDetailRequest) {
 
-        Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findByIdAndSiteId(caseFeeDetailRequest.getPaymentInstructionId(), barUser.getSelectedSiteId());
-        if(!(optionalPaymentInstruction.isPresent()))
+        Optional<PaymentInstruction> optionalPaymentInstruction = paymentInstructionRepository.findByIdAndSiteId(
+            caseFeeDetailRequest.getPaymentInstructionId(), barUser.getSelectedSiteId());
+        if (!(optionalPaymentInstruction.isPresent()))
             throw new PaymentInstructionNotFoundException(caseFeeDetailRequest.getPaymentInstructionId(), barUser.getSelectedSiteId());
         Optional<CaseFeeDetail> optExistingCaseFeeDetail = caseFeeDetailRepository.findById(feeId);
         CaseFeeDetail existingCaseFeeDetail = optExistingCaseFeeDetail.orElseThrow(() ->  new CaseFeeDetailNotFoundException(feeId));

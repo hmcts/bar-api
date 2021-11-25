@@ -25,8 +25,8 @@ public class PaymentReference {
     @JsonIgnore
     private LocalDateTime paymentDate = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
 
-    public PaymentReference(String siteId, int sequenceId, char sequenceCharacter){
-        this.siteId =siteId;
+    public PaymentReference(String siteId, int sequenceId, char sequenceCharacter) {
+        this.siteId = siteId;
         this.sequenceId = sequenceId;
         this.sequenceCharacter = sequenceCharacter;
 

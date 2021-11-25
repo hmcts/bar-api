@@ -90,7 +90,8 @@ public class BarUser {
         }
 
         public String toString() {
-            return "BarUser.BarUserBuilder(id=" + this.id + ", forename=" + this.forename + ", surname=" + this.surname + ", email=" + this.email + ", roles=" + this.roles + ")";
+            return "BarUser.BarUserBuilder(id=" + this.id + ", forename=" + this.forename + ", surname=" + this.surname +
+                ", email=" + this.email + ", roles=" + this.roles + ")";
         }
     }
 }

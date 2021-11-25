@@ -18,17 +18,17 @@ import lombok.ToString;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class PaymentProcessException extends Exception {
 
-	/**
-	 * Serial version id
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	private final String errorMessage;
+    /**
+     * Serial version id.
+     */
+    private static final long serialVersionUID = 1L;
 
-	@JsonCreator
+    private final String errorMessage;
+
+    @JsonCreator
     @Builder(builderMethodName = "paymentProcessExceptionWith")
-	public PaymentProcessException(@JsonProperty("errorMessage") String errorMessage) {
-		super(errorMessage);
-		this.errorMessage = errorMessage;
-	}
+    public PaymentProcessException(@JsonProperty("errorMessage") String errorMessage) {
+        super(errorMessage);
+        this.errorMessage = errorMessage;
+    }
 }

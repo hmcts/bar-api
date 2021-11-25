@@ -37,7 +37,7 @@ public class SiteService {
 
     private List<SiteUserDto> getlstSiteUserDtoWithOneRole(List<SiteUserDto> lstSiteUserDto) {
         List<SiteUserDto> users = new ArrayList<>();
-        lstSiteUserDto.stream().forEach(roles->{
+        lstSiteUserDto.stream().forEach(roles -> {
             boolean isUpdated = false;
             if (roles.getRoles() != null) {
                 if (!isUpdated && roles.getRoles().indexOf("bar-delivery-manager") >= 0) {
@@ -102,7 +102,7 @@ private SiteUserDto createUser(String email, String forname, String surname, Str
 
     public void assignUserToSite(Site site, String userEmail) {
 
-        if (siteRepository.findUserInSite(site.getId(), userEmail).isPresent()){
+        if (siteRepository.findUserInSite(site.getId(), userEmail).isPresent()) {
             throw new BadRequestException("The user with '" + userEmail + "' email already assigned to " + site.getId());
         } else {
             siteRepository.assignUserToSite(site.getId(), userEmail);

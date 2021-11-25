@@ -12,10 +12,10 @@ import javax.persistence.*;
 @Entity
 public class PaymentInstructionStatus {
 
-	@EmbeddedId
+    @EmbeddedId
     private PaymentInstructionStatusReferenceKey paymentInstructionStatusReferenceKey;
 
-	@NonNull
+    @NonNull
     private String barUserId;
 
     @MapsId("paymentInstructionId")
@@ -23,9 +23,9 @@ public class PaymentInstructionStatus {
     @JsonIgnore
     private PaymentInstruction paymentInstruction;
 
-	public PaymentInstructionStatus(String barUserId, PaymentInstruction pi) {
-		this.paymentInstructionStatusReferenceKey = new PaymentInstructionStatusReferenceKey(pi.getId(), pi.getStatus());
-		this.barUserId = barUserId;
-		this.paymentInstruction = pi;
-	}
+    public PaymentInstructionStatus(String barUserId, PaymentInstruction pi) {
+        this.paymentInstructionStatusReferenceKey = new PaymentInstructionStatusReferenceKey(pi.getId(), pi.getStatus());
+        this.barUserId = barUserId;
+        this.paymentInstruction = pi;
+    }
 }

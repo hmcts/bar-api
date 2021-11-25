@@ -15,17 +15,17 @@ import java.time.LocalDateTime;
 @Builder(builderMethodName = "paymentInstructionSearchCriteriaDto")
 public class PaymentInstructionSearchCriteriaDto {
 
-	private String siteId;
+    private String siteId;
     private String dailySequenceId;
     private String payerName;
-    @Pattern(regexp ="^\\d{6,6}$",message = "invalid cheque number")
+    @Pattern(regexp = "^\\d{6,6}$",message = "invalid cheque number")
     private String chequeNumber;
     @Pattern(regexp = "^\\d{6,6}$", message = "invalid postal order number")
     private String postalOrderNumer;
     private String status;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    @Pattern(regexp ="^\\d{1,20}$",message = "invalid all pay transaction id")
+    @Pattern(regexp = "^\\d{1,20}$",message = "invalid all pay transaction id")
     private String allPayInstructionId;
     private String paymentType;
     private String action;

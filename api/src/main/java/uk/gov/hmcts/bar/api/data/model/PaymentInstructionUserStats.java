@@ -14,22 +14,22 @@ import lombok.NoArgsConstructor;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class PaymentInstructionUserStats {
 
-	private String barUserFullName;
+    private String barUserFullName;
 
-	private long countOfPaymentInstructionInSpecifiedStatus;
+    private long countOfPaymentInstructionInSpecifiedStatus;
 
-	private String barUserId;
-	
-	@JsonProperty("list_of_payment_instructions")
-	private Integer[] listOfPaymentInstructions;
+    private String barUserId;
 
-	@JsonCreator
-	public PaymentInstructionUserStats(@JsonProperty("bar_user_id") String barUserId,
-			@JsonProperty("bar_user_full_name") String barUserFullName,
-			@JsonProperty("count_of_payment_instruction_in_specified_status") Long countOfPaymentInstructionInSpecifiedStatus) {
-		this.countOfPaymentInstructionInSpecifiedStatus = countOfPaymentInstructionInSpecifiedStatus;
-		this.barUserId = barUserId;
-		this.barUserFullName = barUserFullName;
-	}
+    @JsonProperty("list_of_payment_instructions")
+    private Integer[] listOfPaymentInstructions;
+
+    @JsonCreator
+    public PaymentInstructionUserStats(@JsonProperty("bar_user_id") String barUserId,
+            @JsonProperty("bar_user_full_name") String barUserFullName,
+            @JsonProperty("count_of_payment_instruction_in_specified_status") Long countOfPaymentInstructionInSpecifiedStatus) {
+        this.countOfPaymentInstructionInSpecifiedStatus = countOfPaymentInstructionInSpecifiedStatus;
+        this.barUserId = barUserId;
+        this.barUserFullName = barUserFullName;
+    }
 
 }

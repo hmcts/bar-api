@@ -21,7 +21,8 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private AuthCheckerUserOnlyFilter authCheckerFilter;
 
     @Override
-    @SuppressFBWarnings(value = "SPRING_CSRF_PROTECTION_DISABLED", justification = "It's safe to disable CSRF protection as application is not being hit directly from the browser")
+    @SuppressFBWarnings(value = "SPRING_CSRF_PROTECTION_DISABLED", justification =
+        "It's safe to disable CSRF protection as application is not being hit directly from the browser")
     protected void configure(HttpSecurity http) throws Exception {
 
        http

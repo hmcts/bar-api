@@ -25,7 +25,7 @@ public class FF4jConfiguration {
     public FF4j getFf4j() {
 
         FF4j ff4j = new FF4j();
-        FeatureStoreSpringJdbc featureStore= new FeatureStoreSpringJdbc();
+        FeatureStoreSpringJdbc featureStore = new FeatureStoreSpringJdbc();
         featureStore.setDataSource(dataSource);
         ff4j.setFeatureStore(featureStore);
         ff4j.autoCreate(true);
