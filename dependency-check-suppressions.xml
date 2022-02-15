@@ -22,7 +22,8 @@
         ]]></notes>
         <cve>CVE-2021-22096</cve>
     </suppress>
-    <suppress until="2020-03-30">
+
+    <suppress until="2022-03-30">
         <notes>Fix until the import for logback are updated</notes>
         <cve>CVE-2021-42550</cve>
     </suppress>
