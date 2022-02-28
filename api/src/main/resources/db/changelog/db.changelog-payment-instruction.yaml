@@ -873,7 +873,10 @@ databaseChangeLog:
       author: akiss
       changes:
       - sql: >
-          INSERT into site (id, description) values ('Y608', 'MEDWAY COUNTY COURT'), ('Y610', 'MILTON KEYNES COUNTY COURT'), ('Y431', 'BROMLEY COUNTY COURT'),
+          INSERT into site (id, description) values
+          ('Y608', 'MEDWAY COUNTY COURT'),
+          ('Y610', 'MILTON KEYNES COUNTY COURT'),
+          ('Y431', 'BROMLEY COUNTY COURT'),
           ('Y403', 'ABERYSTWYTH COUNTY COURT'),
           ('Y404', 'ACCRINGTON COUNTY COURT'),
           ('Y405', 'ALDERSHOT COUNTY COURT'),
@@ -1030,7 +1033,6 @@ databaseChangeLog:
           ('Y611', 'MOLD COUNTY COURT'),
           ('W853', 'MOLD CROWN COURT'),
           ('Y612', 'MORPETH COUNTY COURT'),
-          ('Y613', 'NEATH COUNTY COURT'),
           ('Y268', 'NEWCASTLE COMBINED COURT - COUNTY'),
           ('W818', 'NEWCASTLE COMBINED COURT - CROWN'),
           ('P220', 'NEWCASTLE DPR'),
@@ -1151,10 +1153,7 @@ databaseChangeLog:
           ('Y682', 'WREXHAM COUNTY COURT'),
           ('Y683', 'YEOVIL COUNTY COURT'),
           ('Y684', 'YORK COUNTY COURT'),
-          ('W880', 'YORK CROWN COURT'),
-          ('Y608', 'MEDWAY COUNTY COURT'),
-          ('Y610', 'MILTON KEYNES COUNTY COURT'),
-          ('Y431', 'BROMLEY COUNTY COURT');
+          ('W880', 'YORK CROWN COURT');
   - changeSet:
       id: 38
       author: sachi
