@@ -17,9 +17,9 @@ def app = "api"
 def branchesToSync = ['demo', 'ithc', 'perftest']
 
 withPipeline(type, product, app) {
-    enableDbMigration('bar')
     enableSlackNotifications('#bar-tech')
     enableAksStagingDeployment()
+
 
     after('functionalTest:aat') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
