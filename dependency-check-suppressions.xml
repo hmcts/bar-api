@@ -28,7 +28,5 @@
         <cve>CVE-2021-42550</cve>
     </suppress>
 
-
-
     <!-- False Positive CVE Suppression ends here-->
 </suppressions>
