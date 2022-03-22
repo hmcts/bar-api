@@ -39,7 +39,7 @@ public class PayHubHealthCheck implements HealthIndicator {
         PayHubStatus status = checkWithProtection();
         if (!status.isUp) {
             return Health.down()
-                .withDetail("PayHubStatus Error: ", status.errorDetails).build();
+                .withDetail("Error: ", status.errorDetails).build();
         }
         return Health.up().build();
     }
