@@ -33,5 +33,12 @@
         <cve>CVE-2022-0839</cve>
     </suppress>
 
+    <suppress until="2022-04-30">
+        <notes>jackson-databind issue, upgrading to new version broke functional tests.</notes>
+        <cve>CVE-2020-36518</cve>
+    </suppress>
+
+
+
     <!-- False Positive CVE Suppression ends here-->
 </suppressions>
