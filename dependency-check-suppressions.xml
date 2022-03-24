@@ -28,7 +28,10 @@
         <cve>CVE-2021-42550</cve>
     </suppress>
 
-
+    <suppress until="2022-04-30">
+        <notes>Major liquibase update to version 4.8.0+ needed, this will require code refactoring</notes>
+        <cve>CVE-2022-0839</cve>
+    </suppress>
 
     <!-- False Positive CVE Suppression ends here-->
 </suppressions>
