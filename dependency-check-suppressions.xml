@@ -48,7 +48,10 @@
         <cve>CVE-2022-22950</cve>
     </suppress>
 
-
+    <suppress until="2022-06-30">
+        <notes>Awaiting version of Spring-core with a fix for the following CVE issue.</notes>
+        <cve>CVE-2016-1000027</cve>
+    </suppress>
 
 
 
