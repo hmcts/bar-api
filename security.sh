@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 echo ${TEST_URL}
-zap-api-scan.py -t ${TEST_URL}/v3/api-docs -f openapi -S -d -u ${SecurityRules} -P 1001 -l FAIL
+zap-api-scan.py -t ${TEST_URL}/v3/api-docs -f openapi -S -d -u ${SecurityRules} -P 1001 -l FAIL -J report.json -r api-report.html
 cat zap.out
 echo "ZAP has successfully started"
 export LC_ALL=C.UTF-8
@@ -11,11 +11,3 @@ zap-cli --zap-url http://0.0.0.0 -p 1001 alerts -l High --exit-code False
 mkdir -p functional-output
 chmod a+wx functional-output
 cp /zap/api-report.html functional-output/
-
-##!/usr/bin/env bash
-#echo ${TEST_URL}
-#echo "ZAP has successfully started"
-#zap-api-scan.py -t ${TEST_URL}/v2/api-docs -f openapi -S -d -u ${SecurityRules} -P 1001 -l FAIL -J report.json -r api-report.html
-#mkdir -p functional-output
-#chmod a+wx functional-output
-#cp api-report.html functional-output/
