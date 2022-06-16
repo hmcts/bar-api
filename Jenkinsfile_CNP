@@ -1,4 +1,5 @@
 #!groovy
+import uk.gov.hmcts.contino.AppPipelineDsl
 
 properties(
     [[$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/bar-app.git'],
@@ -16,7 +17,19 @@ def app = "api"
 // Configure branches to sync with master branch
 def branchesToSync = ['demo', 'ithc', 'perftest']
 
+env.PACT_BROKER_URL = 'https://pact-broker.platform.hmcts.net'
+
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+    [ $class: 'AzureKeyVaultSecret',
+      secretType: 'Secret',
+      name: secretName,
+      version: '',
+      envVariable: envVar
+    ]
+}
+
 withPipeline(type, product, app) {
+    enableDbMigration('bar-app')
     enableSlackNotifications('#bar-tech')
     enableAksStagingDeployment()
 
@@ -43,6 +56,19 @@ withPipeline(type, product, app) {
     }
 
     disableLegacyDeployment()
+
+    onMaster() {
+        enablePactAs([
+            AppPipelineDsl.PactRoles.PROVIDER,
+            AppPipelineDsl.PactRoles.CONSUMER
+        ])
+    }
+    onPR() {
+        enablePactAs([
+            AppPipelineDsl.PactRoles.PROVIDER,
+            AppPipelineDsl.PactRoles.CONSUMER
+        ])
+    }
 
     //Sync demo,ithc and perftest with master branch
     syncBranchesWithMaster(branchesToSync)
