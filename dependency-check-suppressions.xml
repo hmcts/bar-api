@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <!-- Below are the supressions added fpr False Positive CVEs -->
-    <suppress  until="2022-06-30">
+    <suppress  until="2022-09-30">
         <notes>The CVE-2018-1258 occurs from spring security libraries, despite the latest versions are used.
             This is confirmed as false positive and hence it is suppressed (https://github.com/jeremylong/DependencyCheck/issues/2952)
         </notes>
@@ -23,32 +23,32 @@
         <cve>CVE-2021-22096</cve>
     </suppress>
 
-    <suppress until="2022-06-30">
+    <suppress until="2022-09-30">
         <notes>Fix until the import for logback are updated</notes>
         <cve>CVE-2021-42550</cve>
     </suppress>
 
-    <suppress until="2022-06-30">
+    <suppress until="2022-09-30">
         <notes>Major liquibase update to version 4.8.0+ needed, this will require code refactoring</notes>
         <cve>CVE-2022-0839</cve>
     </suppress>
 
-    <suppress until="2022-06-30">
+    <suppress until="2022-09-30">
         <notes>jackson-databind issue, upgrading to new version broke functional tests.</notes>
         <cve>CVE-2020-36518</cve>
     </suppress>
 
-    <suppress until="2022-06-30">
+    <suppress until="2022-09-30">
         <notes>Spring MVC or Spring WebFlux CVE that is currently awaiting analysis on NIST.</notes>
         <cve>CVE-2022-22965</cve>
     </suppress>
 
-    <suppress until="2022-06-30">
+    <suppress until="2022-09-30">
         <notes>Awaiting version of Spring-core with a fix for the following CVE issue.</notes>
         <cve>CVE-2022-22950</cve>
     </suppress>
 
-    <suppress until="2022-06-30">
+    <suppress until="2022-09-30">
         <notes>Awaiting version of Spring-core with a fix for the following CVE issue.</notes>
         <cve>CVE-2016-1000027</cve>
     </suppress>
