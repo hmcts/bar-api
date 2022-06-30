@@ -54,6 +54,11 @@
     </suppress>
 
 
+    <suppress until="2022-09-30">
+        <notes>Awaiting version of Tomcat Embed Core with a fix for the following CVE issue. 9.0.64 is most recent and still has the cve issue.</notes>
+        <cve>CVE-2022-34305</cve>
+    </suppress>
+
 
     <!-- False Positive CVE Suppression ends here-->
 </suppressions>
