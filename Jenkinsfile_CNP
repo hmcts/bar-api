@@ -20,7 +20,7 @@ def branchesToSync = ['demo', 'ithc', 'perftest']
 withPipeline(type, product, app) {
     enableSlackNotifications('#bar-tech')
     enableAksStagingDeployment()
-    enableDbMigration('bar-app')
+    enableDbMigration('bar')
 
     after('functionalTest:aat') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
