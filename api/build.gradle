@@ -11,7 +11,7 @@ plugins{
 apply plugin: 'net.serenity-bdd.aggregator'
 
 //Look here Anooj, the build.gradle needs to be able to read the liquibase.gradle file below. Line 14 is how it is set up in payment app
-//apply from: 'liquibase.gradle'
+apply from: 'liquibase.gradle'
 //apply from: "${rootDir}/api/liquibase.gradle"
 //apply from: "src/api/liquibase.gradle"
 
