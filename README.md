@@ -38,6 +38,23 @@ or in dev/test environment you can use this link
 https://dev.api.bar.reform.hmcts.net/swagger-ui.html
 or https://test.api.bar.reform.hmcts.net/swagger-ui.html
 
+## Run the application using docker compose
+
+Please add the following environmental variables in .env file (bar-api/.env)
+
+1. BAR_SPRING_DATASOURCE_PASSWORD=bar
+2. BAR_POSTGRES_PASSWORD=bar
+3. PAYMENT_SPRING_DATASOURCE_PASSWORD=payment
+4. OPENID_SPRING_DATASOURCE_PASSWORD=openidm
+5. IDAM_SPI_FORGEROCK_AM_PASSWORD=Pa55word11
+6. IDAM_SPI_FORGEROCK_IDM_PASSWORD=openidm-admin
+7. IDAM_SPI_FORGEROCK_IDM_PIN_DEFAULTPASSWORD=BlaBlaBlackSh33p
+8. SECURITY_OAUTH2_CLIENT_CLIENTSECRET=password
+9. FEE_REG_SPRING_DATASOURCE_PASSWORD=fee_register
+
+
+``` docker-compose up```
+
 ## Service Endpoints
 Some of the end points are as below. These might be out of date. Please look at the swagger-ui to be sure. 
 
