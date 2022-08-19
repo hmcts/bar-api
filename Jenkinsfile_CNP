@@ -16,29 +16,48 @@ def app = "api"
 // Configure branches to sync with master branch
 def branchesToSync = ['demo', 'ithc', 'perftest']
 
+def secrets = [
+    'bar-${env}': [
+        secret('bar-IDAM-CLIENT-SECRET', 'OAUTH2_CLIENT_SECRET'),
+        secret('idam-test-user-password', 'TEST_USER_PASSWORD')
+    ]
+]
+
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+    [$class     : 'AzureKeyVaultSecret',
+     secretType : 'Secret',
+     name       : secretName,
+     version    : '',
+     envVariable: envVar
+    ]
+}
+
 withPipeline(type, product, app) {
+    loadVaultSecrets(secrets)
     enableSlackNotifications('#bar-tech')
     enableAksStagingDeployment()
 
 
     after('functionalTest:aat') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
             reportDir            : "api/target/site/serenity/",
             reportFiles          : "index.html",
-            reportName           : "AAT Functional Tests",
-            alwaysLinkToLastBuild: true
+            reportName           : "Bar Api AAT Functional Tests",
         ]
 
     }
 
     after('functionalTest:preview') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
             reportDir            : "api/target/site/serenity/",
             reportFiles          : "index.html",
-            reportName           : "Preview Functional Tests",
-            alwaysLinkToLastBuild: true
+            reportName           : "Bar Api Preview Functional Tests",
         ]
     }
 

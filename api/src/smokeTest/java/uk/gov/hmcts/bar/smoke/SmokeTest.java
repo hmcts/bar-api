@@ -1,4 +1,4 @@
-package uk.gove.hmcts.bar.smoke;
+package uk.gov.hmcts.bar.smoke;
 
 import io.restassured.RestAssured;
 import lombok.extern.slf4j.Slf4j;
