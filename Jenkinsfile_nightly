@@ -58,7 +58,7 @@ withNightlyPipeline(type, product, component) {
             keepAll              : true,
             reportDir            : "api/target/site/serenity/",
             reportFiles          : "index.html",
-            reportName           : "Bar Api Preview Functional Tests",
+            reportName           : "Bar Api AAT Functional Tests",
         ]
     }
 }
