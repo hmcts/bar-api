@@ -197,6 +197,13 @@ task smoke(type: GradleBuild, description: 'Runs smoke tests', group: 'Verificat
     tasks = ['smokeTest']
 }
 
+task migratePostgresDatabase(type: GradleBuild, description: 'Migrates Postgres Database', group: 'liquibase') {
+    //forward projectProperties
+    startParameter.projectProperties = project.gradle.startParameter.projectProperties
+    buildFile = './api/build.gradle'
+    tasks = ['migratePostgresDatabase']
+}
+
 task functional(type: GradleBuild, description: 'Runs Functional tests', group: 'Verification') {
     buildFile = './api/build.gradle'
     tasks = ['functionalTest']
