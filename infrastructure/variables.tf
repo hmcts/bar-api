@@ -34,4 +34,6 @@ variable "postgresql_version" {
   default = "11"
 }
 
-
+variable "additional_databases" {
+  default = []
+}
