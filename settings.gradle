@@ -2,6 +2,8 @@ rootProject.name = 'bar-app'
 
 include ':bar-api'
 include ':bar-client'
+include ':api-contract'
 
 project(':bar-api').projectDir = "$rootDir/api" as File
 project(':bar-client').projectDir = "$rootDir/client" as File
+project(':api-contract').projectDir = "$rootDir/api-contract" as File
