@@ -23,81 +23,81 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 public class ControllerExceptionHandlerTest {
 
-	private ControllerExceptionHandler controllerExceptionHandler = new ControllerExceptionHandler();
+    private ControllerExceptionHandler controllerExceptionHandler = new ControllerExceptionHandler();
 
-	@Mock
-	private MethodArgumentNotValidException methodArgumentNotValidExceptionMock;
+    @Mock
+    private MethodArgumentNotValidException methodArgumentNotValidExceptionMock;
 
-	@Mock
-	private MethodParameter methodParameterMock;
+    @Mock
+    private MethodParameter methodParameterMock;
 
-	@Mock
-	private ControllerExceptionHandler controllerExceptionHandlerMock;
+    @Mock
+    private ControllerExceptionHandler controllerExceptionHandlerMock;
 
-	@Mock
-	private ResourceNotFoundException resourceNotFoundExceptionMock;
+    @Mock
+    private ResourceNotFoundException resourceNotFoundExceptionMock;
 
-	@Mock
-	private ConstraintViolationException constraintViolationExceptionMock;
+    @Mock
+    private ConstraintViolationException constraintViolationExceptionMock;
 
-	@SuppressWarnings("rawtypes")
-	@Mock
-	private ConstraintViolation violationMock;
+    @SuppressWarnings("rawtypes")
+    @Mock
+    private ConstraintViolation violationMock;
 
-	@Mock
-	private Set<ConstraintViolation<?>> setOfViolationsMock;
+    @Mock
+    private Set<ConstraintViolation<?>> setOfViolationsMock;
 
-	@Mock
-	private Path pathMock;
+    @Mock
+    private Path pathMock;
 
-	@Mock
-	private Iterator<ConstraintViolation<?>> cvIteratorMock;
+    @Mock
+    private Iterator<ConstraintViolation<?>> cvIteratorMock;
 
-	@Mock
-	private Iterator<Node> nodeIteratorMock;
+    @Mock
+    private Iterator<Node> nodeIteratorMock;
 
-	@Before
+    @Before
     public void setupMock() {
         MockitoAnnotations.initMocks(this);
-	}
+    }
 
-	@Test
-	public void whenResourceNotFound_shouldReturn404() {
-		ResourceNotFoundException resourceNotFoundException = new ResourceNotFoundException("Payment Instruction", "Id",
-				"2");
-		ResponseEntity<Error> reError = controllerExceptionHandler.entityNotFoundException(resourceNotFoundException);
-		assertThat(reError.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-	}
+    @Test
+    public void whenResourceNotFound_shouldReturn404() {
+        ResourceNotFoundException resourceNotFoundException = new ResourceNotFoundException("Payment Instruction", "Id",
+                "2");
+        ResponseEntity<Error> reError = controllerExceptionHandler.entityNotFoundException(resourceNotFoundException);
+        assertThat(reError.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
 
-	@Test
-	public void whenResourceNotFound_shouldReturnErrorMessage() {
-		ResourceNotFoundException resourceNotFoundException = new ResourceNotFoundException("Payment Instruction", "Id",
-				"2");
-		ResponseEntity<Error> reError = controllerExceptionHandler.entityNotFoundException(resourceNotFoundException);
-		assertThat(reError.getBody().getMessage()).isEqualTo("Payment Instruction for Id=2 was not found");
-	}
+    @Test
+    public void whenResourceNotFound_shouldReturnErrorMessage() {
+        ResourceNotFoundException resourceNotFoundException = new ResourceNotFoundException("Payment Instruction", "Id",
+                "2");
+        ResponseEntity<Error> reError = controllerExceptionHandler.entityNotFoundException(resourceNotFoundException);
+        assertThat(reError.getBody().getMessage()).isEqualTo("Payment Instruction for Id=2 was not found");
+    }
 
-	@Test
-	public void whenMethodArgumentNotMatches_shouldReturn500() {
-		when(methodArgumentNotValidExceptionMock.getParameter()).thenReturn(methodParameterMock);
-		when(methodArgumentNotValidExceptionMock.getMessage()).thenReturn("Parameter does not match");
-		when(controllerExceptionHandlerMock.methodArgumentNotValidException(methodArgumentNotValidExceptionMock))
-				.thenReturn(new ResponseEntity<>(new Error("Parameter does not match"), BAD_REQUEST));
-		assertThat(controllerExceptionHandlerMock.methodArgumentNotValidException(methodArgumentNotValidExceptionMock)
-				.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-	}
+    @Test
+    public void whenMethodArgumentNotMatches_shouldReturn500() {
+        when(methodArgumentNotValidExceptionMock.getParameter()).thenReturn(methodParameterMock);
+        when(methodArgumentNotValidExceptionMock.getMessage()).thenReturn("Parameter does not match");
+        when(controllerExceptionHandlerMock.methodArgumentNotValidException(methodArgumentNotValidExceptionMock))
+                .thenReturn(new ResponseEntity<>(new Error("Parameter does not match"), BAD_REQUEST));
+        assertThat(controllerExceptionHandlerMock.methodArgumentNotValidException(methodArgumentNotValidExceptionMock)
+                .getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
 
-	@SuppressWarnings("unchecked")
-	@Test
-	public void whenThereIsConstraintViolation_shouldReturn500() {
-		when(constraintViolationExceptionMock.getConstraintViolations()).thenReturn(setOfViolationsMock);
-		when(setOfViolationsMock.iterator()).thenReturn(cvIteratorMock);
-		when(cvIteratorMock.next()).thenReturn(violationMock);
-		when(violationMock.getPropertyPath()).thenReturn(pathMock);
-		when(pathMock.iterator()).thenReturn(nodeIteratorMock);
-		when(controllerExceptionHandlerMock.handleResourceNotFoundException(constraintViolationExceptionMock))
-				.thenReturn(new ResponseEntity<>(new Error("Parameter"), BAD_REQUEST));
-		assertThat(controllerExceptionHandlerMock.handleResourceNotFoundException(constraintViolationExceptionMock)
-				.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-	}
+    @SuppressWarnings("unchecked")
+    @Test
+    public void whenThereIsConstraintViolation_shouldReturn500() {
+        when(constraintViolationExceptionMock.getConstraintViolations()).thenReturn(setOfViolationsMock);
+        when(setOfViolationsMock.iterator()).thenReturn(cvIteratorMock);
+        when(cvIteratorMock.next()).thenReturn(violationMock);
+        when(violationMock.getPropertyPath()).thenReturn(pathMock);
+        when(pathMock.iterator()).thenReturn(nodeIteratorMock);
+        when(controllerExceptionHandlerMock.handleResourceNotFoundException(constraintViolationExceptionMock))
+                .thenReturn(new ResponseEntity<>(new Error("Parameter"), BAD_REQUEST));
+        assertThat(controllerExceptionHandlerMock.handleResourceNotFoundException(constraintViolationExceptionMock)
+                .getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
 }

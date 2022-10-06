@@ -108,7 +108,8 @@ public class PayHubService {
         ObjectMapper objectMapper = new ObjectMapper();
         resp.setTotal(paymentsPayload.size() + remissionsPayload.size());
 
-        BiFunction<HttpPost, Boolean, Function<BasePaymentInstruction, List<PayhubPartialRemission>>> createPaymentHandler = (httpPost, shouldUpdate) -> payHubPayload -> {
+        BiFunction<HttpPost, Boolean, Function<BasePaymentInstruction,
+            List<PayhubPartialRemission>>> createPaymentHandler = (httpPost, shouldUpdate) -> payHubPayload -> {
             payHubPayload.setReportDate(reportDate);
             StringBuilder payHubErrorMessage = new StringBuilder();
             PaymentInstructionPayhubReference reference = null;
@@ -139,7 +140,8 @@ public class PayHubService {
                     resp.increaseSuccess();
                     PaymentInstructionPayhubReference finalReference = reference;
                     payHubPayload.getCaseFeeDetails()
-                        .forEach(it -> partialRemission.add(createPayhubPartialRemission(it, finalReference.getPaymentGroupReference(), payHubPayload)));
+                        .forEach(it -> partialRemission.add(createPayhubPartialRemission(it,
+                            finalReference.getPaymentGroupReference(), payHubPayload)));
                 }
             }
             if (shouldUpdate) {
@@ -228,7 +230,8 @@ public class PayHubService {
             try {
                 Map<String, String> parsedResponse = parsePayhubResponse(rawMessage, objectMapper);
                 reference = PaymentInstructionPayhubReference.builder()
-                    .reference(parsedResponse.get(REFERENCE_KEY) == null ? parsedResponse.get(REMISSION_REFERENCE_KEY) : parsedResponse.get(REFERENCE_KEY))
+                    .reference(parsedResponse.get(REFERENCE_KEY) == null ? parsedResponse.get(REMISSION_REFERENCE_KEY)
+                        : parsedResponse.get(REFERENCE_KEY))
                     .paymentGroupReference(parsedResponse.get(GROUP_REFERENCE_KEY))
                     .paymentInstructionId(ppi.getId()).build();
                 Set<ConstraintViolation<PaymentInstructionPayhubReference>> violations = validator.validate(reference);
@@ -236,7 +239,7 @@ public class PayHubService {
                     violations.stream().map(ConstraintViolation::getMessage).forEach(payHubErrorMessage::append);
                     return null;
                 }
-            }catch (IOException e) {
+            } catch (IOException e) {
                 String message = "Failed to parse payhub response: \"" + rawMessage + "\": " + e.getMessage();
                 payHubErrorMessage.append(message);
                 LOG.error(message, e);
@@ -249,7 +252,7 @@ public class PayHubService {
     }
 
     private Map parsePayhubResponse(String rawMessage, ObjectMapper objectMapper) throws IOException {
-        if (rawMessage.startsWith("RM-")){
+        if (rawMessage.startsWith("RM-")) {
             Map<String, String> resp = new HashMap<>();
             resp.put(REFERENCE_KEY, rawMessage);
             resp.put(GROUP_REFERENCE_KEY, "");

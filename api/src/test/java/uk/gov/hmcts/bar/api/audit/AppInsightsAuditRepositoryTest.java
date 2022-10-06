@@ -29,13 +29,13 @@ public class AppInsightsAuditRepositoryTest {
         .build();
 
     @Before
-    public void setUp(){
+    public void setUp() {
         telemetry = spy(TelemetryClient.class);
         appInsightsAuditRepository = new AppInsightsAuditRepository("key",telemetry);
     }
 
     @Test
-    public void trackPaymentInstructionEvent(){
+    public void trackPaymentInstructionEvent() {
         PaymentInstruction paymentInstruction = Mockito.mock(PaymentInstruction.class);
         when(paymentInstruction.getId()).thenReturn(1);
         when(paymentInstruction.getPaymentType()).thenReturn(PaymentType.paymentTypeWith().name("CASH").build());
@@ -50,7 +50,7 @@ public class AppInsightsAuditRepositoryTest {
     }
 
     @Test
-    public  void  trackCaseEvent(){
+    public  void  trackCaseEvent() {
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
                                                         .caseReference("case-reference")
                                                         .feeCode("fee-code")
@@ -59,7 +59,7 @@ public class AppInsightsAuditRepositoryTest {
         verify(telemetry).trackEvent(anyString(),anyMap(),any());
     }
     @Test
-    public void trackEvent(){
+    public void trackEvent() {
         Map mockMap = new HashMap<String,String>();
         mockMap.put("key","value");
         appInsightsAuditRepository.trackEvent("name",mockMap);

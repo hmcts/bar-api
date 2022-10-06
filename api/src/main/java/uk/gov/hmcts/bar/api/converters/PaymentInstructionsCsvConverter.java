@@ -21,19 +21,19 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
     public static final String SEPARATOR = ",";
     public static final String EOL = "\n";
     public static final MediaType CSV_MEDIA_TYPE = new MediaType("text", "csv");
-    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat( "0.00" );
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.00");
 
-    public PaymentInstructionsCsvConverter(){
+    public PaymentInstructionsCsvConverter() {
         super(CSV_MEDIA_TYPE);
     }
 
     @Override
-    public List<PaymentInstruction> read(Type type, Class<?> contextClass, HttpInputMessage inputMessage)  {
+    public List<PaymentInstruction> read(Type type, Class<?> contextClass, HttpInputMessage inputMessage) {
         return Collections.emptyList();
     }
 
     @Override
-    protected List<PaymentInstruction> readInternal(Class<? extends List<PaymentInstruction>> clazz, HttpInputMessage inputMessage)  {
+    protected List<PaymentInstruction> readInternal(Class<? extends List<PaymentInstruction>> clazz, HttpInputMessage inputMessage) {
         return Collections.emptyList();
     }
 
@@ -50,7 +50,7 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
         outputStream.close();
     }
 
-    private String convertToCsv(List<String[]> data){
+    private String convertToCsv(List<String[]> data) {
         StringBuilder sb = new StringBuilder();
         data.forEach(line -> sb.append(convertLine(line)).append(EOL));
         return sb.toString();
@@ -59,14 +59,14 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
     private List<String[]> flattenEntity(List<PaymentInstruction> paymentInstructions) {
         List<String[]> paymentLines = new ArrayList<>();
         paymentLines.add(PaymentInstruction.CSV_TABLE_HEADER);
-        for (PaymentInstruction paymentInstruction : paymentInstructions){
+        for (PaymentInstruction paymentInstruction : paymentInstructions) {
             List<PaymentInstructionReportLine> flattened = paymentInstruction.flattenPaymentInstruction();
             flattened.forEach(paymentInstructionReportLine -> paymentLines.add(convertReportCellToString(paymentInstructionReportLine)));
         }
         return paymentLines;
     }
 
-    private String[] convertReportCellToString(PaymentInstructionReportLine line){
+    private String[] convertReportCellToString(PaymentInstructionReportLine line) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
         String[] csvRow = new String[28];
@@ -101,20 +101,20 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
         return csvRow;
     }
 
-    private String formatNumber(Integer amount){
+    private String formatNumber(Integer amount) {
         return amount == null ? null : DECIMAL_FORMAT.format(amount / 100d);
     }
 
-    private String convertLine(String[] line){
+    private String convertLine(String[] line) {
         return Arrays.stream(line).reduce("", (s, s2) -> s + SEPARATOR + (s2 == null ? "\"\"" : replaceSeparator(s2))).substring(1);
     }
 
     /**
-     * We need to use comma as separator to be able to open correctly in Excel, So we have to double quote the content
+     * We need to use comma as separator to be able to open correctly in Excel, So we have to double quote the content.
      * @param source
      * @return
      */
-    private String replaceSeparator(String source){
+    private String replaceSeparator(String source) {
         return "\"" + source.replaceAll("\"", "\"\"") + "\"";
     }
 

@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class TestUtils {
 
-    public static PaymentInstruction createSamplePaymentInstruction(String type, int paymentAmount, int[][] caseDetails){
+    public static PaymentInstruction createSamplePaymentInstruction(String type, int paymentAmount, int[][] caseDetails) {
         PaymentInstruction pi = TestUtils.createPaymentInstructions(type, paymentAmount);
         pi.setCaseFeeDetails(Arrays.stream(caseDetails).map(amounts -> TestUtils.createCaseFeeDetail(amounts)).collect(Collectors.toList()));
         return pi;
@@ -64,7 +64,7 @@ public class TestUtils {
     }
 
     public static PaymentInstruction createPaymentInstructions(String type, int amount) {
-        switch (type){
+        switch (type) {
             case "CARD":
                 CardPaymentInstruction card = new CardPaymentInstruction("John Doe", amount, "GBP","P","123456");
                 card.setId(1);
@@ -114,10 +114,10 @@ public class TestUtils {
             .feeCode("x00335")
             .feeDescription("Recovery of Land - Online (County Court)")
             .build();
-        if (amounts[1] != 0){
+        if (amounts[1] != 0) {
             cf.setRefundAmount(amounts[1]);
         }
-        if (amounts[2] != 0){
+        if (amounts[2] != 0) {
             cf.setRemissionAmount(amounts[2]);
         }
         return cf;
@@ -131,10 +131,10 @@ public class TestUtils {
             .feeVersion("1")
             .caseReference("12345")
             .build();
-        if (amounts[1] != 0){
+        if (amounts[1] != 0) {
             cf.setRefundAmount(amounts[1]);
         }
-        if (amounts[2] != 0){
+        if (amounts[2] != 0) {
             cf.setRemissionAmount(amounts[2]);
             cf.setRemissionAuthorisation("12345678901");
             cf.setRemissionBenefiter("John Doe");

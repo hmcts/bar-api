@@ -16,9 +16,9 @@ import javax.validation.constraints.Pattern;
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class Cheque extends PaymentInstructionRequest{
+public class Cheque extends PaymentInstructionRequest {
 
-    @Pattern(regexp ="^\\d{6,6}$",message = "invalid cheque number")
+    @Pattern(regexp = "^\\d{6,6}$",message = "invalid cheque number")
     private String chequeNumber;
 
     @JsonCreator

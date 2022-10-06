@@ -24,7 +24,7 @@ public class PaymentTypeServiceTest {
 
     @Mock
     private List<PaymentType> paymentTypes;
-    
+
     @Mock
     private List<PaymentInstructionAction> paymentInstructionActions;
 
@@ -35,12 +35,12 @@ public class PaymentTypeServiceTest {
     private FF4j ff4j;
 
 
-	@Before
-	public void setupMock() {
-		MockitoAnnotations.initMocks(this);
-		paymentTypeService = new PaymentTypeService(paymentTypeRepository,ff4j);
+    @Before
+    public void setupMock() {
+        MockitoAnnotations.initMocks(this);
+        paymentTypeService = new PaymentTypeService(paymentTypeRepository,ff4j);
 
-	}
+    }
 
     @Test
     public void shouldReturnPaymentTypes_whenGetAllPaymentTypesIsCalled() throws Exception {
@@ -49,7 +49,7 @@ public class PaymentTypeServiceTest {
 
         List<PaymentType> retrievedPaymentTypes = paymentTypeService.getAllPaymentTypes();
 
-        Assertions.assertThat(retrievedPaymentTypes).isEqualTo (paymentTypes);
+        Assertions.assertThat(retrievedPaymentTypes).isEqualTo(paymentTypes);
 
     }
 

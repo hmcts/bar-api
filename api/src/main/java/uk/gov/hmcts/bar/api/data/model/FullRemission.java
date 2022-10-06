@@ -25,7 +25,7 @@ public class FullRemission  {
                          @JsonProperty("remission_reference") String remissionReference) {
         this.payerName = payerName;
         this.remissionReference = remissionReference;
-        this.status =status;
+        this.status = status;
 
     }
 

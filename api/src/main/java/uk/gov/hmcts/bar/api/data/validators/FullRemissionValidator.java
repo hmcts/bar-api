@@ -11,12 +11,12 @@ public class FullRemissionValidator implements Validator {
 
     @Override
     public void validate(PaymentInstruction paymentInstruction, PaymentInstructionUpdateRequest updateRequest) throws PaymentProcessException {
-        if (!isFullRemission(paymentInstruction)){
+        if (!isFullRemission(paymentInstruction)) {
             return;
         }
         if (paymentInstruction.getCaseFeeDetails().size() != 1 &&
             !PaymentActionEnum.RETURN.displayValue().equals(updateRequest.getAction()) &&
-            !PaymentActionEnum.WITHDRAW.displayValue().equals(updateRequest.getAction())){
+            !PaymentActionEnum.WITHDRAW.displayValue().equals(updateRequest.getAction())) {
             throw new PaymentProcessException("Full Remission must have one and only one fee");
         }
     }

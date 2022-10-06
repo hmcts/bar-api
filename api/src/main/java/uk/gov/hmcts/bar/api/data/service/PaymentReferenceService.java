@@ -46,14 +46,12 @@ public class PaymentReferenceService {
         char currentSequenceCharacter = paymentReference.getSequenceCharacter();
 
         char nextSequenceCharacter = currentSequenceCharacter;
-        if(currentSequenceCharacter == SEQUENCE_CHARACTERS[25] && currentSequenceId == 9999)
-        {
+        if (currentSequenceCharacter == SEQUENCE_CHARACTERS[25] && currentSequenceId == 9999) {
             nextSequenceCharacter = SEQUENCE_CHARACTERS[0];
 
-        }
-        else if (currentSequenceId == 9999 && currentSequenceCharacter !=SEQUENCE_CHARACTERS[25]) {
+        } else if (currentSequenceId == 9999 && currentSequenceCharacter != SEQUENCE_CHARACTERS[25]) {
             int index = Chars.indexOf(SEQUENCE_CHARACTERS,currentSequenceCharacter);
-            nextSequenceCharacter = SEQUENCE_CHARACTERS[index+1];
+            nextSequenceCharacter = SEQUENCE_CHARACTERS[index + 1];
         }
 
         return new PaymentReference(paymentReference.getSiteId(),nextSequenceId,nextSequenceCharacter);

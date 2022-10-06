@@ -14,7 +14,8 @@ import java.util.Optional;
 @Repository
 public interface SiteRepository extends CrudRepository<Site, String> {
 
-    @Query(value = "SELECT us.user_email as email, bu.forename, bu.surname , bu.roles from user_site us left join bar_user bu on us.user_email = upper(bu.email) where us.site_id=:siteId", nativeQuery = true)
+    @Query(value = "SELECT us.user_email as email, bu.forename, bu.surname , bu.roles from user_site us left " +
+        "join bar_user bu on us.user_email = upper(bu.email) where us.site_id=:siteId", nativeQuery = true)
     List<SiteUserDto> findAllEmailsToSite(@Param("siteId") String siteId);
 
     @Modifying
@@ -31,6 +32,6 @@ public interface SiteRepository extends CrudRepository<Site, String> {
     @Query(value = "SELECT s.id, s.description from site s join user_site us on s.id = us.site_id where us.user_email=:email", nativeQuery = true)
     List<Site> findSitesByUser(@Param("email") String email);
 
-    @Query(value= "SELECT site_id FROM user_site where user_email=:email", nativeQuery = true)
+    @Query(value = "SELECT site_id FROM user_site where user_email=:email", nativeQuery = true)
     List<String> findSiteIdsByUser(@Param("email") String email);
 }

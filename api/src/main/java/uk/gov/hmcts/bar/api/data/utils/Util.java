@@ -57,37 +57,37 @@ public interface Util {
         return inCriteria;
     }
 
-	static In<Integer> getInCriteriaWithIntegerValues(In<Integer> inCriteria, String columnName) {
-		if (inCriteria == null) {
-			return null;
-		}
-		String[] valueArray = columnName.split(",");
-		if (valueArray != null && valueArray.length > 0) {
-			for (String statusValue : valueArray) {
-				inCriteria.value(Integer.valueOf(statusValue));
-			}
-		} else {
-			inCriteria.value(Integer.valueOf(columnName));
-		}
-		return inCriteria;
-	}
+    static In<Integer> getInCriteriaWithIntegerValues(In<Integer> inCriteria, String columnName) {
+        if (inCriteria == null) {
+            return null;
+        }
+        String[] valueArray = columnName.split(",");
+        if (valueArray != null && valueArray.length > 0) {
+            for (String statusValue : valueArray) {
+                inCriteria.value(Integer.valueOf(statusValue));
+            }
+        } else {
+            inCriteria.value(Integer.valueOf(columnName));
+        }
+        return inCriteria;
+    }
 
-	static List<PaymentInstructionStaticsByUser> getFilteredPisList(
-			List<PaymentInstructionStaticsByUser> paymentInstructionStaticsByUserObjects) {
-		Map<Integer, PaymentInstructionStaticsByUser> pisMap = new HashMap<>();
-		paymentInstructionStaticsByUserObjects.forEach(pisByUser -> {
-			Integer key = pisByUser.getPaymentInstructionId();
-			if (pisMap.containsKey(key)) {
-				PaymentInstructionStaticsByUser insertedObj = pisMap.get(key);
-				if (insertedObj.getUpdateTime().isBefore(pisByUser.getUpdateTime())) {
-					pisMap.put(key, pisByUser);
-				}
-			} else {
-				pisMap.put(key, pisByUser);
-			}
-		});
-		return new ArrayList<>(pisMap.values());
-	}
+    static List<PaymentInstructionStaticsByUser> getFilteredPisList(
+            List<PaymentInstructionStaticsByUser> paymentInstructionStaticsByUserObjects) {
+        Map<Integer, PaymentInstructionStaticsByUser> pisMap = new HashMap<>();
+        paymentInstructionStaticsByUserObjects.forEach(pisByUser -> {
+            Integer key = pisByUser.getPaymentInstructionId();
+            if (pisMap.containsKey(key)) {
+                PaymentInstructionStaticsByUser insertedObj = pisMap.get(key);
+                if (insertedObj.getUpdateTime().isBefore(pisByUser.getUpdateTime())) {
+                    pisMap.put(key, pisByUser);
+                }
+            } else {
+                pisMap.put(key, pisByUser);
+            }
+        });
+        return new ArrayList<>(pisMap.values());
+    }
 
     static String getFormattedDateTime(LocalDateTime localDateTime, DateTimeFormatter dateFormatter) {
         return (localDateTime == null || dateFormatter == null) ? null : localDateTime.format(dateFormatter);
@@ -113,31 +113,31 @@ public interface Util {
         return paymentInstructionStatsUserMap;
     }
 
-	static MultiMap createMultimapFromPisByUserList(List<PaymentInstructionStaticsByUser> pisByUserList) {
-		MultiMap paymentInstructionStatsByUserMapTemp = new MultiValueMap();
-		MultiMap paymentInstructionStatsMap = new MultiValueMap();
-		pisByUserList.forEach(piByUser -> paymentInstructionStatsByUserMapTemp.put(piByUser.getBarUserId(), piByUser));
-		Set<String> keys = paymentInstructionStatsByUserMapTemp.keySet();
-		for (String key : keys) {
-			List<PaymentInstructionStaticsByUser> pisByUserListInner = (List<PaymentInstructionStaticsByUser>) paymentInstructionStatsByUserMapTemp
-					.get(key);
-			if (pisByUserList.size() > 0) {
-				PaymentInstructionUserStats piuStats = new PaymentInstructionUserStats(
-						pisByUserListInner.get(0).getBarUserId(), pisByUserListInner.get(0).getBarUserFullName(),
-						(long) pisByUserListInner.size());
-				Integer[] piArray = new Integer[pisByUserListInner.size()];
-				int i = 0;
-				for (PaymentInstructionStaticsByUser pisByUserObj : pisByUserListInner) {
-					piArray[i++] = pisByUserObj.getPaymentInstructionId();
-				}
-				piuStats.setListOfPaymentInstructions(piArray);
-				paymentInstructionStatsMap.put(key, piuStats);
-			}
-		}
-		return paymentInstructionStatsMap;
-	}
+    static MultiMap createMultimapFromPisByUserList(List<PaymentInstructionStaticsByUser> pisByUserList) {
+        MultiMap paymentInstructionStatsByUserMapTemp = new MultiValueMap();
+        MultiMap paymentInstructionStatsMap = new MultiValueMap();
+        pisByUserList.forEach(piByUser -> paymentInstructionStatsByUserMapTemp.put(piByUser.getBarUserId(), piByUser));
+        Set<String> keys = paymentInstructionStatsByUserMapTemp.keySet();
+        for (String key : keys) {
+            List<PaymentInstructionStaticsByUser> pisByUserListInner = (List<PaymentInstructionStaticsByUser>) paymentInstructionStatsByUserMapTemp
+                    .get(key);
+            if (pisByUserList.size() > 0) {
+                PaymentInstructionUserStats piuStats = new PaymentInstructionUserStats(
+                        pisByUserListInner.get(0).getBarUserId(), pisByUserListInner.get(0).getBarUserFullName(),
+                        (long) pisByUserListInner.size());
+                Integer[] piArray = new Integer[pisByUserListInner.size()];
+                int i = 0;
+                for (PaymentInstructionStaticsByUser pisByUserObj : pisByUserListInner) {
+                    piArray[i++] = pisByUserObj.getPaymentInstructionId();
+                }
+                piuStats.setListOfPaymentInstructions(piArray);
+                paymentInstructionStatsMap.put(key, piuStats);
+            }
+        }
+        return paymentInstructionStatsMap;
+    }
 
-	interface StringUtils {
+    interface StringUtils {
         static boolean isAnyBlank(java.lang.String...values) {
             for (java.lang.String value: values) {
                 if (org.apache.commons.lang3.StringUtils.isBlank(value)) {

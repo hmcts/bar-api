@@ -62,13 +62,13 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         DateTimeFormatter paramFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
         String paramStartDate = currentDate.format(paramFormatter);
         String recordedUser = "1234-fn 1234-ln";
-        String expectedHeader =convertLine(CashPaymentInstruction.CSV_TABLE_HEADER);
+        String expectedHeader = convertLine(CashPaymentInstruction.CSV_TABLE_HEADER);
         String dailySequenceId = "1";
         String payeeName = "Mr Payer Payer";
         String amountSite1 = "5.33";
         String amountSite2 = "6.10";
         String bgcNumber = "123456";
-        String sentToPayhub="No";
+        String sentToPayhub = "No";
 
         restActions
             .getCsv("/payment-instructions?startDate=" + paramStartDate,"Y431")
@@ -136,11 +136,11 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         DateTimeFormatter paramFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
         String paramStartDate = currentDate.format(paramFormatter);
         String recordedUser = "1234-fn 1234-ln";
-        String expectedHeader =convertLine(CashPaymentInstruction.CSV_TABLE_HEADER);
+        String expectedHeader = convertLine(CashPaymentInstruction.CSV_TABLE_HEADER);
         String dailySequenceId = "1";
         String payeeName = "Mr Payer Payer";
         String amount = "6.00";
-        String sentToPayhub="No";
+        String sentToPayhub = "No";
 
         restActions
             .getCsv("/payment-instructions?startDate=" + paramStartDate,"Y431")
@@ -204,11 +204,11 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         DateTimeFormatter paramFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
         String paramStartDate = currentDate.format(paramFormatter);
         String recordedUser = "1234-fn 1234-ln";
-        String expectedHeader =convertLine(CashPaymentInstruction.CSV_TABLE_HEADER);
+        String expectedHeader = convertLine(CashPaymentInstruction.CSV_TABLE_HEADER);
         String dailySequenceId = "1";
         String payeeName = "Mr Payer Payer";
         String amount = "6.00";
-        String sentToPayhub="No";
+        String sentToPayhub = "No";
 
         restActions
             .getCsv("/payment-instructions?startDate=" + paramStartDate,"Y431")
@@ -274,15 +274,15 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         DateTimeFormatter paramFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
         String paramStartDate = currentDate.format(paramFormatter);
         String recordedUser = "1234-fn 1234-ln";
-        String expectedHeader =convertLine(CashPaymentInstruction.CSV_TABLE_HEADER);
+        String expectedHeader = convertLine(CashPaymentInstruction.CSV_TABLE_HEADER);
         String dailySequenceId = "1";
         String payeeName = "Mr Payer Payer";
         String amount = "6.00";
         String bgcNumber = "123456";
-        String sentToPayhub="Yes";
-        String sentToPayhubBy="1234-fn 1234-ln";
+        String sentToPayhub = "Yes";
+        String sentToPayhubBy = "1234-fn 1234-ln";
         String dtSendToPayhub = currentDateTime.format(actualFormatter);
-        String reportingDt=currentDateTime.format(actualFormatter);
+        String reportingDt = currentDateTime.format(actualFormatter);
 
 
 
@@ -290,7 +290,7 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
             .getCsv("/payment-instructions?startDate=" + paramStartDate,"Y431")
             .andExpect(status().isOk())
             .andExpect(result -> {
-                String csv  = result.getResponse().getContentAsString();
+                String csv = result.getResponse().getContentAsString();
                 int indexOfdailySequenceId = result.getResponse().getContentAsString().indexOf("1");
                 String actualHeader = csv.substring(0,indexOfdailySequenceId - 2);
                 Assert.assertEquals(expectedHeader,actualHeader);
@@ -352,12 +352,12 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         DateTimeFormatter paramFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
         String paramStartDate = currentDate.format(paramFormatter);
         String recordedUser = "1234-fn 1234-ln";
-        String expectedHeader =convertLine(CashPaymentInstruction.CSV_TABLE_HEADER);
+        String expectedHeader = convertLine(CashPaymentInstruction.CSV_TABLE_HEADER);
         String dailySequenceId = "1";
         String payeeName = "Mr Payer Payer";
         String amount = "6.00";
         String bgcNumber = "123456";
-        String sentToPayhub="Fail";
+        String sentToPayhub = "Fail";
 
         restActions
             .getCsv("/payment-instructions?startDate=" + paramStartDate,"Y431")
@@ -433,18 +433,18 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         DateTimeFormatter paramFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
         String paramStartDate = currentDate.format(paramFormatter);
         String recordedUser = "1234-fn 1234-ln";
-        String expectedHeader =convertLine(CashPaymentInstruction.CSV_TABLE_HEADER);
+        String expectedHeader = convertLine(CashPaymentInstruction.CSV_TABLE_HEADER);
         String dailySequenceId = "1";
         String payeeName = "Mr Payer Payer";
         String amount = "6.00";
         String bgcNumber = "123456";
-        String sentToPayhub="";
+        String sentToPayhub = "";
 
         restActions
             .getCsv("/payment-instructions?startDate=" + paramStartDate,"Y431")
             .andExpect(status().isOk())
             .andExpect(result -> {
-                String csv  = result.getResponse().getContentAsString();
+                String csv = result.getResponse().getContentAsString();
                 int indexOfdailySequenceId = result.getResponse().getContentAsString().indexOf("1");
                 String actualHeader = csv.substring(0,indexOfdailySequenceId - 2);
                 Assert.assertEquals(expectedHeader,actualHeader);
@@ -513,12 +513,12 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
         DateTimeFormatter paramFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
         String paramStartDate = currentDate.format(paramFormatter);
         String recordedUser = "1234-fn 1234-ln";
-        String expectedHeader =convertLine(CashPaymentInstruction.CSV_TABLE_HEADER);
+        String expectedHeader = convertLine(CashPaymentInstruction.CSV_TABLE_HEADER);
         String dailySequenceId = "1";
         String payeeName = "Mr Payer Payer";
         String amount = "6.00";
         String bgcNumber = "123456";
-        String sentToPayhub="";
+        String sentToPayhub = "";
 
         restActions
             .getCsv("/payment-instructions?startDate=" + paramStartDate,"Y431")
@@ -543,11 +543,11 @@ public class PaymentInstructionCsvRetrieveTest extends ComponentTestBase {
 
 
 
-    private String convertLine(String[] line){
+    private String convertLine(String[] line) {
         return Arrays.stream(line).reduce("", (s, s2) -> s + SEPARATOR + (s2 == null ? "\"\"" : replaceSeparator(s2))).substring(1);
     }
 
-    private String replaceSeparator(String source){
+    private String replaceSeparator(String source) {
         return "\"" + source.replaceAll("\"", "\"\"") + "\"";
     }
 

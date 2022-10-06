@@ -34,19 +34,23 @@ public class PaymentInstructionUpdateValidatorService {
         validators = Arrays.asList(actionValidator, fullRemissionValidator, unallocatedAmountValidator);
     }
 
-    public void validateAction(PaymentInstruction paymentInstruction, PaymentInstructionUpdateRequest updateRequest) throws PaymentProcessException {
+    public void validateAction(PaymentInstruction paymentInstruction, PaymentInstructionUpdateRequest updateRequest)
+        throws PaymentProcessException {
         this.actionValidator.validate(paymentInstruction, updateRequest);
     }
 
-    public void validateFullRemission(PaymentInstruction paymentInstruction, PaymentInstructionUpdateRequest updateRequest) throws PaymentProcessException {
+    public void validateFullRemission(PaymentInstruction paymentInstruction, PaymentInstructionUpdateRequest updateRequest)
+        throws PaymentProcessException {
         this.fullRemissionValidator.validate(paymentInstruction, updateRequest);
     }
 
-    public void validateUnallocatedAmount(PaymentInstruction paymentInstruction, PaymentInstructionUpdateRequest updateRequest) throws PaymentProcessException {
+    public void validateUnallocatedAmount(PaymentInstruction paymentInstruction, PaymentInstructionUpdateRequest updateRequest)
+        throws PaymentProcessException {
         this.unallocatedAmountValidator.validate(paymentInstruction, updateRequest);
     }
 
-    public void validateAll(PaymentInstruction paymentInstruction, PaymentInstructionUpdateRequest updateRequest) throws PaymentProcessException {
+    public void validateAll(PaymentInstruction paymentInstruction, PaymentInstructionUpdateRequest updateRequest)
+        throws PaymentProcessException {
         List<PaymentProcessException> exceptions = new ArrayList<>();
         validators.forEach(validator -> {
             try {
@@ -55,7 +59,7 @@ public class PaymentInstructionUpdateValidatorService {
                 exceptions.add(e);
             }
         });
-        if (!exceptions.isEmpty()){
+        if (!exceptions.isEmpty()) {
             throw exceptions.get(0);
         }
     }

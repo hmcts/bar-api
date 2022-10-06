@@ -121,7 +121,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
 
     @Test
     public void whenCardPaymentInstructionIsDeleted_expectStatus_204() throws Exception {
-        Card proposedCardPaymentInstructionRequest =cardWith()
+        Card proposedCardPaymentInstructionRequest = cardWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
@@ -170,7 +170,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
             .currency("GBP").status("D").build();
 
 
-        PaymentInstructionUpdateRequest request= paymentInstructionUpdateRequestWith()
+        PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith()
             .status("P").build();
 
         restActions
@@ -194,7 +194,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
             .currency("GBP").status("D").build();
 
 
-        PaymentInstructionUpdateRequest request= paymentInstructionUpdateRequestWith()
+        PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith()
             .status("P").build();
 
         restActions
@@ -217,7 +217,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
             .currency("GBP").status("D").build();
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-        	.paymentInstructionId(1)
+            .paymentInstructionId(1)
             .caseReference("case102")
             .feeCode("X001")
             .amount(200)
@@ -243,7 +243,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
             .currency("GBP").status("D").build();
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-        	.paymentInstructionId(1)
+            .paymentInstructionId(1)
             .caseReference("?????????")
             .build();
 
@@ -298,7 +298,7 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
         restActions
             .get("/payment-instructions?payerName=NonExisting")
             .andExpect(status().isOk())
-            .andExpect(body().as(List.class, cardPaymentInstructionList-> assertTrue(cardPaymentInstructionList.isEmpty())));
+            .andExpect(body().as(List.class, cardPaymentInstructionList -> assertTrue(cardPaymentInstructionList.isEmpty())));
 
     }
 
@@ -380,197 +380,197 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
 
     }
 
-	@Test
-	public void whenCardPaymentInstructionSubmittedToSrFeeClerkByFeeClerk_expectThePIToAppearInSrFeeClerkOverview()
-			throws Exception {
-		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
-				.status("D").authorizationCode("qwerty").build();
+    @Test
+    public void whenCardPaymentInstructionSubmittedToSrFeeClerkByFeeClerk_expectThePIToAppearInSrFeeClerkOverview()
+            throws Exception {
+        Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
+                .status("D").authorizationCode("qwerty").build();
 
-		restActions.post("/allpay", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/allpay", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
-		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+                .paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
 
-		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+        restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
-		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
-				.build();
+        PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+                .build();
 
-		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+        restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
 
-		Card modifiedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
-				.status("PA").authorizationCode("qwerty").build();
+        Card modifiedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
+                .status("PA").authorizationCode("qwerty").build();
 
-		restActionsForFeeClerk.put("/allpay/1", modifiedCardPaymentInstructionRequest).andExpect(status().isOk());
+        restActionsForFeeClerk.put("/allpay/1", modifiedCardPaymentInstructionRequest).andExpect(status().isOk());
 
-		String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk())
-				.andExpect(content().contentType("application/json")).andReturn().getResponse()
-				.getContentAsString();
-		JSONObject feeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
-				.get("fee-clerk")).get(0);
-		assertEquals( "fee-clerk-fn fee-clerk-ln",feeClerk.get("bar_user_full_name"));
-		assertEquals( 1,feeClerk.get("count_of_payment_instruction_in_specified_status"));
-	}
+        String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk())
+                .andExpect(content().contentType("application/json")).andReturn().getResponse()
+                .getContentAsString();
+        JSONObject feeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
+                .get("fee-clerk")).get(0);
+        assertEquals("fee-clerk-fn fee-clerk-ln",feeClerk.get("bar_user_full_name"));
+        assertEquals(1,feeClerk.get("count_of_payment_instruction_in_specified_status"));
+    }
 
-	@Test
-	public void whenCardPaymentInstructionSubmittedToDMBySrFeeClerk_expectThePIToAppearDMOverview() throws Exception {
-		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
-				.status("D").authorizationCode("qwerty").build();
+    @Test
+    public void whenCardPaymentInstructionSubmittedToDMBySrFeeClerk_expectThePIToAppearDMOverview() throws Exception {
+        Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
+                .status("D").authorizationCode("qwerty").build();
 
-		restActions.post("/allpay", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/allpay", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
-		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+                .paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
 
-		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+        restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
-		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
-				.build();
+        PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+                .build();
 
-		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+        restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
 
-		Card pendingApprovedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550)
-				.currency("GBP").status("PA").authorizationCode("qwerty").build();
+        Card pendingApprovedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550)
+                .currency("GBP").status("PA").authorizationCode("qwerty").build();
 
-		restActionsForFeeClerk.put("/allpay/1", pendingApprovedCardPaymentInstructionRequest)
-				.andExpect(status().isOk());
+        restActionsForFeeClerk.put("/allpay/1", pendingApprovedCardPaymentInstructionRequest)
+                .andExpect(status().isOk());
 
-		restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
+        restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
 
-		Card approvedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
-				.status("A").authorizationCode("qwerty").build();
+        Card approvedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
+                .status("A").authorizationCode("qwerty").build();
 
-		restActionsForSrFeeClerk.put("/allpay/1", approvedCardPaymentInstructionRequest).andExpect(status().isOk());
+        restActionsForSrFeeClerk.put("/allpay/1", approvedCardPaymentInstructionRequest).andExpect(status().isOk());
 
-		String jsonResponse = restActionsForDM.get("/users/pi-stats?status=A").andExpect(status().isOk())
-				.andExpect(content().contentType("application/json")).andReturn().getResponse()
-				.getContentAsString();
-		JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
-				.get("sr-fee-clerk")).get(0);
-		assertEquals( "sr-fee-clerk-fn sr-fee-clerk-ln",srFeeClerk.get("bar_user_full_name"));
-		assertEquals( 1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
-	}
+        String jsonResponse = restActionsForDM.get("/users/pi-stats?status=A").andExpect(status().isOk())
+                .andExpect(content().contentType("application/json")).andReturn().getResponse()
+                .getContentAsString();
+        JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
+                .get("sr-fee-clerk")).get(0);
+        assertEquals("sr-fee-clerk-fn sr-fee-clerk-ln",srFeeClerk.get("bar_user_full_name"));
+        assertEquals(1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
+    }
 
-	@Test
-	public void whenCardPaymentInstructionSubmittedBySrFeeClerkIsRejectedByDM_expectThePIStatusAsRDM()
-			throws Exception {
-		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
-				.status("D").authorizationCode("qwerty").build();
+    @Test
+    public void whenCardPaymentInstructionSubmittedBySrFeeClerkIsRejectedByDM_expectThePIStatusAsRDM()
+            throws Exception {
+        Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
+                .status("D").authorizationCode("qwerty").build();
 
-		restActions.post("/allpay", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/allpay", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
-		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(500).feeVersion("1").build();
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+                .paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(500).feeVersion("1").build();
 
-		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+        restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
-		caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-				.paymentInstructionId(1).caseReference("case103").feeCode("X003").amount(50).feeVersion("1").build();
+        caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+                .paymentInstructionId(1).caseReference("case103").feeCode("X003").amount(50).feeVersion("1").build();
 
-		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+        restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
-		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
-				.build();
+        PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+                .build();
 
-		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+        restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
 
-		Card pendingApprovedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550)
-				.currency("GBP").status("PA").authorizationCode("qwerty").build();
+        Card pendingApprovedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550)
+                .currency("GBP").status("PA").authorizationCode("qwerty").build();
 
-		restActionsForFeeClerk.put("/allpay/1", pendingApprovedCardPaymentInstructionRequest)
-				.andExpect(status().isOk());
+        restActionsForFeeClerk.put("/allpay/1", pendingApprovedCardPaymentInstructionRequest)
+                .andExpect(status().isOk());
 
-		restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
+        restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
 
-		Card approvedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
-				.status("A").authorizationCode("qwerty").build();
+        Card approvedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
+                .status("A").authorizationCode("qwerty").build();
 
-		restActionsForSrFeeClerk.put("/allpay/1", approvedCardPaymentInstructionRequest).andExpect(status().isOk());
+        restActionsForSrFeeClerk.put("/allpay/1", approvedCardPaymentInstructionRequest).andExpect(status().isOk());
 
-		Card rejectedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
-				.status("RDM").authorizationCode("qwerty").build();
+        Card rejectedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
+                .status("RDM").authorizationCode("qwerty").build();
 
-		restActionsForDM.patch("/payment-instructions/1/reject", rejectedCardPaymentInstructionRequest)
-				.andExpect(status().isOk());
+        restActionsForDM.patch("/payment-instructions/1/reject", rejectedCardPaymentInstructionRequest)
+                .andExpect(status().isOk());
 
-		restActionsForSrFeeClerk.get("/payment-instructions/1").andExpect(status().isOk())
-				.andExpect(body().as(CardPaymentInstruction.class, (pi) -> {
-					assertThat(pi.getStatus().equals("RDM"));
-				}));
-	}
+        restActionsForSrFeeClerk.get("/payment-instructions/1").andExpect(status().isOk())
+                .andExpect(body().as(CardPaymentInstruction.class, (pi) -> {
+                    assertThat(pi.getStatus().equals("RDM"));
+                }));
+    }
 
-	@Test
-	public void whenCardPaymentInstructionSubmittedBySrFeeClerkIsRejectedByDM_expectThePIInSrFeeClerkOverviewStats()
-			throws Exception {
-		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
-				.status("D").authorizationCode("qwerty").build();
+    @Test
+    public void whenCardPaymentInstructionSubmittedBySrFeeClerkIsRejectedByDM_expectThePIInSrFeeClerkOverviewStats()
+            throws Exception {
+        Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
+                .status("D").authorizationCode("qwerty").build();
 
-		restActions.post("/allpay", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/allpay", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
-		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+                .paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
 
-		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+        restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
-		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
-				.build();
+        PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+                .build();
 
-		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+        restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
 
-		Card pendingApprovedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550)
-				.currency("GBP").status("PA").authorizationCode("qwerty").build();
+        Card pendingApprovedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550)
+                .currency("GBP").status("PA").authorizationCode("qwerty").build();
 
-		restActionsForFeeClerk.put("/allpay/1", pendingApprovedCardPaymentInstructionRequest)
-				.andExpect(status().isOk());
+        restActionsForFeeClerk.put("/allpay/1", pendingApprovedCardPaymentInstructionRequest)
+                .andExpect(status().isOk());
 
-		restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
+        restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
 
-		Card approvedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
-				.status("A").authorizationCode("qwerty").build();
+        Card approvedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
+                .status("A").authorizationCode("qwerty").build();
 
-		restActionsForSrFeeClerk.put("/allpay/1", approvedCardPaymentInstructionRequest).andExpect(status().isOk());
+        restActionsForSrFeeClerk.put("/allpay/1", approvedCardPaymentInstructionRequest).andExpect(status().isOk());
 
-		Card rejectedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
-				.status("RDM").authorizationCode("qwerty").build();
+        Card rejectedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
+                .status("RDM").authorizationCode("qwerty").build();
 
-		restActionsForDM.patch("/payment-instructions/1/reject", rejectedCardPaymentInstructionRequest)
-				.andExpect(status().isOk());
+        restActionsForDM.patch("/payment-instructions/1/reject", rejectedCardPaymentInstructionRequest)
+                .andExpect(status().isOk());
 
-		String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-stats?status=RDM&oldStatus=A")
-				.andExpect(status().isOk()).andExpect(content().contentType("application/json"))
-				.andReturn().getResponse().getContentAsString();
-		System.out.println(jsonResponse);
-		JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
-				.get("sr-fee-clerk")).get(0);
-		assertEquals( "sr-fee-clerk-fn sr-fee-clerk-ln",srFeeClerk.get("bar_user_full_name"));
-		assertEquals( 1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
-	}
+        String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-stats?status=RDM&oldStatus=A")
+                .andExpect(status().isOk()).andExpect(content().contentType("application/json"))
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(jsonResponse);
+        JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
+                .get("sr-fee-clerk")).get(0);
+        assertEquals("sr-fee-clerk-fn sr-fee-clerk-ln",srFeeClerk.get("bar_user_full_name"));
+        assertEquals(1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
+    }
 
-	@Test
-	public void whenQueriedWithAListOfPaymentInstructionIds_receiveAllThePaymentInstructionsInTheQueryList()
-			throws Exception {
-		Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
-				.status("D").authorizationCode("qwerty").build();
-		CardPaymentInstruction retrievedCardPaymentInstruction = cardPaymentInstructionWith()
-				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").authorizationCode("qwerty")
-				.build();
+    @Test
+    public void whenQueriedWithAListOfPaymentInstructionIds_receiveAllThePaymentInstructionsInTheQueryList()
+            throws Exception {
+        Card proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
+                .status("D").authorizationCode("qwerty").build();
+        CardPaymentInstruction retrievedCardPaymentInstruction = cardPaymentInstructionWith()
+                .payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").authorizationCode("qwerty")
+                .build();
 
-		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
-		proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
-				.status("D").authorizationCode("qwerty").build();
-		CardPaymentInstruction retrievedCardPaymentInstruction2 = cardPaymentInstructionWith()
-				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").authorizationCode("qwerty")
-				.build();
+        proposedCardPaymentInstructionRequest = cardWith().payerName("Mr Payer Payer").amount(550).currency("GBP")
+                .status("D").authorizationCode("qwerty").build();
+        CardPaymentInstruction retrievedCardPaymentInstruction2 = cardPaymentInstructionWith()
+                .payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").authorizationCode("qwerty")
+                .build();
 
-		restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/cards", proposedCardPaymentInstructionRequest).andExpect(status().isCreated());
 
-		restActionsForSrFeeClerk.get("/users/2/payment-instructions?piIds=1,2").andExpect(status().isOk())
-				.andExpect(body().as(List.class, (cardPayList) -> {
-					assertThat(cardPayList.get(0).equals(retrievedCardPaymentInstruction));
-					assertThat(cardPayList.get(1).equals(retrievedCardPaymentInstruction2));
-				}));
-	}
+        restActionsForSrFeeClerk.get("/users/2/payment-instructions?piIds=1,2").andExpect(status().isOk())
+                .andExpect(body().as(List.class, (cardPayList) -> {
+                    assertThat(cardPayList.get(0).equals(retrievedCardPaymentInstruction));
+                    assertThat(cardPayList.get(1).equals(retrievedCardPaymentInstruction2));
+                }));
+    }
 
     @Test
     public void givenCardPIsSubmitted_getTheirCount() throws Exception {
@@ -607,7 +607,8 @@ public class CardInstructionCrudComponentTest extends ComponentTestBase  {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("ddMMyyyy");
         String startDate = LocalDate.now().format(dtf);
         String endDate = LocalDate.now().format(dtf);
-        restActionsForFeeClerk.get("/payment-instructions/count?status=PA&userId=1234&startDate="+startDate+"&endDate="+endDate).andExpect(status().isOk())
+        restActionsForFeeClerk.get("/payment-instructions/count?status=PA&userId=1234&startDate=" + startDate +
+            "&endDate=" + endDate).andExpect(status().isOk())
             .andExpect(body().as(Long.class, (count) -> {
                 assertThat(count.equals(1));
             }));

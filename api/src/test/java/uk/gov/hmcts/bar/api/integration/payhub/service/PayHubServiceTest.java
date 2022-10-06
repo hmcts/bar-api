@@ -1,6 +1,5 @@
 package uk.gov.hmcts.bar.api.integration.payhub.service;
 
-import ch.qos.logback.core.db.dialect.DBUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.*;
@@ -41,11 +40,25 @@ import static org.mockito.Mockito.*;
 public class PayHubServiceTest {
 
     public static final LocalDateTime TRANSFER_DATE = LocalDateTime.now();
-    public static final String payload1 = "{\"amount\":100.00,\"currency\":\"GBP\",\"site_id\":\"Y431\",\"giro_slip_no\":\"\",\"fees\":[{\"code\":\"x00335\",\"calculated_amount\":50.00,\"version\":\"1\",\"reference\":\"12345\"},{\"code\":\"x00335\",\"calculated_amount\":50.00,\"version\":\"1\",\"reference\":\"12345\"}],\"requestor_reference\":\"Y431-2018081313A0001\",\"reported_date_offline\":\"" + TRANSFER_DATE.format(DateTimeFormatter.ISO_DATE_TIME) + "\",\"payment_method\":\"CHEQUE\",\"requestor\":\"DIGITAL_BAR\",\"external_reference\":\"D\"}";
-    public static final String payload2 = "{\"amount\":200.00,\"currency\":\"GBP\",\"site_id\":\"Y431\",\"giro_slip_no\":\"\",\"fees\":[{\"code\":\"x00335\",\"calculated_amount\":100.00,\"version\":\"1\",\"reference\":\"12345\"},{\"code\":\"x00335\",\"calculated_amount\":100.00,\"version\":\"1\",\"reference\":\"12345\"}],\"requestor_reference\":\"Y431-2018081313A0002\",\"reported_date_offline\":\"" + TRANSFER_DATE.format(DateTimeFormatter.ISO_DATE_TIME) + "\",\"payment_method\":\"CARD\",\"requestor\":\"DIGITAL_BAR\",\"external_reference\":\"123456\",\"external_provider\":\"barclaycard\"}";
-    public static final String payload3 = "{\"site_id\":\"Y431\", \"case_reference\":\"12345\",\"hwf_reference\":\"12345678901\",\"fee\":{\"code\":\"x00335\",\"version\":\"1\",\"reference\":\"12345\",\"calculated_amount\":10.00},\"beneficiary_name\":\"John Doe\",\"hwf_amount\":10.00}";
-    public static final String payload4 = "{\"site_id\":\"Y431\",\"case_reference\":\"12345\",\"fee\":{\"code\":\"x00335\",\"version\":\"1\",\"reference\":\"12345\",\"calculated_amount\":100.00},\"group_reference\":\"2018-15348634835\",\"hwf_reference\":\"12345678901\",\"beneficiary_name\":\"John Doe\",\"hwf_amount\":10.00}";
-    public static final String payload5 = "{\"site_id\":\"Y431\",\"case_reference\":\"12345\",\"fee\":{\"code\":\"x00335\",\"version\":\"1\",\"reference\":\"12345\",\"calculated_amount\":100.00},\"group_reference\":\"2018-15348634835\",\"hwf_reference\":\"12345678901\",\"beneficiary_name\":\"John Doe\",\"hwf_amount\":15.00}";
+    public static final String payload1 = "{\"amount\":100.00,\"currency\":\"GBP\",\"site_id\":\"Y431\",\"giro_slip_no\":\"\"," +
+        "\"fees\":[{\"code\":\"x00335\",\"calculated_amount\":50.00,\"version\":\"1\",\"reference\":\"12345\"},{\"code\":\"x00335\"," +
+        "\"calculated_amount\":50.00,\"version\":\"1\",\"reference\":\"12345\"}],\"requestor_reference\":\"Y431-2018081313A0001\"," +
+        "\"reported_date_offline\":\"" + TRANSFER_DATE.format(DateTimeFormatter.ISO_DATE_TIME) + "\",\"payment_method\":\"CHEQUE\"," +
+        "\"requestor\":\"DIGITAL_BAR\",\"external_reference\":\"D\"}";
+    public static final String payload2 = "{\"amount\":200.00,\"currency\":\"GBP\",\"site_id\":\"Y431\",\"giro_slip_no\":\"\"," +
+        "\"fees\":[{\"code\":\"x00335\",\"calculated_amount\":100.00,\"version\":\"1\",\"reference\":\"12345\"},{\"code\":\"x00335\"," +
+        "\"calculated_amount\":100.00,\"version\":\"1\",\"reference\":\"12345\"}],\"requestor_reference\":\"Y431-2018081313A0002\"," +
+        "\"reported_date_offline\":\"" + TRANSFER_DATE.format(DateTimeFormatter.ISO_DATE_TIME) + "\",\"payment_method\":\"CARD\"," +
+        "\"requestor\":\"DIGITAL_BAR\",\"external_reference\":\"123456\",\"external_provider\":\"barclaycard\"}";
+    public static final String payload3 = "{\"site_id\":\"Y431\", \"case_reference\":\"12345\",\"hwf_reference\":\"12345678901\"," +
+        "\"fee\":{\"code\":\"x00335\",\"version\":\"1\",\"reference\":\"12345\",\"calculated_amount\":10.00}," +
+        "\"beneficiary_name\":\"John Doe\",\"hwf_amount\":10.00}";
+    public static final String payload4 = "{\"site_id\":\"Y431\",\"case_reference\":\"12345\",\"fee\":{\"code\":\"x00335\",\"version\":\"1\"," +
+        "\"reference\":\"12345\",\"calculated_amount\":100.00},\"group_reference\":\"2018-15348634835\"," +
+        "\"hwf_reference\":\"12345678901\",\"beneficiary_name\":\"John Doe\",\"hwf_amount\":10.00}";
+    public static final String payload5 = "{\"site_id\":\"Y431\",\"case_reference\":\"12345\",\"fee\":{\"code\":\"x00335\",\"version\":\"1\"," +
+        "\"reference\":\"12345\",\"calculated_amount\":100.00},\"group_reference\":\"2018-15348634835\"," +
+        "\"hwf_reference\":\"12345678901\",\"beneficiary_name\":\"John Doe\",\"hwf_amount\":15.00}";
 
     private PayHubService payHubService;
 
@@ -106,7 +119,7 @@ public class PayHubServiceTest {
             .roles(new HashSet<>(Arrays.asList("dummy_role1, dummy_role2"))).id("54321").build();
     }
 
-    private PaymentInstruction getPaymentInstruction(int id, String siteId){
+    private PaymentInstruction getPaymentInstruction(int id, String siteId) {
 
         PaymentInstruction pi = new PaymentInstruction() {
             @Override
@@ -125,7 +138,8 @@ public class PayHubServiceTest {
     public void testSendValidRequestToPayHub() throws Exception {
 
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
-        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
+        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser),
+            any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
         when(paymentInstructionService.getPaymentInstruction(eq(1),eq("Y431"))).thenReturn(getPaymentInstruction(1,"Y431"));
         when(paymentInstructionService.getPaymentInstruction(eq(2),eq("Y431"))).thenReturn(getPaymentInstruction(2,"Y431"));
 
@@ -154,8 +168,10 @@ public class PayHubServiceTest {
     @Test
     public void testSendValidRequestToPayHubWithFullRemission() throws Exception {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
-        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
-        when(paymentInstructionService.getAllRemissionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.fullRemissions);
+        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class)))
+            .thenReturn(this.paymentInstructions);
+        when(paymentInstructionService.getAllRemissionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class)))
+            .thenReturn(this.fullRemissions);
 
         when(paymentInstructionService.getPaymentInstruction(eq(1),eq("Y431"))).thenReturn(getPaymentInstruction(1,"Y431"));
         when(paymentInstructionService.getPaymentInstruction(eq(2),eq("Y431"))).thenReturn(getPaymentInstruction(2,"Y431"));
@@ -196,8 +212,10 @@ public class PayHubServiceTest {
         paymentInstructions.get(1).setAuthorizationCode("123456");
 
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
-        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
-        when(paymentInstructionService.getAllRemissionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.fullRemissions);
+        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class)))
+            .thenReturn(this.paymentInstructions);
+        when(paymentInstructionService.getAllRemissionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class)))
+            .thenReturn(this.fullRemissions);
 
         when(paymentInstructionService.getPaymentInstruction(eq(1),eq("Y431"))).thenReturn(getPaymentInstruction(1,"Y431"));
         when(paymentInstructionService.getPaymentInstruction(eq(2),eq("Y431"))).thenReturn(getPaymentInstruction(2,"Y431"));
@@ -232,15 +250,19 @@ public class PayHubServiceTest {
     @Test
     public void testUpdatePaymentInstructionWhenFailedResponseReceived() throws Exception {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
-        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
-        when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(403, "{\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}"));
+        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class)))
+            .thenReturn(this.paymentInstructions);
+        when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(403,
+            "{\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\"," +
+                " \"message\": \"Access Denied\", \"path\": \"/payment-records\"}"));
         when(paymentInstructionService.getPaymentInstruction(eq(1),eq("Y431"))).thenReturn(getPaymentInstruction(1,"Y431"));
         when(paymentInstructionService.getPaymentInstruction(eq(2),eq("Y431"))).thenReturn(getPaymentInstruction(2,"Y431"));
        PayHubResponseReport stat = payHubService.sendPaymentInstructionToPayHub(barUser, "1234ABCD", TRANSFER_DATE);
         this.paymentInstructions.forEach(it -> {
             assertThat(it.getReportDate(), is(TRANSFER_DATE));
             assertThat(it.isTransferredToPayhub(), is(false));
-            assertThat(it.getPayhubError(), is("Failed(403): {\"timestamp\": \"2018-08-06T12:03:24.732+0000\",\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}"));
+            assertThat(it.getPayhubError(), is("Failed(403): {\"timestamp\": \"2018-08-06T12:03:24.732+0000\"," +
+                "\"status\": 403, \"error\": \"Forbidden\", \"message\": \"Access Denied\", \"path\": \"/payment-records\"}"));
         });
         assertThat(stat.getTotal(), is(2));
         assertThat(stat.getSuccess(), is(0));
@@ -250,7 +272,8 @@ public class PayHubServiceTest {
     @Test
     public void testUpdatePaymentInstructionWhenSendingMessageThrowsException() throws Exception {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
-        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
+        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class)))
+            .thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenThrow(new RuntimeException("something went wrong"));
         when(paymentInstructionService.getPaymentInstruction(eq(1),eq("Y431"))).thenReturn(getPaymentInstruction(1,"Y431"));
         when(paymentInstructionService.getPaymentInstruction(eq(2),eq("Y431"))).thenReturn(getPaymentInstruction(2,"Y431"));
@@ -266,7 +289,8 @@ public class PayHubServiceTest {
     @Test
     public void testWhenReceivedInvalidResponseFromPayhub() throws Exception {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
-        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
+        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class)))
+            .thenReturn(this.paymentInstructions);
         when(paymentInstructionService.getPaymentInstruction(eq(1),eq("Y431"))).thenReturn(getPaymentInstruction(1,"Y431"));
         when(paymentInstructionService.getPaymentInstruction(eq(2),eq("Y431"))).thenReturn(getPaymentInstruction(2,"Y431"));
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(200, "{ \"somekey\" : \"somevalue\" }"));
@@ -282,7 +306,8 @@ public class PayHubServiceTest {
    @Test
     public void testWhenReceivedUnParsableResponseFromPayhub() throws Exception {
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
-        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
+        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class)))
+            .thenReturn(this.paymentInstructions);
         when(paymentInstructionService.getPaymentInstruction(eq(1),eq("Y431"))).thenReturn(getPaymentInstruction(1,"Y431"));
         when(paymentInstructionService.getPaymentInstruction(eq(2),eq("Y431"))).thenReturn(getPaymentInstruction(2,"Y431"));
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(200, "some unparsable message"));
@@ -290,7 +315,8 @@ public class PayHubServiceTest {
         this.paymentInstructions.forEach(it -> {
             assertThat(it.getReportDate(), is(TRANSFER_DATE));
             assertThat(it.isTransferredToPayhub(), is(false));
-            assertThat(it.getPayhubError(), is("Failed to parse payhub response: \"some unparsable message\": Unrecognized token 'some': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n" +
+            assertThat(it.getPayhubError(), is("Failed to parse payhub response: \"some unparsable message\":" +
+                " Unrecognized token 'some': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n" +
                 " at [Source: (String)\"some unparsable message\"; line: 1, column: 5]"));
         });
         verify(entityManager, times(0)).merge(any(PaymentInstructionPayhubReference.class));
@@ -322,7 +348,8 @@ public class PayHubServiceTest {
             "uQshnEZWSXM";
 
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
-        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
+        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class)))
+            .thenReturn(this.paymentInstructions);
         when(paymentInstructionService.getPaymentInstruction(eq(1),eq("Y431"))).thenReturn(getPaymentInstruction(1,"Y431"));
         when(paymentInstructionService.getPaymentInstruction(eq(2),eq("Y431"))).thenReturn(getPaymentInstruction(2,"Y431"));
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> new PayHubHttpResponse(500, tooLongErrorMessage));
@@ -339,13 +366,14 @@ public class PayHubServiceTest {
     public void testInvalidTimeStamp() throws Exception {
         LocalDateTime reportDate = LocalDate.now().plusDays(3).atTime(20, 20);
         when(serviceAuthTokenGenerator.generate()).thenReturn("this_is_a_one_time_password");
-        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class))).thenReturn(this.paymentInstructions);
+        when(paymentInstructionService.getAllPaymentInstructionsForPayhub(eq(barUser), any(PaymentInstructionSearchCriteriaDto.class)))
+            .thenReturn(this.paymentInstructions);
         when(httpClient.execute(any(HttpPost.class))).thenAnswer(invocation -> createPayhubResponse("/payment-records"));
         payHubService.sendPaymentInstructionToPayHub(barUser, "1234ABCD", reportDate);
     }
 
     private PayHubHttpResponse createPayhubResponse(String uri) {
-        if (uri.contains("remission")){
+        if (uri.contains("remission")) {
             return new PayHubHttpResponse(200, "RM-1555-3390-9530-6022");
         } else {
             return new PayHubHttpResponse(200, "{\n" +
@@ -362,7 +390,7 @@ public class PayHubServiceTest {
         private String message;
         private int responseCode;
 
-        PayHubHttpResponse(int responseCode, String message){
+        PayHubHttpResponse(int responseCode, String message) {
             this.responseCode = responseCode;
             this.message = message;
         }

@@ -33,7 +33,8 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
     protected Specification<T> statusJoinSpec = null;
     protected Specification<T> payhubReferenceSpec = null;
 
-    public PaymentInstructionsSpecifications(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto, PaymentTypeService paymentTypeService) {
+    public PaymentInstructionsSpecifications(PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto,
+                                             PaymentTypeService paymentTypeService) {
         this.paymentInstructionSearchCriteriaDto = paymentInstructionSearchCriteriaDto;
         this.paymentTypeService = paymentTypeService;
 
@@ -62,14 +63,14 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
 
         Specification<T> andSpecs = Specification.where(statusSpec).and(startDateSpec).and(actionSpec).and(bgcNumberSpec)
             .and(endDateSpec).and(siteIdSpec).and(userIdSpec).and(paymentTypeSpec).and(transferredToPayhubSpec);
-		Specification<T> orSpecs = Specification.where(payerNameSpec).or(allPayTransactionIdSpec)
-				.or(chequeNumberSpec).or(postalOrderNumerSpec).or(dailySequenceIdSpec)
-				.or(caseReferenceSpec).or(authorizationCodeSpec).or(payhubReferenceSpec);
+        Specification<T> orSpecs = Specification.where(payerNameSpec).or(allPayTransactionIdSpec)
+                .or(chequeNumberSpec).or(postalOrderNumerSpec).or(dailySequenceIdSpec)
+                .or(caseReferenceSpec).or(authorizationCodeSpec).or(payhubReferenceSpec);
         return Specification.where(statusJoinSpec).and(andSpecs).and(orSpecs);
     }
 
     public Specification<T> getPaymentInstructionsMultipleIdSpecification() {
-    	return Specification.where(multiplsIdSpec);
+        return Specification.where(multiplsIdSpec);
     }
 
     private class MultiIdSpec implements Specification<T> {
@@ -80,7 +81,7 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
             In<Integer> inCriteriaForId = null;
 
             if (paymentInstructionSearchCriteriaDto.getMultiplePiIds() != null) {
-            	inCriteriaForId = builder.in(root.<Integer>get("id"));
+                inCriteriaForId = builder.in(root.<Integer>get("id"));
             }
             return Util.getInCriteriaWithIntegerValues(inCriteriaForId, paymentInstructionSearchCriteriaDto.getMultiplePiIds());
         }
@@ -301,7 +302,7 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
 
             Predicate predicate = null;
 
-            if(paymentInstructionSearchCriteriaDto.getBgcNumber() == null) {
+            if (paymentInstructionSearchCriteriaDto.getBgcNumber() == null) {
                 return null;
             }
 
@@ -322,7 +323,8 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
             Predicate predicate = null;
 
             if (paymentInstructionSearchCriteriaDto.getTransferredToPayhub() != null) {
-                predicate = criteriaBuilder.equal(root.<String>get("transferredToPayhub"), paymentInstructionSearchCriteriaDto.getTransferredToPayhub());
+                predicate = criteriaBuilder.equal(root.<String>get("transferredToPayhub"),
+                    paymentInstructionSearchCriteriaDto.getTransferredToPayhub());
             }
             return predicate;
         }
@@ -337,7 +339,8 @@ public class PaymentInstructionsSpecifications<T extends BasePaymentInstruction>
             query.distinct(true);
             ListJoin<T, PaymentInstructionPayhubReference> payhubReferences = root.joinList("payhubReferences", JoinType.LEFT);
             if (paymentInstructionSearchCriteriaDto.getPayhubReference() != null) {
-                predicate = criteriaBuilder.like(payhubReferences.get("reference"), "%" + paymentInstructionSearchCriteriaDto.getPayhubReference() + "%");
+                predicate = criteriaBuilder.like(payhubReferences.get("reference"),
+                    "%" + paymentInstructionSearchCriteriaDto.getPayhubReference() + "%");
             }
             return predicate;
         }

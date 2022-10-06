@@ -32,7 +32,9 @@ public abstract class BasePaymentInstruction {
 
     public static final String[] CSV_TABLE_HEADER = {"Daily sequential payment ID", "Date", "Payee name", "Cheque Amount",
         "Postal Order Amount", "Cash Amount", "Card Amount", "AllPay Amount", "Action Taken", "Case ref no.","BGC Slip No.",
-        "Fee Amount", "Fee code", "Fee description","Remission amount","Remission reference","Recorded user","Recorded time","Validated user","Validated time","Reviewed user","Reviewed time","Approved User","Approved time","Sent to PayHub","Sent to PayHub by","Date Sent to PayHub","Transaction Reporting Date"};
+        "Fee Amount", "Fee code", "Fee description","Remission amount","Remission reference","Recorded user","Recorded time",
+        "Validated user","Validated time","Reviewed user","Reviewed time","Approved User","Approved time","Sent to PayHub",
+        "Sent to PayHub by","Date Sent to PayHub","Transaction Reporting Date"};
 
 
     public abstract List<? extends BaseCaseFeeDetail> getCaseFeeDetails();
@@ -108,15 +110,15 @@ public abstract class BasePaymentInstruction {
     }
 
     @JsonIgnore
-    public String getSentToPayhub(){
+    public String getSentToPayhub() {
 
         String sentToPayhub;
-        if(this.transferredToPayhub)
-            sentToPayhub =SENT_TO_PAYHUB_YES;
+        if (this.transferredToPayhub)
+            sentToPayhub = SENT_TO_PAYHUB_YES;
         else if (this.payhubError != null)
             sentToPayhub = SENT_TO_PAYHUB_FAIL;
-        else{
-            sentToPayhub =SENT_TO_PAYHUB_NO;
+        else {
+            sentToPayhub = SENT_TO_PAYHUB_NO;
         }
         return sentToPayhub;
     }

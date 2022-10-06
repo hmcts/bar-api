@@ -108,9 +108,11 @@ public class PaymentInstructionService {
         return savedPaymentInstruction;
     }
 
-    public List<PaymentInstruction> getAllPaymentInstructions(BarUser barUser,  PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto)  {
+    public List<PaymentInstruction> getAllPaymentInstructions(BarUser barUser,
+                                                              PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto)  {
         paymentInstructionSearchCriteriaDto.setSiteId(barUser.getSelectedSiteId());
-        PaymentInstructionsSpecifications<PaymentInstruction> paymentInstructionsSpecification = new PaymentInstructionsSpecifications<>(paymentInstructionSearchCriteriaDto,paymentTypeService);
+        PaymentInstructionsSpecifications<PaymentInstruction> paymentInstructionsSpecification =
+            new PaymentInstructionsSpecifications<>(paymentInstructionSearchCriteriaDto,paymentTypeService);
         Sort sort = Sort.by(Sort.Direction.DESC, "paymentDate");
         Pageable pageDetails = PageRequest.of(PAGE_NUMBER, MAX_RECORDS_PER_PAGE, sort);
 
@@ -125,7 +127,8 @@ public class PaymentInstructionService {
     }
 
     public long getPaymentInstructionsCount(PaymentInstructionStatusCriteriaDto paymentInstructionStatusCriteriaDto) {
-        PaymentInstructionStatusSpecifications<PaymentInstructionStatus> paymentInstructionStatusSpecification = new PaymentInstructionStatusSpecifications(paymentInstructionStatusCriteriaDto);
+        PaymentInstructionStatusSpecifications<PaymentInstructionStatus> paymentInstructionStatusSpecification =
+            new PaymentInstructionStatusSpecifications(paymentInstructionStatusCriteriaDto);
         Specification<PaymentInstructionStatus>  pisSpecification = paymentInstructionStatusSpecification.getPaymentInstructionStatusSpecification();
         return paymentInstructionStatusRepository.count(pisSpecification);
 
@@ -166,12 +169,13 @@ public class PaymentInstructionService {
     public void deletePaymentInstruction(Integer id, String siteId) {
         paymentInstructionStatusRepository.deleteByPaymentInstructionId(id, siteId);
         int deletedPayment = paymentInstructionRepository.deleteByIdAndSiteId(id, siteId);
-        if (deletedPayment <= 0){
+        if (deletedPayment <= 0) {
             throw new PaymentInstructionNotFoundException(id);
         }
     }
 
-    public PaymentInstruction submitPaymentInstruction(BarUser barUser, Integer id, PaymentInstructionUpdateRequest paymentInstructionUpdateRequest) throws PaymentProcessException {
+    public PaymentInstruction submitPaymentInstruction(BarUser barUser, Integer id, PaymentInstructionUpdateRequest
+        paymentInstructionUpdateRequest) throws PaymentProcessException {
         if (!checkIfActionEnabled(paymentInstructionUpdateRequest)) {
             throw new FeatureAccessException(paymentInstructionUpdateRequest.getAction() + " is not allowed");
         }
@@ -182,16 +186,16 @@ public class PaymentInstructionService {
         updateValidatorService.validateAll(existingPaymentInstruction, paymentInstructionUpdateRequest);
 
         // Assign post clerk payments to fee clerk
-        if (paymentInstructionUpdateRequest.getStatus().equals(PaymentStatusEnum.DRAFT.dbKey())){
+        if (paymentInstructionUpdateRequest.getStatus().equals(PaymentStatusEnum.DRAFT.dbKey())) {
             paymentInstructionUpdateRequest.setStatus(PaymentStatusEnum.PENDING.dbKey());
         }
 
         updatePaymentInstructionsProps(existingPaymentInstruction, paymentInstructionUpdateRequest);
-		if (PaymentStatusEnum.PENDING.dbKey().equals(paymentInstructionUpdateRequest.getStatus())) {
-			existingPaymentInstruction.setAction(null);
-			existingPaymentInstruction.setActionReason(null);
-			existingPaymentInstruction.setActionComment(null);
-		}
+        if (PaymentStatusEnum.PENDING.dbKey().equals(paymentInstructionUpdateRequest.getStatus())) {
+            existingPaymentInstruction.setAction(null);
+            existingPaymentInstruction.setActionReason(null);
+            existingPaymentInstruction.setActionComment(null);
+        }
         existingPaymentInstruction.setUserId(barUser.getId());
         savePaymentInstructionStatus(existingPaymentInstruction, barUser.getId());
         PaymentInstruction paymentInstruction = paymentInstructionRepository.saveAndRefresh(existingPaymentInstruction);
@@ -209,7 +213,8 @@ public class PaymentInstructionService {
         // handle bgc number
         if (paymentInstructionRequest.getBgcNumber() != null) {
             BankGiroCredit bgc = bankGiroCreditRepository.findByBgcNumber(paymentInstructionRequest.getBgcNumber())
-                .orElseGet(() -> bankGiroCreditRepository.save(new BankGiroCredit(paymentInstructionRequest.getBgcNumber(), barUser.getSelectedSiteId())));
+                .orElseGet(() -> bankGiroCreditRepository.save(new BankGiroCredit(paymentInstructionRequest.getBgcNumber(),
+                    barUser.getSelectedSiteId())));
             existingPaymentInstruction.setBgcNumber(bgc.getBgcNumber());
         }
 
@@ -249,14 +254,17 @@ public class PaymentInstructionService {
 
     public MultiMap getPaymentStatsByUserGroupByType(String userId, String status, Optional<String> oldStatus, boolean sentToPayhub, String siteId) {
         String oldPaymentStatus = oldStatus.orElse(status);
-        List<PaymentInstructionStats> results = paymentInstructionStatusRepository.getStatsByUserGroupByType(userId, status, oldPaymentStatus, sentToPayhub, siteId);
+        List<PaymentInstructionStats> results = paymentInstructionStatusRepository.getStatsByUserGroupByType(
+            userId, status, oldPaymentStatus, sentToPayhub, siteId);
 
         return createHateoasResponse(results, userId, status, oldStatus.orElse(null));
     }
 
-    public MultiMap getPaymentInstructionsByUserGroupByActionAndType(String userId, String status, Optional<String> oldStatus, boolean sentToPayhub, String siteId) {
+    public MultiMap getPaymentInstructionsByUserGroupByActionAndType(String userId, String status, Optional<String> oldStatus,
+                                                                     boolean sentToPayhub, String siteId) {
         String oldPaymentStatus = oldStatus.orElse(status);
-        List<PaymentInstructionStats> results =  paymentInstructionStatusRepository.getStatsByUserGroupByActionAndType(userId, status, oldPaymentStatus, sentToPayhub, siteId);
+        List<PaymentInstructionStats> results =  paymentInstructionStatusRepository.getStatsByUserGroupByActionAndType(
+            userId, status, oldPaymentStatus, sentToPayhub, siteId);
 
         return createHateoasResponse(results, userId, status, oldStatus.orElse(null));
     }
@@ -310,8 +318,8 @@ public class PaymentInstructionService {
             searchEndDate = endDate.plusDays(1);
         }
 
-        List<PaymentInstructionStatusHistory> statusHistoryList = paymentInstructionStatusRepository.getPaymentInstructionStatusHistoryForTTB
-            (startDate.atStartOfDay(), searchEndDate.atStartOfDay(),siteId);
+        List<PaymentInstructionStatusHistory> statusHistoryList = paymentInstructionStatusRepository.getPaymentInstructionStatusHistoryForTTB(
+            startDate.atStartOfDay(), searchEndDate.atStartOfDay(),siteId);
 
         final Map<Integer, List<PaymentInstructionStatusHistory>> statusHistoryMapByPaymentInstructionId = new HashMap<>();
         for (final PaymentInstructionStatusHistory statusHistory : statusHistoryList) {
@@ -341,7 +349,7 @@ public class PaymentInstructionService {
         return paymentInstructionsList;
     }
 
-    private boolean checkIfActionEnabled(PaymentInstructionUpdateRequest paymentInstructionUpdateRequest){
+    private boolean checkIfActionEnabled(PaymentInstructionUpdateRequest paymentInstructionUpdateRequest) {
         boolean[] ret = { true };
         String action = paymentInstructionUpdateRequest.getAction();
         PaymentActionEnum.findByDisplayValue(action).ifPresent(paymentActionEnum ->
@@ -357,7 +365,7 @@ public class PaymentInstructionService {
         BeanUtils.copyProperties(updateRequest, existingPi, propNamesToIgnore);
     }
 
-    private String getDailySequentialPaymentId(PaymentReference paymentReference){
+    private String getDailySequentialPaymentId(PaymentReference paymentReference) {
 
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("%02d", LocalDate.now().getDayOfMonth()))

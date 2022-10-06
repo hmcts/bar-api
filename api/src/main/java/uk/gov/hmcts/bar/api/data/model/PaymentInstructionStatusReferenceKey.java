@@ -18,28 +18,28 @@ import java.time.format.DateTimeFormatter;
 @Embeddable
 public class PaymentInstructionStatusReferenceKey implements Serializable {
 
-	@NonNull
+    @NonNull
     @Column(nullable = false, name = "payment_instruction_id")
-	private Integer paymentInstructionId;
+    private Integer paymentInstructionId;
 
-	@NonNull
-	private String status;
+    @NonNull
+    private String status;
 
-	@Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	private LocalDateTime updateTime;
+    @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private LocalDateTime updateTime;
 
-	public PaymentInstructionStatusReferenceKey(Integer paymentInstructionId, String status) {
-		super();
-		this.paymentInstructionId = paymentInstructionId;
-		this.status = status;
-		this.updateTime = formattedDateTime();
-	}
+    public PaymentInstructionStatusReferenceKey(Integer paymentInstructionId, String status) {
+        super();
+        this.paymentInstructionId = paymentInstructionId;
+        this.status = status;
+        this.updateTime = formattedDateTime();
+    }
 
-	private static LocalDateTime formattedDateTime() {
-		LocalDateTime now = LocalDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		return LocalDateTime.parse(now.format(formatter), formatter);
-	}
+    private static LocalDateTime formattedDateTime() {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return LocalDateTime.parse(now.format(formatter), formatter);
+    }
 
 }

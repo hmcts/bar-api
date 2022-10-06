@@ -12,28 +12,28 @@ import java.util.List;
 @Service
 public class PaymentTypeService {
 
-	private final PaymentTypeRepository paymentTypeRepository;
-	private static final String FULL_REMISSION_ID = "FULL_REMISSION";
-	private static final String FULL_REMISSION_FEATURE_ID ="full-remission";
-	private final FF4j ff4j;
+    private final PaymentTypeRepository paymentTypeRepository;
+    private static final String FULL_REMISSION_ID = "FULL_REMISSION";
+    private static final String FULL_REMISSION_FEATURE_ID = "full-remission";
+    private final FF4j ff4j;
 
-	@Autowired
-	public PaymentTypeService(PaymentTypeRepository paymentTypeRepository,FF4j ff4j) {
-		this.paymentTypeRepository = paymentTypeRepository;
+    @Autowired
+    public PaymentTypeService(PaymentTypeRepository paymentTypeRepository,FF4j ff4j) {
+        this.paymentTypeRepository = paymentTypeRepository;
         this.ff4j = ff4j;
     }
 
     public List<PaymentType> getAllPaymentTypes() {
         List<PaymentType> paymentTypes = paymentTypeRepository.findAll();
-        if(!(ff4j.check(FULL_REMISSION_FEATURE_ID))){
-	    paymentTypes.removeIf(pt -> pt.getId().equals(FULL_REMISSION_ID));
+        if (!(ff4j.check(FULL_REMISSION_FEATURE_ID))) {
+        paymentTypes.removeIf(pt -> pt.getId().equals(FULL_REMISSION_ID));
         }
         return paymentTypes;
     }
 
-	@Cacheable("paymentTypes")
-	public PaymentType getPaymentTypeById(String id) {
-		return paymentTypeRepository.getOne(id);
-	}
+    @Cacheable("paymentTypes")
+    public PaymentType getPaymentTypeById(String id) {
+        return paymentTypeRepository.getOne(id);
+    }
 
 }

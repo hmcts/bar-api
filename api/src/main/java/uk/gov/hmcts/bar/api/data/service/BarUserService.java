@@ -36,7 +36,7 @@ public class BarUserService {
     public BarUserService(BarUserRepository barUserRepository,
                           CloseableHttpClient httpClient,
                           @Value("${site.api.url}") String siteApiUrl,
-                          CacheManager cacheManager){
+                          CacheManager cacheManager) {
         this.barUserRepository = barUserRepository;
         this.httpClient = httpClient;
         this.siteApiUrl = siteApiUrl;
@@ -45,7 +45,7 @@ public class BarUserService {
 
     public BarUser saveUser(@NotNull BarUser barUser) {
         BarUser existingUser = getBarUser(barUser.getId());
-        if (existingUser == null || !existingUser.equals(barUser)){
+        if (existingUser == null || !existingUser.equals(barUser)) {
             BarUser savedUser = barUserRepository.save(barUser);
             cache.put(savedUser.getId(), savedUser);
             return savedUser;
@@ -62,7 +62,7 @@ public class BarUserService {
             userId = Optional.ofNullable(userDetails.getUsername());
         }
         return userId.orElseThrow(() -> new AccessDeniedException("failed to identify user"));
-	}
+    }
 
     public Optional<BarUser> getBarUser() {
         String id = getCurrentUserId();
@@ -79,7 +79,7 @@ public class BarUserService {
     }
 
     public Boolean validateUserAgainstSite(String email, String userToken, String siteId) throws IOException {
-        if(Util.StringUtils.isAnyBlank(email, userToken, siteId)) {
+        if (Util.StringUtils.isAnyBlank(email, userToken, siteId)) {
             return false;
         }
         ObjectMapper objectMapper = new ObjectMapper();

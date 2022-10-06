@@ -191,7 +191,7 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
         createSite(site1, "user@hmcts.net");
         createSite(site2, "user@hmcts.net");
 
-        for (int i=0;i<10;i++) {
+        for (int i = 0;i < 10;i++) {
             restActions
                 .get("/sites/users/user@hmcts.net/selected")
                 .andExpect(status().isOk())
@@ -201,7 +201,7 @@ public class SiteControllerIntegrationTest extends ComponentTestBase {
                 }));
         }
 
-        for (int i=0;i<10;i++) {
+        for (int i = 0;i < 10;i++) {
             restActions
                 .get("/sites/users/user@hmcts.net/selected/id")
                 .andExpect(status().isOk())

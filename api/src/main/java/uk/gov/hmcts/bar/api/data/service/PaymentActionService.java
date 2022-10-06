@@ -13,26 +13,26 @@ import uk.gov.hmcts.bar.api.data.repository.PaymentInstructionActionRepository;
 
 @Service
 public class PaymentActionService {
-	private final PaymentInstructionActionRepository paymentInstructionActionRepository;
+    private final PaymentInstructionActionRepository paymentInstructionActionRepository;
 
-	private final FF4j ff4j;
+    private final FF4j ff4j;
 
-	@Autowired
-	public PaymentActionService(PaymentInstructionActionRepository paymentInstructionActionRepository, FF4j ff4j) {
-		this.paymentInstructionActionRepository = paymentInstructionActionRepository;
-		this.ff4j = ff4j;
-	}
+    @Autowired
+    public PaymentActionService(PaymentInstructionActionRepository paymentInstructionActionRepository, FF4j ff4j) {
+        this.paymentInstructionActionRepository = paymentInstructionActionRepository;
+        this.ff4j = ff4j;
+    }
 
-	public List<PaymentInstructionAction> getAllPaymentInstructionAction() {
-		List<PaymentInstructionAction> piaList = paymentInstructionActionRepository.findAll();
-		return piaList.stream()
-				.filter(action -> checkIfActionEnabled(action.getAction())).collect(Collectors.toList());
-	}
+    public List<PaymentInstructionAction> getAllPaymentInstructionAction() {
+        List<PaymentInstructionAction> piaList = paymentInstructionActionRepository.findAll();
+        return piaList.stream()
+                .filter(action -> checkIfActionEnabled(action.getAction())).collect(Collectors.toList());
+    }
 
-	private boolean checkIfActionEnabled(String action) {
-		boolean[] ret = { true };
-		PaymentActionEnum.findByDisplayValue(action)
-				.ifPresent(paymentActionEnum -> ret[0] = ff4j.check(paymentActionEnum.featureKey()));
-		return ret[0];
-	}
+    private boolean checkIfActionEnabled(String action) {
+        boolean[] ret = { true };
+        PaymentActionEnum.findByDisplayValue(action)
+                .ifPresent(paymentActionEnum -> ret[0] = ff4j.check(paymentActionEnum.featureKey()));
+        return ret[0];
+    }
 }

@@ -29,7 +29,8 @@ public class AuthCheckerConfiguration {
 
     @Bean
     public Function<HttpServletRequest, Collection<String>> authorizedRolesExtractor() {
-        return (any) -> Collections.unmodifiableList(Arrays.asList("super", "bar-fee-clerk", "bar-senior-clerk", "bar-delivery-manager", "bar-post-clerk"));
+        return (any) -> Collections.unmodifiableList(Arrays.asList(
+            "super", "bar-fee-clerk", "bar-senior-clerk", "bar-delivery-manager", "bar-post-clerk"));
     }
 
     @Bean
@@ -44,8 +45,10 @@ public class AuthCheckerConfiguration {
     }
 
     @Bean
-    public SubjectResolver<User> userResolver(UserTokenParser<UserTokenDetails> fullUserTokenParser, AuthCheckerProperties properties, BarUserService userService) {
-        return new CachingSubjectResolver<>(new UserResolver(fullUserTokenParser, userService), properties.getUser().getTtlInSeconds(), properties.getUser().getMaximumSize());
+    public SubjectResolver<User> userResolver(UserTokenParser<UserTokenDetails> fullUserTokenParser,
+                                              AuthCheckerProperties properties, BarUserService userService) {
+        return new CachingSubjectResolver<>(new UserResolver(fullUserTokenParser, userService),
+            properties.getUser().getTtlInSeconds(), properties.getUser().getMaximumSize());
     }
 
     @Bean

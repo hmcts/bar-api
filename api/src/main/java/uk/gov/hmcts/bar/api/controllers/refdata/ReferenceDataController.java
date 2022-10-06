@@ -23,19 +23,19 @@ public class ReferenceDataController {
     private final PaymentActionService paymentActionService;
 
 
-	@Autowired
-	public ReferenceDataController(PaymentTypeService paymentTypeService, PaymentActionService paymentActionService) {
-		this.paymentTypeService = paymentTypeService;
-		this.paymentActionService = paymentActionService;
-	}
+    @Autowired
+    public ReferenceDataController(PaymentTypeService paymentTypeService, PaymentActionService paymentActionService) {
+        this.paymentTypeService = paymentTypeService;
+        this.paymentActionService = paymentActionService;
+    }
 
     @GetMapping("/payment-types")
-    public List<PaymentType> getPaymentTypes(){
+    public List<PaymentType> getPaymentTypes() {
         return paymentTypeService.getAllPaymentTypes();
     }
 
     @GetMapping("/payment-action")
-    public List<PaymentInstructionAction> getPaymentAction(){
+    public List<PaymentInstructionAction> getPaymentAction() {
         return paymentActionService.getAllPaymentInstructionAction();
     }
 

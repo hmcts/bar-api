@@ -410,7 +410,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
         restActions.post("/allpay", proposedPostalOrderPaymentInstructionRequest).andExpect(status().isCreated());
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-        		.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+                .paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
 
         restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
@@ -432,7 +432,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
         JSONObject feeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
             .get("fee-clerk")).get(0);
         assertEquals("fee-clerk-fn fee-clerk-ln",feeClerk.get("bar_user_full_name"));
-        assertEquals( 1,feeClerk.get("count_of_payment_instruction_in_specified_status"));
+        assertEquals(1,feeClerk.get("count_of_payment_instruction_in_specified_status"));
     }
 
     @Test
@@ -445,7 +445,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
         restActions.post("/allpay", proposedPostalOrderPaymentInstructionRequest).andExpect(status().isCreated());
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-        		.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+                .paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
 
         restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
@@ -475,8 +475,8 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
             .getContentAsString();
         JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
             .get("sr-fee-clerk")).get(0);
-        assertEquals( "sr-fee-clerk-fn sr-fee-clerk-ln",srFeeClerk.get("bar_user_full_name"));
-        assertEquals( 1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
+        assertEquals("sr-fee-clerk-fn sr-fee-clerk-ln",srFeeClerk.get("bar_user_full_name"));
+        assertEquals(1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
     }
 
     @Test
@@ -489,7 +489,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
         restActions.post("/allpay", proposedPostalOrderPaymentInstructionRequest).andExpect(status().isCreated());
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-        		.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+                .paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
 
         restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
@@ -537,7 +537,7 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
         restActions.post("/allpay", proposedPostalOrderPaymentInstructionRequest).andExpect(status().isCreated());
 
         CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-        		.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+                .paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
 
         restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
@@ -575,8 +575,8 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
         System.out.println(jsonResponse);
         JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
             .get("sr-fee-clerk")).get(0);
-        assertEquals( "sr-fee-clerk-fn sr-fee-clerk-ln",srFeeClerk.get("bar_user_full_name"));
-        assertEquals( 1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
+        assertEquals("sr-fee-clerk-fn sr-fee-clerk-ln",srFeeClerk.get("bar_user_full_name"));
+        assertEquals(1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
     }
 
     @Test
@@ -692,7 +692,8 @@ public class PostalOrderCrudComponentTest extends ComponentTestBase {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("ddMMyyyy");
         String startDate = LocalDate.now().format(dtf);
         String endDate = LocalDate.now().format(dtf);
-        restActionsForFeeClerk.get("/payment-instructions/count?status=PA&userId=1234&startDate="+startDate+"&endDate="+endDate).andExpect(status().isOk())
+        restActionsForFeeClerk.get("/payment-instructions/count?status=PA&userId=1234&startDate=" + startDate +
+            "&endDate=" + endDate).andExpect(status().isOk())
             .andExpect(body().as(Long.class, (count) -> {
                 assertThat(count.equals(1));
             }));

@@ -5,40 +5,40 @@ import java.util.Map;
 
 public enum PaymentStatusEnum {
 
-	DRAFT("D", "Draft"), PENDING("P", "Pending"), VALIDATED("V", "Validated"), PENDING_APPROVAL("PA",
-			"Pending Approval"), APPROVED("A", "Approved"), TRANSFERREDTOBAR("TTB",
-					"Transferred to bar"), REJECTED("REJ", "Rejected"), REJECTEDBYDM("RDM",
+    DRAFT("D", "Draft"), PENDING("P", "Pending"), VALIDATED("V", "Validated"), PENDING_APPROVAL("PA",
+            "Pending Approval"), APPROVED("A", "Approved"), TRANSFERREDTOBAR("TTB",
+                    "Transferred to bar"), REJECTED("REJ", "Rejected"), REJECTEDBYDM("RDM",
         "Rejected by DM"), COMPLETED("C","Completed"),SENTTOPAYHUB("STP","Sent to payhub");
 
-	private static final Map<String, PaymentStatusEnum> paymentStatusEnumMap = new HashMap<>();
+    private static final Map<String, PaymentStatusEnum> paymentStatusEnumMap = new HashMap<>();
 
-	static {
-		PaymentStatusEnum[] paymentStatusEnums = PaymentStatusEnum.values();
-		for (PaymentStatusEnum paymentStatusEnum : paymentStatusEnums) {
-			paymentStatusEnumMap.put(paymentStatusEnum.dbKey(), paymentStatusEnum);
-		}
-	}
+    static {
+        PaymentStatusEnum[] paymentStatusEnums = PaymentStatusEnum.values();
+        for (PaymentStatusEnum paymentStatusEnum : paymentStatusEnums) {
+            paymentStatusEnumMap.put(paymentStatusEnum.dbKey(), paymentStatusEnum);
+        }
+    }
 
-	private String dbKey = null;
+    private String dbKey = null;
 
-	private String displayValue = null;
+    private String displayValue = null;
 
-	PaymentStatusEnum(String dbKey, String displayValue) {
-		this.dbKey = dbKey;
-		this.displayValue = displayValue;
-	}
+    PaymentStatusEnum(String dbKey, String displayValue) {
+        this.dbKey = dbKey;
+        this.displayValue = displayValue;
+    }
 
-	public String dbKey() {
-		return this.dbKey;
-	}
+    public String dbKey() {
+        return this.dbKey;
+    }
 
-	public String displayValue() {
-		return this.displayValue;
-	}
+    public String displayValue() {
+        return this.displayValue;
+    }
 
-	public static PaymentStatusEnum getPaymentStatusEnum(String dbKey) {
-		return paymentStatusEnumMap.get(dbKey);
-	}
+    public static PaymentStatusEnum getPaymentStatusEnum(String dbKey) {
+        return paymentStatusEnumMap.get(dbKey);
+    }
 
     public static boolean contains(String dbKey) {
 
@@ -57,7 +57,7 @@ public enum PaymentStatusEnum {
      */
     @Override
     public String toString() {
-    	return this.dbKey();
+        return this.dbKey();
     }
 
 }

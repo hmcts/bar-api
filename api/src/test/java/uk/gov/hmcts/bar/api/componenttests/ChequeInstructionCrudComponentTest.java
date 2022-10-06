@@ -25,7 +25,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenChequeInstructionDetails_thenCreateChequePaymentInstruction() throws Exception {
-        Cheque proposedChequePaymentInstructionRequest =chequePaymentInstructionRequestWith()
+        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
@@ -60,7 +60,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenChequeInstructionWithInvalidCurrency_thenReturn400() throws Exception {
-        Cheque proposedChequePaymentInstructionRequest =chequePaymentInstructionRequestWith()
+        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("xxx")
@@ -76,13 +76,13 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void givenChequePaymentInstructionDetails_retrieveThem() throws Exception {
-        Cheque proposedChequePaymentInstructionRequest =chequePaymentInstructionRequestWith()
+        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
             .chequeNumber("000000").status("D").build();
 
-        ChequePaymentInstruction retrievedChequePaymentInstruction =chequePaymentInstructionWith()
+        ChequePaymentInstruction retrievedChequePaymentInstruction = chequePaymentInstructionWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
@@ -146,14 +146,14 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenNonExistingChequePaymentInstructionIsDeleted_expectStatus_204() throws Exception {
-        Cheque proposedChequePaymentInstructionRequest =chequePaymentInstructionRequestWith()
+        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
             .chequeNumber("000000").status("D").build();
 
         restActions
-            .post("/cheques",  proposedChequePaymentInstructionRequest)
+            .post("/cheques", proposedChequePaymentInstructionRequest)
             .andExpect(status().isCreated());
 
         restActions
@@ -166,17 +166,17 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenChequePaymentInstructionIsSubmittedByPostClerk_expectStatus_200() throws Exception {
-        Cheque proposedChequePaymentInstructionRequest =chequePaymentInstructionRequestWith()
+        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
             .chequeNumber("000000").status("D").build();
 
-        PaymentInstructionUpdateRequest statusUpdateRequest= paymentInstructionUpdateRequestWith()
+        PaymentInstructionUpdateRequest statusUpdateRequest = paymentInstructionUpdateRequestWith()
             .status("P").build();
 
         restActions
-            .post("/cheques",  proposedChequePaymentInstructionRequest)
+            .post("/cheques", proposedChequePaymentInstructionRequest)
             .andExpect(status().isCreated());
 
         restActions
@@ -188,17 +188,17 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenNonExistingChequePaymentInstructionIsSubmittedByPostClerk_expectStatus_404() throws Exception {
-        Cheque proposedChequePaymentInstructionRequest =chequePaymentInstructionRequestWith()
+        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
             .chequeNumber("000000").status("D").build();
 
-        PaymentInstructionUpdateRequest statusUpdateRequest= paymentInstructionUpdateRequestWith()
+        PaymentInstructionUpdateRequest statusUpdateRequest = paymentInstructionUpdateRequestWith()
             .status("P").build();
 
         restActions
-            .post("/cheques",  proposedChequePaymentInstructionRequest)
+            .post("/cheques", proposedChequePaymentInstructionRequest)
             .andExpect(status().isCreated());
 
         restActions
@@ -239,7 +239,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
     @Test
     public void whenInvalidCaseReferenceForAChequePaymentInstructionIsCreated_expectStatus_201() throws Exception {
-        Cheque proposedChequePaymentInstructionRequest =chequePaymentInstructionRequestWith()
+        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
             .payerName("Mr Payer Payer")
             .amount(500)
             .currency("GBP")
@@ -308,7 +308,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
         restActions
             .get("/payment-instructions?payerName=NonExisting")
             .andExpect(status().isOk())
-            .andExpect(body().as(List.class, chequePaymentInstructionList-> assertTrue(chequePaymentInstructionList.isEmpty())));
+            .andExpect(body().as(List.class, chequePaymentInstructionList -> assertTrue(chequePaymentInstructionList.isEmpty())));
     }
 
     @Test
@@ -355,7 +355,7 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
         restActions
             .get("/payment-instructions?chequeNumber=111111")
             .andExpect(status().isOk())
-            .andExpect(body().as(List.class, chequePaymentInstructionList-> assertTrue(chequePaymentInstructionList.isEmpty())));
+            .andExpect(body().as(List.class, chequePaymentInstructionList -> assertTrue(chequePaymentInstructionList.isEmpty())));
     }
 
     @Test
@@ -445,189 +445,189 @@ public class ChequeInstructionCrudComponentTest extends ComponentTestBase {
 
     }
 
-	@Test
-	public void whenChequePaymentInstructionSubmittedToSrFeeClerkByFeeClerk_expectThePIToAppearInSrFeeClerkOverview()
-			throws Exception {
-		Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").chequeNumber("000000").build();
+    @Test
+    public void whenChequePaymentInstructionSubmittedToSrFeeClerkByFeeClerk_expectThePIToAppearInSrFeeClerkOverview()
+            throws Exception {
+        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+                .payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").chequeNumber("000000").build();
 
-		restActions.post("/allpay", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/allpay", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
 
-		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+                .paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
 
-		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+        restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
-		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
-				.build();
+        PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+                .build();
 
-		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+        restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
 
-		Cheque modifiedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").chequeNumber("000000").build();
+        Cheque modifiedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+                .payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").chequeNumber("000000").build();
 
-		restActionsForFeeClerk.put("/allpay/1", modifiedChequePaymentInstructionRequest).andExpect(status().isOk());
+        restActionsForFeeClerk.put("/allpay/1", modifiedChequePaymentInstructionRequest).andExpect(status().isOk());
 
-		String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk())
-				.andExpect(content().contentType("application/json")).andReturn().getResponse()
-				.getContentAsString();
-		JSONObject feeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
-				.get("fee-clerk")).get(0);
-		assertEquals( "fee-clerk-fn fee-clerk-ln",feeClerk.get("bar_user_full_name"));
-		assertEquals( 1,feeClerk.get("count_of_payment_instruction_in_specified_status"));
-	}
+        String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk())
+                .andExpect(content().contentType("application/json")).andReturn().getResponse()
+                .getContentAsString();
+        JSONObject feeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
+                .get("fee-clerk")).get(0);
+        assertEquals("fee-clerk-fn fee-clerk-ln",feeClerk.get("bar_user_full_name"));
+        assertEquals(1,feeClerk.get("count_of_payment_instruction_in_specified_status"));
+    }
 
-	@Test
-	public void whenChequePaymentInstructionSubmittedToDMBySrFeeClerk_expectThePIToAppearDMOverview() throws Exception {
-		Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").chequeNumber("000000").build();
+    @Test
+    public void whenChequePaymentInstructionSubmittedToDMBySrFeeClerk_expectThePIToAppearDMOverview() throws Exception {
+        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+                .payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").chequeNumber("000000").build();
 
-		restActions.post("/allpay", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/allpay", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
 
-		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+                .paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
 
-		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+        restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
-		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
-				.build();
+        PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+                .build();
 
-		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+        restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
 
-		Cheque pendingApprovedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").chequeNumber("000000").build();
+        Cheque pendingApprovedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+                .payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").chequeNumber("000000").build();
 
-		restActionsForFeeClerk.put("/allpay/1", pendingApprovedChequePaymentInstructionRequest)
-				.andExpect(status().isOk());
+        restActionsForFeeClerk.put("/allpay/1", pendingApprovedChequePaymentInstructionRequest)
+                .andExpect(status().isOk());
 
-		restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
+        restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
 
-		Cheque approvedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("A").chequeNumber("000000").build();
+        Cheque approvedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+                .payerName("Mr Payer Payer").amount(550).currency("GBP").status("A").chequeNumber("000000").build();
 
-		restActionsForSrFeeClerk.put("/allpay/1", approvedChequePaymentInstructionRequest).andExpect(status().isOk());
+        restActionsForSrFeeClerk.put("/allpay/1", approvedChequePaymentInstructionRequest).andExpect(status().isOk());
 
-		String jsonResponse = restActionsForDM.get("/users/pi-stats?status=A").andExpect(status().isOk())
-				.andExpect(content().contentType("application/json")).andReturn().getResponse()
-				.getContentAsString();
-		JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
-				.get("sr-fee-clerk")).get(0);
-		assertEquals( "sr-fee-clerk-fn sr-fee-clerk-ln",srFeeClerk.get("bar_user_full_name"));
-		assertEquals( 1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
-	}
+        String jsonResponse = restActionsForDM.get("/users/pi-stats?status=A").andExpect(status().isOk())
+                .andExpect(content().contentType("application/json")).andReturn().getResponse()
+                .getContentAsString();
+        JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
+                .get("sr-fee-clerk")).get(0);
+        assertEquals("sr-fee-clerk-fn sr-fee-clerk-ln",srFeeClerk.get("bar_user_full_name"));
+        assertEquals(1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
+    }
 
-	@Test
-	public void whenChequePaymentInstructionSubmittedBySrFeeClerkIsRejectedByDM_expectThePIStatusAsRDM()
-			throws Exception {
-		Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").chequeNumber("000000").build();
+    @Test
+    public void whenChequePaymentInstructionSubmittedBySrFeeClerkIsRejectedByDM_expectThePIStatusAsRDM()
+            throws Exception {
+        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+                .payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").chequeNumber("000000").build();
 
-		restActions.post("/allpay", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/allpay", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
 
-		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+                .paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
 
-		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+        restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
-		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
-				.build();
+        PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+                .build();
 
-		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+        restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
 
-		Cheque pendingApprovedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").chequeNumber("000000").build();
+        Cheque pendingApprovedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+                .payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").chequeNumber("000000").build();
 
-		restActionsForFeeClerk.put("/allpay/1", pendingApprovedChequePaymentInstructionRequest)
-				.andExpect(status().isOk());
+        restActionsForFeeClerk.put("/allpay/1", pendingApprovedChequePaymentInstructionRequest)
+                .andExpect(status().isOk());
 
-		restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
+        restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
 
-		Cheque approvedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("A").chequeNumber("000000").build();
+        Cheque approvedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+                .payerName("Mr Payer Payer").amount(550).currency("GBP").status("A").chequeNumber("000000").build();
 
-		restActionsForSrFeeClerk.put("/allpay/1", approvedChequePaymentInstructionRequest).andExpect(status().isOk());
+        restActionsForSrFeeClerk.put("/allpay/1", approvedChequePaymentInstructionRequest).andExpect(status().isOk());
 
-		Cheque rejectedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("RDM").chequeNumber("000000").build();
+        Cheque rejectedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+                .payerName("Mr Payer Payer").amount(550).currency("GBP").status("RDM").chequeNumber("000000").build();
 
-		restActionsForDM.patch("/payment-instructions/1/reject", rejectedChequePaymentInstructionRequest)
-				.andExpect(status().isOk());
+        restActionsForDM.patch("/payment-instructions/1/reject", rejectedChequePaymentInstructionRequest)
+                .andExpect(status().isOk());
 
-		restActionsForSrFeeClerk.get("/payment-instructions/1").andExpect(status().isOk())
-				.andExpect(body().as(ChequePaymentInstruction.class, (pi) -> {
-					assertThat(pi.getStatus().equals("RDM"));
-				}));
-	}
+        restActionsForSrFeeClerk.get("/payment-instructions/1").andExpect(status().isOk())
+                .andExpect(body().as(ChequePaymentInstruction.class, (pi) -> {
+                    assertThat(pi.getStatus().equals("RDM"));
+                }));
+    }
 
-	@Test
-	public void whenChequePaymentInstructionSubmittedBySrFeeClerkIsRejectedByDM_expectThePIInSrFeeClerkOverviewStats()
-			throws Exception {
-		Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").chequeNumber("000000").build();
+    @Test
+    public void whenChequePaymentInstructionSubmittedBySrFeeClerkIsRejectedByDM_expectThePIInSrFeeClerkOverviewStats()
+            throws Exception {
+        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+                .payerName("Mr Payer Payer").amount(550).currency("GBP").status("D").chequeNumber("000000").build();
 
-		restActions.post("/allpay", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/allpay", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
 
-		CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
-				.paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
+        CaseFeeDetailRequest caseFeeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
+                .paymentInstructionId(1).caseReference("case102").feeCode("X001").amount(550).feeVersion("1").build();
 
-		restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
+        restActionsForFeeClerk.post("/fees", caseFeeDetailRequest).andExpect(status().isCreated());
 
-		PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
-				.build();
+        PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith().status("V").action("Process")
+                .build();
 
-		restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
+        restActionsForFeeClerk.put("/payment-instructions/1", request).andExpect(status().isOk());
 
-		Cheque pendingApprovedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").chequeNumber("000000").build();
+        Cheque pendingApprovedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+                .payerName("Mr Payer Payer").amount(550).currency("GBP").status("PA").chequeNumber("000000").build();
 
-		restActionsForFeeClerk.put("/allpay/1", pendingApprovedChequePaymentInstructionRequest)
-				.andExpect(status().isOk());
+        restActionsForFeeClerk.put("/allpay/1", pendingApprovedChequePaymentInstructionRequest)
+                .andExpect(status().isOk());
 
-		restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
+        restActionsForSrFeeClerk.get("/users/pi-stats?status=PA").andExpect(status().isOk());
 
-		Cheque approvedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("A").chequeNumber("000000").build();
+        Cheque approvedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+                .payerName("Mr Payer Payer").amount(550).currency("GBP").status("A").chequeNumber("000000").build();
 
-		restActionsForSrFeeClerk.put("/allpay/1", approvedChequePaymentInstructionRequest).andExpect(status().isOk());
+        restActionsForSrFeeClerk.put("/allpay/1", approvedChequePaymentInstructionRequest).andExpect(status().isOk());
 
-		Cheque rejectedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(550).currency("GBP").status("RDM").chequeNumber("000000").build();
+        Cheque rejectedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+                .payerName("Mr Payer Payer").amount(550).currency("GBP").status("RDM").chequeNumber("000000").build();
 
-		restActionsForDM.patch("/payment-instructions/1/reject", rejectedChequePaymentInstructionRequest)
-				.andExpect(status().isOk());
+        restActionsForDM.patch("/payment-instructions/1/reject", rejectedChequePaymentInstructionRequest)
+                .andExpect(status().isOk());
 
-		String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-stats?status=RDM&oldStatus=A")
-				.andExpect(status().isOk()).andExpect(content().contentType("application/json"))
-				.andReturn().getResponse().getContentAsString();
-		System.out.println(jsonResponse);
-		JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
-				.get("sr-fee-clerk")).get(0);
-		assertEquals( "sr-fee-clerk-fn sr-fee-clerk-ln",srFeeClerk.get("bar_user_full_name"));
-		assertEquals( 1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
-	}
+        String jsonResponse = restActionsForSrFeeClerk.get("/users/pi-stats?status=RDM&oldStatus=A")
+                .andExpect(status().isOk()).andExpect(content().contentType("application/json"))
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(jsonResponse);
+        JSONObject srFeeClerk = (JSONObject) ((JSONArray) ((JSONObject) JSONParser.parseJSON(jsonResponse))
+                .get("sr-fee-clerk")).get(0);
+        assertEquals("sr-fee-clerk-fn sr-fee-clerk-ln",srFeeClerk.get("bar_user_full_name"));
+        assertEquals(1,srFeeClerk.get("count_of_payment_instruction_in_specified_status"));
+    }
 
-	@Test
-	public void whenQueriedWithAListOfPaymentInstructionIds_receiveAllThePaymentInstructionsInTheQueryList()
-			throws Exception {
-		Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
-				.payerName("Mr Payer Payer").amount(500).currency("GBP").chequeNumber("000000").status("D").build();
-		ChequePaymentInstruction retrievedChequePaymentInstruction = chequePaymentInstructionWith()
-				.payerName("Mr Payer Payer").amount(500).currency("GBP").chequeNumber("000000").status("D").build();
+    @Test
+    public void whenQueriedWithAListOfPaymentInstructionIds_receiveAllThePaymentInstructionsInTheQueryList()
+            throws Exception {
+        Cheque proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith()
+                .payerName("Mr Payer Payer").amount(500).currency("GBP").chequeNumber("000000").status("D").build();
+        ChequePaymentInstruction retrievedChequePaymentInstruction = chequePaymentInstructionWith()
+                .payerName("Mr Payer Payer").amount(500).currency("GBP").chequeNumber("000000").status("D").build();
 
-		restActions.post("/cheques", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/cheques", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
 
-		proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith().payerName("Mr Payer2 Payer2")
-				.amount(500).currency("GBP").chequeNumber("000000").status("D").build();
-		ChequePaymentInstruction retrievedChequePaymentInstruction2 = chequePaymentInstructionWith()
-				.payerName("Mr Payer2 Payer2").amount(500).currency("GBP").chequeNumber("000000").status("D").build();
+        proposedChequePaymentInstructionRequest = chequePaymentInstructionRequestWith().payerName("Mr Payer2 Payer2")
+                .amount(500).currency("GBP").chequeNumber("000000").status("D").build();
+        ChequePaymentInstruction retrievedChequePaymentInstruction2 = chequePaymentInstructionWith()
+                .payerName("Mr Payer2 Payer2").amount(500).currency("GBP").chequeNumber("000000").status("D").build();
 
-		restActions.post("/cheques", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
+        restActions.post("/cheques", proposedChequePaymentInstructionRequest).andExpect(status().isCreated());
 
-		restActionsForSrFeeClerk.get("/users/2/payment-instructions?piIds=1,2").andExpect(status().isOk())
-				.andExpect(body().as(List.class, (chequePayList) -> {
-					assertThat(chequePayList.get(0).equals(retrievedChequePaymentInstruction));
-					assertThat(chequePayList.get(1).equals(retrievedChequePaymentInstruction2));
-				}));
-	}
+        restActionsForSrFeeClerk.get("/users/2/payment-instructions?piIds=1,2").andExpect(status().isOk())
+                .andExpect(body().as(List.class, (chequePayList) -> {
+                    assertThat(chequePayList.get(0).equals(retrievedChequePaymentInstruction));
+                    assertThat(chequePayList.get(1).equals(retrievedChequePaymentInstruction2));
+                }));
+    }
 
 }

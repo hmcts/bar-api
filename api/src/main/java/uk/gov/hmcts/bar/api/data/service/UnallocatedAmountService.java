@@ -15,7 +15,7 @@ public class UnallocatedAmountService {
     private final PaymentInstructionRepository paymentInstructionRepository;
 
     @Autowired
-    public UnallocatedAmountService(PaymentInstructionRepository paymentInstructionRepository){
+    public UnallocatedAmountService(PaymentInstructionRepository paymentInstructionRepository) {
         this.paymentInstructionRepository = paymentInstructionRepository;
     }
 
@@ -24,29 +24,29 @@ public class UnallocatedAmountService {
         return calculateUnallocatedAmount(paymentInstruction);
     }
 
-	public int calculateUnallocatedAmount(PaymentInstruction paymentInstruction) {
+    public int calculateUnallocatedAmount(PaymentInstruction paymentInstruction) {
 
-		int unallocatedAmount = 0 ;
-		// Assign post clerk payments to fee clerk
+        int unallocatedAmount = 0;
+        // Assign post clerk payments to fee clerk
         if (paymentInstruction.getStatus().equals(PaymentStatusEnum.DRAFT.dbKey())) {
             return unallocatedAmount;
         }
-		if (!(paymentInstruction.getPaymentType().getId().equals("FULL_REMISSION"))){
+        if (!(paymentInstruction.getPaymentType().getId().equals("FULL_REMISSION"))) {
 
-		List<CaseFeeDetail> cfdList = paymentInstruction.getCaseFeeDetails();
-		if (cfdList.isEmpty()) {
-			cfdList = this.paymentInstructionRepository.getCaseFeeDetails(paymentInstruction.getId());
-		}
+        List<CaseFeeDetail> cfdList = paymentInstruction.getCaseFeeDetails();
+        if (cfdList.isEmpty()) {
+            cfdList = this.paymentInstructionRepository.getCaseFeeDetails(paymentInstruction.getId());
+        }
           unallocatedAmount =  paymentInstruction.getAmount() - (cfdList.stream()
-				.mapToInt(caseFeeDetail -> validateAmount(caseFeeDetail.getAmount())
-						- validateAmount(caseFeeDetail.getRemissionAmount())
-						+ validateAmount(caseFeeDetail.getRefundAmount()))
-				.sum());
-		}
-		return unallocatedAmount;
-	}
+                .mapToInt(caseFeeDetail -> validateAmount(caseFeeDetail.getAmount())
+                        - validateAmount(caseFeeDetail.getRemissionAmount())
+                        + validateAmount(caseFeeDetail.getRefundAmount()))
+                .sum());
+        }
+        return unallocatedAmount;
+    }
 
-    private int validateAmount(Integer value){
+    private int validateAmount(Integer value) {
         return value != null ? value : 0;
     }
 }

@@ -22,10 +22,10 @@ public interface PaymentInstructionRepository extends BaseRepository<PaymentInst
     @Query("SELECT pi FROM PaymentInstruction pi, CaseFeeDetail cfd  WHERE " +
             " cfd.paymentInstructionId = pi.id AND cfd.caseReference like %:caseReference%")
     List<PaymentInstruction> findByCaseReference(@Param("caseReference") String caseReference);
-    
-	@Query("SELECT cfd FROM CaseFeeDetail cfd  WHERE cfd.paymentInstructionId = :piId")
-	List<CaseFeeDetail> getCaseFeeDetails(@Param("piId") int piId);
-    
+
+    @Query("SELECT cfd FROM CaseFeeDetail cfd  WHERE cfd.paymentInstructionId = :piId")
+    List<CaseFeeDetail> getCaseFeeDetails(@Param("piId") int piId);
+
     @Modifying
     @Query(value = "UPDATE payment_instruction SET transferred_to_payhub = :status, payhub_error = :errorMessage " +
         "WHERE id = :id", nativeQuery = true)

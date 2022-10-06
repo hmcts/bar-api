@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class AppInsightsAuditRepository implements AuditRepository{
+public class AppInsightsAuditRepository implements AuditRepository {
 
     private final TelemetryClient telemetry;
 
@@ -28,7 +28,7 @@ public class AppInsightsAuditRepository implements AuditRepository{
         this.telemetry = telemetry;
     }
 
-    public void trackPaymentInstructionEvent(String name, PaymentInstruction paymentInstruction, BarUser barUser){
+    public void trackPaymentInstructionEvent(String name, PaymentInstruction paymentInstruction, BarUser barUser) {
 
         Map<String, String> properties = new HashMap<>();
         properties.put("Payment instruction id",paymentInstruction.getId().toString());
@@ -37,20 +37,20 @@ public class AppInsightsAuditRepository implements AuditRepository{
         properties.put("Payment type", paymentInstruction.getPaymentType().getName());
         properties.put("Amount", paymentInstruction.getAmount().toString());
 
-        if (null != paymentInstruction.getAction()){
+        if (null != paymentInstruction.getAction()) {
             properties.put("Action",paymentInstruction.getAction());
         }
 
         properties.put("Status",paymentInstruction.getStatus());
 
-        if (null != paymentInstruction.getBgcNumber()){
+        if (null != paymentInstruction.getBgcNumber()) {
             properties.put("BGC Number",paymentInstruction.getBgcNumber());
         }
 
         telemetry.trackEvent(name, ImmutableMap.copyOf(properties),null);
     }
 
-    public void trackCaseEvent(String name, CaseFeeDetailRequest caseFeeDetailRequest, BarUser barUser){
+    public void trackCaseEvent(String name, CaseFeeDetailRequest caseFeeDetailRequest, BarUser barUser) {
 
         Map<String, String> properties = new ImmutableMap.Builder<String, String>()
             .put("User id ", barUser.getId())

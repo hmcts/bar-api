@@ -26,7 +26,9 @@ public class SiteUtils {
             }
 
             @Override
-            public String getRoles() { return "bar-delivery-manager,bar-senior-clerk,IDAM_ADMIN_USER";};
+            public String getRoles() {
+                return "bar-delivery-manager,bar-senior-clerk,IDAM_ADMIN_USER";
+            }
 
         });
 
@@ -47,7 +49,9 @@ public class SiteUtils {
             }
 
             @Override
-            public String getRoles() { return "bar-senior-clerk,bar-post-clerk"; }
+            public String getRoles() {
+                return "bar-senior-clerk,bar-post-clerk";
+            }
         });
 
         users.add(new SiteUserDto() {
@@ -67,7 +71,9 @@ public class SiteUtils {
             }
 
             @Override
-            public String getRoles() { return "bar-fee-clerk"; }
+            public String getRoles() {
+                return "bar-fee-clerk";
+            }
         });
 
         users.add(new SiteUserDto() {
@@ -87,7 +93,9 @@ public class SiteUtils {
             }
 
             @Override
-            public String getRoles() { return "bar-post-clerk"; }
+            public String getRoles() {
+                return "bar-post-clerk";
+            }
         });
 
         users.add(new SiteUserDto() {
@@ -107,7 +115,9 @@ public class SiteUtils {
             }
 
             @Override
-            public String getRoles() { return null; }
+            public String getRoles() {
+                return null;
+            }
         });
 
         return users;

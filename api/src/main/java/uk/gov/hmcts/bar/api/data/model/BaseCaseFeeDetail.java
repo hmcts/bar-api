@@ -20,7 +20,7 @@ public class BaseCaseFeeDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CASE_FEE_ID")
-    @JsonProperty(access= JsonProperty.Access.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private int caseFeeId;
 
     private Integer paymentInstructionId;
@@ -33,7 +33,7 @@ public class BaseCaseFeeDetail {
 
     private String feeVersion;
     @NotNull
-    @Pattern(regexp ="^[a-zA-Z0-9]{1,11}",message = "invalid case reference number")
+    @Pattern(regexp = "^[a-zA-Z0-9]{1,11}",message = "invalid case reference number")
     private String caseReference;
 
     private Integer remissionAmount;

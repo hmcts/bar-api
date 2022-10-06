@@ -94,8 +94,9 @@ public class PaymentInstructionController {
 
         List<PaymentInstruction> paymentInstructionList = null;
 
-        if (checkAcceptHeaderForCsv(headers)){
-            paymentInstructionList =  paymentInstructionService.getAllPaymentInstructionsByTTB(startDate,endDate,request.getBarUser().getSelectedSiteId());
+        if (checkAcceptHeaderForCsv(headers)) {
+            paymentInstructionList =  paymentInstructionService.getAllPaymentInstructionsByTTB(
+                startDate,endDate,request.getBarUser().getSelectedSiteId());
         } else {
             PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto =
                 createPaymentInstructionCriteria(status, startDate, endDate, payerName, chequeNumber, postalOrderNumber,
@@ -115,7 +116,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/users/{id}/payment-instructions")
-    public List<PaymentInstruction> getPaymentInstructionsByIdamId (
+    public List<PaymentInstruction> getPaymentInstructionsByIdamId(
         BarWrappedHttpRequest request,
         @PathVariable("id") String id,
         @RequestParam(name = "status", required = false) String status,
@@ -136,12 +137,12 @@ public class PaymentInstructionController {
 
         List<PaymentInstruction> paymentInstructionList = null;
 
-		PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = createPaymentInstructionCriteria(id,
-				status, startDate, endDate, payerName, chequeNumber, postalOrderNumber, dailySequenceId,
-				allPayInstructionId, paymentType, action, caseReference, piIds, bgcNumber, null, oldStatus, payhubReference);
+        PaymentInstructionSearchCriteriaDto paymentInstructionSearchCriteriaDto = createPaymentInstructionCriteria(id,
+                status, startDate, endDate, payerName, chequeNumber, postalOrderNumber, dailySequenceId,
+                allPayInstructionId, paymentType, action, caseReference, piIds, bgcNumber, null, oldStatus, payhubReference);
 
-		paymentInstructionList = paymentInstructionService
-				.getAllPaymentInstructions(request.getBarUser(), paymentInstructionSearchCriteriaDto);
+        paymentInstructionList = paymentInstructionService
+                .getAllPaymentInstructions(request.getBarUser(), paymentInstructionSearchCriteriaDto);
 
 
         return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
@@ -197,7 +198,7 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/cards/{id}")
     public ResponseEntity<Void> updateCardInstruction(@PathVariable("id") Integer id,
-                                                      @ApiParam(value="Card request", required=true) @Valid @RequestBody Card card,
+                                                      @ApiParam(value = "Card request", required = true) @Valid @RequestBody Card card,
                                                       BarWrappedHttpRequest request) {
         paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id,card);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -229,7 +230,7 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/cheques/{id}")
     public ResponseEntity<Void> updateChequeInstruction(@PathVariable("id") Integer id,
-                                                        @ApiParam(value="Cheque request",required=true) @Valid @RequestBody Cheque cheque,
+                                                        @ApiParam(value = "Cheque request",required = true) @Valid @RequestBody Cheque cheque,
                                                         BarWrappedHttpRequest request) {
         paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id,cheque);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -241,26 +242,26 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/payment-instructions/{id}/reject")
-	public ResponseEntity<Void> rejectPaymentInstruction(@PathVariable("id") Integer id,
+    public ResponseEntity<Void> rejectPaymentInstruction(@PathVariable("id") Integer id,
                                                          BarWrappedHttpRequest request) {
-		Optional<BarUser> userOptional = barUserService.getBarUser();
-		BarUser user = null;
-		if (userOptional.isPresent()) {
-			user = userOptional.get();
-		} else {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		String status = null;
-		if (Util.isUserDeliveryManager(user.getRoles())) {
-			status = PaymentStatusEnum.REJECTEDBYDM.dbKey();
-		} else if (Util.isUserSrFeeClerk(user.getRoles())) {
-			status = PaymentStatusEnum.REJECTED.dbKey();
-		}
-		PaymentInstructionRequest paymentInstructionRequest = PaymentInstructionRequest.paymentInstructionRequestWith()
-				.status(status).build();
-		paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id, paymentInstructionRequest);
-		return new ResponseEntity<>(HttpStatus.OK);
-	}
+        Optional<BarUser> userOptional = barUserService.getBarUser();
+        BarUser user = null;
+        if (userOptional.isPresent()) {
+            user = userOptional.get();
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        String status = null;
+        if (Util.isUserDeliveryManager(user.getRoles())) {
+            status = PaymentStatusEnum.REJECTEDBYDM.dbKey();
+        } else if (Util.isUserSrFeeClerk(user.getRoles())) {
+            status = PaymentStatusEnum.REJECTED.dbKey();
+        }
+        PaymentInstructionRequest paymentInstructionRequest = PaymentInstructionRequest.paymentInstructionRequestWith()
+                .status(status).build();
+        paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id, paymentInstructionRequest);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 
     @ApiOperation(value = "Create cash payment instruction", notes = "Create cash payment instruction with the given values.")
@@ -270,7 +271,7 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/cash")
     public PaymentInstruction saveCashInstruction(BarWrappedHttpRequest request,
-                                                  @ApiParam(value="Cash request",required=true) @Valid @RequestBody Cash cash) {
+                                                  @ApiParam(value = "Cash request",required = true) @Valid @RequestBody Cash cash) {
         CashPaymentInstruction cashPaymentInstruction = CashPaymentInstruction.cashPaymentInstructionWith()
             .payerName(cash.getPayerName())
             .amount(cash.getAmount())
@@ -286,7 +287,8 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/remissions")
     public PaymentInstruction saveRemission(BarWrappedHttpRequest request,
-                                            @ApiParam(value="Full remission request",required=true) @Valid @RequestBody FullRemission fullRemission) {
+                                            @ApiParam(value = "Full remission request",required = true)
+                                            @Valid @RequestBody FullRemission fullRemission) {
         FullRemissionPaymentInstruction remissionPaymentInstruction = FullRemissionPaymentInstruction.fullRemissionPaymentInstructionWith()
             .payerName(fullRemission.getPayerName())
             .remissionReference(fullRemission.getRemissionReference()).build();
@@ -299,7 +301,8 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/remissions/{id}")
-    public ResponseEntity<Void> updateRemissionInstruction(@PathVariable("id") Integer id , @ApiParam(value="Full remission request",required=true) @Valid @RequestBody FullRemission fullRemission)  {
+    public ResponseEntity<Void> updateRemissionInstruction(@PathVariable("id") Integer id, @ApiParam(value = "Full remission request",
+        required = true) @Valid @RequestBody FullRemission fullRemission) {
         fullRemissionService.updateFullRemission(id, fullRemission);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -312,7 +315,8 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/cash/{id}")
     public ResponseEntity<Void> updateCashInstruction(BarWrappedHttpRequest request,
-                                                      @PathVariable("id") Integer id , @ApiParam(value="Cash request",required=true) @Valid @RequestBody Cash cash) {
+                                                      @PathVariable("id") Integer id, @ApiParam(
+                                                          value = "Cash request", required = true) @Valid @RequestBody Cash cash) {
         paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id,cash);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -328,7 +332,7 @@ public class PaymentInstructionController {
     @PostMapping("/postal-orders")
     public PaymentInstruction savePostalOrderInstruction(
         BarWrappedHttpRequest request,
-        @ApiParam(value="Postal Order request",required=true) @Valid @RequestBody PostalOrder postalOrder) {
+        @ApiParam(value = "Postal Order request",required = true) @Valid @RequestBody PostalOrder postalOrder) {
         PostalOrderPaymentInstruction postalOrderPaymentInstruction = PostalOrderPaymentInstruction.postalOrderPaymentInstructionWith()
             .payerName(postalOrder.getPayerName())
             .amount(postalOrder.getAmount())
@@ -345,7 +349,8 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/postal-orders/{id}")
     public ResponseEntity<Void> updatePostalOrderInstruction(BarWrappedHttpRequest request,
-                                                             @PathVariable("id") Integer id , @ApiParam(value="Postal order request",required=true) @Valid @RequestBody PostalOrder postalOrder) {
+                                                             @PathVariable("id") Integer id, @ApiParam(value = "Postal order request",
+        required = true) @Valid @RequestBody PostalOrder postalOrder) {
         paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id,postalOrder);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -360,7 +365,7 @@ public class PaymentInstructionController {
     @PostMapping("/allpay")
     public PaymentInstruction saveAllPayInstruction(
         BarWrappedHttpRequest request,
-        @ApiParam(value="All Pay request", required=true) @Valid @RequestBody AllPay allPay) {
+        @ApiParam(value = "All Pay request", required = true) @Valid @RequestBody AllPay allPay) {
         AllPayPaymentInstruction allPayPaymentInstruction = AllPayPaymentInstruction.allPayPaymentInstructionWith()
             .payerName(allPay.getPayerName())
             .amount(allPay.getAmount())
@@ -377,7 +382,8 @@ public class PaymentInstructionController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/allpay/{id}")
     public ResponseEntity<Void> updateAllPayInstruction(BarWrappedHttpRequest request,
-                                                        @PathVariable("id") Integer id , @ApiParam(value="Allpay request",required=true) @Valid @RequestBody AllPay allpay) {
+                                                        @PathVariable("id") Integer id, @ApiParam(
+                                                            value = "Allpay request",required = true) @Valid @RequestBody AllPay allpay) {
         paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id, allpay);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -395,17 +401,18 @@ public class PaymentInstructionController {
         BarWrappedHttpRequest request,
         @PathVariable("id") Integer id,
         @RequestBody PaymentInstructionUpdateRequest paymentInstructionUpdateRequest) {
-    	ResponseEntity<Object> response;
+        ResponseEntity<Object> response;
         if (null == paymentInstructionUpdateRequest) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         PaymentInstruction submittedPaymentInstruction = null;
         try {
-			submittedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(request.getBarUser(), id, paymentInstructionUpdateRequest);
-			response = new ResponseEntity<>(submittedPaymentInstruction, HttpStatus.OK);
-		} catch (PaymentProcessException e) {
-			response = new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
-		}
+            submittedPaymentInstruction = paymentInstructionService.submitPaymentInstruction(request.getBarUser(),
+                id, paymentInstructionUpdateRequest);
+            response = new ResponseEntity<>(submittedPaymentInstruction, HttpStatus.OK);
+        } catch (PaymentProcessException e) {
+            response = new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
+        }
         return response;
     }
 
@@ -447,7 +454,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/payment-instructions/{id}/unallocated")
-    public int getUnallocatedPayment(@PathVariable("id") Integer paymentId){
+    public int getUnallocatedPayment(@PathVariable("id") Integer paymentId) {
         return unallocatedAmountService.calculateUnallocatedAmount(paymentId);
     }
 
@@ -472,7 +479,8 @@ public class PaymentInstructionController {
         return resultMap;
     }
 
-    @ApiOperation(value = "Get the payments stats along with count", notes = "Get the payment instruction's stats showing each User's activities along with count.")
+    @ApiOperation(value = "Get the payments stats along with count", notes = "Get the payment instruction's stats" +
+        " showing each User's activities along with count.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Return payment overview stats with count"),
         @ApiResponse(code = 500, message = "Internal server error") })
     @ResponseStatus(HttpStatus.OK)
@@ -484,7 +492,8 @@ public class PaymentInstructionController {
         MultiMap resultMap = null;
         String siteId = request.getBarUser().getSelectedSiteId();
 
-            resultMap = paymentInstructionService.getPaymentInstructionStatsWithCount(status.dbKey(), siteId,startDate.atStartOfDay(),endDate.atTime(LocalTime.MAX));
+            resultMap = paymentInstructionService.getPaymentInstructionStatsWithCount(status.dbKey(),
+                siteId,startDate.atStartOfDay(),endDate.atTime(LocalTime.MAX));
 
         return resultMap;
     }
@@ -502,10 +511,9 @@ public class PaymentInstructionController {
         @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "ddMMyyyy") LocalDate endDate) {
 
         long count = 0;
-        if (null == userId && null == startDate && null == endDate){
+        if (null == userId && null == startDate && null == endDate) {
             count = paymentInstructionService.getNonResetPaymentInstructionsCount(status, request.getBarUser().getSelectedSiteId());
-        }
-        else if(null != startDate && null != endDate) {
+        } else if (null != startDate && null != endDate) {
             PaymentInstructionStatusCriteriaDto paymentInstructionStatusCriteriaDto =
                 PaymentInstructionStatusCriteriaDto.paymentInstructionStatusCriteriaDto().status(status).userId(userId)
                     .startDate(startDate.atStartOfDay())
@@ -531,8 +539,10 @@ public class PaymentInstructionController {
         @RequestParam(name = "old_status", required = false) Optional<String> oldStatus,
         @RequestParam(name = "sentToPayhub", required = false, defaultValue = "false") boolean sentToPayhub) {
 
-        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType(id, status, oldStatus, sentToPayhub, request.getBarUser().getSelectedSiteId());
-        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUser(request, id, status, oldStatus, sentToPayhub)).withSelfRel();
+        MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType(id, status, oldStatus,
+            sentToPayhub, request.getBarUser().getSelectedSiteId());
+        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUser(
+            request, id, status, oldStatus, sentToPayhub)).withSelfRel();
         return of(stats, link);
     }
 
@@ -549,8 +559,10 @@ public class PaymentInstructionController {
         @RequestParam(name = "old_status", required = false) Optional<String> oldStatus,
         @RequestParam(name = "sentToPayhub", required = false, defaultValue = "false") boolean sentToPayhub) {
 
-        MultiMap stats = paymentInstructionService.getPaymentInstructionsByUserGroupByActionAndType(id, status, oldStatus, sentToPayhub, request.getBarUser().getSelectedSiteId());
-        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUserGroupByAction(request, id, status, oldStatus, sentToPayhub)).withSelfRel();
+        MultiMap stats = paymentInstructionService.getPaymentInstructionsByUserGroupByActionAndType(id, status,
+            oldStatus, sentToPayhub, request.getBarUser().getSelectedSiteId());
+        Link link = linkTo(methodOn(PaymentInstructionController.class).getPaymentInstructionStatsByUserGroupByAction(
+            request, id, status, oldStatus, sentToPayhub)).withSelfRel();
         return of(stats, link);
     }
 
@@ -561,7 +573,7 @@ public class PaymentInstructionController {
         @ApiResponse(code = 500, message = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping({"/payment-instructions/send-to-payhub", "/payment-instructions/send-to-payhub/{timestamp}"})
-	public ResponseEntity<PayHubResponseReport> sendToPayHub(@RequestHeader HttpHeaders headers,
+    public ResponseEntity<PayHubResponseReport> sendToPayHub(@RequestHeader HttpHeaders headers,
                                                              @PathVariable(name = "timestamp", required = false)
                                                              Optional<Long> reportTimestamp,
                                                              BarWrappedHttpRequest request)  {
@@ -593,7 +605,7 @@ public class PaymentInstructionController {
         String authorizationCode,
         String oldStatus,
         String payhubReference
-    ){
+    ) {
         return createPaymentInstructionCriteria(null, status, startDate, endDate, payerName, chequeNumber,
             postalOrderNumber, dailySequenceId, allPayInstructionId, paymentType, action, caseReference, multiplePiIds, bgcNumber,
             authorizationCode, oldStatus, payhubReference);
@@ -617,23 +629,23 @@ public class PaymentInstructionController {
         String authorizationCode,
         String oldStatus,
         String payhubReference
-    ){
-		return PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto().status(status).userId(userId)
-				.startDate(startDate == null ? null : startDate.atStartOfDay())
-				.endDate(endDate == null ? null : endDate.atTime(LocalTime.of(23, 59, 59))).payerName(payerName)
-				.chequeNumber(chequeNumber).postalOrderNumer(postalOrderNumber).dailySequenceId(dailySequenceId)
-				.allPayInstructionId(allPayInstructionId).paymentType(paymentType).action(action)
-				.caseReference(caseReference).multiplePiIds(multiplePiIds).bgcNumber(bgcNumber)
+    ) {
+        return PaymentInstructionSearchCriteriaDto.paymentInstructionSearchCriteriaDto().status(status).userId(userId)
+                .startDate(startDate == null ? null : startDate.atStartOfDay())
+                .endDate(endDate == null ? null : endDate.atTime(LocalTime.of(23, 59, 59))).payerName(payerName)
+                .chequeNumber(chequeNumber).postalOrderNumer(postalOrderNumber).dailySequenceId(dailySequenceId)
+                .allPayInstructionId(allPayInstructionId).paymentType(paymentType).action(action)
+                .caseReference(caseReference).multiplePiIds(multiplePiIds).bgcNumber(bgcNumber)
                 .authorizationCode(authorizationCode).oldStatus(oldStatus).payhubReference(payhubReference).build();
     }
 
-    private boolean checkAcceptHeaderForCsv(HttpHeaders headers){
+    private boolean checkAcceptHeaderForCsv(HttpHeaders headers) {
         return headers.getAccept().contains(new MediaType("text","csv"));
     }
 
     @InitBinder
-	public void initBinder(final WebDataBinder webdataBinder) {
-		webdataBinder.registerCustomEditor(PaymentStatusEnum.class, new PaymentStatusEnumConverter());
-	}
+    public void initBinder(final WebDataBinder webdataBinder) {
+        webdataBinder.registerCustomEditor(PaymentStatusEnum.class, new PaymentStatusEnumConverter());
+    }
 
 }

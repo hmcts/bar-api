@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class PaymentInstructionActionRequest {
 
-	private String action;
+    private String action;
 
-	@JsonCreator
+    @JsonCreator
     @Builder(builderMethodName = "paymentInstructionActionRequestWith")
-	public PaymentInstructionActionRequest(@JsonProperty("action") String action) {
-		this.action = action;
-	}
+    public PaymentInstructionActionRequest(@JsonProperty("action") String action) {
+        this.action = action;
+    }
 
 }

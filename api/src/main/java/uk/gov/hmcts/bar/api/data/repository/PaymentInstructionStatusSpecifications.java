@@ -57,7 +57,8 @@ public class PaymentInstructionStatusSpecifications<T extends PaymentInstruction
             Predicate predicate = null;
             query.distinct(true);
             if (paymentInstructionStatusCriteriaDto.getStatus() != null) {
-                predicate = builder.equal(root.<String>get("paymentInstructionStatusReferenceKey").get("status"),paymentInstructionStatusCriteriaDto.getStatus());
+                predicate = builder.equal(root.<String>get("paymentInstructionStatusReferenceKey").get("status"),
+                    paymentInstructionStatusCriteriaDto.getStatus());
             }
             return predicate;
         }
@@ -72,7 +73,8 @@ public class PaymentInstructionStatusSpecifications<T extends PaymentInstruction
             Predicate predicate = null;
             query.distinct(true);
             if (paymentInstructionStatusCriteriaDto.getStartDate() != null) {
-                predicate = builder.between(root.<LocalDateTime>get("paymentInstructionStatusReferenceKey").get("updateTime"), paymentInstructionStatusCriteriaDto.getStartDate(),paymentInstructionStatusCriteriaDto.getEndDate());
+                predicate = builder.between(root.<LocalDateTime>get("paymentInstructionStatusReferenceKey").get("updateTime"),
+                    paymentInstructionStatusCriteriaDto.getStartDate(),paymentInstructionStatusCriteriaDto.getEndDate());
             }
             return predicate;
         }

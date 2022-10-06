@@ -119,7 +119,7 @@ public class FullRemissionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .remissionReference("12345678911").build();
 
-        PaymentInstructionUpdateRequest request= paymentInstructionUpdateRequestWith()
+        PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith()
             .status("P").build();
 
         CaseFeeDetailRequest feeDetailRequest = CaseFeeDetailRequest.caseFeeDetailRequestWith()
@@ -150,7 +150,7 @@ public class FullRemissionCrudComponentTest extends ComponentTestBase {
             .payerName("Mr Payer Payer")
             .remissionReference("12345678911").build();
 
-        PaymentInstructionUpdateRequest request= paymentInstructionUpdateRequestWith()
+        PaymentInstructionUpdateRequest request = paymentInstructionUpdateRequestWith()
             .status("P").build();
 
         restActions
@@ -177,7 +177,7 @@ public class FullRemissionCrudComponentTest extends ComponentTestBase {
         restActions
             .get("/payment-instructions?payerName=Mr Payer Payer")
             .andExpect(status().isOk())
-            .andExpect(body().as(List.class, fullRemissionPaymentInstructionList-> {
+            .andExpect(body().as(List.class, fullRemissionPaymentInstructionList -> {
                 assertThat(fullRemissionPaymentInstructionList.get(0)).isEqualToComparingOnlyGivenFields(
                     fullRemissionPaymentInstructionWith()
                         .payerName("Mr Payer Payer")
@@ -200,7 +200,7 @@ public class FullRemissionCrudComponentTest extends ComponentTestBase {
         restActions
             .get("/payment-instructions?payerName=NonExisting")
             .andExpect(status().isOk())
-            .andExpect(body().as(List.class, fullRemissionPaymentInstructionList-> assertTrue(fullRemissionPaymentInstructionList.isEmpty())));
+            .andExpect(body().as(List.class, fullRemissionPaymentInstructionList -> assertTrue(fullRemissionPaymentInstructionList.isEmpty())));
 
     }
 

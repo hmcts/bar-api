@@ -183,7 +183,8 @@ public class PaymentInstructionServiceTest {
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(chequePaymentInstructionMock);
         PaymentInstructionStatus status = new PaymentInstructionStatus(null, createdPaymentInstruction);
         verify(paymentInstructionStatusRepositoryMock, times(1)).save(status);
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",chequePaymentInstructionMock,barUserMock);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",
+            chequePaymentInstructionMock,barUserMock);
     }
 
     @Test
@@ -203,7 +204,8 @@ public class PaymentInstructionServiceTest {
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(cashPaymentInstructionMock);
         PaymentInstructionStatus status = new PaymentInstructionStatus(null, createdPaymentInstruction);
         verify(paymentInstructionStatusRepositoryMock, times(1)).save(status);
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",cashPaymentInstructionMock,barUserMock);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",
+            cashPaymentInstructionMock,barUserMock);
 
 
     }
@@ -223,7 +225,8 @@ public class PaymentInstructionServiceTest {
             .createPaymentInstruction(barUserMock, postalOrderPaymentInstructionMock);
         verify(paymentReferenceService, times(1)).getNextPaymentReference(anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(postalOrderPaymentInstructionMock);
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",postalOrderPaymentInstructionMock,barUserMock);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent(
+            "CREATE_PAYMENT_INSTRUCTION_EVENT",postalOrderPaymentInstructionMock,barUserMock);
     }
 
     @Test
@@ -247,7 +250,8 @@ public class PaymentInstructionServiceTest {
         PaymentInstructionStatus status = new PaymentInstructionStatus(null, createdPaymentInstruction);
         verify(paymentInstructionStatusRepositoryMock, times(1)).save(status);
 
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",allpayPaymentInstructionMock,barUserMock);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",
+            allpayPaymentInstructionMock,barUserMock);
     }
 
     @Test
@@ -271,7 +275,8 @@ public class PaymentInstructionServiceTest {
         PaymentInstructionStatus status = new PaymentInstructionStatus(null, createdPaymentInstruction);
         verify(paymentInstructionStatusRepositoryMock, times(2)).save(status);
 
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",allpayPaymentInstructionMock,barUserMock);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("CREATE_PAYMENT_INSTRUCTION_EVENT",
+            allpayPaymentInstructionMock,barUserMock);
     }
 
 
@@ -294,7 +299,7 @@ public class PaymentInstructionServiceTest {
     @Test
     public void shouldNotDeletePaymentInstruction_whenSiteIdDoesNotMach() {
         when(paymentInstructionRepository.deleteByIdAndSiteId(anyInt(), anyString())).thenReturn(0);
-        try{
+        try {
             paymentInstructionServiceMock.deletePaymentInstruction(1, "Y431");
             fail("should fail here");
         } catch (PaymentInstructionNotFoundException e) {
@@ -506,7 +511,8 @@ public class PaymentInstructionServiceTest {
         assertEquals(null, argument.getValue().getAction());
         assertEquals(null, argument.getValue().getActionComment());
         assertEquals(null, argument.getValue().getActionReason());
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",existingPaymentInstruction,barUserMock);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",
+            existingPaymentInstruction,barUserMock);
     }
 
     @Test
@@ -542,20 +548,23 @@ public class PaymentInstructionServiceTest {
         paymentInstructionService.submitPaymentInstruction(barUserMock, 1, pir);
         verify(paymentInstructionRepository, times(1)).findByIdAndSiteId(anyInt(), anyString());
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",paymentInstructionMock,barUserMock);
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",paymentInstructionMock,barUserMock);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",
+            paymentInstructionMock,barUserMock);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",
+            paymentInstructionMock,barUserMock);
         PaymentInstructionUpdateRequest anotherPir = PaymentInstructionUpdateRequest.paymentInstructionUpdateRequestWith()
             .status("D").action("Process").build();
         try {
             paymentInstructionService.submitPaymentInstruction(barUserMock, 1, anotherPir);
             fail("should fail here");
-        } catch (FeatureAccessException fae){
+        } catch (FeatureAccessException fae) {
             assertEquals("Process is not allowed", fae.getMessage());
         }
     }
 
     @Test
-    public void shouldRefuseSubmittedPaymentInstructionWithAction_whenSubmitPaymentInstructionForGivenPaymentInstructionIsCalledWithAction() throws PaymentProcessException {
+    public void shouldRefuseSubmittedPaymentInstructionWithAction_whenSubmitPaymentInstructionForGivenPaymentInstructionIsCalledWithAction()
+        throws PaymentProcessException {
         when(ff4jMock.check(anyString())).thenReturn(false);
         when(paymentInstructionRepository.findById(anyInt())).thenReturn(Optional.of(paymentInstructionMock));
         when(paymentInstructionRepository.saveAndRefresh(any(PaymentInstruction.class)))
@@ -565,7 +574,7 @@ public class PaymentInstructionServiceTest {
                 .status("D").action("Suspense").build();
             paymentInstructionService.submitPaymentInstruction(barUserMock, 1, pir);
             fail("should fail here");
-        } catch (FeatureAccessException fae){
+        } catch (FeatureAccessException fae) {
 
             assertEquals("Suspense is not allowed", fae.getMessage());
         }
@@ -602,12 +611,13 @@ public class PaymentInstructionServiceTest {
         paymentInstructionService.updatePaymentInstruction(barUserMock, 1, pir);
         verify(paymentInstructionRepository, times(1)).findByIdAndSiteId(anyInt(), eq("Y431"));
         verify(paymentInstructionRepository, times(1)).saveAndRefresh(paymentInstructionMock);
-        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",paymentInstructionMock,barUserMock);
+        verify(auditRepository,times(1)).trackPaymentInstructionEvent("PAYMENT_INSTRUCTION_UPDATE_EVENT",
+            paymentInstructionMock,barUserMock);
 
     }
 
     @Test
-    public void shouldReturn200andBgcUpdated_whenUpdatePostalInstructionWithBGCForGivenPaymentInstructionIsCalled() throws Exception{
+    public void shouldReturn200andBgcUpdated_whenUpdatePostalInstructionWithBGCForGivenPaymentInstructionIsCalled() throws Exception {
         PaymentInstruction pi = new PostalOrderPaymentInstruction();
         PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
             .amount(200)
@@ -628,7 +638,7 @@ public class PaymentInstructionServiceTest {
     }
 
     @Test
-    public void shouldReturn200andBgcNotUpdated_whenUpdateCardPaymentInstructionWithBGCForGivenPaymentInstructionIsCalled() throws Exception{
+    public void shouldReturn200andBgcNotUpdated_whenUpdateCardPaymentInstructionWithBGCForGivenPaymentInstructionIsCalled() throws Exception {
         PaymentInstruction pi = new CardPaymentInstruction();
         PaymentInstructionRequest pir = PostalOrder.postalOrderPaymentInstructionRequestWith()
             .amount(200)
@@ -667,13 +677,15 @@ public class PaymentInstructionServiceTest {
     public void shouldReturnEmptyPaymentInstructionList_whengetAllPaymentInstructionsByTTBWithIncorrectDates()
         throws Exception {
 
-        List<PaymentInstruction> paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByTTB(LocalDate.now(), LocalDate.now().minusDays(1),"Y431");
+        List<PaymentInstruction> paymentInstructionList = paymentInstructionService.getAllPaymentInstructionsByTTB(LocalDate.now(),
+            LocalDate.now().minusDays(1),"Y431");
         assertTrue(paymentInstructionList.isEmpty());
     }
 
     @Test
     public void testGettingPaymentInstructionStats_whenNoPayments() {
-        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString(), anyString(), anyBoolean(), anyString())).thenReturn(new ArrayList<PaymentInstructionStats>());
+        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString(), anyString(), anyBoolean(), anyString()))
+            .thenReturn(new ArrayList<PaymentInstructionStats>());
         MultiMap stats = new MultiValueMap();
         assertEquals(stats, paymentInstructionService.getPaymentStatsByUserGroupByType("1234", "PA", Optional.empty(),false, "Y431"));
     }
@@ -681,7 +693,8 @@ public class PaymentInstructionServiceTest {
     @Test
     public void testGettingPaymentInstructionStats() {
         List<PaymentInstructionStats> rawStats = createStats();
-        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString(), anyString() ,anyBoolean(), anyString())).thenReturn(rawStats);
+        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString(), anyString(),
+            anyBoolean(), anyString())).thenReturn(rawStats);
         MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType("1234", "PA", Optional.empty(), false, "Y431");
         assertEquals(2, ((List)stats.get("bgc123")).size());
     }
@@ -689,7 +702,8 @@ public class PaymentInstructionServiceTest {
     @Test
     public void testGettingPaymentInstructionStatsWhenSentToPayhub() {
         List<PaymentInstructionStats> rawStats = createStats();
-        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString(), anyString(), anyBoolean(), anyString())).thenReturn(rawStats);
+        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString(), anyString(),
+            anyBoolean(), anyString())).thenReturn(rawStats);
         MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType("1234", "PA", Optional.empty(), true, "Y431");
         assertEquals(2, ((List)stats.get("bgc123")).size());
     }
@@ -697,21 +711,28 @@ public class PaymentInstructionServiceTest {
     @Test
     public void testCreatingLinksInTheStatResource() {
         List<PaymentInstructionStats> rawStats = createStats();
-        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString(), anyString(), anyBoolean(), anyString())).thenReturn(rawStats);
+        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByType(anyString(), anyString(), anyString(),
+            anyBoolean(), anyString())).thenReturn(rawStats);
         MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType("1234", "PA", Optional.empty(), false, "Y431");
         EntityModel<PaymentInstructionStats> resource = (EntityModel<PaymentInstructionStats>)((List)stats.get("bgc123")).get(0);
-        assertTrue(resource.getLink(STAT_DETAILS).get().getHref().contains("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE&action=Process&bgcNumber=bgc123"));
-        assertTrue(resource.getLink(STAT_GROUP_DETAILS).get().getHref().contains("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE,POSTAL_ORDER&action=Process&bgcNumber=bgc123"));
+        assertTrue(resource.getLink(STAT_DETAILS).get().getHref().contains(
+            "/users/1234/payment-instructions?status=PA&paymentType=CHEQUE&action=Process&bgcNumber=bgc123"));
+        assertTrue(resource.getLink(STAT_GROUP_DETAILS).get().getHref().contains(
+            "/users/1234/payment-instructions?status=PA&paymentType=CHEQUE,POSTAL_ORDER&action=Process&bgcNumber=bgc123"));
     }
 
     @Test
     public void testGetPaymentInstructionsByUserGroupByActionAndType() {
         List<PaymentInstructionStats> rawStats = createStats();
-        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByActionAndType(anyString(), anyString(), anyString(), anyBoolean(), anyString())).thenReturn(rawStats);
-        MultiMap stats = paymentInstructionService.getPaymentInstructionsByUserGroupByActionAndType("1234", "PA", Optional.empty(), false, "Y431");
+        when(paymentInstructionStatusRepositoryMock.getStatsByUserGroupByActionAndType(anyString(), anyString(), anyString(),
+            anyBoolean(), anyString())).thenReturn(rawStats);
+        MultiMap stats = paymentInstructionService.getPaymentInstructionsByUserGroupByActionAndType("1234", "PA", Optional.empty(),
+            false, "Y431");
         EntityModel<PaymentInstructionStats> resource = (EntityModel<PaymentInstructionStats>)((List)stats.get("bgc123")).get(0);
-        assertTrue(resource.getLink(STAT_DETAILS).get().getHref().contains("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE&action=Process&bgcNumber=bgc123"));
-        assertTrue(resource.getLink(STAT_GROUP_DETAILS).get().getHref().contains("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE,POSTAL_ORDER&action=Process&bgcNumber=bgc123"));
+        assertTrue(resource.getLink(STAT_DETAILS).get().getHref().contains(
+            "/users/1234/payment-instructions?status=PA&paymentType=CHEQUE&action=Process&bgcNumber=bgc123"));
+        assertTrue(resource.getLink(STAT_GROUP_DETAILS).get().getHref().contains(
+            "/users/1234/payment-instructions?status=PA&paymentType=CHEQUE,POSTAL_ORDER&action=Process&bgcNumber=bgc123"));
     }
 
     @Test
@@ -757,7 +778,10 @@ public class PaymentInstructionServiceTest {
                                                       Long totalAmount, String paymentType, String bgc, String action) {
         return new PaymentInstructionStats() {
             @Override
-            public String getName() { return name; }
+            public String getName() {
+                return name;
+            }
+
             @Override
             public String getUserId() {
                 return userId;
