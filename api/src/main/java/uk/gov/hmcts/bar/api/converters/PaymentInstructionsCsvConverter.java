@@ -4,6 +4,7 @@ import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractGenericHttpMessageConverter;
+import uk.gov.hmcts.bar.api.data.model.BasePaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstruction;
 import uk.gov.hmcts.bar.api.data.model.PaymentInstructionReportLine;
 import uk.gov.hmcts.bar.api.data.utils.Util;
@@ -58,7 +59,7 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
 
     private List<String[]> flattenEntity(List<PaymentInstruction> paymentInstructions) {
         List<String[]> paymentLines = new ArrayList<>();
-        paymentLines.add(PaymentInstruction.CSV_TABLE_HEADER);
+        paymentLines.add(BasePaymentInstruction.CSV_TABLE_HEADER);
         for (PaymentInstruction paymentInstruction : paymentInstructions){
             List<PaymentInstructionReportLine> flattened = paymentInstruction.flattenPaymentInstruction();
             flattened.forEach(paymentInstructionReportLine -> paymentLines.add(convertReportCellToString(paymentInstructionReportLine)));
@@ -70,7 +71,7 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
         String[] csvRow = new String[28];
-        csvRow[0] = line.getDailyId() == null ? null : line.getDailyId().toString();
+        csvRow[0] = line.getDailyId() == null ? null : line.getDailyId();
         csvRow[1] = Util.getFormattedDateTime(line.getDate(),dateFormatter);
         csvRow[2] = line.getName();
         csvRow[3] = formatNumber(line.getCheckAmount());
@@ -115,7 +116,7 @@ public class PaymentInstructionsCsvConverter extends AbstractGenericHttpMessageC
      * @return
      */
     private String replaceSeparator(String source){
-        return "\"" + source.replaceAll("\"", "\"\"") + "\"";
+        return "\"" + source.replace("\"", "\"\"") + "\"";
     }
 
 }
