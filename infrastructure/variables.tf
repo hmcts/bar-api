@@ -10,7 +10,9 @@ variable "env" {}
 
 variable "subscription" {}
 
-variable "ilbIp"{}
+variable "ilbIp" {
+  default = ""
+}
 
 variable "tenant_id" {}
 
