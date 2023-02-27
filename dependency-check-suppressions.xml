@@ -145,5 +145,12 @@
         </notes>
         <cve>CVE-2022-31197</cve>
     </suppress>
+    <suppress>
+        <notes>A stack overflow in the XML.toJSONObject component of hutool-json v5.8.10
+            allows attackers to cause a Denial of Service (DoS) via crafted JSON or XML data.
+            New version of jackson-core needed to resolve this issue.
+        </notes>
+        <cve>CVE-2022-45688</cve>
+    </suppress>
     <!-- False Positive CVE Suppression ends here-->
 </suppressions>
