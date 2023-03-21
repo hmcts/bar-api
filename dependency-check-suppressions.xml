@@ -28,4 +28,12 @@
         </notes>
         <cve>CVE-2021-42550</cve>
     </suppress>
+    <suppress until="2023-06-30">
+        <notes>
+            Postgress version 42.4.3 uses dbUtils which has an interface change which is causing broken functional tests.
+        </notes>
+        <cve>CVE-2022-31197</cve>
+        <cve>CVE-2022-41946</cve>
+
+    </suppress>
 </suppressions>
