@@ -22,4 +22,10 @@
         <cve>CVE-2022-22978</cve>
         <cve>CVE-2022-22976</cve>
     </suppress>
+    <suppress until="2023-06-30">
+        <notes>
+            Loggback-core version 1.2.11 has interface change and breaks code.
+        </notes>
+        <cve>CVE-2021-42550</cve>
+    </suppress>
 </suppressions>
