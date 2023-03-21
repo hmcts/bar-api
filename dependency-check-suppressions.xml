@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <!-- Below are the supressions added fpr False Positive CVEs -->
-    <suppress until="2023-06-31">
+    <suppress until="2023-06-30">
         <notes>
            Jackson core needs major version latest 2.12.7  not resolving current CVE issue. Same applies to json-path version 2.4.0.
             Same applies to json-smart version 2.4.10
         </notes>
         <cve>CVE-2022-45688</cve>
     </suppress>
-    <suppress until="2023-06-31">
+    <suppress until="2023-06-30">
         <notes>
             Liquibase core needs major version latest of liquibase-core. Version 4.2.2 not resolving current CVE issue
         </notes>
         <cve>CVE-2022-0839</cve>
     </suppress>
-    <suppress until="2023-06-31">
+    <suppress until="2023-06-30">
         <notes>
             This applies to spring-security-config-5.4.10, spring-security-crypto-5.4.10 and spring-security-web-5.4.10.
             Upgrade past current version required
