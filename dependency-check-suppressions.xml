@@ -42,6 +42,5 @@
 
         <cve>CVE-2022-31197</cve>
         <cve>CVE-2022-41946</cve>
-        <cve>CVE-2020-5412</cve>
     </suppress>
 </suppressions>
