@@ -29,11 +29,9 @@
         <cve>CVE-2021-42550</cve>
     </suppress>
     <suppress until="2023-06-30">
-        <notes>
-            Postgress version 42.4.3 uses dbUtils which has an interface change which is causing broken functional tests.
+        <notes>SnakeYaml's Constructor() class does not restrict types which can be instantiated during deserialization.
         </notes>
-        <cve>CVE-2022-31197</cve>
-        <cve>CVE-2022-41946</cve>
+        <cve>CVE-2022-1471</cve>
     </suppress>
     <suppress until="2023-06-30">
         <cve>CVE-2021-42550</cve>
