@@ -1,156 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <!-- Below are the supressions added fpr False Positive CVEs -->
-    <suppress  until="2023-03-31">
-        <notes>The CVE-2018-1258 occurs from spring security libraries, despite the latest versions are used.
-            This is confirmed as false positive and hence it is suppressed (https://github.com/jeremylong/DependencyCheck/issues/2952)
-        </notes>
-        <cve>CVE-2018-1258</cve>
-    </suppress>
-
-    <suppress>
-        <notes>CVE-2021-28170 https://nvd.nist.gov/vuln/detail/CVE-2021-28170
-            Spring Framework vulnerability, subject to review after Spring Boot upgrade to 2.4.x affected lib org.glassfish:jakarta.el:3.0.3
-        </notes>
-        <cve>CVE-2021-28170</cve>
-    </suppress>
-
-    <suppress>
-        <notes><![CDATA[
-                 https://nvd.nist.gov/vuln/detail/CVE-2021-22096#range-7096083
-                 Temporary suppression until upgrade to Spring Boot 2.5.6 (current) https://docs.spring.io/spring-boot/docs/current/reference/html/dependency-versions.html#dependency-versions
-        ]]></notes>
-        <cve>CVE-2021-22096</cve>
-    </suppress>
-
-    <suppress until="2023-03-31">
-        <notes>Fix until the import for logback are updated</notes>
-        <cve>CVE-2021-42550</cve>
-    </suppress>
-
-    <suppress until="2023-03-31">
-        <notes>Major liquibase update to version 4.8.0+ needed, this will require code refactoring</notes>
-        <cve>CVE-2022-0839</cve>
-    </suppress>
-
-    <suppress until="2023-03-31">
-        <notes>jackson-databind issue, upgrading to new version broke functional tests.</notes>
-        <cve>CVE-2020-36518</cve>
-    </suppress>
-
-    <suppress until="2023-03-31">
-        <notes>Spring MVC or Spring WebFlux CVE that is currently awaiting analysis on NIST.</notes>
-        <cve>CVE-2022-22965</cve>
-    </suppress>
-
-    <suppress until="2023-03-31">
-        <notes>Awaiting version of Spring-core with a fix for the following CVE issue.</notes>
-        <cve>CVE-2022-22950</cve>
-    </suppress>
-
-    <suppress until="2023-03-31">
-        <notes>Awaiting version of Spring-core with a fix for the following CVE issue.</notes>
-        <cve>CVE-2016-1000027</cve>
-    </suppress>
-
-
-    <suppress until="2023-03-31">
-        <notes>Awaiting version of Tomcat Embed Core with a fix for the following CVE issue. 9.0.64 is most recent and still has the cve issue.</notes>
-        <cve>CVE-2022-34305</cve>
-    </suppress>
-
-    <suppress until="2023-03-31">
+    <suppress until="2023-06-30">
         <notes>
-            Versions of the Amazon AWS Apache Log4j hotpatch package before log4j-cve-2021-44228-hotpatch-1.3.5 are
-            affected by a race condition that could lead to a local privilege escalation. CVE-2022-33915 occured,
-            despite latest versions used.
-        </notes>
-        <cve>CVE-2022-33915</cve>
-    </suppress>
-
-    <suppress until="2023-03-31">
-      <notes>
-        The RipudamanKaushikDal/projects repository through 2022-04-03 on GitHub allows absolute path traversal
-        because the Flask send_file function is used unsafely.
-      </notes>
-      <cve>CVE-2022-31569</cve>
-    </suppress>
-
-    <suppress until="2023-03-31">
-      <notes>
-        The nrlakin/homepage repository through 2017-03-06 on GitHub allows absolute path traversal because the
-        Flask send_file function is used unsafely.
-      </notes>
-      <cve>CVE-2022-31548</cve>
-    </suppress>
-    <suppress until="2023-03-31">
-        <notes>
-            The package org.yaml:snakeyaml from 0 and before 1.31 are vulnerable to
-            Denial of Service (DoS) due missing to nested depth limitation for collections.
-            snakeyaml v1.31 (most recent patch available currently) does not resolve the issue.
-        </notes>
-        <cve>CVE-2022-25857</cve>
-        <cve>CVE-2022-38749</cve>
-        <cve>CVE-2022-38750</cve>
-        <cve>CVE-2022-38751</cve>
-        <cve>CVE-2022-38752</cve>
-    </suppress>
-    <suppress until="2023-03-31">
-        <notes>
-          In FasterXML jackson-databind before 2.14.0-rc1, resource exhaustion can occur because of a lack of a check in
-          primitive value deserializers to avoid deep wrapper array nesting,
-          when the UNWRAP_SINGLE_VALUE_ARRAYS feature is enabled
-        </notes>
-        <cve>CVE-2022-42003</cve>
-        <cve>CVE-2022-42004</cve>
-    </suppress>
-
-    <suppress until="2023-03-31">
-        <notes>
-            Postgres jdbc vulnerability is not resolved by the most recent patch 42.4.3 and is being supressed until a newer version is available.
-        </notes>
-        <cve>CVE-2022-41946</cve>
-    </suppress>
-    <suppress until="2023-03-31">
-        <notes>
-          apache commons_net
-        </notes>
-        <cve>CVE-2021-37533</cve>
-    </suppress>
-    <suppress until="2023-03-31">
-        <notes>
-            Snake yaml and latencyUtils
-        </notes>
-        <cve>CVE-2021-4235</cve>
-        <cve>CVE-2021-4277</cve>
-        <cve>CVE-2022-3064</cve>
-    </suppress>
-    <suppress until="2023-03-31">
-        <notes>
-            Spring Cloud Netflix
-        </notes>
-        <cve>CVE-2020-5412</cve>
-    </suppress>
-    <suppress until="2023-03-31">
-        <notes>
-            Spring Security
-        </notes>
-        <cve>CVE-2022-22978</cve>
-        <cve>CVE-2021-22119</cve>
-        <cve>CVE-2022-22976</cve>
-    </suppress>
-    <suppress until="2023-03-31">
-        <notes>
-            PostgreSQL JDBC Driver
-        </notes>
-        <cve>CVE-2022-31197</cve>
-    </suppress>
-    <suppress until="2023-03-31">
-        <notes>A stack overflow in the XML.toJSONObject component of hutool-json v5.8.10
-            allows attackers to cause a Denial of Service (DoS) via crafted JSON or XML data.
-            New version of jackson-core needed to resolve this issue.
+           Jackson core needs major version latest 2.12.7  not resolving current CVE issue. Same applies to json-path version 2.4.0.
+            Same applies to json-smart version 2.4.10
         </notes>
         <cve>CVE-2022-45688</cve>
     </suppress>
-    <!-- False Positive CVE Suppression ends here-->
+    <suppress until="2023-06-30">
+        <notes>
+            Liquibase core needs major version latest of liquibase-core. Version 4.2.2 not resolving current CVE issue
+        </notes>
+        <cve>CVE-2022-0839</cve>
+    </suppress>
+    <suppress until="2023-06-30">
+        <notes>
+            This applies to spring-security-config-5.4.10, spring-security-crypto-5.4.10 and spring-security-web-5.4.10.
+            Upgrade past current version required
+        </notes>
+        <cve>CVE-2022-22978</cve>
+        <cve>CVE-2022-22976</cve>
+    </suppress>
+    <suppress until="2023-06-30">
+        <notes>
+            Loggback-core version 1.2.11 has interface change and breaks code.
+        </notes>
+        <cve>CVE-2021-42550</cve>
+    </suppress>
+    <suppress until="2023-06-30">
+        <notes>
+            SnakeYaml's Constructor() class does not restrict types which can be instantiated during deserialization.
+        </notes>
+        <cve>CVE-2022-1471</cve>
+    </suppress>
+    <suppress until="2023-06-30">
+        <notes>
+            Jackson-databind version 2.12.7.1 in combination with postgres has interface changes in DBUtils that cause unit tests to fail.
+        </notes>
+        <cve>CVE-2020-36518</cve>
+        <cve>CVE-2022-42003</cve>
+        <cve>CVE-2022-42004</cve>
+    </suppress>
+    <suppress until="2023-06-30">
+        <notes>
+            Postgres version 42.4.3 in combination with jackson-databind has interface changes in DBUtils that cause unit tests to fail.
+        </notes>
+        <cve>CVE-2022-31197</cve>
+        <cve>CVE-2022-41946</cve>
+    </suppress>
 </suppressions>
