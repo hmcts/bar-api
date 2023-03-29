@@ -49,4 +49,10 @@
         <cve>CVE-2022-31197</cve>
         <cve>CVE-2022-41946</cve>
     </suppress>
+    <suppress until="2023-06-30">
+        <notes>
+            Upgrading tomcat causes unhealthy pipeline error.
+        </notes>
+        <cve>CVE-2023-28708</cve>
+    </suppress>
 </suppressions>
