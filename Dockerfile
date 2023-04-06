@@ -9,3 +9,4 @@ COPY lib/AI-Agent.xml /opt/app/
 EXPOSE 8080
 
 CMD ["bar-app.jar"]
+
