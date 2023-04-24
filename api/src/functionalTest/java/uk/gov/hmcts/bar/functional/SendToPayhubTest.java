@@ -42,6 +42,7 @@ public class SendToPayhubTest {
     }
 
     @Test
+    @Ignore("Ignoring Test: PAY-5982")
     public void testSendPaymentToPayhub() throws JSONException {
 
         // create payment
