@@ -123,12 +123,12 @@ dependencies {
     smokeTestImplementation sourceSets.test.runtimeClasspath
 
     // functional
-    functionalImplementation sourceSets.test.runtimeClasspath
-    functionalImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
-    functionalImplementation group: 'net.serenity-bdd', name: 'serenity-cucumber', version: versions.serenityCucumber
-    functionalImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
-    functionalImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
-    functionalImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
+    functionalTestImplementation sourceSets.test.runtimeClasspath
+    functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
+    functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-cucumber', version: versions.serenityCucumber
+    functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
+    functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
+    functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
 
 
     implementation group: 'org.pitest', name: 'pitest', version: '1.5.1'
