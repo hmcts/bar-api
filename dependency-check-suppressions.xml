@@ -55,4 +55,10 @@
         </notes>
         <cve>CVE-2021-46877</cve>
     </suppress>
+    <suppress until="2023-09-30">
+        <notes>
+           Spring boot requires upgrade to spring-boot-2.5
+        </notes>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
 </suppressions>
