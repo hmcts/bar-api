@@ -49,4 +49,11 @@
         <cve>CVE-2022-31197</cve>
         <cve>CVE-2022-41946</cve>
     </suppress>
+    <suppress until="2023-09-30">
+        <notes>
+            Postgres version 42.4.3 in combination with jackson-databind has interface changes in DBUtils that cause unit tests to fail.
+        </notes>
+        <cve>CVE-2022-31197</cve>
+        <cve>CVE-2022-41946</cve>
+    </suppress>
 </suppressions>
