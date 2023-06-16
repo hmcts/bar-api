@@ -51,9 +51,8 @@
     </suppress>
     <suppress until="2023-09-30">
         <notes>
-            Postgres version 42.4.3 in combination with jackson-databind has interface changes in DBUtils that cause unit tests to fail.
+            Jackson data bind requires upgrade to Jackson Databind » 2.12.7.1
         </notes>
-        <cve>CVE-2022-31197</cve>
-        <cve>CVE-2022-41946</cve>
+        <cve>CVE-2021-46877</cve>
     </suppress>
 </suppressions>
