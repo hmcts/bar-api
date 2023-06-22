@@ -128,7 +128,7 @@ subprojects {
         testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
         implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-        implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
+        implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
         implementation 'org.springframework.boot:spring-boot-starter-validation'
     }
 }
