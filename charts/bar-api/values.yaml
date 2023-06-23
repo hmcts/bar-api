@@ -17,6 +17,7 @@ java:
     TIMEOUT_SERVER_SHUTDOWN_PHASE: 30s
   keyVaults:
     bar:
+      resourceGroup: bar
       secrets:
         - name: bar-S2S-SECRET
           alias: S2S_SECRET
