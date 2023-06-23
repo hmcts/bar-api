@@ -1,9 +1,0 @@
-spring:
-  cloud:
-    propertiesvolume:
-      paths: /mnt/secrets/bar
-      prefixed: false
-      aliases:
-        bar-S2S-SECRET: S2S_SECRET
-        api-POSTGRES-PASS: POSTGRES_PASSWORD
-        AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
