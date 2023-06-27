@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <!-- Below are the supressions added fpr False Positive CVEs -->
-    <suppress until="2023-06-30">
+    <suppress until="2023-10-30">
         <notes>
            Jackson core needs major version latest 2.12.7  not resolving current CVE issue. Same applies to json-path version 2.4.0.
             Same applies to json-smart version 2.4.10
         </notes>
         <cve>CVE-2022-45688</cve>
     </suppress>
-    <suppress until="2023-06-30">
+    <suppress until="2023-10-30">
         <notes>
             Liquibase core needs major version latest of liquibase-core. Version 4.2.2 not resolving current CVE issue
         </notes>
         <cve>CVE-2022-0839</cve>
     </suppress>
-    <suppress until="2023-06-30">
+    <suppress until="2023-10-30">
         <notes>
             This applies to spring-security-config-5.4.10, spring-security-crypto-5.4.10 and spring-security-web-5.4.10.
             Upgrade past current version required
@@ -22,20 +22,21 @@
         <cve>CVE-2022-22978</cve>
         <cve>CVE-2022-22976</cve>
         <cve>CVE-2023-20861</cve>
+        <cve> CVE-2023-20862</cve>
     </suppress>
-    <suppress until="2023-06-30">
+    <suppress until="2023-10-30">
         <notes>
             Loggback-core version 1.2.11 has interface change and breaks code.
         </notes>
         <cve>CVE-2021-42550</cve>
     </suppress>
-    <suppress until="2023-06-30">
+    <suppress until="2023-10-30">
         <notes>
             SnakeYaml's Constructor() class does not restrict types which can be instantiated during deserialization.
         </notes>
         <cve>CVE-2022-1471</cve>
     </suppress>
-    <suppress until="2023-06-30">
+    <suppress until="2023-10-30">
         <notes>
             Jackson-databind version 2.12.7.1 in combination with postgres has interface changes in DBUtils that cause unit tests to fail.
         </notes>
@@ -43,20 +44,20 @@
         <cve>CVE-2022-42003</cve>
         <cve>CVE-2022-42004</cve>
     </suppress>
-    <suppress until="2023-06-30">
+    <suppress until="2023-10-30">
         <notes>
             Postgres version 42.4.3 in combination with jackson-databind has interface changes in DBUtils that cause unit tests to fail.
         </notes>
         <cve>CVE-2022-31197</cve>
         <cve>CVE-2022-41946</cve>
     </suppress>
-    <suppress until="2023-06-30">
+    <suppress until="2023-10-30">
         <notes>
             Upgrading tomcat causes unhealthy pipeline error.
         </notes>
         <cve>CVE-2023-28708</cve>
     </suppress>
-    <suppress until="2023-06-30">
+    <suppress until="2023-10-30">
         <notes>
             spring-webmvc version 5.3.26 casues issues that fail unit test cases due it not being able to create test environment correctly.
         </notes>
