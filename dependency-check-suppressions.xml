@@ -155,4 +155,11 @@
         </notes>
         <cve>CVE-2023-28708</cve>
     </suppress>
+    <suppress>
+        <notes>
+            Spring security framework requires update
+        </notes>
+        <cve>CVE-2022-22978</cve>
+        <cve>CVE-2022-22976</cve>
+    </suppress>
 </suppressions>
