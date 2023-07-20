@@ -74,17 +74,6 @@
         <cve>CVE-2021-46877</cve>
     </suppress>
     <suppress>
-        <notes>In spring framework versions prior to 5.2.24 release+ ,5.3.27+ and 6.0.8+ , it is possible for a user to provide a specially crafted SpEL expression that may cause a denial-of-service (DoS) condition.
-        </notes>
-        <cve>CVE-2023-20863</cve>
-    </suppress>
-    <suppress>
-        <notes>
-            jackson-databind 2.10.x through 2.12.x before 2.12.6 and 2.13.x before 2.13.1 allows attackers to cause a denial of service (2 GB transient heap usage per read) in uncommon situations involving JsonNode JDK serialization.
-        </notes>
-        <cve>CVE-2021-46877</cve>
-    </suppress>
-    <suppress>
         <notes>
             spring-hateoas-1.1.4.RELEASE.jar requires update
         </notes>

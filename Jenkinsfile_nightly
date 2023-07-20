@@ -44,7 +44,7 @@ withNightlyPipeline(type, product, component) {
     enableMutationTest()
     enableFortifyScan()
     enableFullFunctionalTest()
-    enableSlackNotifications('#cc-payments-tech')
+    enableSlackNotifications('#fee-pay-nightly-pipeline')
 
     afterAlways('fortify-scan') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
