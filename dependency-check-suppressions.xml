@@ -95,6 +95,7 @@
             and multiple servlets, one of them being Spring MVC’s DispatcherServlet.
         </notes>
         <cve>CVE-2023-34035</cve>
+    </suppress>
     <suppress until="2023-03-31">
         <notes>Reactive web applications that use Spring HATEOAS to produce hypermedia-based responses might be exposed to
             malicious forwarded headers if they are not behind a trusted proxy that ensures correctness of such headers, or if
