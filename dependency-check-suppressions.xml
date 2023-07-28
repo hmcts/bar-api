@@ -89,4 +89,19 @@
         </notes>
         <cve>CVE-2023-2976</cve>
     </suppress>
+    <suppress until="2023-10-31">
+        <notes>Spring Security versions 5.8 prior to 5.8.5, 6.0 prior to 6.0.5, and 6.1 prior to 6.1.2 could be
+            susceptible to authorization rule misconfiguration if the application uses requestMatchers(String)
+            and multiple servlets, one of them being Spring MVC’s DispatcherServlet.
+        </notes>
+        <cve>CVE-2023-34035</cve>
+    </suppress>
+    <suppress until="2023-10-31">
+        <notes>Reactive web applications that use Spring HATEOAS to produce hypermedia-based responses might be exposed to
+            malicious forwarded headers if they are not behind a trusted proxy that ensures correctness of such headers, or if
+            they don't have anything else in place to handle (and possibly discard) forwarded headers either in WebFlux or at the
+            level of the underlying HTTP server.
+        </notes>
+        <cve>CVE-2023-34036</cve>
+    </suppress>
 </suppressions>
