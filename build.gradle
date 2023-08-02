@@ -63,7 +63,7 @@ allprojects {
             dependency 'com.google.guava:guava:30.1-jre'
 
             dependency 'org.liquibase:liquibase-core:3.7.0'
-            dependency 'org.postgresql:postgresql:42.2.13'
+            dependency 'org.postgresql:postgresql:42.3.2'
 
             dependency 'commons-beanutils:commons-beanutils:1.9.3'
         }
