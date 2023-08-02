@@ -41,9 +41,9 @@ idea {
 }
 
 def versions = [
-        pitest: '1.9.0',
-        sonarPitest: '0.5',
-        lombok: '1.18.12',
+        pitest                  : '1.9.0',
+        sonarPitest             : '0.5',
+        lombok                  : '1.18.22',
         serenity                : '2.2.12',
         serenityreporter        : '2.1.4',
         serenityCucumber        : '1.9.51'
