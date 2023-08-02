@@ -1,9 +1,10 @@
 package uk.gov.hmcts.bar.api.controllers.payment;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.collections.MultiMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -36,7 +37,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.hateoas.EntityModel.of;
 
 @RestController
-
+@Tag(name = "BAR Payment API", description = "Get all current payment instructions ")
 @Validated
 public class PaymentInstructionController {
 
@@ -67,11 +68,12 @@ public class PaymentInstructionController {
         this.fullRemissionService = fullRemissionService;
     }
 
-    @ApiOperation(value = "Get all current payment instructions", notes = "Get all current payment instructions for a given site.",
-        produces = "application/json, text/csv")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return all current payment instructions"),
-        @ApiResponse(code = 404, message = "Payment instructions not found"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary = "Get all current payment instructions", description = "Get all current payment instructions for a given site.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Return all current payment instructions"),
+        @ApiResponse(responseCode = "404", description = "Payment instructions not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/payment-instructions")
     public List<PaymentInstruction> getPaymentInstructions(
@@ -108,11 +110,10 @@ public class PaymentInstructionController {
         return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
     }
 
-    @ApiOperation(value = "Get all current payment instructions", notes = "Get all current payment instructions for a given site.",
-        produces = "application/json, text/csv")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return all current payment instructions for a given user"),
-        @ApiResponse(code = 404, message = "Payment instructions not found"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary = "Get all current payment instructions", description = "Get all current payment instructions for a given site.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Return all current payment instructions for a given user"),
+        @ApiResponse(responseCode = "404", description = "Payment instructions not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/users/{id}/payment-instructions")
     public List<PaymentInstruction> getPaymentInstructionsByIdamId (
@@ -147,10 +148,11 @@ public class PaymentInstructionController {
         return Util.updateStatusAndActionDisplayValue(paymentInstructionList);
     }
 
-    @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction for the given id.")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return payment instruction"),
-        @ApiResponse(code = 404, message = "Payment instruction not found"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary = "Get the payment instruction", description = "Get the payment instruction for the given id.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Return payment instruction"),
+        @ApiResponse(responseCode = "404", description = "Payment instruction not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/payment-instructions/{id}")
     public ResponseEntity<PaymentInstruction> getPaymentInstruction(BarWrappedHttpRequest request, @PathVariable("id") Integer id) {
@@ -161,20 +163,22 @@ public class PaymentInstructionController {
         return new ResponseEntity<>(paymentInstruction, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Delete payment instruction", notes = "Delete payment instruction with the given id.")
-    @ApiResponses(value = {@ApiResponse(code = 204, message = "Payment instruction deleted"),
-        @ApiResponse(code = 404, message = "Payment instruction not found"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary = "Delete payment instruction", description = "Delete payment instruction with the given id.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Payment instruction deleted"),
+        @ApiResponse(responseCode = "404", description = "Payment instruction not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/payment-instructions/{id}")
     public void deletePaymentInstruction(BarWrappedHttpRequest request, @PathVariable("id") Integer id) {
         paymentInstructionService.deletePaymentInstruction(id, request.getBarUser().getSelectedSiteId());
     }
 
-    @ApiOperation(value = "Create card payment instruction", notes = "Create card payment instruction with the given values.")
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "Card payment instruction created"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary = "Create card payment instruction", description = "Create card payment instruction with the given values.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Card payment instruction created"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/cards")
     public PaymentInstruction saveCardInstruction(
@@ -190,25 +194,25 @@ public class PaymentInstructionController {
         return paymentInstructionService.createPaymentInstruction(request.getBarUser(), cardPaymentInstruction);
     }
 
-    @ApiOperation(value = "Update card payment instruction", notes = "Update card payment instruction with the given values.")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Card payment instruction updated"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary  = "Update card payment instruction", description = "Update card payment instruction with the given values.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Card payment instruction updated"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/cards/{id}")
     public ResponseEntity<Void> updateCardInstruction(@PathVariable("id") Integer id,
-                                                      @ApiParam(value="Card request", required=true) @Valid @RequestBody Card card,
+                                                      @Parameter(name="Card request", required=true) @Valid @RequestBody Card card,
                                                       BarWrappedHttpRequest request) {
         paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id,card);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
-
-    @ApiOperation(value = "Create cheque payment instruction", notes = "Create cheque payment instruction with the given values.")
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "Cheque payment instruction created"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary  = "Create cheque payment instruction", description = "Create cheque payment instruction with the given values.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "201", description = "Cheque payment instruction created"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/cheques")
     public PaymentInstruction saveChequeInstruction(BarWrappedHttpRequest request,
@@ -222,23 +226,23 @@ public class PaymentInstructionController {
         return paymentInstructionService.createPaymentInstruction(request.getBarUser(), chequePaymentInstruction);
     }
 
-    @ApiOperation(value = "Update cheque payment instruction", notes = "Update cheque payment instruction with the given values.")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Postal Order payment instruction updated"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary  = "Update cheque payment instruction", description = "Update cheque payment instruction with the given values.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Postal Order payment instruction updated"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/cheques/{id}")
     public ResponseEntity<Void> updateChequeInstruction(@PathVariable("id") Integer id,
-                                                        @ApiParam(value="Cheque request",required=true) @Valid @RequestBody Cheque cheque,
+                                                        @Parameter(name="Cheque request",required=true) @Valid @RequestBody Cheque cheque,
                                                         BarWrappedHttpRequest request) {
         paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id,cheque);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Reject the payment instruction", notes = "Reject payment instruction with the given id.")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Payment instruction rejected"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary = "Reject the payment instruction", description = "Reject payment instruction with the given id.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Payment instruction rejected"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/payment-instructions/{id}/reject")
 	public ResponseEntity<Void> rejectPaymentInstruction(@PathVariable("id") Integer id,
@@ -263,14 +267,14 @@ public class PaymentInstructionController {
 	}
 
 
-    @ApiOperation(value = "Create cash payment instruction", notes = "Create cash payment instruction with the given values.")
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "Cash payment instruction created"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary = "Create cash payment instruction", description = "Create cash payment instruction with the given values.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "201", description = "Cash payment instruction created"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/cash")
     public PaymentInstruction saveCashInstruction(BarWrappedHttpRequest request,
-                                                  @ApiParam(value="Cash request",required=true) @Valid @RequestBody Cash cash) {
+                                                  @Parameter(name="Cash request",required=true) @Valid @RequestBody Cash cash) {
         CashPaymentInstruction cashPaymentInstruction = CashPaymentInstruction.cashPaymentInstructionWith()
             .payerName(cash.getPayerName())
             .amount(cash.getAmount())
@@ -279,56 +283,54 @@ public class PaymentInstructionController {
         return paymentInstructionService.createPaymentInstruction(request.getBarUser(), cashPaymentInstruction);
     }
 
-    @ApiOperation(value = "Create remission", notes = "Create a full remission with the given values.")
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "Full remission created"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary  = "Create remission", description = "Create a full remission with the given values.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "201", description = "Full remission created"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/remissions")
     public PaymentInstruction saveRemission(BarWrappedHttpRequest request,
-                                            @ApiParam(value="Full remission request",required=true) @Valid @RequestBody FullRemission fullRemission) {
+                                            @Parameter(name="Full remission request",required=true) @Valid @RequestBody FullRemission fullRemission) {
         FullRemissionPaymentInstruction remissionPaymentInstruction = FullRemissionPaymentInstruction.fullRemissionPaymentInstructionWith()
             .payerName(fullRemission.getPayerName())
             .remissionReference(fullRemission.getRemissionReference()).build();
         return paymentInstructionService.createPaymentInstruction(request.getBarUser(), remissionPaymentInstruction);
     }
 
-    @ApiOperation(value = "Update full remission", notes = "Update remission instruction with the given values.")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Remission instruction updated"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary  = "Update full remission", description = "Update remission instruction with the given values.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Remission instruction updated"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/remissions/{id}")
-    public ResponseEntity<Void> updateRemissionInstruction(@PathVariable("id") Integer id , @ApiParam(value="Full remission request",required=true) @Valid @RequestBody FullRemission fullRemission)  {
+    public ResponseEntity<Void> updateRemissionInstruction(@PathVariable("id") Integer id , @Parameter(name="Full remission request",required=true) @Valid @RequestBody FullRemission fullRemission)  {
         fullRemissionService.updateFullRemission(id, fullRemission);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
-    @ApiOperation(value = "Update cash payment instruction", notes = "Update cash payment instruction with the given values.")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Cash payment instruction updated"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary  = "Update cash payment instruction", description = "Update cash payment instruction with the given values.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Cash payment instruction updated"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/cash/{id}")
     public ResponseEntity<Void> updateCashInstruction(BarWrappedHttpRequest request,
-                                                      @PathVariable("id") Integer id , @ApiParam(value="Cash request",required=true) @Valid @RequestBody Cash cash) {
+                                                      @PathVariable("id") Integer id , @Parameter(name="Cash request",required=true) @Valid @RequestBody Cash cash) {
         paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id,cash);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
-
-
-    @ApiOperation(value = "Create poatal order payment instruction", notes = "Create postal order payment instruction with the given values.")
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "Postal order payment instruction created"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary  = "Create poatal order payment instruction", description = "Create postal order payment instruction with the given values.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "201", description = "Postal order payment instruction created"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/postal-orders")
     public PaymentInstruction savePostalOrderInstruction(
         BarWrappedHttpRequest request,
-        @ApiParam(value="Postal Order request",required=true) @Valid @RequestBody PostalOrder postalOrder) {
+        @Parameter(name="Postal Order request",required=true) @Valid @RequestBody PostalOrder postalOrder) {
         PostalOrderPaymentInstruction postalOrderPaymentInstruction = PostalOrderPaymentInstruction.postalOrderPaymentInstructionWith()
             .payerName(postalOrder.getPayerName())
             .amount(postalOrder.getAmount())
@@ -338,29 +340,29 @@ public class PaymentInstructionController {
         return paymentInstructionService.createPaymentInstruction(request.getBarUser(), postalOrderPaymentInstruction);
     }
 
-    @ApiOperation(value = "Update postal order payment instruction", notes = "Update postal order payment instruction with the given values.")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Postal Order payment instruction updated"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary  = "Update postal order payment instruction", description = "Update postal order payment instruction with the given values.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Postal Order payment instruction updated"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/postal-orders/{id}")
     public ResponseEntity<Void> updatePostalOrderInstruction(BarWrappedHttpRequest request,
-                                                             @PathVariable("id") Integer id , @ApiParam(value="Postal order request",required=true) @Valid @RequestBody PostalOrder postalOrder) {
+                                                             @PathVariable("id") Integer id , @Parameter(name="Postal order request",required=true) @Valid @RequestBody PostalOrder postalOrder) {
         paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id,postalOrder);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
 
-    @ApiOperation(value = "Create allpay payment instruction", notes = "Create allpay payment instruction with the given values.")
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "AllPay payment instruction created"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary  = "Create allpay payment instruction", description = "Create allpay payment instruction with the given values.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "201", description = "AllPay payment instruction created"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/allpay")
     public PaymentInstruction saveAllPayInstruction(
         BarWrappedHttpRequest request,
-        @ApiParam(value="All Pay request", required=true) @Valid @RequestBody AllPay allPay) {
+        @Parameter(name="All Pay request", required=true) @Valid @RequestBody AllPay allPay) {
         AllPayPaymentInstruction allPayPaymentInstruction = AllPayPaymentInstruction.allPayPaymentInstructionWith()
             .payerName(allPay.getPayerName())
             .amount(allPay.getAmount())
@@ -370,24 +372,24 @@ public class PaymentInstructionController {
         return paymentInstructionService.createPaymentInstruction(request.getBarUser(), allPayPaymentInstruction);
     }
 
-    @ApiOperation(value = "Update allpay payment instruction", notes = "Update allpay payment instruction with the given values.")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Allpay payment instruction updated"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary  = "Update allpay payment instruction", description = "Update allpay payment instruction with the given values.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Allpay payment instruction updated"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/allpay/{id}")
     public ResponseEntity<Void> updateAllPayInstruction(BarWrappedHttpRequest request,
-                                                        @PathVariable("id") Integer id , @ApiParam(value="Allpay request",required=true) @Valid @RequestBody AllPay allpay) {
+                                                        @PathVariable("id") Integer id , @Parameter(name="Allpay request",required=true) @Valid @RequestBody AllPay allpay) {
         paymentInstructionService.updatePaymentInstruction(request.getBarUser(), id, allpay);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
-    @ApiOperation(value = "Submit current payment instructions by post clerk", notes = "Submit current payment instructions by a post clerk.")
+    @Operation(summary  = "Submit current payment instructions by post clerk", description = "Submit current payment instructions by a post clerk.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Submit current payment instructions by post clerk"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")
+        @ApiResponse(responseCode = "200", description = "Submit current payment instructions by post clerk"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/payment-instructions/{id}")
@@ -409,20 +411,20 @@ public class PaymentInstructionController {
         return response;
     }
 
-    @ApiOperation(value = "Create case fee detail for a payment instruction", notes = "Create case fee detail for a payment instruction.")
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "Case fee detail for a payment instruction created"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary  = "Create case fee detail for a payment instruction", description = "Create case fee detail for a payment instruction.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "201", description = "Case fee detail for a payment instruction created"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/fees")
     public CaseFeeDetail saveCaseFeeDetail(BarWrappedHttpRequest request,@RequestBody CaseFeeDetailRequest caseFeeDetailRequest) {
         return caseFeeDetailService.saveCaseFeeDetail(request.getBarUser(),caseFeeDetailRequest);
     }
 
-    @ApiOperation(value = "Update case fee details", notes = "Update case fee details with the given values.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Case Fee details updated"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error") })
+    @Operation(summary  = "Update case fee details", description = "Update case fee details with the given values.")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Case Fee details updated"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error") })
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/fees/{caseFeeId}")
     public CaseFeeDetail updateCaseFeeDetail(BarWrappedHttpRequest request,@PathVariable("caseFeeId") Integer caseFeeId,
@@ -430,10 +432,10 @@ public class PaymentInstructionController {
         return caseFeeDetailService.updateCaseFeeDetail(request.getBarUser(),caseFeeId, caseFeeDetailRequest);
     }
 
-    @ApiOperation(value = "Delete case fee details", notes = "Delete case fee details with the given values.")
-    @ApiResponses(value = { @ApiResponse(code = 204, message = "Case Fee details deleted"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error") })
+    @Operation(summary  = "Delete case fee details", description = "Delete case fee details with the given values.")
+    @ApiResponses(value = { @ApiResponse(responseCode = "204", description = "Case Fee details deleted"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error") })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/fees/{caseFeeId}")
     public ResponseEntity<Void> deleteCaseFeeDetail(@PathVariable("caseFeeId") Integer caseFeeId) {
@@ -441,19 +443,19 @@ public class PaymentInstructionController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Get the payment instruction", notes = "Get the payment instruction's unallocated amount for the given id.")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return payment unallocated amount"),
-        @ApiResponse(code = 404, message = "Payment instruction not found"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary  = "Get the payment instruction", description = "Get the payment instruction's unallocated amount for the given id.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Return payment unallocated amount"),
+        @ApiResponse(responseCode = "404", description = "Payment instruction not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/payment-instructions/{id}/unallocated")
     public int getUnallocatedPayment(@PathVariable("id") Integer paymentId){
         return unallocatedAmountService.calculateUnallocatedAmount(paymentId);
     }
 
-    @ApiOperation(value = "Get the payments stats", notes = "Get the payment instruction's stats showing each User's activities.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Return payment overview stats"),
-        @ApiResponse(code = 500, message = "Internal server error") })
+    @Operation(summary  = "Get the payments stats", description = "Get the payment instruction's stats showing each User's activities.")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Return payment overview stats"),
+        @ApiResponse(responseCode = "500", description = "Internal server error") })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/users/pi-stats")
     public MultiMap getPIStats(BarWrappedHttpRequest request,
@@ -472,9 +474,9 @@ public class PaymentInstructionController {
         return resultMap;
     }
 
-    @ApiOperation(value = "Get the payments stats along with count", notes = "Get the payment instruction's stats showing each User's activities along with count.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Return payment overview stats with count"),
-        @ApiResponse(code = 500, message = "Internal server error") })
+    @Operation(summary  = "Get the payments stats along with count", description = "Get the payment instruction's stats showing each User's activities along with count.")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Return payment overview stats with count"),
+        @ApiResponse(responseCode = "500", description = "Internal server error") })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/users/pi-stats/count")
     public MultiMap getPIStatsCount(BarWrappedHttpRequest request,
@@ -489,10 +491,10 @@ public class PaymentInstructionController {
         return resultMap;
     }
 
-    @ApiOperation(value = "collect payment instructions count", notes = "Collect  payment instruction count  ")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return count"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary  = "collect payment instructions count", description = "Collect  payment instruction count  ")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Return count"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/payment-instructions/count")
     public long getPaymentInstructionCount(BarWrappedHttpRequest request,
@@ -518,10 +520,10 @@ public class PaymentInstructionController {
         return count;
     }
 
-    @ApiOperation(value = "collect stats for a user", notes = "Collect all payment instruction stats for a user grouped by type for a given status")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return stats for a given user"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary  = "collect stats for a user", description = "Collect all payment instruction stats for a user grouped by type for a given status")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Return stats for a given user"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/users/{id}/payment-instructions/stats")
     public EntityModel<MultiMap> getPaymentInstructionStatsByUser(
@@ -536,10 +538,10 @@ public class PaymentInstructionController {
         return of(stats, link);
     }
 
-    @ApiOperation(value = "collect stats for a user", notes = "Collect all payment instruction stats for a user grouped by action and type")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return stats for a given user"),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary = "collect stats for a user", description = "Collect all payment instruction stats for a user grouped by action and type")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Return stats for a given user"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/users/{id}/payment-instructions/action-stats")
     public EntityModel<MultiMap> getPaymentInstructionStatsByUserGroupByAction(
@@ -555,10 +557,10 @@ public class PaymentInstructionController {
     }
 
 
-    @ApiOperation(value = "Send to payhub", notes = "Send all payment-instructions with TTB status to payhub")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = ""),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+    @Operation(summary = "Send to payhub", description = "Send all payment-instructions with TTB status to payhub")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = ""),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping({"/payment-instructions/send-to-payhub", "/payment-instructions/send-to-payhub/{timestamp}"})
 	public ResponseEntity<PayHubResponseReport> sendToPayHub(@RequestHeader HttpHeaders headers,

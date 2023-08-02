@@ -1,6 +1,5 @@
 package uk.gov.hmcts.bar.api.integration.payhub.service;
 
-import ch.qos.logback.core.db.dialect.DBUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.*;

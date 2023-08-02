@@ -1,6 +1,7 @@
 package uk.gov.hmcts.bar.api;
 
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.bar.multisite.MultisiteConfiguration;
 @EnableJpaRepositories(repositoryBaseClass = BaseRepositoryImpl.class)
 @ComponentScan(basePackages = {"uk.gov.hmcts.bar.api"})
 @EntityScan(basePackages = {"uk.gov.hmcts.bar.api"})
+@OpenAPIDefinition
 @Import({ MultisiteConfiguration.class })
 public class BarServiceApplication {
     public static void main(String[] args) {

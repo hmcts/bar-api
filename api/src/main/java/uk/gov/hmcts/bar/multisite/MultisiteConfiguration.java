@@ -1,54 +1,63 @@
 package uk.gov.hmcts.bar.multisite;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import org.springdoc.core.GroupedOpenApi;
+import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.ParameterBuilder;
-import springfox.documentation.schema.ModelRef;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
-import static java.util.Collections.singletonList;
-import static springfox.documentation.builders.RequestHandlerSelectors.basePackage;
-
 
 @Configuration
-@EnableSwagger2
+@OpenAPIDefinition
 @EnableJpaRepositories(basePackages = {"uk.gov.hmcts.bar.multisite"})
 @ComponentScan(basePackages = {"uk.gov.hmcts.bar.multisite"})
 @EntityScan(basePackages = {"uk.gov.hmcts.bar.multisite"})
 public class MultisiteConfiguration {
 
+    private static final String HEADER = "header";
+
     @Bean
-    public Docket multiSiteApi() {
-        return new Docket(DocumentationType.SWAGGER_2)
-            .groupName("multi-site")
-            .globalOperationParameters(singletonList(
-                new ParameterBuilder()
-                    .name("Authorization")
-                    .description("User authorization header")
-                    .required(false)
-                    .parameterType("header")
-                    .modelRef(new ModelRef("string"))
-                    .build()
-            ))
-            .apiInfo(multiSiteInfo()).select()
-            .apis(basePackage(MultisiteConfiguration.class.getPackage().getName()))
+    public GroupedOpenApi paymentApi() {
+        return GroupedOpenApi.builder()
+            .group("multi-site")
+            .packagesToScan("uk.gov.hmcts.bar.api.controllers")
+            .pathsToMatch("/**")
+            .addOperationCustomizer(authorizationHeaders())
             .build();
     }
 
-    private ApiInfo multiSiteInfo() {
-        return new ApiInfoBuilder()
+    @Bean
+    public OperationCustomizer authorizationHeaders() {
+        return (operation, handlerMethod) ->
+            operation
+                .addParametersItem(
+                    mandatoryStringParameter("Authorization", "User authorization header"));
+    }
+
+    private Parameter mandatoryStringParameter(String name, String description) {
+        return new Parameter()
+            .name(name)
+            .description(description)
+            .required(true)
+            .in(HEADER)
+            .schema(new StringSchema());
+    }
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI().components(new Components())
+            .info(new Info()
             .title("Multi Site API")
-            .description("Multi Site API to be able assign user to a site")
-            .contact(new Contact("Sachi Kuppuswami, Jalal ul Deen, Ravi Kumar Arasan, Attila Kiss", "", "jalal.deen@hmcts.net"))
-            .version("1.0")
-            .build();
+            .version("1.0.0")
+            .contact(new Contact().name("Tobias De Rose"))
+            .description("Multi Site API to be able assign user to a site"));
     }
 }

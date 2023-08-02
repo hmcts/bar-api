@@ -1,16 +1,16 @@
 buildscript {
     dependencies {
-        classpath "net.serenity-bdd:serenity-gradle-plugin:2.1.4"
-        classpath "net.serenity-bdd:serenity-single-page-report:2.1.4"
+        classpath "net.serenity-bdd:serenity-gradle-plugin:2.5.10"
+        classpath "net.serenity-bdd:serenity-single-page-report:2.1.13"
     }
 }
 
 plugins{
     id "info.solidsoft.pitest" version '1.9.0'
 }
-apply plugin: 'net.serenity-bdd.aggregator'
 
 apply from: 'liquibase.gradle'
+apply plugin: 'net.serenity-bdd.aggregator'
 
 sourceSets {
 
@@ -55,27 +55,25 @@ sonarqube {
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     }
 }
+
 def javaLoggingVersion = '6.0.1'
-def appInsightsVersion = '2.4.1'
 
 dependencies {
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: javaLoggingVersion
     implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: javaLoggingVersion
     implementation group: 'com.github.hmcts.java-logging', name: 'java-logging-spring', version: '5.1.5'
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '3.1.1'
-
-    // redefining with version 2.4.1 as applicationinsights-agent-2.5.0 has an open issue
-    // https://github.com/glowroot/instrumentation/issues/1
-    implementation group: 'com.microsoft.azure', name: 'applicationinsights-logging-logback', version: appInsightsVersion
-    implementation group: 'com.microsoft.azure', name: 'applicationinsights-spring-boot-starter', version: appInsightsVersion
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-webmvc-core', version: '1.7.0'
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
-    implementation group: 'org.ff4j', name: 'ff4j-spring-boot-web-api', version: '1.7.3'
-    implementation group: 'org.ff4j', name: 'ff4j-store-springjdbc', version: '1.7.3'
+    implementation group: 'org.ff4j', name: 'ff4j-spring-boot-web-api', version: '1.9'
+    implementation group: 'org.ff4j', name: 'ff4j-store-springjdbc', version: '1.9'
+
     implementation group: 'com.google.guava', name: 'guava', version:'30.1-jre'
     implementation group: 'io.github.resilience4j', name: 'resilience4j-circuitbreaker', version: '0.14.1'
     implementation group: 'io.github.resilience4j', name: 'resilience4j-retry', version: '0.14.1'
@@ -87,8 +85,6 @@ dependencies {
         exclude(module: 'slf4j-simple')
     }
 
-    implementation 'io.springfox:springfox-swagger2'
-    implementation 'io.springfox:springfox-swagger-ui'
     implementation ('com.github.hmcts:auth-checker-lib') {
         exclude(module: 'java-logging-spring')
     }
@@ -96,12 +92,12 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-annotations'
     implementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-    implementation 'org.hibernate:hibernate-validator'
+    implementation group: 'org.hibernate.validator', name: 'hibernate-validator', version: '6.0.13.Final'
     implementation 'commons-beanutils:commons-beanutils'
 
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.0.1'
+    //implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.1.7'
     implementation group: 'org.springframework.plugin', name: 'spring-plugin-core', version: '1.2.0.RELEASE'
-    implementation(group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '1.1.4.RELEASE') {
+    implementation(group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '1.3.7') {
         exclude(module: 'spring-plugin-core')
     }
 
@@ -111,7 +107,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.hsqldb:hsqldb'
 
-    testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
+    testImplementation group: 'io.rest-assured', name: 'rest-assured'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'com.github.tomakehurst:wiremock:2.6.0'
     testImplementation group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.1.1'
@@ -138,7 +134,7 @@ dependencies {
     smokeTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     smokeTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.3.0.RELEASE'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
 }
 
 test {
