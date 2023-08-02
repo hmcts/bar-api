@@ -1,14 +1,13 @@
- # renovate: datasource=github-releases depName=microsoft/ApplicationInsights-Java
-ARG APP_INSIGHTS_AGENT_VERSION=2.5.1
+ARG APP_INSIGHTS_AGENT_VERSION=3.4.14
+FROM hmctspublic.azurecr.io/base/java:17-distroless
 
-# Application image
-FROM hmctspublic.azurecr.io/base/java:11-distroless
-ENV APP bar-app.jar
-
-COPY build/libs/$APP /opt/app/
-COPY lib/AI-Agent.xml /opt/app/
+COPY lib/applicationinsights.json /opt/app/
+COPY build/libs/bar-app.jar /opt/app/
 
 EXPOSE 8080
 
-CMD ["bar-app.jar"]
+CMD [ \
+    "--add-opens", "java.base/java.lang=ALL-UNNAMED", \
+    "bar-app.jar" \
+    ]
 

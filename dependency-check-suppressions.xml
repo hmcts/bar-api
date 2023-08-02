@@ -104,4 +104,19 @@
         </notes>
         <cve>CVE-2023-34036</cve>
     </suppress>
+    <suppress>
+        <notes>
+            A vulnerability was found in Hibernate-Validator (hibernate-validator-6.0.13.Final.jar). The SafeHtml validator annotation
+            fails to properly sanitize payloads consisting of potentially malicious code in HTML comments and instructions. This vulnerability
+            can result in an XSS attack.
+        </notes>
+        <cve>CVE-2020-10693</cve>
+        <cve>CVE-2019-10219</cve>
+    </suppress>
+    <suppress>
+        <notes>
+            Using "**" as a pattern in Spring Security configuration for WebFlux creates a mismatch in pattern matching between Spring Security and Spring WebFlux, and the potential for a security bypass.
+        </notes>
+        <cve>CVE-2023-34034</cve>
+    </suppress>
 </suppressions>

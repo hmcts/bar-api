@@ -1,58 +1,64 @@
 package uk.gov.hmcts.bar.api.configuration;
 
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import org.springdoc.core.customizers.OperationCustomizer;
+import org.springdoc.core.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.ParameterBuilder;
-import springfox.documentation.schema.ModelRef;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
-import uk.gov.hmcts.bar.api.BarServiceApplication;
-import uk.gov.hmcts.bar.api.auth.BarWrappedHttpRequest;
-
-import java.util.Arrays;
-
-import static springfox.documentation.builders.RequestHandlerSelectors.basePackage;
 
 @Configuration
-@EnableSwagger2
 public class SwaggerConfiguration {
 
+
+    private static final String HEADER = "header";
+
     @Bean
-    public Docket barApi() {
-        return new Docket(DocumentationType.SWAGGER_2)
-            .groupName("bar")
-            .ignoredParameterTypes(BarWrappedHttpRequest.class)
-            .globalOperationParameters(Arrays.asList(
-                new ParameterBuilder()
-                    .name("Authorization")
-                    .description("User authorization header")
-                    .required(false)
-                    .parameterType("header")
-                    .modelRef(new ModelRef("string"))
-                    .build(),
-                new ParameterBuilder()
-                    .name("SiteId")
-                    .description("Site id header")
-                    .required(false)
-                    .parameterType("header")
-                    .modelRef(new ModelRef("string"))
-                    .build()
-            ))
-            .apiInfo(barApiInfo()).select()
-            .apis(basePackage(BarServiceApplication.class.getPackage().getName()))
+    public GroupedOpenApi paymentBarReferenceDataApi() {
+        return GroupedOpenApi.builder()
+            .group("refdata")
+            .packagesToScan("uk.gov.hmcts.bar.api.controllers.refdata")
+            .pathsToMatch("/**")
+            .addOperationCustomizer(authorizationHeaders())
             .build();
     }
 
-    private ApiInfo barApiInfo() {
-        return new ApiInfoBuilder()
-            .title("BAR API")
-            .description("BAR API to process the payments at court.")
-            .contact(new Contact("Sachi Kuppuswami, Jalal ul Deen, Ravi Kumar Arasan, Attila Kiss", "", "jalal.deen@hmcts.net"))
-            .version("1.0")
+    @Bean
+    public GroupedOpenApi paymentBarApi() {
+        return GroupedOpenApi.builder()
+            .group("payment")
+            .packagesToScan("uk.gov.hmcts.bar.api.controllers.payment")
+            .pathsToMatch("/**")
+            .addOperationCustomizer(authorizationHeaders())
             .build();
     }
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI().components(new Components())
+            .info(new Info().title("BAR App").version("1.0.0"));
+    }
+
+    @Bean
+    public OperationCustomizer authorizationHeaders() {
+        return (operation, handlerMethod) ->
+            operation
+                .addParametersItem(
+                    mandatoryStringParameter("Authorization", "User authorization header"))
+                .addParametersItem(
+                    mandatoryStringParameter("ServiceAuthorization", "Service authorization header"));
+    }
+
+    private Parameter mandatoryStringParameter(String name, String description) {
+        return new Parameter()
+            .name(name)
+            .description(description)
+            .required(true)
+            .in(HEADER)
+            .schema(new StringSchema());
+    }
+
 }

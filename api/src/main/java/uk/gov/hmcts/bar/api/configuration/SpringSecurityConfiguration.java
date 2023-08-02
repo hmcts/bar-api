@@ -31,8 +31,8 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
            .formLogin().disable()
            .logout().disable()
            .authorizeRequests()
-           .antMatchers("/swagger-ui.html", "/webjars/springfox-swagger-ui/**", "/swagger-resources/**",
-               "/v2/**", "/health","/health/liveness","/health/readiness", "/payment-types", "/info").permitAll()
+           .antMatchers("/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**",
+               "/v3/**", "/health","/health/liveness","/health/readiness", "/payment-types", "/info").permitAll()
            .anyRequest().authenticated();
     }
 
