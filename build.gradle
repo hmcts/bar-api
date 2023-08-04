@@ -49,7 +49,6 @@ allprojects {
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
             mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
         }
-
         dependencies {
 
             // solves CVE-2019-12086
@@ -57,6 +56,11 @@ allprojects {
             dependencySet(group: 'com.fasterxml.jackson.core', version: '2.10.1') {
                 entry 'jackson-core'
                 entry 'jackson-databind'
+            }
+
+            // CVE-2020-8908
+            dependencySet(group: 'com.google.guava', version: '32.1.2-jre') {
+                entry 'guava'
             }
 
             dependency 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.0'
