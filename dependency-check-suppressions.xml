@@ -126,4 +126,10 @@
         </notes>
         <cve>CVE-2023-41080</cve>
     </suppress>
+    <suppress>
+        <notes>
+            Exposure of data and identity to wrong session in Spring for GraphQL.
+        </notes>
+        <cve>CVE-2023-34047</cve>
+    </suppress>
 </suppressions>
