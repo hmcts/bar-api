@@ -9,5 +9,5 @@ maintainers:
     email: bar@hmcts.net
 dependencies:
   - name: java
-    version: 4.1.2
+    version: 5.0.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
