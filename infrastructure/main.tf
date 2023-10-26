@@ -38,7 +38,7 @@ module "bar-database-v15" {
   component = var.component
   business_area = "cft"
   name = "${var.product}-${var.component}-postgres-db-v15"
-  location = var.location_app
+  location = var.location
   env = var.env
   pgsql_admin_username = var.postgresql_user
   pgsql_databases = [
