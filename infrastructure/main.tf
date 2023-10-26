@@ -69,30 +69,30 @@ resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
 resource "azurerm_key_vault_secret" "POSTGRES-USER-V15" {
   name      = join("-", [var.component, "POSTGRES-USER-V15"])
   value     = module.bar-database-v15.username
-  key_vault_id = data.azurerm_key_vault.payment_key_vault.id
+  key_vault_id = data.azurerm_key_vault.bar_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS-V15" {
   name      = join("-", [var.component, "POSTGRES-PASS-V15"])
   value     = module.bar-database-v15.password
-  key_vault_id = data.azurerm_key_vault.payment_key_vault.id
+  key_vault_id = data.azurerm_key_vault.bar_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_HOST-V15" {
   name      = join("-", [var.component, "POSTGRES-HOST-V15"])
   value     =  module.bar-database-v15.fqdn
-  key_vault_id = data.azurerm_key_vault.payment_key_vault.id
+  key_vault_id = data.azurerm_key_vault.bar_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_PORT-V15" {
   name      = join("-", [var.component, "POSTGRES-PORT-V15"])
   value     =  var.postgresql_flexible_server_port
-  key_vault_id = data.azurerm_key_vault.payment_key_vault.id
+  key_vault_id = data.azurerm_key_vault.bar_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE-V15" {
   name      = join("-", [var.component, "POSTGRES-DATABASE-V15"])
   value     =  var.database_name
-  key_vault_id = data.azurerm_key_vault.payment_key_vault.id
+  key_vault_id = data.azurerm_key_vault.bar_key_vault.id
 }
 
