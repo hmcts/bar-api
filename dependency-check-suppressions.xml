@@ -150,4 +150,73 @@
         </notes>
         <cve>CVE-2023-44487</cve>
     </suppress>
+
+
+    <suppress>
+        <notes>
+            In FasterXML jackson-databind before 2.13.4, resource exhaustion can occur because of a lack of a check in BeanDeserializer._deserializeFromArray to prevent use of deeply nested arrays.
+        </notes>
+        <cve>CVE-2022-42004</cve>
+    </suppress>
+
+    <suppress>
+        <notes>
+            In FasterXML jackson-databind before 2.14.0-rc1, resource exhaustion
+        </notes>
+        <cve>CVE-2022-42003</cve>
+    </suppress>
+
+    <suppress>
+        <notes>
+            In FasterXML jackson-databind before 2.14.0-rc1, resource exhaustion
+        </notes>
+        <cve>CVE-2022-083</cve>
+    </suppress>
+    <suppress>
+        <notes>
+            SnakeYaml's Constructor() class does not restrict types which can be instantiated during deserialization.
+        </notes>
+        <cve>CVE-2022-1471</cve>
+    </suppress>
+
+    <suppress>
+        <notes>
+            pgjdbc is an open source postgresql JDBC Driver. In affected versions a prepared statement using either
+        </notes>
+        <cve>CVE-2022-41946</cve>
+    </suppress>
+
+    <suppress>
+        <notes>
+            The HTTP/2 protocol allows a denial of service (server resource consumption) because request cancellation can reset many streams quickly, as exploited in the wild in August through October 2023.
+        </notes>
+        <cve>CVE-2023-44487</cve>
+    </suppress>
+
+    <suppress>
+        <notes>
+            When using the RemoteIpFilter with requests received from a reverse proxy via HTTP that include the X-Forwarded-Proto header set to https,
+        </notes>
+        <cve>CVE-2023-28708</cve>
+    </suppress>
+
+    <suppress>
+        <notes>
+            jackson-databind before 2.13.0 allows a Java StackOverflow exception and denial of service via a large depth of nested objects.
+        </notes>
+        <cve>CVE-2023-28708</cve>
+    </suppress>
+
+    <suppress>
+        <notes>
+            jackson-databind before 2.13.0 allows a Java StackOverflow exception and denial of service via a large depth of nested objects.
+        </notes>
+        <cve>CVE-2023-42795</cve>
+        <cve>CVE-2023-45648</cve>
+        <cve>CVE-2022-31197</cve>
+        <cve>CVE-2020-36518</cve>
+        <cve>CVE-2022-0839</cve>
+
+    </suppress>
+
 </suppressions>
