@@ -3,10 +3,10 @@ java:
   applicationPort: 8080
   ingressHost: bar-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   environment:
-    POSTGRES_PORT: 5432
-    POSTGRES_HOST: bar-postgres-db-v11-{{ .Values.global.environment }}.postgres.database.azure.com
+    #POSTGRES_PORT: 5432
+    #POSTGRES_HOST: bar-postgres-db-v11-{{ .Values.global.environment }}.postgres.database.azure.com
     POSTGRES_NAME: bar
-    POSTGRES_USERNAME: bar@bar-postgres-db-v11-{{ .Values.global.environment }}
+    #POSTGRES_USERNAME: bar@bar-postgres-db-v11-{{ .Values.global.environment }}
     POSTGRES_CONNECTION_OPTIONS: ?sslmode=require
     SPRING_LIQUIBASE_ENABLED: false
     S2S_AUTH_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
@@ -22,5 +22,11 @@ java:
           alias: S2S_SECRET
         - name: api-POSTGRES-PASS
           alias: POSTGRES_PASSWORD
+        - name: api-POSTGRES-HOST
+          alias: POSTGRES_HOST
+        - name: api-POSTGRES-PORT
+          alias: POSTGRES_PORT
+        - name: api-POSTGRES-USER
+          alias: POSTGRES_USERNAME
         - name: AppInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
