@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/hmcts/bar-app.svg?branch=master)](https://travis-ci.org/hmcts/bar-app)
 [![codecov](https://codecov.io/gh/hmcts/bar-app/branch/master/graph/badge.svg)](https://codecov.io/gh/hmcts/bar-app)
 
+Forcing preview build.
+
 This project provides REST based web services for exposing BAR related information for hearing fee and award fees.
 
 ### Getting Started
