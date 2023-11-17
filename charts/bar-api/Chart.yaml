@@ -3,7 +3,7 @@ appVersion: "2.0"
 description: Helm chart for the HMCTS bar api
 name: bar-api
 home: https://github.com/hmcts/bar-app
-version: 0.2.21
+version: 0.2.19
 maintainers:
   - name: HMCTS Bar Dev Team
     email: bar@hmcts.net
