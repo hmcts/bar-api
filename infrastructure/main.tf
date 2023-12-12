@@ -12,23 +12,6 @@ data "azurerm_key_vault" "bar_key_vault" {
   resource_group_name = "${local.rg_name}"
 }
 
-module "bar-database-v11" {
-  source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product         = var.product
-  component       = var.component
-  name            = join("-", [var.product, "postgres-db-v11"])
-  location = var.location
-  env = var.env
-  postgresql_user = var.postgresql_user
-  database_name = var.database_name
-  sku_name = "GP_Gen5_2"
-  sku_tier = "GeneralPurpose"
-  common_tags = var.common_tags
-  subscription = var.subscription
-  postgresql_version = var.postgresql_version
-  additional_databases = var.additional_databases
-}
-
 module "bar-database-v15" {
   providers = {
     azurerm.postgres_network = azurerm.postgres_network
@@ -88,38 +71,6 @@ resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   name      = join("-", [var.component, "POSTGRES-DATABASE"])
-  value     =  var.database_name
-  key_vault_id = data.azurerm_key_vault.bar_key_vault.id
-}
-
-# Populate Vault with Flexible DB info
-
-resource "azurerm_key_vault_secret" "POSTGRES-USER-V15" {
-  name      = join("-", [var.component, "POSTGRES-USER-V15"])
-  value     = module.bar-database-v15.username
-  key_vault_id = data.azurerm_key_vault.bar_key_vault.id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-PASS-V15" {
-  name      = join("-", [var.component, "POSTGRES-PASS-V15"])
-  value     = module.bar-database-v15.password
-  key_vault_id = data.azurerm_key_vault.bar_key_vault.id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_HOST-V15" {
-  name      = join("-", [var.component, "POSTGRES-HOST-V15"])
-  value     =  module.bar-database-v15.fqdn
-  key_vault_id = data.azurerm_key_vault.bar_key_vault.id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_PORT-V15" {
-  name      = join("-", [var.component, "POSTGRES-PORT-V15"])
-  value     =  var.postgresql_flexible_server_port
-  key_vault_id = data.azurerm_key_vault.bar_key_vault.id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_DATABASE-V15" {
-  name      = join("-", [var.component, "POSTGRES-DATABASE-V15"])
   value     =  var.database_name
   key_vault_id = data.azurerm_key_vault.bar_key_vault.id
 }
