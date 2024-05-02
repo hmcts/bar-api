@@ -10,12 +10,6 @@
     </suppress>
     <suppress until="2023-11-30">
         <notes>
-            Liquibase core needs major version latest of liquibase-core. Version 4.2.2 not resolving current CVE issue
-        </notes>
-        <cve>CVE-2022-0839</cve>
-    </suppress>
-    <suppress until="2023-11-30">
-        <notes>
             This applies to spring-security-config-5.4.10, spring-security-crypto-5.4.10 and spring-security-web-5.4.10.
             Upgrade past current version required
         </notes>
