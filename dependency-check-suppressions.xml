@@ -32,12 +32,6 @@
     </suppress>
     <suppress until="2023-11-30">
         <notes>
-            SnakeYaml's Constructor() class does not restrict types which can be instantiated during deserialization.
-        </notes>
-        <cve>CVE-2022-1471</cve>
-    </suppress>
-    <suppress until="2023-11-30">
-        <notes>
             Jackson-databind version 2.12.7.1 in combination with postgres has interface changes in DBUtils that cause unit tests to fail.
         </notes>
         <cve>CVE-2020-36518</cve>
@@ -171,12 +165,6 @@
             In FasterXML jackson-databind before 2.14.0-rc1, resource exhaustion
         </notes>
         <cve>CVE-2022-083</cve>
-    </suppress>
-    <suppress>
-        <notes>
-            SnakeYaml's Constructor() class does not restrict types which can be instantiated during deserialization.
-        </notes>
-        <cve>CVE-2022-1471</cve>
     </suppress>
 
     <suppress>
