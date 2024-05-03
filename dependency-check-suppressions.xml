@@ -10,12 +10,6 @@
     </suppress>
     <suppress until="2023-11-30">
         <notes>
-            Liquibase core needs major version latest of liquibase-core. Version 4.2.2 not resolving current CVE issue
-        </notes>
-        <cve>CVE-2022-0839</cve>
-    </suppress>
-    <suppress until="2023-11-30">
-        <notes>
             This applies to spring-security-config-5.4.10, spring-security-crypto-5.4.10 and spring-security-web-5.4.10.
             Upgrade past current version required
         </notes>
@@ -29,12 +23,6 @@
             Loggback-core version 1.2.11 has interface change and breaks code.
         </notes>
         <cve>CVE-2021-42550</cve>
-    </suppress>
-    <suppress until="2023-11-30">
-        <notes>
-            SnakeYaml's Constructor() class does not restrict types which can be instantiated during deserialization.
-        </notes>
-        <cve>CVE-2022-1471</cve>
     </suppress>
     <suppress until="2023-11-30">
         <notes>
@@ -171,12 +159,6 @@
             In FasterXML jackson-databind before 2.14.0-rc1, resource exhaustion
         </notes>
         <cve>CVE-2022-083</cve>
-    </suppress>
-    <suppress>
-        <notes>
-            SnakeYaml's Constructor() class does not restrict types which can be instantiated during deserialization.
-        </notes>
-        <cve>CVE-2022-1471</cve>
     </suppress>
 
     <suppress>
