@@ -26,14 +26,6 @@
     </suppress>
     <suppress until="2023-11-30">
         <notes>
-            Jackson-databind version 2.12.7.1 in combination with postgres has interface changes in DBUtils that cause unit tests to fail.
-        </notes>
-        <cve>CVE-2020-36518</cve>
-        <cve>CVE-2022-42003</cve>
-        <cve>CVE-2022-42004</cve>
-    </suppress>
-    <suppress until="2023-11-30">
-        <notes>
             Postgres version 42.4.3 in combination with jackson-databind has interface changes in DBUtils that cause unit tests to fail.
         </notes>
         <cve>CVE-2022-31197</cve>
@@ -55,13 +47,6 @@
         <notes>In spring framework versions prior to 5.2.24 release+ ,5.3.27+ and 6.0.8+ , it is possible for a user to provide a specially crafted SpEL expression that may cause a denial-of-service (DoS) condition.
         </notes>
         <cve>CVE-2023-20863</cve>
-    </suppress>
-    <suppress>
-        <notes>
-            jackson-databind 2.10.x through 2.12.x before 2.12.6 and 2.13.x before 2.13.1 allows attackers to cause a denial of service (2 GB transient heap usage per read) in uncommon situations involving JsonNode JDK serialization.
-        </notes>
-        <cve>CVE-2021-46877</cve>
-        <cve>CVE-2023-35116</cve>
     </suppress>
     <suppress>
         <notes>
