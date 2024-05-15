@@ -51,21 +51,6 @@ allprojects {
         }
         dependencies {
 
-            // solves CVE-2019-12086
-            // remove once spring manager incorporates this changes
-            dependencySet(group: 'com.fasterxml.jackson.core', version: '2.16.1') {
-                entry 'jackson-core'
-                entry 'jackson-databind'
-            }
-
-            // CVE-2020-8908
-            dependencySet(group: 'com.google.guava', version: '32.1.2-jre') {
-                entry 'guava'
-            }
-
-            dependency 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.0'
-            dependency 'com.google.guava:guava:30.1-jre'
-
             dependency 'org.liquibase:liquibase-core:4.27.0'
             dependency 'org.postgresql:postgresql:42.3.2'
 
@@ -118,8 +103,14 @@ subprojects {
             skipProject = true
         }
     }
+
+    ext['tomcat.version'] = '9.0.88' // CVE-2023-46589, CVE-2023-42794, CVE-2023-28709
+    ext['jackson.version'] = '2.16.0' // CVE-2021-46877, CVE-2022-42003, CVE-2022-42004, CVE-2020-36518
+
     dependencies {
-        implementation group: 'org.springframework.security', name: 'spring-security-rsa', version: '1.1.1'
+        implementation group: 'org.springframework.security', name: 'spring-security-rsa', version: '1.1.1', {
+            exclude group: 'com.google.guava', module: 'guava' // guava-30.1-jre.jar CVE-2023-2976, CVE-2020-8908
+        }
 
         implementation ('com.sun.xml.bind:jaxb-osgi:2.3.1')
         implementation (group: 'com.github.hmcts', name: 'auth-checker-lib', version: '2.1.4') {
@@ -138,14 +129,12 @@ subprojects {
         annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
         testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
         implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-        implementation 'org.springframework.boot:spring-boot-starter-validation'
     }
 }
 
 dependencies {
     implementation project(':bar-api')
-    testImplementation 'com.github.hmcts:fortify-client:1.3.0:all'
+    testImplementation 'com.github.hmcts:fortify-client:1.4.1:all'
 }
 
 task fortifyScan(type: JavaExec)  {
