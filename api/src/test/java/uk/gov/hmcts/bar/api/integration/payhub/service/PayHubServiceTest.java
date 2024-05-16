@@ -290,7 +290,7 @@ public class PayHubServiceTest {
             assertThat(it.getReportDate(), is(TRANSFER_DATE));
             assertThat(it.isTransferredToPayhub(), is(false));
             assertThat(it.getPayhubError(), is("Failed to parse payhub response: \"some unparsable message\": Unrecognized token 'some': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n" +
-                " at [Source: (String)\"some unparsable message\"; line: 1, column: 5]"));
+                " at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 5]"));
         });
         verify(entityManager, times(0)).merge(any(PaymentInstructionPayhubReference.class));
     }

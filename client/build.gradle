@@ -2,7 +2,5 @@
 dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-annotations'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
-    implementation 'org.apache.httpcomponents:httpclient'
-
     testImplementation 'com.github.tomakehurst:wiremock:2.6.0'
 }

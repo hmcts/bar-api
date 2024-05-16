@@ -50,14 +50,14 @@ public class AuthCheckerConfiguration {
 
     @Bean
     public UserRequestAuthorizer<User> userRequestAuthorizer(SubjectResolver<User> userResolver,
-                                                                     Function<HttpServletRequest, Optional<String>> userIdExtractor,
-                                                                     Function<HttpServletRequest, Collection<String>> authorizedRolesExtractor) {
+                                                             Function<HttpServletRequest, Optional<String>> userIdExtractor,
+                                                             Function<HttpServletRequest, Collection<String>> authorizedRolesExtractor) {
         return new UserRequestAuthorizer<>(userResolver, userIdExtractor, authorizedRolesExtractor);
     }
 
     @Bean
     public AuthCheckerUserOnlyFilter<User> authCheckerServiceAndUserFilter(UserRequestAuthorizer<User> userRequestAuthorizer,
-                                                                                   AuthenticationManager authenticationManager) {
+                                                                           AuthenticationManager authenticationManager) {
         AuthCheckerUserOnlyFilter<User> filter = new AuthCheckerUserOnlyFilter<>(userRequestAuthorizer);
         filter.setAuthenticationManager(authenticationManager);
         return filter;

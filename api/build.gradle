@@ -73,11 +73,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation group: 'org.ff4j', name: 'ff4j-spring-boot-web-api', version: '1.9'
     implementation group: 'org.ff4j', name: 'ff4j-store-springjdbc', version: '1.9'
-
-    implementation group: 'com.google.guava', name: 'guava', version:'30.1-jre'
     implementation group: 'io.github.resilience4j', name: 'resilience4j-circuitbreaker', version: '0.14.1'
     implementation group: 'io.github.resilience4j', name: 'resilience4j-retry', version: '0.14.1'
-
 
     implementation 'org.liquibase:liquibase-core'
     implementation(group: 'org.postgresql', name: 'postgresql') {
@@ -85,12 +82,13 @@ dependencies {
         exclude(module: 'slf4j-simple')
     }
 
-    implementation ('com.github.hmcts:auth-checker-lib') {
+    implementation (group: 'com.github.hmcts', name: 'auth-checker-lib', version: '2.1.4') {
         exclude(module: 'java-logging-spring')
+        exclude group: 'com.google.guava', module: 'guava' // guava-30.1-jre.jar CVE-2023-2976, CVE-2020-8908
     }
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'com.fasterxml.jackson.core:jackson-annotations'
-    implementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '33.2.0-jre'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation group: 'org.hibernate.validator', name: 'hibernate-validator', version: '6.0.13.Final'
     implementation 'commons-beanutils:commons-beanutils'
@@ -125,7 +123,9 @@ dependencies {
 
     implementation group: 'org.pitest', name: 'pitest', version: '1.9.0'
     implementation 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.9.0'
-    implementation 'org.codehaus.sonar-plugins:sonar-pitest-plugin:0.5'
+    implementation 'org.codehaus.sonar-plugins:sonar-pitest-plugin:0.5', {
+        exclude group: 'com.google.guava', module: 'guava' // guava-30.1-jre.jar CVE-2023-2976, CVE-2020-8908
+    }
 
 
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
