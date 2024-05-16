@@ -55,6 +55,7 @@ allprojects {
             dependency 'org.postgresql:postgresql:42.3.2'
 
             dependency 'commons-beanutils:commons-beanutils:1.9.3'
+
         }
     }
 }
@@ -113,13 +114,14 @@ subprojects {
         }
 
         implementation ('com.sun.xml.bind:jaxb-osgi:2.3.1')
-        implementation (group: 'com.github.hmcts', name: 'auth-checker-lib', version: '2.1.4') {
+        implementation (group: 'com.github.hmcts', name: 'auth-checker-lib', version: '2.3.0') {
             exclude(module: 'java-logging-spring')
         }
-        implementation group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.11'
         implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
         implementation 'org.projectlombok:lombok:1.16.16'
         implementation 'com.google.code.findbugs:annotations:3.0.1'
+        implementation group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.16'
+        implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
 
         testImplementation 'junit:junit:4.12'
         testImplementation 'org.assertj:assertj-core:3.8.0'

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.bar.api.configuration;
 
-import org.apache.http.client.HttpClient;
+import org.apache.hc.client5.http.classic.HttpClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,17 +35,6 @@ public class AuthCheckerConfiguration {
     @Bean
     public Function<HttpServletRequest, Optional<String>> userIdExtractor() {
         return (request) -> Optional.empty();
-    }
-
-    @Bean
-    public UserTokenParser<UserTokenDetails> fullUserTokenParser(HttpClient userTokenParserHttpClient,
-                                                                 @Value("${auth.idam.client.baseUrl}") String baseUrl) {
-        return new HttpComponentsBasedUserTokenParser<>(userTokenParserHttpClient, baseUrl, UserTokenDetails.class);
-    }
-
-    @Bean
-    public SubjectResolver<User> userResolver(UserTokenParser<UserTokenDetails> fullUserTokenParser, AuthCheckerProperties properties, BarUserService userService) {
-        return new CachingSubjectResolver<>(new UserResolver(fullUserTokenParser, userService), properties.getUser().getTtlInSeconds(), properties.getUser().getMaximumSize());
     }
 
     @Bean
