@@ -10,16 +10,6 @@
     </suppress>
     <suppress until="2023-11-30">
         <notes>
-            This applies to spring-security-config-5.4.10, spring-security-crypto-5.4.10 and spring-security-web-5.4.10.
-            Upgrade past current version required
-        </notes>
-        <cve>CVE-2022-22978</cve>
-        <cve>CVE-2022-22976</cve>
-        <cve>CVE-2023-20861</cve>
-        <cve>CVE-2023-20862</cve>
-    </suppress>
-    <suppress until="2023-11-30">
-        <notes>
             Loggback-core version 1.2.11 has interface change and breaks code.
         </notes>
         <cve>CVE-2021-42550</cve>
@@ -61,23 +51,6 @@
             and multiple servlets, one of them being Spring MVC’s DispatcherServlet.
         </notes>
         <cve>CVE-2023-34035</cve>
-    </suppress>
-    <suppress until="2023-10-31">
-        <notes>Reactive web applications that use Spring HATEOAS to produce hypermedia-based responses might be exposed to
-            malicious forwarded headers if they are not behind a trusted proxy that ensures correctness of such headers, or if
-            they don't have anything else in place to handle (and possibly discard) forwarded headers either in WebFlux or at the
-            level of the underlying HTTP server.
-        </notes>
-        <cve>CVE-2023-34036</cve>
-    </suppress>
-    <suppress>
-        <notes>
-            A vulnerability was found in Hibernate-Validator (hibernate-validator-6.0.13.Final.jar). The SafeHtml validator annotation
-            fails to properly sanitize payloads consisting of potentially malicious code in HTML comments and instructions. This vulnerability
-            can result in an XSS attack.
-        </notes>
-        <cve>CVE-2020-10693</cve>
-        <cve>CVE-2019-10219</cve>
     </suppress>
     <suppress>
         <notes>
@@ -144,21 +117,18 @@
         </notes>
         <cve>CVE-2023-44487</cve>
     </suppress>
-
     <suppress>
         <notes>
             When using the RemoteIpFilter with requests received from a reverse proxy via HTTP that include the X-Forwarded-Proto header set to https,
         </notes>
         <cve>CVE-2023-28708</cve>
     </suppress>
-
     <suppress>
         <notes>
             jackson-databind before 2.13.0 allows a Java StackOverflow exception and denial of service via a large depth of nested objects.
         </notes>
         <cve>CVE-2023-28708</cve>
     </suppress>
-
     <suppress>
         <notes>
             jackson-databind before 2.13.0 allows a Java StackOverflow exception and denial of service via a large depth of nested objects.
@@ -169,19 +139,6 @@
         <cve>CVE-2020-36518</cve>
         <cve>CVE-2022-0839</cve>
         <cve>CVE-2023-34036</cve>
-    </suppress>
-
-    <suppress>
-        <notes>
-            Bouncy Castle for Java before 1.73 contains a potential Denial of Service (DoS) issue within the Bouncy Castle org.bouncycastle.openssl.PEMParser class.
-        </notes>
-        <cve>CVE-2023-33202</cve>
-    </suppress>
-    <suppress>
-        <notes>
-            In Spring Boot versions 2.7.0 - 2.7.17, 3.0.0-3.0.12 and 3.1.0-3.1.5, it is possible for a user to provide specially crafted HTTP requests that may cause a denial-of-service (DoS) condition.
-        </notes>
-        <cve>CVE-2023-34055</cve>
     </suppress>
     <suppress>
         <notes>
