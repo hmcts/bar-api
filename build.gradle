@@ -122,7 +122,7 @@ subprojects {
         implementation 'org.projectlombok:lombok:1.16.16'
         implementation 'com.google.code.findbugs:annotations:3.0.1'
         implementation group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.16'
-        implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
+        implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
 
         testImplementation 'junit:junit:4.12'
         testImplementation 'org.assertj:assertj-core:3.8.0'
