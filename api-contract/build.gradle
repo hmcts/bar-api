@@ -1,6 +1,6 @@
 dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-annotations'
-    implementation group: 'org.hibernate', name: 'hibernate-validator', version:'6.0.17.Final'
+    implementation group: 'org.hibernate', name: 'hibernate-validator', version:'6.2.5.Final'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 }

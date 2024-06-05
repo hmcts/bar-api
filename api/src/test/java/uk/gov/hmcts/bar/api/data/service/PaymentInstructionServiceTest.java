@@ -701,7 +701,7 @@ public class PaymentInstructionServiceTest {
         MultiMap stats = paymentInstructionService.getPaymentStatsByUserGroupByType("1234", "PA", Optional.empty(), false, "Y431");
         EntityModel<PaymentInstructionStats> resource = (EntityModel<PaymentInstructionStats>)((List)stats.get("bgc123")).get(0);
         assertTrue(resource.getLink(STAT_DETAILS).get().getHref().contains("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE&action=Process&bgcNumber=bgc123"));
-        assertTrue(resource.getLink(STAT_GROUP_DETAILS).get().getHref().contains("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE,POSTAL_ORDER&action=Process&bgcNumber=bgc123"));
+        assertTrue(resource.getLink(STAT_GROUP_DETAILS).get().getHref().contains("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE%2CPOSTAL_ORDER&action=Process&bgcNumber=bgc123"));
     }
 
     @Test
@@ -711,7 +711,7 @@ public class PaymentInstructionServiceTest {
         MultiMap stats = paymentInstructionService.getPaymentInstructionsByUserGroupByActionAndType("1234", "PA", Optional.empty(), false, "Y431");
         EntityModel<PaymentInstructionStats> resource = (EntityModel<PaymentInstructionStats>)((List)stats.get("bgc123")).get(0);
         assertTrue(resource.getLink(STAT_DETAILS).get().getHref().contains("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE&action=Process&bgcNumber=bgc123"));
-        assertTrue(resource.getLink(STAT_GROUP_DETAILS).get().getHref().contains("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE,POSTAL_ORDER&action=Process&bgcNumber=bgc123"));
+        assertTrue(resource.getLink(STAT_GROUP_DETAILS).get().getHref().contains("/users/1234/payment-instructions?status=PA&paymentType=CHEQUE%2CPOSTAL_ORDER&action=Process&bgcNumber=bgc123"));
     }
 
     @Test
