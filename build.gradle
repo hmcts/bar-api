@@ -54,7 +54,7 @@ allprojects {
             dependency 'org.liquibase:liquibase-core:4.27.0'
             dependency 'org.postgresql:postgresql:42.3.2'
 
-            dependency 'commons-beanutils:commons-beanutils:1.9.3'
+            dependency 'commons-beanutils:commons-beanutils:1.9.4'
 
         }
     }
