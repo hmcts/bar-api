@@ -88,7 +88,7 @@ dependencies {
     }
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'com.fasterxml.jackson.core:jackson-annotations'
-    implementation group: 'com.google.guava', name: 'guava', version: '33.2.0-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation group: 'org.hibernate.validator', name: 'hibernate-validator', version: '6.2.5.Final'
     implementation 'commons-beanutils:commons-beanutils'
