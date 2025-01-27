@@ -106,7 +106,7 @@ dependencies {
 
     testImplementation group: 'io.rest-assured', name: 'rest-assured'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'com.github.tomakehurst:wiremock:2.6.0'
+    testImplementation 'com.github.tomakehurst:wiremock:2.35.2'
     testImplementation group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.1.1'
 
     // smoke
