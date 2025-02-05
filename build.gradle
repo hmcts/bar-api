@@ -137,7 +137,7 @@ subprojects {
 
 dependencies {
     implementation project(':bar-api')
-    testImplementation 'com.github.hmcts:fortify-client:1.4.1:all'
+    testImplementation 'com.github.hmcts:fortify-client:1.4.7:all'
 }
 
 task fortifyScan(type: JavaExec)  {
