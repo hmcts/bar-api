@@ -1,6 +1,7 @@
 locals {
   vaultName = join("-", ["bar", var.env])
   rg_name = "bar-${var.env}-rg"
+  db_server_name = join("-", [var.product, "postgres-db-v15"])
 }
 
 provider "azurerm" {
@@ -24,7 +25,7 @@ module "bar-database-v15" {
   product = var.product
   component = var.component
   business_area = "cft"
-  name = join("-", [var.product, "postgres-db-v15"])
+  name = local.db_server_name
   location = var.location
   env = var.env
   pgsql_admin_username = var.postgresql_user
@@ -46,7 +47,9 @@ module "bar-database-v15" {
   admin_user_object_id = var.jenkins_AAD_objectId
   common_tags = var.common_tags
   pgsql_version = var.postgresql_flexible_sql_version
-
+  action_group_name           = join("-", [var.db_monitor_action_group_name, local.db_server_name, var.env])
+  email_address_key           = var.db_alert_email_address_key
+  email_address_key_vault_id  = data.azurerm_key_vault.fees_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
@@ -78,4 +81,3 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   value     =  var.database_name
   key_vault_id = data.azurerm_key_vault.bar_key_vault.id
 }
-
